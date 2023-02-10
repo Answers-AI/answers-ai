@@ -32,7 +32,7 @@ const fetchJiraData = async (endpoint) => {
     method: "GET",
     headers,
   });
-  console.log("Fetched Endpoint: ", response.status, endpoint);
+  // console.log("Fetched Endpoint: ", response.status, endpoint);
 
   if (response.status === 429) {
     await handleRateLimit(response);
@@ -95,46 +95,7 @@ const createContextFromObject = (obj) => {
   return context;
 };
 
-const writeObjectToFile = (obj) => {
-  const maxFileSize = 1.8 * 1024 * 1024; // 1.5MB in bytes
-
-  let currentFileSize = 0;
-  let currentFileIndex = 0;
-  let currentFileArray = [];
-
-  const currentDate = new Date().toISOString().slice(0, 19).replace(/T/, " ");
-
-  const folderPath = `output/jira/${currentDate}`;
-
-  if (!fs.existsSync(folderPath)) {
-    fs.mkdirSync(folderPath, { recursive: true });
-  }
-
-  const outputFileName = `${folderPath}/${Date.now()}`;
-  obj.vectors.forEach(function (element) {
-    let jsonString = JSON.stringify(element);
-    let jsonStringSize = Buffer.byteLength(jsonString, "utf8");
-    if (currentFileSize + jsonStringSize > maxFileSize) {
-      fs.writeFileSync(
-        `${outputFileName}-${currentFileIndex}.json`,
-        JSON.stringify({ namespace: "jira", vectors: currentFileArray })
-      );
-      currentFileIndex++;
-      currentFileArray = [];
-      currentFileSize = 0;
-    }
-    currentFileArray.push(element);
-    currentFileSize += jsonStringSize;
-  });
-
-  fs.writeFileSync(
-    `${outputFileName}-${currentFileIndex}.json`,
-    JSON.stringify({ namespace: "jira", vectors: currentFileArray })
-  );
-};
-
 module.exports = {
-  writeObjectToFile,
   createContextFromObject,
   jiraAdfToMarkdown,
   fetchJiraData,
