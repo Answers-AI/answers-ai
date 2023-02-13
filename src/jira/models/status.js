@@ -1,4 +1,4 @@
-const JiraObject = require("./jiraObject");
+const JiraObject = require("./baseObject");
 
 class JiraStatus extends JiraObject {
   constructor(status) {
@@ -19,9 +19,11 @@ class JiraStatus extends JiraObject {
       "key",
       "statusCategory",
     ];
+
     removeFields.forEach((fieldName) => {
       delete status[fieldName];
     });
+
     return status;
   }
 }

@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-class Pinecone {
+class SessionData {
   constructor(config) {
     this.vectors = [];
     Object.assign(this, config);
@@ -77,4 +77,4 @@ class Pinecone {
   }
 }
 
-module.exports = Pinecone;
+module.exports = SessionData;

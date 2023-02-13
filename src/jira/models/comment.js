@@ -1,6 +1,4 @@
-const JiraObject = require("./jiraObject");
-const { jiraAdfToMarkdown } = require("./jira");
-
+const JiraObject = require("./baseObject");
 class JiraComment extends JiraObject {
   constructor(comment) {
     const tidiedComment = JiraComment.tidy(comment);
@@ -16,7 +14,7 @@ class JiraComment extends JiraObject {
 
     comment.objectType = "JIRA Comment";
     comment.author = comment.author.displayName;
-    comment.body = jiraAdfToMarkdown(comment.body.content);
+    comment.body = this.jiraAdfToMarkdown(comment.body.content);
 
     return comment;
   }
