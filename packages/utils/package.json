@@ -1,0 +1,61 @@
+{
+  "name": "utils",
+  "version": "0.0.1",
+  "description": "Content Parser for Open AI",
+  "private": true,
+  "main": "./dist/index.js",
+  "source": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+    "dev": "tsc -w",
+    "lint": "TIMING=1 eslint \"src/**/*.ts*\"",
+    "test": "jest",
+    "start": "node index.js",
+    "airtable": "node -r dotenv/config airtable.js",
+    "jira": "node -r dotenv/config src/jira.js",
+    "blog": "node -r dotenv/config createblog.js",
+    "fgenerate": "node -r dotenv/config finetune-generate.js",
+    "egenerate": "node -r dotenv/config embeddings-generate.js",
+    "upload": "node -r dotenv/config fileupload.js",
+    "finetune": "node -r dotenv/config finetune.js",
+    "pinecone": "node -r dotenv/config pinecone.js",
+    "query": "node -r dotenv/config query.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@contentful/app-sdk": "^4.15.0",
+    "@contentful/rich-text-from-markdown": "^15.16.3",
+    "airtable": "^0.11.6",
+    "axios": "^1.3.2",
+    "cheerio": "^1.0.0-rc.12",
+    "contentful-management": "^10.29.1",
+    "csv": "^6.2.7",
+    "csv-parser": "^3.0.0",
+    "csv-stringify": "^6.2.4",
+    "dotenv": "^16.0.3",
+    "gpt-3-encoder": "^1.1.4",
+    "jira.js": "^2.16.0",
+    "natural": "^6.2.0",
+    "node-fetch": "^3.3.0",
+    "openai": "^3.1.0",
+    "react": "^18.2.0",
+    "readline": "^1.3.0",
+    "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.22",
+    "@types/node": "^18.11.9",
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "workspace:*",
+    "jest": "^26.6.3",
+    "tsconfig": "workspace:*",
+    "types": "workspace:*",
+    "typescript": "^4.8.3"
+  }
+}
