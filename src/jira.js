@@ -89,6 +89,30 @@ const getJiraTickets = async (options) => {
   return allPromiseTickets;
 };
 
+const getSingleJiraTicket = async (issueId) => {
+  console.time("getSingleJiraTicket");
+  let issue;
+
+  try {
+    if (!issueId) throw new Error("No issue with issue key ${issueId} found.");
+    let endpoint = `/issue/${issueId}`;
+    let data = await jiraClient.fetchJiraData(endpoint);
+    if (!data || data.errors) {
+      throw new Error(
+        `issueID:${issueId} - ${data?.errorMessages?.join(" | ")}`
+      );
+    }
+
+    issue = new JiraIssue(data);
+  } catch (error) {
+    console.error(error);
+  }
+
+  console.timeEnd("getSingleJiraTicket");
+
+  return issue;
+};
+
 const getJiraComments = async (issueKey) => {
   let comments = await jiraClient.fetchJiraData(`/issue/${issueKey}/comment`);
 
@@ -114,50 +138,53 @@ const getJiraComments = async (issueKey) => {
 
 const prepareAllForEmbedding = async (jiraObjects) => {
   console.time("prepareAllForEmbedding");
-  let promises = [];
+  let preparedStatuses;
+  try {
+    if (!jiraObjects) throw new Error("Invalid jiraObjects");
+    let promises = [];
 
-  for (const obj of jiraObjects) {
-    if (obj) promises.push(obj.prepareForEmbedding());
+    for (const obj of jiraObjects) {
+      if (obj) promises.push(obj.prepareForEmbedding());
+    }
+    preparedStatuses = await Promise.all(promises);
+  } catch (error) {
+    console.error(error);
   }
-  const preparedStatuses = await Promise.all(promises);
+
   console.timeEnd("prepareAllForEmbedding");
   return preparedStatuses;
 };
 
-const allJiraStatuses = async () => {
-  console.time("allJiraStatuses");
+const indexAllJiraStatuses = async () => {
+  console.time("indexAllJiraStatuses");
   const data = await getJiraStatuses();
   const vectorData = await prepareAllForEmbedding(data);
   // sessionData.addVectors(vectorData);
   await pinecone.writeVectorsToIndex(vectorData);
-  console.timeEnd("allJiraStatuses");
+  console.timeEnd("indexAllJiraStatuses");
 };
 
-const allJiraStatusCategories = async () => {
-  console.time("allJiraStatusCategories");
+const indexAllJiraStatusCategories = async () => {
+  console.time("indexAllJiraStatusCategories");
   const data = await getJiraStatusCategories();
   const vectorData = await prepareAllForEmbedding(data);
   // sessionData.addVectors(vectorData);
   await pinecone.writeVectorsToIndex(vectorData);
-  console.timeEnd("allJiraStatusCategories");
+  console.timeEnd("indexAllJiraStatusCategories");
 };
 
-const allJiraIssues = async () => {
-  console.time("allJiraIssues");
-  const options = {
-    projectId: "PROJECT",
-    batchSize: 10,
-    maxResults: 1000,
-  };
+const indexAllJiraIssues = async (options) => {
+  console.time("indexAllJiraIssues");
   const data = await getJiraTickets(options);
   const vectorData = await prepareAllForEmbedding(data);
+  console.log(vectorData[0]);
   // sessionData.addVectors(vectorData);
   await pinecone.writeVectorsToIndex(vectorData);
-  console.timeEnd("allJiraIssues");
+  console.timeEnd("indexAllJiraIssues");
 };
 
-const allJiraCommments = async (issues) => {
-  console.time("allJiraCommments");
+const indexAllJiraCommments = async (issues) => {
+  console.time("indexAllJiraCommments");
   //TODO: Open AI rate limit of 3000/min
   let promises = [];
   for (const issue of issues) {
@@ -168,15 +195,29 @@ const allJiraCommments = async (issues) => {
   const vectorData = await prepareAllForEmbedding(data.flat().flat());
   // sessionData.addVectors(vectorData);
   await pinecone.writeVectorsToIndex(vectorData);
-  console.timeEnd("allJiraCommments");
+  console.timeEnd("indexAllJiraCommments");
+};
+
+const indexSingleJiraIssue = async (issueId) => {
+  console.time("indexSingleJiraIssue");
+  const issue = await getSingleJiraTicket(issueId);
+  const vectorIssue = await issue.prepareForEmbedding();
+  // sessionData.addVectors(vectorData);
+  await pinecone.writeVectorsToIndex(vectorIssue);
+  console.timeEnd("indexSingleJiraIssue");
 };
 
 (async () => {
   try {
-    // await allJiraStatuses();
-    // await allJiraStatusCategories();
-    await allJiraIssues();
-    // await allJiraIssuesComments(issues);
+    // await indexAllJiraStatuses();
+    // await indexAllJiraStatusCategories();
+    await indexAllJiraIssues({
+      projectId: "PROJECT",
+      batchSize: 10,
+      maxResults: 1,
+    });
+    // await indexAllJiraIssuesComments(issues);
+    // await indexSingleJiraIssue("PROJECT-168");
   } catch (error) {
     console.error(`Error: ${error?.response?.data?.message} (${error})`);
   }

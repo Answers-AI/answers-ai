@@ -6,14 +6,6 @@ class SessionData {
     Object.assign(this, config);
   }
 
-  createVector(id, metadata, values) {
-    return {
-      id,
-      metadata,
-      values,
-    };
-  }
-
   addVectors(vectors) {
     if (Array.isArray(vectors)) {
       this.vectors.push(...vectors);

@@ -5,6 +5,14 @@ class Vector {
     this.values = values;
   }
 
+  static removeObjNulls(obj) {
+    return Object.fromEntries(
+      Object.entries(obj).filter(
+        ([key, value]) => value !== null && value !== undefined
+      )
+    );
+  }
+
   static flattenObject(ob) {
     let toReturn = {};
 
@@ -21,6 +29,7 @@ class Vector {
         toReturn[i] = ob[i];
       }
     }
+    toReturn = this.removeObjNulls(toReturn);
     return toReturn;
   }
 }

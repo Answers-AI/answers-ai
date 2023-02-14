@@ -83,25 +83,19 @@ class JiraObject {
 
   async prepareForEmbedding() {
     this.context = await this.getContext();
-    console.log(this.context);
     this.tokens = await this.getTokenCount();
     this.embedding = await this.createEmbedding();
-    this.vector = await this.createVector();
+    this.vector = this.createVector();
     return this.vector;
   }
 
   async createEmbedding() {
-    try {
-      const openAi = new OpenAI();
-      const embedding = await openAi.createEmbedding(this.context);
-      return embedding;
-    } catch (err) {
-      console.error(err);
-      return null;
-    }
+    const openAi = new OpenAI();
+    const embedding = await openAi.createEmbedding(this.context);
+    return embedding;
   }
 
-  async createVector() {
+  createVector() {
     const objectType = this.object.objectType.replace(/\s/g, "").toLowerCase();
     const uid = this.object.uid;
     const id = `${objectType}_${uid}`;
