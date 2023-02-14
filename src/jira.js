@@ -214,7 +214,7 @@ const indexSingleJiraIssue = async (issueId) => {
     await indexAllJiraIssues({
       projectId: "PROJECT",
       batchSize: 10,
-      maxResults: 1,
+      maxResults: 100,
     });
     // await indexAllJiraIssuesComments(issues);
     // await indexSingleJiraIssue("PROJECT-168");
