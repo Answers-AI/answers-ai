@@ -1,4 +1,4 @@
-const JiraObject = require("./baseObject");
+const JiraObject = require("./jiraObject");
 
 class JiraStatus extends JiraObject {
   constructor(status) {

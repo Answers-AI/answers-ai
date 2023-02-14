@@ -1,4 +1,4 @@
-const JiraObject = require("./baseObject");
+const JiraObject = require("./jiraObject");
 class JiraComment extends JiraObject {
   constructor(comment) {
     const tidiedComment = JiraComment.tidy(comment);
