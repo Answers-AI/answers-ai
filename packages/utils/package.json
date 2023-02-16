@@ -18,6 +18,7 @@
     "start": "node index.js",
     "airtable": "node -r dotenv/config airtable.js",
     "jira": "node -r dotenv/config src/jira.js",
+    "slack": "node -r dotenv/config src/slack.js",
     "blog": "node -r dotenv/config createblog.js",
     "fgenerate": "node -r dotenv/config finetune-generate.js",
     "egenerate": "node -r dotenv/config embeddings-generate.js",
@@ -31,6 +32,7 @@
   "dependencies": {
     "@contentful/app-sdk": "^4.15.0",
     "@contentful/rich-text-from-markdown": "^15.16.3",
+    "@slack/web-api": "^6.8.1",
     "airtable": "^0.11.6",
     "axios": "^1.3.2",
     "cheerio": "^1.0.0-rc.12",
