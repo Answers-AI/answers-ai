@@ -51,7 +51,7 @@ class PineconeClient {
     const index = this.client.Index(this.indexName);
 
     //TODO: Remove after testing
-    await this.deleteIndex(index);
+    // await this.deleteIndex(index);
 
     await index.upsert({
       vectors: [vector],
@@ -67,11 +67,10 @@ class PineconeClient {
     const index = this.client.Index(this.indexName);
 
     //TODO: Remove after testing
-    await this.deleteIndex(index);
+    // await this.deleteIndex(index);
 
     let pineconeUpsertPromises = chunkArray(vectors, 100);
     pineconeUpsertPromises.map((chunkedVectors) => {
-      console.log(chunkedVectors);
       const upsertRequest = {
         vectors: chunkedVectors,
         namespace: this.namespace,

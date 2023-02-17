@@ -1,9 +1,15 @@
 const fs = require("fs");
+const Pinecone = require("../pinecone/client");
 
-class SessionData {
+class AnswerSession {
   constructor(config) {
     this.vectors = [];
     Object.assign(this, config);
+  }
+
+  initPinecone(options) {
+    const pinecone = new Pinecone(options);
+    this.pinecone = pinecone;
   }
 
   addVectors(vectors) {
@@ -67,6 +73,25 @@ class SessionData {
       JSON.stringify({ namespace, vectors: currentFileArray })
     );
   }
+
+  async prepareAllForEmbedding(objects) {
+    console.time("prepareAllForEmbedding");
+    let preparedStatuses;
+    try {
+      if (!objects) throw new Error("Invalid objects");
+      let promises = [];
+
+      for (const obj of objects) {
+        if (obj) promises.push(obj.prepareForEmbedding());
+      }
+      preparedStatuses = await Promise.all(promises);
+    } catch (error) {
+      console.error(error);
+    }
+
+    console.timeEnd("prepareAllForEmbedding");
+    return preparedStatuses;
+  }
 }
 
-module.exports = SessionData;
+module.exports = AnswerSession;
