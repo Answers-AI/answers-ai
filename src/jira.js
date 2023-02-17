@@ -4,14 +4,14 @@ const JiraStatus = require("./jira/models/status");
 const JiraIssue = require("./jira/models/issue");
 const JiraComment = require("./jira/models/comment");
 const Pinecone = require("./pinecone/client");
-// const SessionData = require("./utilities/sessionData");
+// const AnswerSession = require("./utilities/answerSession");
 const JiraClient = require("./jira/client");
 
 const pinecone = new Pinecone({
   namespace: "jira",
   indexName: "adam-test-jira-2023-02-08-01",
 });
-// const sessionData = new SessionData({ namespace: "jira" });
+// const answerSession = new AnswerSession({ namespace: "jira" });
 const jiraClient = new JiraClient();
 
 const getJiraStatusCategories = async () => {
@@ -21,16 +21,21 @@ const getJiraStatusCategories = async () => {
   );
 };
 
+const getJiraProjects = async () => {
+  let projects = await jiraClient.fetchJiraData(`/project`);
+  return projects.filter((project) => !project.archived);
+};
+
 const getJiraStatuses = async () => {
   let statuses = await jiraClient.fetchJiraData(`/status`);
   return statuses.map((status) => new JiraStatus(status));
 };
 
 const getJiraTickets = async (options) => {
-  console.time("getJiraTickets");
   const initialPullCount = 1;
 
   let { projectId, startAt = 0, batchSize = 100, maxResults = 1000 } = options;
+  console.time(`${projectId} Jira Tickets`);
   let allTickets = [];
   let total = 0;
   maxResults -= initialPullCount;
@@ -39,6 +44,7 @@ const getJiraTickets = async (options) => {
   while (true) {
     try {
       let endpoint = `/search?jql=project=${projectId}&maxResults=${initialPullCount}&startAt=${startAt}`;
+      console.time(endpoint);
       let data = await jiraClient.fetchJiraData(endpoint);
 
       if (!data || data.errors) {
@@ -59,19 +65,26 @@ const getJiraTickets = async (options) => {
       batchSize += initialPullCount;
 
       let promises = [];
+      let result;
       while (startAt < total) {
         let nextEndpoint = `/search?jql=project=${projectId}&startAt=${startAt}&maxResults=${batchSize}`;
-        promises.push(jiraClient.fetchJiraData(nextEndpoint));
-        startAt += batchSize;
-      }
-
-      let results = await Promise.all(promises);
-      for (let i = 0; i < results.length; i++) {
-        let result = results[i];
+        console.time(nextEndpoint);
+        // promises.push(jiraClient.fetchJiraData(nextEndpoint));
+        result = await jiraClient.fetchJiraData(nextEndpoint);
         allTickets = allTickets.concat(
           result.issues.map((issue) => new JiraIssue(issue))
         );
+        console.timeEnd(nextEndpoint);
+        startAt += batchSize;
       }
+
+      // let results = await Promise.all(promises);
+      // for (let i = 0; i < results.length; i++) {
+      //   let result = results[i];
+      //   allTickets = allTickets.concat(
+      //     result.issues.map((issue) => new JiraIssue(issue))
+      //   );
+      // }
 
       if (allTickets.length >= total) {
         break;
@@ -83,8 +96,8 @@ const getJiraTickets = async (options) => {
   }
 
   const allPromiseTickets = Promise.all(allTickets);
-  console.log(`getJiraTickets Issue Count: ${allTickets.length}`);
-  console.timeEnd("getJiraTickets");
+  console.log(`${projectId} Issue Count: ${allTickets.length}`);
+  console.timeEnd(`${projectId} Jira Tickets`);
 
   return allPromiseTickets;
 };
@@ -159,7 +172,7 @@ const indexAllJiraStatuses = async () => {
   console.time("indexAllJiraStatuses");
   const data = await getJiraStatuses();
   const vectorData = await prepareAllForEmbedding(data);
-  // sessionData.addVectors(vectorData);
+  // answerSession.addVectors(vectorData);
   await pinecone.writeVectorsToIndex(vectorData);
   console.timeEnd("indexAllJiraStatuses");
 };
@@ -168,19 +181,26 @@ const indexAllJiraStatusCategories = async () => {
   console.time("indexAllJiraStatusCategories");
   const data = await getJiraStatusCategories();
   const vectorData = await prepareAllForEmbedding(data);
-  // sessionData.addVectors(vectorData);
+  // answerSession.addVectors(vectorData);
   await pinecone.writeVectorsToIndex(vectorData);
   console.timeEnd("indexAllJiraStatusCategories");
 };
 
 const indexAllJiraIssues = async (options) => {
-  console.time("indexAllJiraIssues");
+  console.time(`Running ${options.projectId}`);
+
   const data = await getJiraTickets(options);
+
+  console.time(`${options.projectId} Embedding`);
   const vectorData = await prepareAllForEmbedding(data);
-  console.log(vectorData[0]);
-  // sessionData.addVectors(vectorData);
+  console.timeEnd(`${options.projectId} Embedding`);
+  // answerSession.addVectors(vectorData);
+
+  console.time(`${options.projectId} Writing Vectors`);
   await pinecone.writeVectorsToIndex(vectorData);
-  console.timeEnd("indexAllJiraIssues");
+  console.timeEnd(`${options.projectId} Writing Vectors`);
+
+  console.timeEnd(`Running ${options.projectId}`);
 };
 
 const indexAllJiraCommments = async (issues) => {
@@ -193,7 +213,7 @@ const indexAllJiraCommments = async (issues) => {
 
   const data = await Promise.all(promises);
   const vectorData = await prepareAllForEmbedding(data.flat().flat());
-  // sessionData.addVectors(vectorData);
+  // answerSession.addVectors(vectorData);
   await pinecone.writeVectorsToIndex(vectorData);
   console.timeEnd("indexAllJiraCommments");
 };
@@ -202,20 +222,34 @@ const indexSingleJiraIssue = async (issueId) => {
   console.time("indexSingleJiraIssue");
   const issue = await getSingleJiraTicket(issueId);
   const vectorIssue = await issue.prepareForEmbedding();
-  // sessionData.addVectors(vectorData);
+  // answerSession.addVectors(vectorData);
   await pinecone.writeVectorsToIndex(vectorIssue);
   console.timeEnd("indexSingleJiraIssue");
 };
 
 (async () => {
   try {
-    // await indexAllJiraStatuses();
+    const projects = await getJiraProjects();
     // await indexAllJiraStatusCategories();
-    await indexAllJiraIssues({
-      projectId: "PROJECT",
-      batchSize: 10,
-      maxResults: 100,
-    });
+    // const projects = [{ key: "PROJECT" }];
+
+    for (const project of projects) {
+      try {
+        await indexAllJiraIssues({
+          projectId: project.key,
+          batchSize: 10,
+          maxResults: 10000,
+        });
+        console.log(
+          `Completed indexing all Jira issues for project ${project.name}`
+        );
+      } catch (error) {
+        console.error(
+          `Error indexing Jira issues for project ${project.name}: ${error}`
+        );
+        break; // Stop the loop if there is an error
+      }
+    }
     // await indexAllJiraIssuesComments(issues);
     // await indexSingleJiraIssue("PROJECT-168");
   } catch (error) {

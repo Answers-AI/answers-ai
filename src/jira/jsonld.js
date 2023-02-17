@@ -5,14 +5,14 @@ const JiraStatus = require("./jira/models/status");
 const JiraIssue = require("./jira/models/issue");
 const JiraComment = require("./jira/models/comment");
 const Pinecone = require("./pinecone/client");
-const SessionData = require("./utilities/sessionData");
+const AnswerSession = require("./utilities/answerSession");
 const JiraClient = require("./jira/client");
 
 const pinecone = new Pinecone({
   namespace: "jira",
   indexName: "adam-test-jira-2023-02-08-01",
 });
-const sessionData = new SessionData({ namespace: "jira" });
+const answerSession = new AnswerSession({ namespace: "jira" });
 const jiraClient = new JiraClient();
 
 const getIssueFieldJsonLdContext = async () => {
