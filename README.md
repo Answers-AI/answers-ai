@@ -1,15 +1,15 @@
-# Turborepo starter
+# Answers AI
 
-This is an official pnpm starter turborepo.
+This is the official Answers AI monorepo
 
 ## What's inside?
 
-This turborepo uses [pnpm](https://pnpm.io) as a package manager. It includes the following packages/apps:
+This monorepo uses [pnpm](https://pnpm.io) as a package manager. It includes the following packages/apps:
 
 ### Apps and Packages
 
-- `web`: another [Next.js](https://nextjs.org/) app
-- `utils`: a library shared applications
+- `web`: a [Next.js](https://nextjs.org/) app holding the frontend and serverless functions for the Answers AI website
+- `utils`: a library shared applications with utilities to sync and query data to the Answers AI database
 - `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `tsconfig`: `tsconfig.json`s used throughout the monorepo
 
