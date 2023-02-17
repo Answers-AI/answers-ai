@@ -23,11 +23,17 @@ const getJiraStatuses = async () => {
   return statuses.map((status) => new JiraStatus(status));
 };
 
+const getJiraProjects = async () => {
+  let projects = await jiraClient.fetchJiraData(`/project`);
+  return projects.filter((project) => !project.archived);
+};
+
 const getJiraTickets = async (options) => {
   console.time('getJiraTickets');
   const initialPullCount = 1;
 
   let { projectId, startAt = 0, batchSize = 100, maxResults = 1000 } = options;
+  console.time(`${projectId} Jira Tickets`);
   let allTickets = [];
   let total = 0;
   maxResults -= initialPullCount;
@@ -36,6 +42,7 @@ const getJiraTickets = async (options) => {
   while (true) {
     try {
       let endpoint = `/search?jql=project=${projectId}&maxResults=${initialPullCount}&startAt=${startAt}`;
+      console.time(endpoint);
       let data = await jiraClient.fetchJiraData(endpoint);
 
       if (!data || data.errors) {

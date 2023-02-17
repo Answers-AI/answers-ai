@@ -8,6 +8,7 @@ import {
   Card,
   CardContent,
   CardMedia,
+  CircularProgress,
   Container,
   IconButton,
   Input,
@@ -18,17 +19,23 @@ import { JsonViewer } from '@textea/json-viewer';
 
 import { useQuery } from '@tanstack/react-query';
 import { deepOrange, deepPurple } from '@mui/material/colors';
+
 const DeveloperTools: React.FC = () => {
   const [inputValue, setInputValue] = useState('What is the current status of tickets assigned to Max Techera?');
   const [prompt, setPrompt] = useState('');
   const [answers, setAnswers] = useState<any[]>([]);
+  const [isLoadingJira, setIsLoadingJira] = useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  const addAnswer = (answer: any) => setAnswers((currentAnswers) => [...currentAnswers, answer]);
+
   const { data, isFetching } = useQuery({
     enabled: !!prompt,
     queryKey: ['completion', prompt],
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
+    cacheTime: 0,
     retry: false,
     queryFn: () =>
       axios
@@ -38,7 +45,7 @@ const DeveloperTools: React.FC = () => {
           error: error?.response?.data?.error
         })),
     onSuccess: (data) => {
-      setAnswers([...answers, data]);
+      addAnswer(data);
     }
   });
   React.useEffect(() => {
@@ -49,10 +56,16 @@ const DeveloperTools: React.FC = () => {
   };
 
   const handleSyncJira = async () => {
+    setIsLoadingJira(true);
+
+    addAnswer({ prompt: 'Can you please sync all jira tickets?' });
     try {
       await axios.post(`/api/sync/jira`);
+      addAnswer({ answer: 'Synced Jira successfully' });
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoadingJira(false);
     }
   };
 
@@ -71,13 +84,19 @@ const DeveloperTools: React.FC = () => {
             {answers.map((answer, index) => (
               <Answer {...answer} key={index} />
             ))}
-            {isFetching && prompt ? <Answer answer={'...'} /> : null}
+            {isFetching || isLoadingJira ? <Answer answer={'...'} /> : null}
           </Box>
         </Box>
 
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button variant="outlined" color="primary" onClick={handleSyncJira}>
-            Sync Jira
+          <Button
+            sx={{ position: 'relative', label: { transition: '2.s', opacity: isLoadingJira ? 0 : 1 } }}
+            variant="outlined"
+            color="primary"
+            disabled={isLoadingJira}
+            onClick={handleSyncJira}>
+            {isLoadingJira ? <CircularProgress size={24} sx={{ position: 'absolute' }} /> : null}
+            <label>Sync Jira</label>
           </Button>
 
           <Button variant="outlined" color="primary" disabled>
