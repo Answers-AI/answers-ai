@@ -38,7 +38,7 @@ const indexSingleSlackChannel = async (channelId) => {
   console.timeEnd('indexSingleSlackChannel');
 };
 
-(async () => {
+export const syncSlack = async () => {
   try {
     //     { id: 'CHAD1M11A', name: 'general' }
     // { id: 'CHBG340BZ', name: 'random' }
@@ -196,4 +196,4 @@ const indexSingleSlackChannel = async (channelId) => {
   } catch (error) {
     console.error(`Error: ${error?.response?.data?.message} (${error})`);
   }
-})();
+};

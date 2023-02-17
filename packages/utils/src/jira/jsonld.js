@@ -9,7 +9,7 @@ import JiraClient from './jira/client';
 
 const pinecone = new Pinecone({
   namespace: 'jira',
-  indexName: 'adam-test-jira-2023-02-08-01'
+  indexName: process.env.PINECONE_INDEX
 });
 const answerSession = new AnswerSession({ namespace: 'jira' });
 const jiraClient = new JiraClient();

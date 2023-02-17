@@ -33,7 +33,7 @@ const pineconeQuery = async (embeddings: number[]) => {
 
     const result = await pinecone.Index(process.env.PINECONE_INDEX).query({
       vector: embeddings,
-      topK: 10,
+      topK: 20,
       includeMetadata: true,
       namespace: 'jira'
     });
@@ -48,10 +48,10 @@ const pineconeQuery = async (embeddings: number[]) => {
 };
 
 const createContext = (id: string, metadata: Record<string, string>): string => {
-  let string = 'ISSUE ID: ' + id + '\n\n';
+  let string = 'For jira issue ' + id + '\n';
   for (const key in metadata) {
     if (metadata.hasOwnProperty(key)) {
-      string += `${key}: ${metadata[key]}\n\n`;
+      string += `The ${key} is ${metadata[key]}, `;
     }
   }
   return string;
@@ -63,14 +63,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await cors(req, res);
 
   try {
-    const args = { ...req.body };
-    const prompt: string = args.prompt;
-
-    console.log('args', args);
-    const statusCategory: string = args.statusCategory;
-    console.log('getting image with prompt', args.prompt);
+    const { prompt, answers } = req.body;
     try {
-      console.log('GETTING PROMPT', prompt);
       // Send a request to the OpenAI API for embeddings based on query
       const embeddingResponse = await openai.createEmbedding({
         model: 'text-embedding-ada-002',
@@ -80,11 +74,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
       const pineconeData = await pineconeQuery(embeddings);
 
-      const context = pineconeData?.matches
-        ?.map((item: any) => {
-          return createContext(item.id, item.metadata);
-        })
-        .join('\n\n');
+      const context = [
+        ...answers?.filter((item: any) => !!item?.answer)?.map((item: any) => item?.answer),
+        ...(!pineconeData?.matches
+          ? []
+          : pineconeData?.matches?.map((item: any) => createContext(item.id, item.metadata)))
+      ].join('\n');
       let completionData;
       try {
         // Chunk the pineconeData into 3000 tokens
@@ -92,7 +87,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         // For each chunk query open AI
         // Take each response and combine them into one context
         // Use the context for the new query
-        console.log('openai');
+
         console.time('OpenAI->createCompletion');
         const { data } = await openai.createCompletion({
           model: 'text-davinci-003',

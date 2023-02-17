@@ -4,7 +4,7 @@ import OpenAI from '../../openai/openai';
 import Vector from '../../utilities/vector';
 
 const embeddingJoinSeparator = ' ';
-
+const openAi = new OpenAI();
 class AnswersObject {
   constructor(object) {
     this.object = object;
@@ -37,7 +37,6 @@ class AnswersObject {
   }
 
   async createEmbedding() {
-    const openAi = new OpenAI();
     const embedding = await openAi.createEmbedding(this.context);
     return embedding;
   }

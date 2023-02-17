@@ -2,15 +2,12 @@ class Vector {
   constructor(id, metadata, values) {
     this.id = id;
     this.metadata = Vector.flattenObject(metadata);
+
     this.values = values;
   }
 
   static removeObjNulls(obj) {
-    return Object.fromEntries(
-      Object.entries(obj).filter(
-        ([key, value]) => value !== null && value !== undefined
-      )
-    );
+    return Object.fromEntries(Object.entries(obj).filter(([key, value]) => value !== null && value !== undefined));
   }
 
   static flattenObject(ob) {
@@ -19,7 +16,7 @@ class Vector {
     for (let i in ob) {
       if (!ob.hasOwnProperty(i)) continue;
 
-      if (typeof ob[i] == "object") {
+      if (typeof ob[i] == 'object') {
         let flatObject = Vector.flattenObject(ob[i]);
         for (let x in flatObject) {
           if (!flatObject.hasOwnProperty(x)) continue;

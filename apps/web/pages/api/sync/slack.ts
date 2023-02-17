@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { syncJira } from 'utils';
+import { syncSlack } from 'utils';
 import cors from '../../../src/cors';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
   await cors(req, res);
-  const result = await syncJira({ maxResults: 100 });
+  const result = await syncSlack();
   res.status(200).json({ result });
 };
 

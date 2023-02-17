@@ -43,6 +43,7 @@
     "csv-stringify": "^6.2.4",
     "dotenv": "^16.0.3",
     "gpt-3-encoder": "^1.1.4",
+    "ioredis": "^5.3.1",
     "jira.js": "^2.16.0",
     "natural": "^6.2.0",
     "node-fetch": "^3.3.0",
