@@ -1,9 +1,15 @@
-import fs from "fs";
+import fs from 'fs';
+import PineconeClient from '../pinecone/client';
 
-class SessionData {
+class AnswerSession {
   constructor(config) {
     this.vectors = [];
     Object.assign(this, config);
+  }
+
+  initPinecone(options) {
+    const pinecone = new PineconeClient(options);
+    this.pinecone = pinecone;
   }
 
   addVectors(vectors) {
@@ -33,7 +39,7 @@ class SessionData {
     let currentFileIndex = 0;
     let currentFileArray = [];
 
-    const currentDate = new Date().toISOString().slice(0, 19).replace(/T/, " ");
+    const currentDate = new Date().toISOString().slice(0, 19).replace(/T/, ' ');
 
     const folderPath = `output/${this.namespace}/${currentDate}`;
 
@@ -45,13 +51,13 @@ class SessionData {
     const namespace = this.namespace;
     this.vectors.forEach(function (element) {
       let jsonString = JSON.stringify(element);
-      let jsonStringSize = Buffer.byteLength(jsonString, "utf8");
+      let jsonStringSize = Buffer.byteLength(jsonString, 'utf8');
       if (currentFileSize + jsonStringSize > maxFileSize) {
         fs.writeFileSync(
           `${outputFileName}-${currentFileIndex}.json`,
           JSON.stringify({
             namespace,
-            vectors: currentFileArray,
+            vectors: currentFileArray
           })
         );
         currentFileIndex++;
@@ -67,6 +73,25 @@ class SessionData {
       JSON.stringify({ namespace, vectors: currentFileArray })
     );
   }
+
+  async prepareAllForEmbedding(objects) {
+    console.time('prepareAllForEmbedding');
+    let preparedStatuses;
+    try {
+      if (!objects) throw new Error('Invalid objects');
+      let promises = [];
+
+      for (const obj of objects) {
+        if (obj) promises.push(obj.prepareForEmbedding());
+      }
+      preparedStatuses = await Promise.all(promises);
+    } catch (error) {
+      console.error(error);
+    }
+
+    console.timeEnd('prepareAllForEmbedding');
+    return preparedStatuses;
+  }
 }
 
-export default SessionData;
+export default AnswerSession;

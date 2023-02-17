@@ -70,7 +70,6 @@ class PineconeClient {
 
     let pineconeUpsertPromises = chunkArray(vectors, 100);
     pineconeUpsertPromises.map((chunkedVectors) => {
-      // console.log(chunkedVectors);
       const upsertRequest = {
         vectors: chunkedVectors,
         namespace: this.namespace
