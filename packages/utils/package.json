@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Content Parser for Open AI",
   "private": true,
+  "type": "module",
   "main": "./dist/index.js",
   "source": "./src/index.ts",
   "types": "./dist/index.d.ts",

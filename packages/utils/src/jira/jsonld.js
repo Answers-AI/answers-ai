@@ -1,12 +1,11 @@
-const fs = require("fs");
-// Write a nodejs script that exports all comments from Jira in a single text field for each issue
-const JiraStatusCategory = require("./jira/models/statusCategory");
-const JiraStatus = require("./jira/models/status");
-const JiraIssue = require("./jira/models/issue");
-const JiraComment = require("./jira/models/comment");
-const Pinecone = require("./pinecone/client");
-const SessionData = require("./utilities/sessionData");
-const JiraClient = require("./jira/client");
+import fs from "fs";
+import JiraStatusCategory from "./jira/models/statusCategory";
+import JiraStatus from "./jira/models/status";
+import JiraIssue from "./jira/models/issue";
+import JiraComment from "./jira/models/comment";
+import Pinecone from "./pinecone/client";
+import SessionData from "./utilities/sessionData";
+import JiraClient from "./jira/client";
 
 const pinecone = new Pinecone({
   namespace: "jira",

@@ -1,54 +1,50 @@
 // Write a nodejs script that exports all comments from Jira in a single text field for each issue
-require("dotenv").config();
-const fs = require("fs");
-const fetch = require("node-fetch");
-const natural = require("natural");
-const { Configuration, OpenAIApi } = require("openai");
-const { start } = require("repl");
+
+import fs from 'fs';
+import fetch from 'node-fetch';
+import natural from 'natural';
+import { Configuration, OpenAIApi } from 'openai';
+import { start } from 'repl';
 const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY
 });
 const openai = new OpenAIApi(configuration);
 const tokenizer = new natural.WordTokenizer();
 
 const pineconeObject = {
-  vectors: [],
+  vectors: []
 };
 
 const headers = {
-  Authorization: `Basic ${Buffer.from(
-    `brad@lastrev.com:${process.env.JIRA_API}`
-  ).toString("base64")}`,
-  Accept: "application/json",
+  Authorization: `Basic ${Buffer.from(`brad@lastrev.com:${process.env.JIRA_API}`).toString('base64')}`,
+  Accept: 'application/json'
 };
 
 const mapJiraValues = (jiraObject, prefix) => {
   const mappedJiraObject = {};
   for (const key in jiraObject) {
     switch (key) {
-      case "self":
+      case 'self':
         mappedJiraObject[`${prefix}_url`] = jiraObject[key];
         break;
-      case "statusCategory":
+      case 'statusCategory':
         mappedJiraObject.status_category_id = jiraObject[key]?.id;
         break;
       default:
-        mappedJiraObject[
-          `${prefix}_${key.replace(/([A-Z])/g, "_$1").toLowerCase()}`
-        ] = jiraObject[key];
+        mappedJiraObject[`${prefix}_${key.replace(/([A-Z])/g, '_$1').toLowerCase()}`] = jiraObject[key];
     }
   }
   return mappedJiraObject;
 };
 
 const getAllStatusCategories = async () => {
-  console.log("GETTING STATUS CATEGORIES");
+  console.log('GETTING STATUS CATEGORIES');
   const url = `https://lastrev.atlassian.net/rest/api/3/statuscategory`;
   let statusCategories = await fetchJiraData(url);
   statusCategories = await Promise.all(
     statusCategories.map(async (statusCategory) => {
       delete statusCategory.self;
-      const metadata = mapJiraValues(statusCategory, "status_category");
+      const metadata = mapJiraValues(statusCategory, 'status_category');
 
       let context = `Status Category:${statusCategory.name}`;
       const embeddingResponse = await createEmbedding(context);
@@ -57,11 +53,11 @@ const getAllStatusCategories = async () => {
       var obj = {
         id: `status_category_id_${statusCategory.id}`,
         metadata,
-        values: embeddings,
+        values: embeddings
       };
 
       pineconeObject.vectors.push(obj);
-      return mapJiraValues(statusCategory, "status_category");
+      return mapJiraValues(statusCategory, 'status_category');
     })
   );
 
@@ -69,7 +65,7 @@ const getAllStatusCategories = async () => {
 };
 
 const getAllStatuses = async () => {
-  console.log("GETTING STATUSES");
+  console.log('GETTING STATUSES');
   const url = `https://lastrev.atlassian.net/rest/api/3/status`;
   let statuses = await fetchJiraData(url);
   statuses = await Promise.all(
@@ -78,7 +74,7 @@ const getAllStatuses = async () => {
       delete status.scope;
       delete status.iconUrl;
       delete status.self;
-      const metadata = mapJiraValues(status, "status");
+      const metadata = mapJiraValues(status, 'status');
       let context = `Status:${status.name}`;
       const embeddingResponse = await createEmbedding(context);
       const embeddings = embeddingResponse?.data?.data[0]?.embedding;
@@ -86,7 +82,7 @@ const getAllStatuses = async () => {
       var obj = {
         id: `status_id_${status.id}`,
         metadata,
-        values: embeddings,
+        values: embeddings
       };
 
       pineconeObject.vectors.push(obj);
@@ -99,13 +95,13 @@ const getAllStatuses = async () => {
 
 const getIssuesPagination = async (projectID, startAt = 150) => {
   const allJiraIssues = [];
-  console.log("GETTING PROJECT", projectID, startAt);
-  console.log("Jira Issues Array", allJiraIssues.length);
+  console.log('GETTING PROJECT', projectID, startAt);
+  console.log('Jira Issues Array', allJiraIssues.length);
   const response = await fetch(
     `https://lastrev.atlassian.net/rest/api/3/search?jql=project%20%3D%20${projectID}&startAt=${startAt}&validateQuery=strict`,
     {
-      method: "GET",
-      headers,
+      method: 'GET',
+      headers
     }
   );
   let results = await response.text();
@@ -114,7 +110,7 @@ const getIssuesPagination = async (projectID, startAt = 150) => {
 
   const isLast = startAt + 50 > results.total;
   if (isLast) {
-    console.log("DONE GETTING JIRA TICKETS: ", allJiraIssues.length);
+    console.log('DONE GETTING JIRA TICKETS: ', allJiraIssues.length);
     return allJiraIssues;
   } else {
     console.log(isLast, results.total, startAt + 400);
@@ -124,13 +120,13 @@ const getIssuesPagination = async (projectID, startAt = 150) => {
 
 const getAllIssuesForProject = async (projectID, startAt = 150) => {
   const allJiraIssues = [];
-  console.log("GETTING PROJECT", projectID, startAt);
-  console.log("Jira Issues Array", allJiraIssues.length);
+  console.log('GETTING PROJECT', projectID, startAt);
+  console.log('Jira Issues Array', allJiraIssues.length);
   const response = await fetch(
     `https://lastrev.atlassian.net/rest/api/3/search?jql=project%20%3D%20${projectID}&startAt=${startAt}&validateQuery=strict`,
     {
-      method: "GET",
-      headers,
+      method: 'GET',
+      headers
     }
   );
   let results = await response.text();
@@ -139,7 +135,7 @@ const getAllIssuesForProject = async (projectID, startAt = 150) => {
 
   const isLast = startAt + 50 > results.total;
   if (isLast) {
-    console.log("DONE GETTING JIRA TICKETS: ", allJiraIssues.length);
+    console.log('DONE GETTING JIRA TICKETS: ', allJiraIssues.length);
     return allJiraIssues;
   } else {
     console.log(isLast, results.total, startAt + 400);
@@ -148,8 +144,8 @@ const getAllIssuesForProject = async (projectID, startAt = 150) => {
 };
 
 async function handleRateLimit(response) {
-  let retryAfter = response.headers.get("Retry-After");
-  let resetTime = response.headers.get("X-RateLimit-Reset");
+  let retryAfter = response.headers.get('Retry-After');
+  let resetTime = response.headers.get('X-RateLimit-Reset');
 
   if (retryAfter) {
     console.log(`Too many requests, retrying after ${retryAfter} seconds.`);
@@ -159,17 +155,17 @@ async function handleRateLimit(response) {
     let timeToWait = new Date(resetTime) - new Date();
     await new Promise((resolve) => setTimeout(resolve, timeToWait));
   } else {
-    console.log("no wait", Object.keys(response));
+    console.log('no wait', Object.keys(response));
   }
 }
 
 async function fetchJiraData(url) {
   // console.log("Fetching URL: ", url);
   let response = await fetch(url, {
-    method: "GET",
-    headers,
+    method: 'GET',
+    headers
   });
-  console.log("Fetching URL: ", response.status, url);
+  console.log('Fetching URL: ', response.status, url);
 
   if (response.status === 429) {
     await handleRateLimit(response);
@@ -226,43 +222,39 @@ async function getJiraTickets(projectId) {
 }
 
 const jiraToMarkdown = (node) => {
-  if (!node) return "";
+  if (!node) return '';
 
-  if (node.type === "text") {
+  if (node.type === 'text') {
     return node.text;
-  } else if (node.type === "mention") {
+  } else if (node.type === 'mention') {
     return `@${node.attrs.username}`;
-  } else if (node.type === "emoji") {
+  } else if (node.type === 'emoji') {
     return `:${node.attrs.shortName}:`;
-  } else if (node.type === "link") {
+  } else if (node.type === 'link') {
     return `[${node.text}](${node.attrs.url})`;
-  } else if (node.type === "mediaGroup") {
-    return node.content.map(jiraToMarkdown).join("");
-  } else if (node.type === "paragraph") {
-    return `${node.content.map(jiraToMarkdown).join("")}\n`;
-  } else if (node.type === "bulletList") {
-    return node.content.map((item) => `- ${jiraToMarkdown(item)}`).join("\n");
-  } else if (node.type === "orderedList") {
-    return node.content
-      .map((item, index) => `${index + 1}. ${jiraToMarkdown(item)}`)
-      .join("\n");
-  } else if (node.type === "heading") {
-    return `\n${"#".repeat(node.attrs.level)} ${node.content
-      .map(jiraToMarkdown)
-      .join("")}\n`;
-  } else if (node.type === "codeBlock") {
+  } else if (node.type === 'mediaGroup') {
+    return node.content.map(jiraToMarkdown).join('');
+  } else if (node.type === 'paragraph') {
+    return `${node.content.map(jiraToMarkdown).join('')}\n`;
+  } else if (node.type === 'bulletList') {
+    return node.content.map((item) => `- ${jiraToMarkdown(item)}`).join('\n');
+  } else if (node.type === 'orderedList') {
+    return node.content.map((item, index) => `${index + 1}. ${jiraToMarkdown(item)}`).join('\n');
+  } else if (node.type === 'heading') {
+    return `\n${'#'.repeat(node.attrs.level)} ${node.content.map(jiraToMarkdown).join('')}\n`;
+  } else if (node.type === 'codeBlock') {
     return `\`\`\`\n${node.text}\n\`\`\`\n`;
-  } else if (node.type === "blockquote") {
-    return `> ${node.content.map(jiraToMarkdown).join("")}\n`;
+  } else if (node.type === 'blockquote') {
+    return `> ${node.content.map(jiraToMarkdown).join('')}\n`;
   } else {
-    return "";
+    return '';
   }
 };
 
 const extractText = (content) => {
-  let text = "";
+  let text = '';
   content.forEach((element) => {
-    if (element.type === "text") {
+    if (element.type === 'text') {
       text += element.text;
     } else if (element.content) {
       text += extractText(element.content);
@@ -285,7 +277,7 @@ const getComments = async (issueKey) => {
       delete comment.visibility;
       comment.body = jiraToMarkdown(comment.body.content);
       let context = `Issue ID:${issueKey}\n\nAuthor:${comment.author}\n\nComment:${comment.body}`;
-      const metadata = mapJiraValues(comment, "comment");
+      const metadata = mapJiraValues(comment, 'comment');
       const embeddingResponse = await createEmbedding(context);
       const embeddings = embeddingResponse?.data?.data[0]?.embedding;
 
@@ -293,9 +285,9 @@ const getComments = async (issueKey) => {
         id: `comment_id_${comment.id}`,
         metadata: {
           issue_id: issueKey,
-          ...metadata,
+          ...metadata
         },
-        values: embeddings,
+        values: embeddings
       };
 
       pineconeObject.vectors.push(obj);
@@ -319,12 +311,12 @@ const getComments = async (issueKey) => {
 };
 
 const getDescription = async (description) => {
-  let text = "";
+  let text = '';
   description?.content.forEach((content) => {
-    if (content.type === "paragraph") {
+    if (content.type === 'paragraph') {
       content.content.forEach((content) => {
-        if (content.type === "text") {
-          text += content.text + " ";
+        if (content.type === 'text') {
+          text += content.text + ' ';
         }
       });
     }
@@ -342,11 +334,11 @@ function writeObjectToFile(obj) {
   const outputFileName = `jira-issues-${Date.now()}`;
   obj.vectors.forEach(function (element) {
     let jsonString = JSON.stringify(element);
-    let jsonStringSize = Buffer.byteLength(jsonString, "utf8");
+    let jsonStringSize = Buffer.byteLength(jsonString, 'utf8');
     if (currentFileSize + jsonStringSize > maxFileSize) {
       fs.writeFileSync(
         `${outputFileName}-${currentFileIndex}.json`,
-        JSON.stringify({ namespace: "jira", vectors: currentFileArray })
+        JSON.stringify({ namespace: 'jira', vectors: currentFileArray })
       );
       currentFileIndex++;
       currentFileArray = [];
@@ -358,14 +350,14 @@ function writeObjectToFile(obj) {
 
   fs.writeFileSync(
     `${outputFileName}-${currentFileIndex}.json`,
-    JSON.stringify({ namespace: "jira", vectors: currentFileArray })
+    JSON.stringify({ namespace: 'jira', vectors: currentFileArray })
   );
 }
 
 const createEmbedding = async (input) => {
   const response = await openai.createEmbedding({
-    model: "text-embedding-ada-002",
-    input: input,
+    model: 'text-embedding-ada-002',
+    input: input
   });
   return response;
 };
@@ -374,25 +366,23 @@ const getIssueDetail = async (issue) => {
   const { fields, key } = issue;
 
   const metadata = {
-    issue_description: fields.description
-      ? jiraToMarkdown(fields.description)
-      : "",
-    issue_summary: fields?.summary ?? "",
-    issue_creator: fields.creator?.displayName ?? "",
-    status_id: parseInt(fields.status?.id, 10) ?? "",
-    status_category_id: fields.status?.statusCategory?.id ?? "",
-    issue_account: fields.customfield_10037?.value ?? "",
-    issue_type: fields.issuetype?.name ?? "",
-    issue_reporter: fields.reporter?.accountId ?? "",
-    issue_assignee: fields.assignee?.accountId ?? "",
-    issue_parent_key: fields.parent?.key ?? "",
-    issue_project: fields.project?.name ?? "",
+    issue_description: fields.description ? jiraToMarkdown(fields.description) : '',
+    issue_summary: fields?.summary ?? '',
+    issue_creator: fields.creator?.displayName ?? '',
+    status_id: parseInt(fields.status?.id, 10) ?? '',
+    status_category_id: fields.status?.statusCategory?.id ?? '',
+    issue_account: fields.customfield_10037?.value ?? '',
+    issue_type: fields.issuetype?.name ?? '',
+    issue_reporter: fields.reporter?.accountId ?? '',
+    issue_assignee: fields.assignee?.accountId ?? '',
+    issue_parent_key: fields.parent?.key ?? '',
+    issue_project: fields.project?.name ?? ''
   };
 
   let context = Object.entries(metadata)
-    .filter(([, value]) => value !== "")
+    .filter(([, value]) => value !== '')
     .map(([key, value]) => `${key.toUpperCase()}:${value}`)
-    .join("\n\n");
+    .join('\n\n');
   let tokens = tokenizer.tokenize(context);
 
   if (tokens.length > 1900) {
@@ -407,7 +397,7 @@ const getIssueDetail = async (issue) => {
   var obj = {
     id: key,
     metadata,
-    values: embeddings,
+    values: embeddings
   };
 
   console.log(`Issue Detail: ${key}`);
@@ -418,7 +408,7 @@ const getIssueDetail = async (issue) => {
 (async () => {
   const allStatusCategories = await getAllStatusCategories();
   const allStatuses = await getAllStatuses();
-  const allIssues = await getJiraTickets("PROJECT");
+  const allIssues = await getJiraTickets('PROJECT');
 
   let promises = [];
 
@@ -427,12 +417,12 @@ const getIssueDetail = async (issue) => {
     promises.push(getComments(issue.key));
   }
 
-  console.log("BEFORE ALL");
+  console.log('BEFORE ALL');
 
   await Promise.all(promises);
 
-  console.log("AFTER ALL");
+  console.log('AFTER ALL');
 
   writeObjectToFile(pineconeObject);
-  console.log("AFTER WRITE");
+  console.log('AFTER WRITE');
 })();

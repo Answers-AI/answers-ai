@@ -33,7 +33,7 @@ const pineconeQuery = async (embeddings: number[]) => {
 
     const result = await pinecone.Index(process.env.PINECONE_INDEX).query({
       vector: embeddings,
-      topK: 10,
+      topK: 20,
       includeMetadata: true,
       namespace: 'jira'
     });
@@ -103,10 +103,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         completionData = data;
 
         console.timeEnd('OpenAI->createCompletion');
-      } catch (error) {
-        console.log('OPENAI-ERROR', error);
+      } catch (error: any) {
+        console.log('OPENAI-ERROR', error?.response?.data);
 
-        res.status(500).json({ prompt: prompt, error, response: { pineconeData } } as any);
+        res.status(500).json({ prompt: prompt, error: error?.response?.data } as any);
         return;
       }
       const answer = completionData.choices[0].text;
@@ -127,7 +127,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         // Get the error message and status code from the response
         const { message, status, data } = error.response;
 
-        res.status(500).json({ prompt: prompt, error, response: { message, status, data } } as any);
+        res.status(500).json({ prompt: prompt, error: data } as any);
       } else {
         res.status(500).json({ prompt: prompt, error });
       }

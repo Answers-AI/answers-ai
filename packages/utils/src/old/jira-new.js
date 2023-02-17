@@ -1,20 +1,20 @@
 // Write a nodejs script that exports all comments from Jira in a single text field for each issue
-require("dotenv").config();
-const fs = require("fs");
-const fetch = require("node-fetch");
-const natural = require("natural");
-const { Configuration, OpenAIApi } = require("openai");
-const { start } = require("repl");
+
+import fs from 'fs';
+import fetch from 'node-fetch';
+import natural from 'natural';
+import { Configuration, OpenAIApi } from 'openai';
+import { start } from 'repl';
 const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY
 });
 const openai = new OpenAIApi(configuration);
 const tokenizer = new natural.WordTokenizer();
 const allJiraIssues = [];
 
 async function handleRateLimit(response) {
-  let retryAfter = response.headers.get("Retry-After");
-  let resetTime = response.headers.get("X-RateLimit-Reset");
+  let retryAfter = response.headers.get('Retry-After');
+  let resetTime = response.headers.get('X-RateLimit-Reset');
 
   if (retryAfter) {
     console.log(`Too many requests, retrying after ${retryAfter} seconds.`);
@@ -28,13 +28,13 @@ async function handleRateLimit(response) {
 
 const getIssuesPagination = async (projectID, startAt = 150) => {
   const allJiraIssues = [];
-  console.log("GETTING PROJECT", projectID, startAt);
-  console.log("Jira Issues Array", allJiraIssues.length);
+  console.log('GETTING PROJECT', projectID, startAt);
+  console.log('Jira Issues Array', allJiraIssues.length);
   const response = await fetch(
     `https://lastrev.atlassian.net/rest/api/3/search?jql=project%20%3D%20${projectID}&startAt=${startAt}&validateQuery=strict`,
     {
-      method: "GET",
-      headers,
+      method: 'GET',
+      headers
     }
   );
   let results = await response.text();
@@ -43,7 +43,7 @@ const getIssuesPagination = async (projectID, startAt = 150) => {
 
   const isLast = startAt + 50 > results.total;
   if (isLast) {
-    console.log("DONE GETTING JIRA TICKETS: ", allJiraIssues.length);
+    console.log('DONE GETTING JIRA TICKETS: ', allJiraIssues.length);
     return allJiraIssues;
   } else {
     console.log(isLast, results.total, startAt + 400);
@@ -53,13 +53,11 @@ const getIssuesPagination = async (projectID, startAt = 150) => {
 
 async function fetchJiraData(url) {
   let response = await fetch(url, {
-    method: "GET",
+    method: 'GET',
     headers: {
-      Authorization: `Basic ${Buffer.from(
-        `brad@lastrev.com:${process.env.JIRA_API}`
-      ).toString("base64")}`,
-      Accept: "application/json",
-    },
+      Authorization: `Basic ${Buffer.from(`brad@lastrev.com:${process.env.JIRA_API}`).toString('base64')}`,
+      Accept: 'application/json'
+    }
   });
   if (response.status === 429) {
     await handleRateLimit(response);
@@ -155,13 +153,10 @@ async function getJiraTickets(projectId) {
 
 function removeNullKeys(array) {
   return array.map((item) => {
-    if (typeof item === "object" && item !== null) {
+    if (typeof item === 'object' && item !== null) {
       const obj = Object.entries(item).reduce((obj, [key, value]) => {
-        if (
-          value !== null &&
-          !(typeof value === "object" && Object.keys(value).length === 0)
-        ) {
-          if (typeof value === "object" && value !== null) {
+        if (value !== null && !(typeof value === 'object' && Object.keys(value).length === 0)) {
+          if (typeof value === 'object' && value !== null) {
             obj[key] = removeNullKeys([value])[0];
           } else {
             obj[key] = value;

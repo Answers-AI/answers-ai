@@ -1,4 +1,4 @@
-const JiraObject = require("./jiraObject");
+import JiraObject from "./jiraObject";
 
 class JiraIssue extends JiraObject {
   constructor(issue) {
@@ -49,4 +49,4 @@ class JiraIssue extends JiraObject {
   }
 }
 
-module.exports = JiraIssue;
+export default JiraIssue;

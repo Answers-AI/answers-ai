@@ -1,7 +1,6 @@
-const Pinecone = require("./pinecone/client");
-// const SessionData = require("./utilities/sessionData");
-const SlackClient = require("./slack/client");
-const SlackMessage = require("./slack/models/message");
+import Pinecone from "./pinecone/client";
+import SlackClient from "./slack/client";
+import SlackMessage from "./slack/models/message";
 
 const pinecone = new Pinecone({
   namespace: "slack",

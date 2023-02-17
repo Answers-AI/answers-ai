@@ -1,4 +1,4 @@
-const { Configuration, OpenAIApi } = require("openai");
+import { Configuration, OpenAIApi } from "openai";
 
 const defaultModel = "text-embedding-ada-002";
 
@@ -46,4 +46,4 @@ class OpenAI {
   }
 }
 
-module.exports = OpenAI;
+export default OpenAI;

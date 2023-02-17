@@ -1,4 +1,4 @@
-const JiraObject = require("./jiraObject");
+import JiraObject from "./jiraObject";
 class JiraComment extends JiraObject {
   constructor(comment) {
     const tidiedComment = JiraComment.tidy(comment);
@@ -20,4 +20,4 @@ class JiraComment extends JiraObject {
   }
 }
 
-module.exports = JiraComment;
+export default JiraComment;

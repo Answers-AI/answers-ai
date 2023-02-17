@@ -1,4 +1,4 @@
-const AnswersObject = require("../../core/models/answersObject");
+import AnswersObject from "../../core/models/answersObject";
 
 class JiraObject extends AnswersObject {
   constructor(object) {
@@ -54,4 +54,4 @@ class JiraObject extends AnswersObject {
   }
 }
 
-module.exports = JiraObject;
+export default JiraObject;

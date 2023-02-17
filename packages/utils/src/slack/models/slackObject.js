@@ -1,4 +1,4 @@
-const AnswersObject = require("../../core/models/answersObject");
+import AnswersObject from "../../core/models/answersObject";
 
 class SlackObject extends AnswersObject {
   constructor(object) {
@@ -14,4 +14,4 @@ class SlackObject extends AnswersObject {
   }
 }
 
-module.exports = SlackObject;
+export default SlackObject;

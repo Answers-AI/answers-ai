@@ -1,6 +1,5 @@
-require("dotenv").config();
-const { PineconeClient: Pinecone } = require("pinecone-ts-client");
-const { chunkArray } = require("../utilities/utils");
+import { chunkArray } from '../utilities/utils';
+import { PineconeClient as PC } from '@pinecone-database/pinecone';
 
 class PineconeClient {
   constructor(config) {
@@ -9,18 +8,18 @@ class PineconeClient {
 
     if (!apiKey) {
       throw new Error(
-        "Missing Pinecone API key. Please provide one in the config or set the PINECONE_API_KEY environment variable."
+        'Missing Pinecone API key. Please provide one in the config or set the PINECONE_API_KEY environment variable.'
       );
     }
 
     if (!environment) {
       throw new Error(
-        "Missing Pinecone environment. Please provide one in the config or set the PINECONE_ENVIRONMENT environment variable."
+        'Missing Pinecone environment. Please provide one in the config or set the PINECONE_ENVIRONMENT environment variable.'
       );
     }
 
     // Create a client
-    this.client = new Pinecone();
+    this.client = new PC();
 
     this.apiKey = apiKey;
     this.environment = environment;
@@ -33,7 +32,7 @@ class PineconeClient {
   async init() {
     await this.client.init({
       apiKey: this.apiKey,
-      environment: this.environment,
+      environment: this.environment
     });
   }
 
@@ -47,41 +46,41 @@ class PineconeClient {
   }
 
   async writeVectorToIndex(vector) {
-    console.time("writeVectorToIndex");
+    console.time('writeVectorToIndex');
     const index = this.client.Index(this.indexName);
 
     //TODO: Remove after testing
-    await this.deleteIndex(index);
+    // await this.deleteIndex(index);
 
     await index.upsert({
       vectors: [vector],
-      namespace: this.namespace,
+      namespace: this.namespace
     });
 
-    console.timeEnd("writeVectorToIndex");
+    console.timeEnd('writeVectorToIndex');
   }
 
   async writeVectorsToIndex(vectors) {
-    console.time("writeVectorsToIndex");
+    console.time('writeVectorsToIndex');
 
     const index = this.client.Index(this.indexName);
 
     //TODO: Remove after testing
-    await this.deleteIndex(index);
+    // await this.deleteIndex(index);
 
     let pineconeUpsertPromises = chunkArray(vectors, 100);
     pineconeUpsertPromises.map((chunkedVectors) => {
-      console.log(chunkedVectors);
+      // console.log(chunkedVectors);
       const upsertRequest = {
         vectors: chunkedVectors,
-        namespace: this.namespace,
+        namespace: this.namespace
       };
       return index.upsert(upsertRequest);
     });
 
     await Promise.all(pineconeUpsertPromises);
-    console.timeEnd("writeVectorsToIndex");
+    console.timeEnd('writeVectorsToIndex');
   }
 }
 
-module.exports = PineconeClient;
+export default PineconeClient;

@@ -1,4 +1,4 @@
-const fs = require("fs");
+import fs from "fs";
 
 class SessionData {
   constructor(config) {
@@ -69,4 +69,4 @@ class SessionData {
   }
 }
 
-module.exports = SessionData;
+export default SessionData;

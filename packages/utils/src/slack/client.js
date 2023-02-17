@@ -1,5 +1,4 @@
-const { WebClient } = require("@slack/web-api");
-require("dotenv").config();
+import { WebClient } from '@slack/web-api';
 
 class SlackClient {
   constructor() {
@@ -15,7 +14,7 @@ class SlackClient {
       const response = await this.client.conversations.history({
         channel: channelId,
         latest: latestTimestamp,
-        limit: 1000,
+        limit: 1000
       });
 
       messages = messages.concat(response.messages);
@@ -27,4 +26,4 @@ class SlackClient {
   }
 }
 
-module.exports = SlackClient;
+export default SlackClient;

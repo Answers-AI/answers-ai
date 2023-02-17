@@ -1,4 +1,4 @@
-const JiraObject = require("./jiraObject");
+import JiraObject from "./jiraObject";
 
 class JiraStatusCategory extends JiraObject {
   constructor(statusCategory) {
@@ -17,4 +17,4 @@ class JiraStatusCategory extends JiraObject {
   }
 }
 
-module.exports = JiraStatusCategory;
+export default JiraStatusCategory;

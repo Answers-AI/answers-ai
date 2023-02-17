@@ -1,4 +1,4 @@
-const SlackObject = require("./slackObject");
+import SlackObject from "./slackObject";
 
 class SlackMessage extends SlackObject {
   constructor(message) {
@@ -29,4 +29,4 @@ class SlackMessage extends SlackObject {
   }
 }
 
-module.exports = SlackMessage;
+export default SlackMessage;

@@ -1,24 +1,21 @@
-// Write a nodejs script that exports all comments from Jira in a single text field for each issue
-const JiraStatusCategory = require("./jira/models/statusCategory");
-const JiraStatus = require("./jira/models/status");
-const JiraIssue = require("./jira/models/issue");
-const JiraComment = require("./jira/models/comment");
-const Pinecone = require("./pinecone/client");
-// const SessionData = require("./utilities/sessionData");
-const JiraClient = require("./jira/client");
+import JiraStatusCategory from './jira/models/statusCategory';
+import JiraStatus from './jira/models/status';
+import JiraIssue from './jira/models/issue';
+import JiraComment from './jira/models/comment';
+import Pinecone from './pinecone/client';
+// import SessionData from "./utilities/sessionData");
+import JiraClient from './jira/client';
 
 const pinecone = new Pinecone({
-  namespace: "jira",
-  indexName: "adam-test-jira-2023-02-08-01",
+  namespace: 'jira',
+  indexName: process.env.PINECONE_INDEX
 });
 // const sessionData = new SessionData({ namespace: "jira" });
 const jiraClient = new JiraClient();
 
 const getJiraStatusCategories = async () => {
   let statusCategories = await jiraClient.fetchJiraData(`/statuscategory`);
-  return statusCategories.map(
-    (statusCategory) => new JiraStatusCategory(statusCategory)
-  );
+  return statusCategories.map((statusCategory) => new JiraStatusCategory(statusCategory));
 };
 
 const getJiraStatuses = async () => {
@@ -27,7 +24,7 @@ const getJiraStatuses = async () => {
 };
 
 const getJiraTickets = async (options) => {
-  console.time("getJiraTickets");
+  console.time('getJiraTickets');
   const initialPullCount = 1;
 
   let { projectId, startAt = 0, batchSize = 100, maxResults = 1000 } = options;
@@ -45,9 +42,7 @@ const getJiraTickets = async (options) => {
         break;
       }
 
-      allTickets = allTickets.concat(
-        data.issues.map((issue) => new JiraIssue(issue))
-      );
+      allTickets = allTickets.concat(data.issues.map((issue) => new JiraIssue(issue)));
 
       if (data.isLast) {
         break;
@@ -68,9 +63,7 @@ const getJiraTickets = async (options) => {
       let results = await Promise.all(promises);
       for (let i = 0; i < results.length; i++) {
         let result = results[i];
-        allTickets = allTickets.concat(
-          result.issues.map((issue) => new JiraIssue(issue))
-        );
+        allTickets = allTickets.concat(result.issues.map((issue) => new JiraIssue(issue)));
       }
 
       if (allTickets.length >= total) {
@@ -84,23 +77,21 @@ const getJiraTickets = async (options) => {
 
   const allPromiseTickets = Promise.all(allTickets);
   console.log(`getJiraTickets Issue Count: ${allTickets.length}`);
-  console.timeEnd("getJiraTickets");
+  console.timeEnd('getJiraTickets');
 
   return allPromiseTickets;
 };
 
 const getSingleJiraTicket = async (issueId) => {
-  console.time("getSingleJiraTicket");
+  console.time('getSingleJiraTicket');
   let issue;
 
   try {
-    if (!issueId) throw new Error("No issue with issue key ${issueId} found.");
+    if (!issueId) throw new Error('No issue with issue key ${issueId} found.');
     let endpoint = `/issue/${issueId}`;
     let data = await jiraClient.fetchJiraData(endpoint);
     if (!data || data.errors) {
-      throw new Error(
-        `issueID:${issueId} - ${data?.errorMessages?.join(" | ")}`
-      );
+      throw new Error(`issueID:${issueId} - ${data?.errorMessages?.join(' | ')}`);
     }
 
     issue = new JiraIssue(data);
@@ -108,7 +99,7 @@ const getSingleJiraTicket = async (issueId) => {
     console.error(error);
   }
 
-  console.timeEnd("getSingleJiraTicket");
+  console.timeEnd('getSingleJiraTicket');
 
   return issue;
 };
@@ -130,17 +121,15 @@ const getJiraComments = async (issueKey) => {
   //     return comments;
   //   }
   // }
-  const jiraComments = comments.comments.map(
-    (comment) => new JiraComment({ ...comment, issueId: issueKey })
-  );
+  const jiraComments = comments.comments.map((comment) => new JiraComment({ ...comment, issueId: issueKey }));
   return jiraComments;
 };
 
 const prepareAllForEmbedding = async (jiraObjects) => {
-  console.time("prepareAllForEmbedding");
+  console.time('prepareAllForEmbedding');
   let preparedStatuses;
   try {
-    if (!jiraObjects) throw new Error("Invalid jiraObjects");
+    if (!jiraObjects) throw new Error('Invalid jiraObjects');
     let promises = [];
 
     for (const obj of jiraObjects) {
@@ -151,40 +140,40 @@ const prepareAllForEmbedding = async (jiraObjects) => {
     console.error(error);
   }
 
-  console.timeEnd("prepareAllForEmbedding");
+  console.timeEnd('prepareAllForEmbedding');
   return preparedStatuses;
 };
 
 const indexAllJiraStatuses = async () => {
-  console.time("indexAllJiraStatuses");
+  console.time('indexAllJiraStatuses');
   const data = await getJiraStatuses();
   const vectorData = await prepareAllForEmbedding(data);
   // sessionData.addVectors(vectorData);
   await pinecone.writeVectorsToIndex(vectorData);
-  console.timeEnd("indexAllJiraStatuses");
+  console.timeEnd('indexAllJiraStatuses');
 };
 
 const indexAllJiraStatusCategories = async () => {
-  console.time("indexAllJiraStatusCategories");
+  console.time('indexAllJiraStatusCategories');
   const data = await getJiraStatusCategories();
   const vectorData = await prepareAllForEmbedding(data);
   // sessionData.addVectors(vectorData);
   await pinecone.writeVectorsToIndex(vectorData);
-  console.timeEnd("indexAllJiraStatusCategories");
+  console.timeEnd('indexAllJiraStatusCategories');
 };
 
 const indexAllJiraIssues = async (options) => {
-  console.time("indexAllJiraIssues");
+  console.time('indexAllJiraIssues');
   const data = await getJiraTickets(options);
   const vectorData = await prepareAllForEmbedding(data);
-  console.log(vectorData[0]);
+  // console.log(vectorData[0]);
   // sessionData.addVectors(vectorData);
   await pinecone.writeVectorsToIndex(vectorData);
-  console.timeEnd("indexAllJiraIssues");
+  console.timeEnd('indexAllJiraIssues');
 };
 
 const indexAllJiraCommments = async (issues) => {
-  console.time("indexAllJiraCommments");
+  console.time('indexAllJiraCommments');
   //TODO: Open AI rate limit of 3000/min
   let promises = [];
   for (const issue of issues) {
@@ -195,30 +184,30 @@ const indexAllJiraCommments = async (issues) => {
   const vectorData = await prepareAllForEmbedding(data.flat().flat());
   // sessionData.addVectors(vectorData);
   await pinecone.writeVectorsToIndex(vectorData);
-  console.timeEnd("indexAllJiraCommments");
+  console.timeEnd('indexAllJiraCommments');
 };
 
 const indexSingleJiraIssue = async (issueId) => {
-  console.time("indexSingleJiraIssue");
+  console.time('indexSingleJiraIssue');
   const issue = await getSingleJiraTicket(issueId);
   const vectorIssue = await issue.prepareForEmbedding();
   // sessionData.addVectors(vectorData);
   await pinecone.writeVectorsToIndex(vectorIssue);
-  console.timeEnd("indexSingleJiraIssue");
+  console.timeEnd('indexSingleJiraIssue');
 };
 
-(async () => {
+export const syncJira = async () => {
   try {
     // await indexAllJiraStatuses();
     // await indexAllJiraStatusCategories();
     await indexAllJiraIssues({
-      projectId: "PROJECT",
+      projectId: 'PROJECT',
       batchSize: 10,
-      maxResults: 100,
+      maxResults: 100
     });
     // await indexAllJiraIssuesComments(issues);
     // await indexSingleJiraIssue("PROJECT-168");
   } catch (error) {
     console.error(`Error: ${error?.response?.data?.message} (${error})`);
   }
-})();
+};

@@ -1,9 +1,9 @@
-const natural = require("natural");
-const tokenizer = new natural.WordTokenizer();
-const OpenAI = require("../../openai/openai");
-const Vector = require("../../utilities/vector");
+// import natural from "natural";
+// const tokenizer = new natural.WordTokenizer();
+import OpenAI from '../../openai/openai';
+import Vector from '../../utilities/vector';
 
-const embeddingJoinSeparator = " ";
+const embeddingJoinSeparator = ' ';
 
 class AnswersObject {
   constructor(object) {
@@ -14,20 +14,15 @@ class AnswersObject {
     return this.createContextFromObject(this.object);
   }
 
-  getTokenCount() {
-    return tokenizer.tokenize(this.context);
-  }
+  // getTokenCount() {
+  //   return tokenizer.tokenize(this.context);
+  // }
 
   createContextFromObject(obj) {
-    const trimValues = ["", undefined, null, "indeterminate"];
+    const trimValues = ['', undefined, null, 'indeterminate'];
     let context = Object.entries(obj)
-      .filter(
-        ([, value]) => !trimValues.includes(value) && typeof value !== "object"
-      )
-      .map(
-        ([key, value]) =>
-          `${key.replace(/([A-Z_])/g, " $1").toUpperCase()}: ${value}`
-      )
+      .filter(([, value]) => !trimValues.includes(value) && typeof value !== 'object')
+      .map(([key, value]) => `${key.replace(/([A-Z_])/g, ' $1').toUpperCase()}: ${value}`)
       .join(embeddingJoinSeparator);
 
     return context;
@@ -35,7 +30,7 @@ class AnswersObject {
 
   async prepareForEmbedding() {
     this.context = await this.getContext();
-    this.tokens = await this.getTokenCount();
+    // this.tokens = await this.getTokenCount();
     this.embedding = await this.createEmbedding();
     this.vector = this.createVector();
     return this.vector;
@@ -48,7 +43,7 @@ class AnswersObject {
   }
 
   createVector() {
-    const objectType = this.object.objectType.replace(/\s/g, "").toLowerCase();
+    const objectType = this.object.objectType.replace(/\s/g, '').toLowerCase();
     const uid = this.object.uid;
     const id = `${objectType}_${uid}`;
     const vector = new Vector(id, this.object, this.embedding);
@@ -57,4 +52,4 @@ class AnswersObject {
   }
 }
 
-module.exports = AnswersObject;
+export default AnswersObject;
