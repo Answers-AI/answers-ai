@@ -1,23 +1,37 @@
-import JiraObject from "./jiraObject";
+import JiraObject from './jiraObject';
 class JiraComment extends JiraObject {
   constructor(comment) {
     const tidiedComment = JiraComment.tidy(comment);
+    console.log('TIDY');
+    console.log(tidiedComment);
     super(tidiedComment);
-    this.object.objectType = "JIRA Comment";
+    this.object.objectType = 'JIRA Comment';
     this.object.uid = comment.id;
   }
 
   static tidy(comment) {
-    delete comment.updateAuthor;
-    delete comment.jsdPublic;
-    delete comment.visibility;
-
-    comment.objectType = "JIRA Comment";
-    comment.author = comment.author.displayName;
-    comment.body = this.jiraAdfToMarkdown(comment.body.content);
-
-    return comment;
+    console.log('FIELDS', comment);
+    // delete comment.updateAuthor;
+    // delete comment.jsdPublic;
+    // delete comment.visibility;
+    const attrs = {
+      ...comment,
+      // key,
+      objectType: 'JIRA Comment',
+      author: comment?.author?.displayName,
+      link: comment?.self,
+      body: this.jiraAdfToMarkdown(comment?.body)
+    };
+    return {
+      ...attrs,
+      text: createContext(attrs)
+    };
   }
 }
-
+const createContext = (metadata) => {
+  // let string = 'The context for ' + id + ' ';
+  let string = '';
+  string += `${metadata.author} commented "${metadata.body}" on ${metadata.created} and last updated on ${metadata.updated}.`;
+  return string;
+};
 export default JiraComment;

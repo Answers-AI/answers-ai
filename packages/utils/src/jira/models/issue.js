@@ -25,6 +25,7 @@ class JiraIssue extends JiraObject {
       'assignee name': fields.assignee?.displayName || 'Unassigned',
       'assignee email': fields.assignee?.email,
       'priority': fields.priority?.name,
+      'comments': fields?.comments,
       // priorityId: fields.priority?.id,
       // creatorId: fields.creator?.accountId,
       // creator: fields.creator?.displayName,
@@ -47,7 +48,7 @@ class JiraIssue extends JiraObject {
     };
 
     return {
-      ...attrs,
+      // ...attrs,
       text: createContext(key, attrs)
     };
   }
