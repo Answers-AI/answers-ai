@@ -5,7 +5,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import error from 'next/error';
 
 interface PromptCardProps {
-  title: string;
+  title?: string;
   prompt: string;
   actor?: string;
   likes?: number;

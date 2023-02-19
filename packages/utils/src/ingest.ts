@@ -8,10 +8,21 @@ import { jiraIssueLoader } from './jira';
 
 const inngest = new Inngest({ name: 'My app' });
 
-const JIRA_ISSUE_BATCH_SIZE = 500;
+const JIRA_ISSUE_BATCH_SIZE = 1000;
 const JIRA_PROJECT_BATCH_SIZE = 5;
-const EMBEDDING_BATCH_SIZE = 10;
+const EMBEDDING_BATCH_SIZE = 100;
 
+export const processSyncSlack = inngest.createFunction(
+  { name: 'Process SYNC_SLACK event' },
+  { event: 'SYNC_SLACK' },
+  async ({ event }) => {
+    const jobId = LAST_JOB_ID++;
+    const { projectKeys: projectKeysFilter } = event.data;
+    console.time('SYNC_SLACK:' + jobId);
+
+    console.timeEnd('SYNC_SLACK:' + jobId);
+  }
+);
 export const processJiraUpdated = inngest.createFunction(
   { name: 'Process SYNC_JIRA event' },
   { event: 'SYNC_JIRA' },
@@ -35,9 +46,11 @@ export const processJiraUpdated = inngest.createFunction(
               'IASWEB',
               'INTERNAL',
               'ISD',
+              'IFSD',
               'IFTP',
               'IF',
-              'IFMIGRATE'
+              'IFMIGRATE',
+              'TSTARS'
             ].includes(project.key)
         ),
         JIRA_PROJECT_BATCH_SIZE
@@ -114,15 +127,15 @@ export const processUpsertedIssues = inngest.createFunction(
       const { issuesKeys, key } = event.data;
       console.time(key);
 
-      const issues = await jiraIssueLoader.loadMany(issuesKeys);
+      // const issues = await jiraIssueLoader.loadMany(issuesKeys);
 
       await Promise.all(
         chunkArray(issuesKeys, EMBEDDING_BATCH_SIZE).map((batchIssues: JiraIssue[], i) => {
           const eventData = {
-            key: `${key}_ISSUES_UPSERTED_BATCH_${i * EMBEDDING_BATCH_SIZE}-${
-              (i + 1) * EMBEDDING_BATCH_SIZE
-            }:`,
-            total: issues.length,
+            key: `ISSUES_EMBEDDING_UPDATED_BATCH_${
+              i * Math.min(batchIssues?.length, EMBEDDING_BATCH_SIZE)
+            }-${(i + 1) * Math.min(batchIssues?.length, EMBEDDING_BATCH_SIZE)}:`,
+            total: issuesKeys.length,
             issuesKeys: batchIssues
           };
           //TODO: Save to Redis by issue key
@@ -141,8 +154,8 @@ export const processUpsertedIssues = inngest.createFunction(
 export const processEmbeddings = inngest.createFunction(
   { name: 'Process EMBEDDING_UPDATED event' },
   { event: 'ISSUES_EMBEDDING_UPDATED' },
-  async ({ event, step }) => {
-    await step.sleep('1 seconds');
+  async ({ event }) => {
+    // await step.sleep('0.2s');
     try {
       const { issuesKeys, key } = event.data;
       console.time(key);
@@ -151,6 +164,7 @@ export const processEmbeddings = inngest.createFunction(
       const vectorData = await prepareAllForEmbedding(
         issues.map((issue: any) => new JiraIssueModel(issue))
       );
+      // console.log('vectorData', vectorData[0]);
       await pinecone.writeVectorsToIndex(vectorData);
       console.timeEnd(key);
     } catch (e) {

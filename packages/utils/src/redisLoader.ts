@@ -9,7 +9,7 @@ const primeAll = async <K, V>(
   keyValues: Array<[K, V]>,
   cacheExpirationInSeconds?: number
 ) => {
-  await redis.mset(keyValues.map(([key, value]) => [hashKey(key), JSON.stringify(value)]));
+  await redis.mset(...keyValues.flatMap(([key, value]) => [hashKey(key), JSON.stringify(value)]));
   // Set the expiration time for the cache key
   if (cacheExpirationInSeconds)
     await Promise.all(

@@ -9,7 +9,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
   // Chunk projects into batches of 10
   inngest.send({
     name: 'SYNC_JIRA',
-    data: {}
+    // data: {}
+    data: { projectKeys: ['PROJECT', 'SUPPORT', 'DRATAWEB', 'ISD', 'G2M', 'IFWEB', 'WORWEB'] }
   });
   res.status(200).json({});
 };
