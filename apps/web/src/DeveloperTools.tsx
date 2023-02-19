@@ -7,9 +7,12 @@ import {
   CardMedia,
   CircularProgress,
   Container,
+  FormControlLabel,
   IconButton,
   Input,
-  TextField
+  Switch,
+  TextField,
+  ToggleButton
 } from '@mui/material';
 import { RecommendedPrompt } from 'types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -63,6 +66,7 @@ const DEFAULT_PROMPTS = [
     prompt:
       'What is the details for this ticket? Provide a overview including at least title, description, priority and a summar of the thread comments for each ticket. List all items that have this ticket as parent key.'
   },
+  { title: 'Ticket comments', prompt: 'What are the comments for DRATA-286? ' },
   {
     title: 'Next steps',
     prompt:
@@ -86,6 +90,7 @@ const DeveloperTools: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedResponse, setGeneratedResponse] = useState<any>({});
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [useStreaming, setUseStreaming] = useState(true);
   const generateResponse = async (aPrompt: string) => {
     setGeneratedResponse('');
     setIsLoading(true);
@@ -123,16 +128,21 @@ const DeveloperTools: React.FC = () => {
         setGeneratedResponse((prev: any) => {
           let curr = (prev?.answer || '') + chunkValue;
           const [jsonData, ...rest] = curr.split('JSON_END');
+          console.log('OnChunk->JSonData', { curr, jsonData });
           if (jsonData && rest?.length) {
             extra = JSON.parse(jsonData);
             curr = rest.join('');
+            console.log('JSONOnChunk', { rest, extra, curr });
           }
           answer = curr;
           return { answer: curr, ...extra };
         });
       } else {
+        // console.log('OnChunk', { curr, jsonData });
         setGeneratedResponse((prev: any) => {
           const curr = (prev?.answer || '') + chunkValue;
+          console.log('OnChunk', { curr, extra });
+
           answer = curr;
           return { answer: curr, ...extra };
         });
@@ -147,7 +157,7 @@ const DeveloperTools: React.FC = () => {
   const addAnswer = (answer: any) => setAnswers((currentAnswers) => [...currentAnswers, answer]);
 
   const { data, isFetching } = useQuery({
-    enabled: !!prompt && false,
+    enabled: !!prompt && !useStreaming,
     queryKey: ['completion', prompt],
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -205,7 +215,7 @@ const DeveloperTools: React.FC = () => {
     setAnswers([...answers, { prompt: inputValue }]);
     setShowPrompts(false);
     setInputValue('');
-    generateResponse(inputValue);
+    if (useStreaming) generateResponse(inputValue);
   };
 
   const handlePromptClick = (prompt: string) => {
@@ -214,7 +224,8 @@ const DeveloperTools: React.FC = () => {
     addAnswer({ prompt });
     setInputValue('');
     setShowPrompts(false);
-    generateResponse(prompt);
+
+    if (useStreaming) generateResponse(prompt);
   };
   return (
     <>
@@ -232,14 +243,12 @@ const DeveloperTools: React.FC = () => {
             {answers.map((answer, index) => (
               <Answer {...answer} key={index} />
             ))}
-            {generatedResponse?.context && <Answer {...generatedResponse} />}
+            {generatedResponse?.answer && <Answer {...generatedResponse} />}
             {(isFetching || isLoadingJira || (isLoading && !generatedResponse?.answer)) &&
             answers?.length ? (
               <Answer answer={'...'} />
             ) : null}
-            {!answers?.length ||
-            showPrompts ||
-            !(isFetching || isLoadingJira || (isLoading && !generatedResponse?.answer)) ? (
+            {!answers?.length || showPrompts ? (
               <DefaultPrompts prompts={DEFAULT_PROMPTS} handlePromptClick={handlePromptClick} />
             ) : null}
           </Box>
@@ -273,6 +282,21 @@ const DeveloperTools: React.FC = () => {
           </Button>
 
           <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+            <>
+              {/* Toggle component that updates when using query or streaming */}
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    {...{ inputProps: { 'aria-label': 'Stream mode' } }}
+                    checked={useStreaming}
+                    onChange={() => setUseStreaming(!useStreaming)}
+                    name="Stream"
+                  />
+                }
+                label={'Stream'}
+              />
+            </>
             {answers?.length ? (
               <Button variant="outlined" color="primary" onClick={() => setAnswers([])}>
                 <DeleteIcon />

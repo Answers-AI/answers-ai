@@ -14,6 +14,37 @@ You can start editing the page by modifying `pages/index.js`. The page auto-upda
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
+## Event Oriented with Inngest
+
+This documentation provides information on how to use Inngest to process and synchronize events related to Jira and Slack integration.
+
+### Overview
+
+The project uses Inngest, a JavaScript-based open-source event-driven platform to automate the process of synchronizing Jira and Slack data. It allows us to create functions that are triggered in response to events and can be used to execute tasks based on the event's data.
+
+### Main Event Types
+
+The following are the available Inngest functions that can be triggered in response to specific events:
+
+processSyncSlack: Process the SYNC_SLACK event
+processJiraUpdated: Process the SYNC_JIRA event
+procesProjectUpdated: Process the PROJECT_UPDATED event
+processUpsertedIssues: Process the ISSUES_UPSERTED event
+
+### Running the dev Inngest server
+
+1- Run the following command to start the dev server:
+
+```bash
+npx inngest-cli@latest dev -u http://localhost:3000/api/inngest
+```
+
+This will start the Inngest local server and will synchronize events on the specified URL.
+
+Open the Inngest dashboard to see the available functions and events.
+
+Sync any platform from the UI at http://localhost:3000
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

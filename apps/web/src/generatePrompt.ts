@@ -13,14 +13,20 @@ export const pinecone = new PineconeClient();
 
 export const generatePrompt = async ({ prompt, answers = [] }: any) => {
   // Send a request to the OpenAI API for embeddings based on query
+  console.log('Generate Prompt');
   const embeddingResponse = await openai.createEmbedding({
     model: 'text-embedding-ada-002',
     input: prompt
   });
   const embeddings = embeddingResponse.data?.data[0]?.embedding;
 
-  const pineconeData = await pineconeQuery(embeddings);
-  // const pineconeData = { matches: [] };
+  let pineconeData;
+  try {
+    pineconeData = await pineconeQuery(embeddings);
+    // const pineconeData = { matches: [] };
+  } catch (error: any) {
+    console.log('Pinecone Error', error);
+  }
 
   const context = [
     ...answers
@@ -33,10 +39,7 @@ export const generatePrompt = async ({ prompt, answers = [] }: any) => {
 
   console.time('OpenAI->createCompletion');
   return {
-    prompt: `Answer the following question based on the context provided,
-                if you don't know the answer say "I don't know".
-                When writing a issue id with the format {PROJECT-ID},
-                wrap it with a tag <jira>.
+    prompt: `Answer the following question based on the context provided.
                 \n\nCONTEXT:\n${context}\n\n
                 Question:\n${prompt}\n\nAnswer:\n`,
     pineconeData,
