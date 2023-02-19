@@ -20,21 +20,16 @@ class OpenAI {
       keyPrefix: 'openai',
       redisConfig: process.env.REDIS_CONNECTION_STRING as string,
       getValuesFn: (keys) =>
-        Promise.all(
-          keys?.map((key, i) => {
-            console.log('skeep', 0 * i);
-            return sleep(0 * i).then(() =>
-              this.openai
-                .createEmbedding({
-                  input: key,
-                  model: this.defaultModel
-                })
-                ?.then(async (res) => {
-                  return res?.data?.data[0]?.embedding;
-                })
-            );
+        this.openai
+          .createEmbedding({
+            //@ts-expect-error
+            input: keys,
+            model: this.defaultModel
           })
-        ),
+          ?.then(async (res) => {
+            // console.log('Respoonse', res);
+            return res?.data?.data?.map((d) => d?.embedding);
+          }),
       cacheExpirationInSeconds: 10000
     });
   }

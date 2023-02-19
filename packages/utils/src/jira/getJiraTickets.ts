@@ -12,9 +12,11 @@ const JIRA_FIELDS = [
   'description',
   'creator',
   'status',
+  'issuetype',
   'customfield_10037',
   'reporter',
   'assignee',
+  'comments',
   'priority',
   'parent',
   'project'
@@ -31,7 +33,6 @@ export const getJiraTickets = async ({
   try {
     const initialPullCount = 1;
 
-    console.debug(`getJiraTickets ->JQL:${jql}`);
     console.time(`getJiraTickets ->JQL:${jql}`);
     let total = 0;
     // maxResults -= initialPullCount;
@@ -42,15 +43,9 @@ export const getJiraTickets = async ({
     // console.time(endpoint);
     let data: { issues: JiraIssue[]; errors?: any; isLast: boolean; total: number } =
       await jiraClient.fetchJiraData(endpoint, { cache: false });
-    console.log(
-      'Total:',
-      data.total,
-      'Issues:',
-      data.issues.length,
-      'Errors:',
-      data.errors ? 'Yes' : 'No'
-    );
-    // console.log(data?.issues[0]);
+    console.debug(`getJiraTickets ->JQL:${jql}` + 'Total: ' + data.total);
+
+    console.log(data?.issues[0]);
     // if (!data || data.errors) {
     //   break;
     // }

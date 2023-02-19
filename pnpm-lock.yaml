@@ -121,6 +121,7 @@ importers:
       dotenv: ^16.0.3
       eslint: ^7.32.0
       eslint-config-custom: workspace:*
+      eventsource-parser: ^0.1.0
       gpt-3-encoder: ^1.1.4
       inngest: ^1.2.0
       ioredis: ^5.3.1
@@ -148,6 +149,7 @@ importers:
       csv-stringify: 6.2.4
       dataloader: 2.2.2
       dotenv: 16.0.3
+      eventsource-parser: 0.1.0
       gpt-3-encoder: 1.1.4
       inngest: 1.2.0
       ioredis: 5.3.1
@@ -3151,6 +3153,11 @@ packages:
 
   /eventemitter3/4.0.7:
     resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
+    dev: false
+
+  /eventsource-parser/0.1.0:
+    resolution: {integrity: sha512-M9QjFtEIkwytUarnx113HGmgtk52LSn3jNAtnWKi3V+b9rqSfQeVdLsaD5AG/O4IrGQwmAAHBIsqbmURPTd2rA==}
+    engines: {node: '>=14.18'}
     dev: false
 
   /exec-sh/0.3.6:
