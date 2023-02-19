@@ -6,7 +6,7 @@ class JiraIssue extends JiraObject {
     super(tidiedIssue);
     this.object.objectType = 'JIRA Issue';
     this.object.uid = issue.key;
-    this.vectors = this.getVectors();
+    // this.vectors = this.getVectors();
   }
 
   static tidy(issue) {
@@ -14,7 +14,7 @@ class JiraIssue extends JiraObject {
     const attrs = {
       objectType: 'JIRA Issue',
       // issueTypeId: fields?.issuetype.id,
-      issueType: fields?.issuetype.name,
+      issueType: fields?.issuetype?.name,
       issueId: key,
       description: fields.description ? JiraIssue.jiraAdfToMarkdown(fields.description) : '',
       summary: fields?.summary,
@@ -50,7 +50,7 @@ const createContext = (id, metadata) => {
   let string = 'For jira issue ' + id + '\n';
   for (const key in metadata) {
     if (metadata.hasOwnProperty(key)) {
-      string += `The ${key} is ${metadata[key]}, `;
+      string += `the ${key} is ${metadata[key]}, `;
     }
   }
   return string;

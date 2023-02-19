@@ -61,13 +61,13 @@ class PineconeClient {
   }
 
   async writeVectorsToIndex(vectors) {
-    console.time('writeVectorsToIndex');
+    // console.time('writeVectorsToIndex');
 
     const index = this.client.Index(this.indexName);
 
     //TODO: Remove after testing
     // await this.deleteIndex(index);
-    console.log('Vector', vectors[0]);
+    // console.log('Vector', vectors[0]);
     let pineconeUpsertPromises = chunkArray(vectors, 100);
     pineconeUpsertPromises.map((chunkedVectors) => {
       const upsertRequest = {
@@ -78,7 +78,7 @@ class PineconeClient {
     });
 
     await Promise.all(pineconeUpsertPromises);
-    console.timeEnd('writeVectorsToIndex');
+    // console.timeEnd('writeVectorsToIndex');
   }
 }
 

@@ -1,7 +1,13 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["OPENAI_API_KEY", "PINECONE_API_KEY", "PINECONE_ENVIRONMENT", "PINECONE_INDEX"],
+  "globalEnv": [
+    "OPENAI_API_KEY",
+    "PINECONE_API_KEY",
+    "PINECONE_ENVIRONMENT",
+    "PINECONE_INDEX",
+    "INNGEST_SIGNING_KEY"
+  ],
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],

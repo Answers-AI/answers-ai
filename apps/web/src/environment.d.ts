@@ -5,6 +5,7 @@ declare global {
       PINECONE_API_KEY: string;
       PINECONE_INDEX: string;
       REDIS_CONNECTION_STRING: string;
+      INNGEST_SIGNING_KEY: string;
       NODE_ENV: 'development' | 'production';
     }
   }

@@ -14,7 +14,7 @@ type Data = {
 };
 const initializeOpenAI = () => {
   const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY // process.env.API_KEY,
+    apiKey: process.env.OPENAI_API_KEY
   });
   return new OpenAIApi(configuration);
 };
@@ -58,7 +58,7 @@ const createContext = (id: string, metadata: Record<string, string>): string => 
 };
 
 // Prompt for the OpenAI API
-
+// TODO: Enable stream mode to show results as they are returned
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await cors(req, res);
 
