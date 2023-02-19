@@ -28,7 +28,6 @@ class PineconeClient {
     this.index = undefined;
     this.init();
   }
-
   async init() {
     await this.client.init({
       apiKey: this.apiKey,
@@ -68,16 +67,23 @@ class PineconeClient {
     //TODO: Remove after testing
     // await this.deleteIndex(index);
     // console.log('Vector', vectors[0]);
-    let pineconeUpsertPromises = chunkArray(vectors, 100);
-    pineconeUpsertPromises.map((chunkedVectors) => {
+    let pineconeUpsertPromises = chunkArray(vectors, 50);
+    pineconeUpsertPromises.map(async (chunkedVectors) => {
       const upsertRequest = {
         vectors: chunkedVectors,
         namespace: this.namespace
       };
-      return index.upsert(upsertRequest);
+      try {
+        await index.upsert(upsertRequest);
+      } catch (error) {
+        // console.log('Error', error);
+        throw error;
+      }
     });
 
-    await Promise.all(pineconeUpsertPromises);
+    const results = await Promise.all(pineconeUpsertPromises);
+    const errors = results.filter((result) => result.error);
+    console.log('Errors', errors?.length);
     // console.timeEnd('writeVectorsToIndex');
   }
 }

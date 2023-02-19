@@ -20,6 +20,7 @@ class AnswersObject {
 
   createContextFromObject(obj) {
     const trimValues = ['', undefined, null, 'indeterminate'];
+    if (obj?.text) return obj?.text;
     let context = Object.entries(obj)
       .filter(([, value]) => !trimValues.includes(value) && typeof value !== 'object')
       .map(([key, value]) => `${key.replace(/([A-Z_])/g, ' $1').toUpperCase()}: ${value}`)
@@ -42,7 +43,7 @@ class AnswersObject {
   }
 
   createVector() {
-    const objectType = this.object.objectType.replace(/\s/g, '').toLowerCase();
+    const objectType = this.object.objectType?.replace(/\s/g, '')?.toLowerCase();
     const uid = this.object.uid;
     const id = `${objectType}_${uid}`;
     const vector = new Vector(id, this.object, this.embedding);

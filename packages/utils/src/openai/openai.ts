@@ -57,6 +57,7 @@ class OpenAI {
     model = this.defaultModel
   ): Promise<number[]> {
     try {
+      // console.log('CreateEmbedding', input);
       return this.loader.load(input);
     } catch (error) {
       console.error(`Error creating embedding: ${error}`);
