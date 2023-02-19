@@ -3,32 +3,21 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Button from '@mui/material/Button';
 import {
-  Avatar,
   Box,
-  Card,
-  CardContent,
   CardMedia,
   CircularProgress,
   Container,
   IconButton,
   Input,
-  styled,
   TextField
 } from '@mui/material';
-import { JsonViewer } from '@textea/json-viewer';
 import { RecommendedPrompt } from 'types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { deepOrange, deepPurple } from '@mui/material/colors';
 import PromptCard from './PromptCard';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
-import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
-import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
-import MuiAccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
+import { Answer } from './Answer';
 
 const DEFAULT_PROMPTS = [
   {
@@ -39,7 +28,12 @@ const DEFAULT_PROMPTS = [
   {
     title: 'Ongoing tickets',
     prompt:
-      'What tickets are assigned to Max Techera and status is: scheduled, open, in progress, discovery, new ticket? Provide a overview of the current status for each one.'
+      'What tickets have the highest priority and are assigned to Max Techera and status is: scheduled, open, in progress, discovery, new ticket? Provide a overview of the current status for each one. Do not include items that are resolved.'
+  },
+  {
+    title: 'Customer action items',
+    prompt:
+      'What tickets are waiting for customer action? Provide a overview of the current status for each one.'
   },
 
   {
@@ -67,12 +61,12 @@ const DEFAULT_PROMPTS = [
   {
     title: 'Ticket details',
     prompt:
-      'What is the details for this ticket? Provide a overview including at least title, description, priority for each ticket '
+      'What is the details for this ticket? Provide a overview including at least title, description, priority and a summar of the thread comments for each ticket. List all items that have this ticket as parent key.'
   },
   {
     title: 'Next steps',
     prompt:
-      'What are the next steps? Provide information for each ticket. If the ticket is parent ticket, provide information for each child ticket.'
+      'What is the summary of the description? Provide information for each ticket. If the ticket is parent ticket, provide information for each child ticket.'
   },
   {
     title: 'Priority of ticket',
@@ -243,7 +237,9 @@ const DeveloperTools: React.FC = () => {
             answers?.length ? (
               <Answer answer={'...'} />
             ) : null}
-            {!answers?.length || showPrompts ? (
+            {!answers?.length ||
+            showPrompts ||
+            !(isFetching || isLoadingJira || (isLoading && !generatedResponse?.answer)) ? (
               <DefaultPrompts prompts={DEFAULT_PROMPTS} handlePromptClick={handlePromptClick} />
             ) : null}
           </Box>
@@ -325,139 +321,4 @@ const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) => 
   </Grid2>
 );
 
-const Accordion = styled((props: AccordionProps) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
-))(({ theme }) => ({
-  'border': `1px solid ${theme.palette.divider}`,
-  '&:not(:last-child)': {
-    borderBottom: 0
-  },
-  '&:before': {
-    display: 'none'
-  }
-}));
-
-const AccordionSummary = styled((props: AccordionSummaryProps) => (
-  <MuiAccordionSummary
-    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
-    {...props}
-  />
-))(({ theme }) => ({
-  'backgroundColor':
-    theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, .05)' : 'rgba(0, 0, 0, .03)',
-  'flexDirection': 'row-reverse',
-  '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
-    transform: 'rotate(90deg)'
-  },
-  '& .MuiAccordionSummary-content': {
-    marginLeft: theme.spacing(1)
-  }
-}));
-
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderTop: '1px solid rgba(0, 0, 0, .125)'
-}));
-
-const Answer = ({ answer, prompt, error, ...other }: any) => (
-  <Card sx={{ display: 'flex', padding: 2 }}>
-    <Avatar sx={{ bgcolor: answer ? deepPurple[500] : deepOrange[500] }}>
-      {answer ? 'AI' : 'MT'}
-    </Avatar>
-    <CardContent sx={{ py: 0, px: 2, width: '100%', display: 'flex', flexDirection: 'column' }}>
-      {error ? (
-        <>
-          <Typography variant="subtitle1" color="text.secondary" component="div">
-            Ooops! Could not complete your request! Try again with a different prompt.
-          </Typography>
-          <JsonViewer
-            rootName="response"
-            value={error}
-            theme={'dark'}
-            collapseStringsAfterLength={100}
-          />
-        </>
-      ) : null}
-      {answer ? (
-        <>
-          <Typography
-            sx={{
-              whiteSpace: 'pre-line',
-              paddingBottom: 2,
-              code: { color: 'white', backgroundColor: 'black', padding: 2 }
-            }}
-            variant="subtitle1"
-            color="text.secondary"
-            component="div">
-            <span dangerouslySetInnerHTML={{ __html: answer }} />
-          </Typography>
-          {other?.context ? (
-            // Use the @mui accordion component to wrap the context and response
-
-            <Accordion TransitionProps={{ unmountOnExit: true }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header">
-                <Typography variant="overline">Context</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography
-                  sx={{ whiteSpace: 'pre-line' }}
-                  variant="body1"
-                  color="text.secondary"
-                  component="div">
-                  {other?.context}
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
-          ) : null}
-          {other?.pineconeData ? (
-            <Accordion TransitionProps={{ unmountOnExit: true }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header">
-                <Typography variant="overline">Pinecone</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <JsonViewer
-                  rootName=""
-                  value={other?.pineconeData}
-                  theme={'dark'}
-                  // defaultInspectDepth={0}
-                  collapseStringsAfterLength={100}
-                />
-              </AccordionDetails>
-            </Accordion>
-          ) : null}
-          {other?.completionData ? (
-            <Accordion TransitionProps={{ unmountOnExit: true }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header">
-                <Typography variant="overline">Completion</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <JsonViewer
-                  rootName=""
-                  value={other?.completionData}
-                  theme={'dark'}
-                  // defaultInspectDepth={0}
-                  collapseStringsAfterLength={100}
-                />
-              </AccordionDetails>
-            </Accordion>
-          ) : null}
-        </>
-      ) : null}
-      {prompt && !error && !answer ? (
-        <Typography variant="subtitle1" color="text.secondary" component="div">
-          {prompt}
-        </Typography>
-      ) : null}
-    </CardContent>
-  </Card>
-);
 export default DeveloperTools;

@@ -23,7 +23,9 @@ export const generatePrompt = async ({ prompt, answers = [] }: any) => {
   // const pineconeData = { matches: [] };
 
   const context = [
-    ...answers?.filter((item: any) => !!item?.answer)?.map((item: any) => item?.answer),
+    ...answers
+      ?.filter((item: any) => !!item?.answer || !!item?.context)
+      ?.map((item: any) => `${item?.answer}, ${item?.context}`),
     ...(!pineconeData?.matches
       ? []
       : pineconeData?.matches?.map((item: any) => item?.metadata?.text))

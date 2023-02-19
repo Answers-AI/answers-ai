@@ -1,16 +1,26 @@
 import { Inngest } from 'inngest';
-import { getJiraProjects, JiraIssue, JiraProject, prepareAllForEmbedding } from './jira';
+import {
+  getJiraComments,
+  getJiraProjects,
+  JiraComment,
+  JiraIssue,
+  JiraProject,
+  prepareAllForEmbedding
+} from './jira';
 import { getJiraTickets } from './jira/getJiraTickets';
 import PineconeClient from './pinecone/client';
 import JiraIssueModel from './jira/models/issue';
+import JiraThreadModel from './jira/models/thread';
 import { chunkArray } from './utilities/utils';
 import { jiraIssueLoader } from './jira';
+import JiraCommentModel from './jira/models/comment';
 
 const inngest = new Inngest({ name: 'My app' });
 
 const JIRA_ISSUE_BATCH_SIZE = 1000;
 const JIRA_PROJECT_BATCH_SIZE = 5;
 const EMBEDDING_BATCH_SIZE = 100;
+const COMMENTS_BATCH_SIZE = 50;
 
 export const processSyncSlack = inngest.createFunction(
   { name: 'Process SYNC_SLACK event' },
@@ -83,6 +93,7 @@ export const procesProjectUpdated = inngest.createFunction(
     const issues = await getJiraTickets({
       jql: `project in (${projectKeys?.join(',')})`
     });
+
     console.log('Projects to sync:', projectKeys?.join(','));
     // Prime redis loader with the issues using the hashKey function
     try {
@@ -144,6 +155,20 @@ export const processUpsertedIssues = inngest.createFunction(
         })
       );
 
+      await Promise.all(
+        chunkArray(issuesKeys, COMMENTS_BATCH_SIZE).map((batchIssues: JiraIssue[], i) => {
+          const eventData = {
+            key: `ISSUES_COMMENTS_UPDATED_BATCH_${
+              i * Math.min(batchIssues?.length, COMMENTS_BATCH_SIZE)
+            }-${(i + 1) * Math.min(batchIssues?.length, COMMENTS_BATCH_SIZE)}:`,
+            total: issuesKeys.length,
+            issuesKeys: batchIssues
+          };
+          //TODO: Save to Redis by issue key
+          //TODO: In event only send issue keys
+          inngest.send({ name: 'ISSUES_COMMENTS_UPDATED', data: eventData });
+        })
+      );
       console.timeEnd(key);
     } catch (e) {
       console.log(e);
@@ -151,6 +176,51 @@ export const processUpsertedIssues = inngest.createFunction(
     }
   }
 );
+
+export const processIssuesComments = inngest.createFunction(
+  { name: 'Process ISSUES_COMMENTS_UPDATED event' },
+  { event: 'ISSUES_COMMENTS_UPDATED' },
+  async ({ event }) => {
+    try {
+      const { issuesKeys, key } = event.data;
+      console.time('ISSUES_COMMENTS_UPDATED:' + key);
+
+      const jiraThreads = await Promise.all(
+        issuesKeys?.map(async (issueKey: any) =>
+          getJiraComments(issueKey).then((comments) => new JiraThreadModel({ issueKey, comments }))
+        )
+      );
+      console.log('Comments to sync:', issuesKeys?.join(','));
+      // Prime redis loader with the issues using the hashKey function
+      // try {
+      //   // @ts-ignore
+      //   await jiraIssueLoader.primeAll(issues.map((issue) => [issue.key, issue]));
+      // } catch (error) {
+      //   console.log('Error priming loader', error);
+      // }
+      await Promise.all(
+        chunkArray(jiraThreads, COMMENTS_BATCH_SIZE).map((threads: JiraComment[], i) => {
+          const eventData = {
+            key: `ISSUES_COMMENTS_UPDATED_${i * Math.min(threads?.length, COMMENTS_BATCH_SIZE)}-${
+              (i + 1) * Math.min(threads?.length, COMMENTS_BATCH_SIZE)
+            }:`,
+            total: jiraThreads.length,
+            threads: threads
+          };
+          //TODO: Save to Redis by issue key
+          //TODO: In event only send issue keys
+          return inngest.send({ name: 'COMMENTS_EMBEDDING_UPDATED', data: eventData });
+        })
+      );
+      // return issues;
+      console.timeEnd('PROJECT_UPDATED:' + key);
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+);
+
 export const processEmbeddings = inngest.createFunction(
   { name: 'Process EMBEDDING_UPDATED event' },
   { event: 'ISSUES_EMBEDDING_UPDATED' },
@@ -163,6 +233,28 @@ export const processEmbeddings = inngest.createFunction(
 
       const vectorData = await prepareAllForEmbedding(
         issues.map((issue: any) => new JiraIssueModel(issue))
+      );
+      // console.log('vectorData', vectorData[0]);
+      await pinecone.writeVectorsToIndex(vectorData);
+      console.timeEnd(key);
+    } catch (e) {
+      // console.log(e);
+      throw e;
+    }
+  }
+);
+export const processCommentsEmbeddings = inngest.createFunction(
+  { name: 'Process COMMENTS_EMBEDDING_UPDATED event' },
+  { event: 'COMMENTS_EMBEDDING_UPDATED' },
+  async ({ event }) => {
+    // await step.sleep('0.2s');
+    try {
+      const { threads, key } = event.data;
+      console.time(key);
+      // const issues = await jiraIssueLoader.loadMany(issuesKeys);
+
+      const vectorData = await prepareAllForEmbedding(
+        threads.map((thread: any) => new JiraThreadModel(thread.object))
       );
       // console.log('vectorData', vectorData[0]);
       await pinecone.writeVectorsToIndex(vectorData);
