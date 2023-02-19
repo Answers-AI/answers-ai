@@ -22,7 +22,9 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MessageIcon from '@mui/icons-material/QueryBuilder';
 import HomeIcon from '@mui/icons-material/Home';
+import SettingsIcon from '@mui/icons-material/Settings';
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
 const queryClient = new QueryClient();
 
@@ -111,59 +113,22 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function RootLayout({
   // Layouts must accept a children prop.
+  params,
   // This will be populated with nested layouts or pages
   children
 }: {
   children: React.ReactNode;
+  params: {
+    slug: string;
+  };
 }) {
-  const [open, setOpen] = React.useState(false);
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <QueryClientProvider client={queryClient}>
         <html lang="en" style={{ height: '100%' }}>
           <body style={{ height: '100%', display: 'flex' }}>
-            <Drawer variant="permanent" open={open}>
-              <DrawerHeader>
-                {/* <IconButton onClick={handleDrawerClose}>
-                  {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                </IconButton> */}
-              </DrawerHeader>
-              <Divider />
-              <List>
-                {[
-                  { text: 'Message', link: '/', icon: <HomeIcon /> },
-                  { text: 'Inngest', link: '/events', icon: <MessageIcon /> }
-                ].map(({ text, link, icon }) => (
-                  <NextLink key={text} href={link} passHref>
-                    <ListItem disablePadding sx={{ display: 'block' }}>
-                      <ListItemButton
-                        href={link}
-                        sx={{
-                          // minHeight: 48,
-                          px: 2.5
-                        }}>
-                        <ListItemIcon
-                          sx={{
-                            minWidth: 0,
-                            mr: open ? 3 : 'auto',
-                            justifyContent: 'center'
-                          }}>
-                          {icon}
-                        </ListItemIcon>
-                        <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-                      </ListItemButton>
-                    </ListItem>
-                  </NextLink>
-                ))}
-              </List>
-            </Drawer>
+            <AppDrawer {...params} />
             {children}
             <ReactQueryDevtools position="top-right" />
           </body>
@@ -172,3 +137,52 @@ export default function RootLayout({
     </ThemeProvider>
   );
 }
+const AppDrawer = (params: any) => {
+  console.log('params', params);
+  // const activeLink = React.useEffect(() => {
+  //   const path = window.location.pathname;
+  //   return path;
+  // }, []);
+  const { pathname } = params;
+  const {} = useRouter();
+
+  return (
+    <Drawer variant="permanent">
+      <DrawerHeader>
+        {/* <IconButton onClick={handleDrawerClose}>
+          {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+        </IconButton> */}
+      </DrawerHeader>
+      <Divider />
+      <List>
+        {[
+          { text: 'Message', link: '/', icon: <HomeIcon /> },
+          { text: 'Settings', link: '/settings', icon: <SettingsIcon /> },
+          { text: 'Inngest', link: '/events', icon: <MessageIcon /> }
+        ].map(({ text, link, icon }) => (
+          // <NextLink key={text} href={link} passHref>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              aria-label={text}
+              href={link}
+              sx={{
+                minHeight: 48,
+                ...(pathname === link ? { bgcolor: 'primary.main' } : {}),
+                px: 2.5
+              }}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center'
+                }}>
+                {icon}
+              </ListItemIcon>
+              <ListItemText primary={text} sx={{ opacity: 0 }} />
+            </ListItemButton>
+          </ListItem>
+          // </NextLink>
+        ))}
+      </List>
+    </Drawer>
+  );
+};

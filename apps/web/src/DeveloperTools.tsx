@@ -14,13 +14,14 @@ import {
   TextField,
   ToggleButton
 } from '@mui/material';
-import { RecommendedPrompt } from 'types';
+import { AppSettings, RecommendedPrompt } from 'types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PromptCard from './PromptCard';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Answer } from './Answer';
+import useAppSettings from 'useAppSettings';
 
 const DEFAULT_PROMPTS = [
   {
@@ -81,7 +82,8 @@ type CallbackType = (data: string[]) => void;
 
 type InitCallbackType = (cb: CallbackType) => void;
 
-const DeveloperTools: React.FC = () => {
+const DeveloperTools = ({ appSettings }: { appSettings: AppSettings }) => {
+  // const { appSettings } = useAppSettings();
   const [inputValue, setInputValue] = useState('');
   const [prompt, setPrompt] = useState('');
   const [answers, setAnswers] = useState<any[]>([]);
@@ -259,6 +261,20 @@ const DeveloperTools: React.FC = () => {
         </Box>
 
         <Box sx={{ display: 'flex', gap: 2 }}>
+          {appSettings?.services?.map((service) => (
+            <Button
+              sx={{
+                position: 'relative',
+                label: { transition: '2.s', opacity: isLoadingJira ? 0 : 1 }
+              }}
+              variant="outlined"
+              color="primary"
+              disabled={!service.enabled}
+              onClick={handleSyncJira}>
+              {isLoadingJira ? <CircularProgress size={24} sx={{ position: 'absolute' }} /> : null}
+              <label>Sync {service.name}</label>
+            </Button>
+          ))}
           <Button
             sx={{
               position: 'relative',

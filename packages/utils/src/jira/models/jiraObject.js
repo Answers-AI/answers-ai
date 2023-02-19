@@ -14,7 +14,7 @@ class JiraObject extends AnswersObject {
       return node.text;
     } else if (node.type === 'hardBreak') {
       // return "\n";
-      return '';
+      return ' ';
     } else if (node.type === 'mention') {
       return `@${node.attrs.username}`;
     } else if (node.type === 'emoji') {
@@ -24,7 +24,7 @@ class JiraObject extends AnswersObject {
     } else if (node.type === 'mediaGroup') {
       return node.content.map(JiraObject.jiraAdfToMarkdown).join('');
     } else if (node.type === 'paragraph') {
-      return `${node.content.map(JiraObject.jiraAdfToMarkdown).join('')}.`;
+      return `${node.content.map(JiraObject.jiraAdfToMarkdown).join('')}. `;
     } else if (node.type === 'bulletList') {
       return node.content.map((item) => `${JiraObject.jiraAdfToMarkdown(item)}`).join('');
     } else if (node.type === 'listItem') {

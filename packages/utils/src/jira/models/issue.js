@@ -55,7 +55,7 @@ class JiraIssue extends JiraObject {
 }
 
 const createContext = (id, metadata) => {
-  let string = 'The context for ' + id + ' ';
+  let string = '' + id + ' ';
   string += Object.keys(metadata)
     .filter((key) => !!metadata[key])
     .map((key) => {
