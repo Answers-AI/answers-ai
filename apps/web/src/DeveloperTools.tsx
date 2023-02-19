@@ -227,7 +227,7 @@ interface DefaultPromptsProps {
 const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) => (
   <Grid2 container spacing={2} sx={{ width: '100%' }}>
     {prompts?.map((prompt) => (
-      <Grid2 xs={6}>
+      <Grid2 xs={6} key={prompt?.prompt}>
         <PromptCard {...prompt} onClick={() => handlePromptClick(prompt?.prompt)} />
       </Grid2>
     ))}
