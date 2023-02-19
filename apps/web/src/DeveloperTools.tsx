@@ -90,7 +90,7 @@ const DeveloperTools: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedResponse, setGeneratedResponse] = useState<any>({});
   const scrollRef = React.useRef<HTMLDivElement>(null);
-  const [useStreaming, setUseStreaming] = useState(true);
+  const [useStreaming, setUseStreaming] = useState(false);
   const generateResponse = async (aPrompt: string) => {
     setGeneratedResponse('');
     setIsLoading(true);
@@ -188,7 +188,9 @@ const DeveloperTools: React.FC = () => {
     addAnswer({ prompt: 'Can you please sync all jira tickets?' });
     try {
       await axios.post(`/api/sync/jira`);
-      addAnswer({ answer: 'Synced Jira successfully' });
+      addAnswer({
+        answer: 'Synced Jira event sent. Go to <a href="/events">events</a> to track the status.'
+      });
     } catch (error) {
       console.log(error);
     } finally {
@@ -201,7 +203,9 @@ const DeveloperTools: React.FC = () => {
     addAnswer({ prompt: 'Can you please sync all Slack tickets?' });
     try {
       await axios.post(`/api/sync/slack`);
-      addAnswer({ answer: 'Synced Slack successfully' });
+      addAnswer({
+        answer: 'Synced Slack event sent. Go to <a href="/events">events</a> to track the status.'
+      });
     } catch (error) {
       console.log(error);
     } finally {

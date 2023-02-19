@@ -45,7 +45,7 @@ export const getJiraTickets = async ({
       await jiraClient.fetchJiraData(endpoint, { cache: false });
     console.debug(`getJiraTickets ->JQL:${jql}` + 'Total: ' + data.total);
 
-    console.log(data?.issues[0]);
+    // console.log(data?.issues[0]);
     // if (!data || data.errors) {
     //   break;
     // }

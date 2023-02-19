@@ -8,8 +8,8 @@ This monorepo uses [pnpm](https://pnpm.io) as a package manager. It includes the
 
 ### Apps and Packages
 
-- `web`: a [Next.js](https://nextjs.org/) app holding the frontend and serverless functions for the Answers AI website
-- `utils`: a library shared applications with utilities to sync and query data to the Answers AI database
+- [`web`](./packages/web/README.md): a [Next.js](https://nextjs.org/) app holding the frontend and serverless functions for the Answers AI website
+- [`utils`](./packages/utils/README.md): a library shared applications with utilities to sync and query data to the Answers AI database
 - `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `tsconfig`: `tsconfig.json`s used throughout the monorepo
 

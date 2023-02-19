@@ -19,8 +19,10 @@ const inngest = new Inngest({ name: 'My app' });
 
 const JIRA_ISSUE_BATCH_SIZE = 1000;
 const JIRA_PROJECT_BATCH_SIZE = 5;
-const EMBEDDING_BATCH_SIZE = 100;
+const EMBEDDING_BATCH_SIZE = 300;
 const COMMENTS_BATCH_SIZE = 50;
+
+const DISABLE_EMBEDDING = false;
 
 export const processSyncSlack = inngest.createFunction(
   { name: 'Process SYNC_SLACK event' },
@@ -69,6 +71,7 @@ export const processJiraUpdated = inngest.createFunction(
           key: `${jobId}_PROJECT_UPDATED_BATCH_${i * JIRA_PROJECT_BATCH_SIZE}-${
             (i + 1) * JIRA_PROJECT_BATCH_SIZE
           }:`,
+          batchSize: JIRA_PROJECT_BATCH_SIZE,
           total: projects.length,
           projectKeys: batchProjects?.map((project) => project.key)
         };
@@ -111,6 +114,7 @@ export const procesProjectUpdated = inngest.createFunction(
             (i + 1) * JIRA_ISSUE_BATCH_SIZE
           }:`,
           total: issues.length,
+          batchSize: JIRA_ISSUE_BATCH_SIZE,
           projectKeys,
           issuesKeys: batchIssues?.map((issue) => issue.key)
         };
@@ -147,6 +151,7 @@ export const processUpsertedIssues = inngest.createFunction(
               i * Math.min(batchIssues?.length, EMBEDDING_BATCH_SIZE)
             }-${(i + 1) * Math.min(batchIssues?.length, EMBEDDING_BATCH_SIZE)}:`,
             total: issuesKeys.length,
+            batchSize: EMBEDDING_BATCH_SIZE,
             issuesKeys: batchIssues
           };
           //TODO: Save to Redis by issue key
@@ -189,8 +194,8 @@ export const processIssuesComments = inngest.createFunction(
         issuesKeys?.map(async (issueKey: any) =>
           getJiraComments(issueKey).then((comments) => new JiraThreadModel({ issueKey, comments }))
         )
-      );
-      console.log('Comments to sync:', issuesKeys?.join(','));
+      )?.then((threads) => threads.filter((thread) => !!thread?.object?.text));
+      // console.log('Comments to sync:', jiraThreads[0]);
       // Prime redis loader with the issues using the hashKey function
       // try {
       //   // @ts-ignore
@@ -205,6 +210,7 @@ export const processIssuesComments = inngest.createFunction(
               (i + 1) * Math.min(threads?.length, COMMENTS_BATCH_SIZE)
             }:`,
             total: jiraThreads.length,
+            batchSize: COMMENTS_BATCH_SIZE,
             threads: threads
           };
           //TODO: Save to Redis by issue key
@@ -234,8 +240,8 @@ export const processEmbeddings = inngest.createFunction(
       const vectorData = await prepareAllForEmbedding(
         issues.map((issue: any) => new JiraIssueModel(issue))
       );
-      // console.log('vectorData', vectorData[0]);
-      await pinecone.writeVectorsToIndex(vectorData);
+      console.log('vectorData', vectorData[0]);
+      if (!DISABLE_EMBEDDING) await pinecone.writeVectorsToIndex(vectorData);
       console.timeEnd(key);
     } catch (e) {
       // console.log(e);
@@ -256,8 +262,8 @@ export const processCommentsEmbeddings = inngest.createFunction(
       const vectorData = await prepareAllForEmbedding(
         threads.map((thread: any) => new JiraThreadModel(thread.object))
       );
-      // console.log('vectorData', vectorData[0]);
-      await pinecone.writeVectorsToIndex(vectorData);
+      console.log('vectorData', vectorData?.length);
+      if (!DISABLE_EMBEDDING) await pinecone.writeVectorsToIndex(vectorData);
       console.timeEnd(key);
     } catch (e) {
       // console.log(e);

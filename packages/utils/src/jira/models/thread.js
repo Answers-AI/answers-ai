@@ -4,8 +4,8 @@ class JiraThread extends JiraObject {
     const tidiedThread = JiraThread.tidy(thread);
 
     super(tidiedThread);
-    this.thread = thread;
-    this.object.objectType = 'JIRA Thread';
+    // this.thread = thread;
+    // this.object.objectType = 'JIRA Comments Thread';
     this.object.uid = thread.issueKey;
   }
 
@@ -13,7 +13,7 @@ class JiraThread extends JiraObject {
     return {
       id: thread?.id,
       issueKey: thread?.issueKey,
-      objectType: 'JIRA comments thread',
+      // objectType: 'JIRA comments thread',
       text: thread?.text || createContext(thread, this.jiraAdfToMarkdown)
     };
   }
@@ -26,8 +26,8 @@ class JiraThread extends JiraObject {
     chunkArray(comments, chunkSize).forEach((chunk, idx) => {
       const vector = {
         id: thread?.id,
-        issueKey: `${this.thread?.issueKey}${idx}`,
-        objectType: 'JIRA comments thread',
+        issueKey: `${this.object.uid}${idx}`,
+        // objectType: 'JIRA comments thread',
         text: thread?.text || createContext({ ...thread, comments: chunk }, this.jiraAdfToMarkdown)
       };
       vectors.push(vector);
@@ -41,12 +41,12 @@ const createContext = (metadata, jiraAdfToMarkdown) => {
   const thread = metadata?.comments
     ?.map(
       ({ author, body, updated, self }) =>
-        // `[${self}](${updated} ${author?.displayName}:${jiraAdfToMarkdown(body)}`
-        `${author?.displayName}:${jiraAdfToMarkdown(body)}`
+        // `[${updated} - ${author?.displayName}](${self}): ${jiraAdfToMarkdown(body)}`
+        `${author?.displayName} commented "${jiraAdfToMarkdown(body)}" on ${metadata?.issueKey}.`
     )
-    ?.join('\n');
+    ?.join('. ');
   if (!thread) return '';
-  string += `Conversation thread for ${metadata?.issueKey}:\n ${thread}`;
+  string += `${thread}`;
   return string;
 };
 export default JiraThread;

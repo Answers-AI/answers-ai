@@ -13,7 +13,7 @@ export const pinecone = new PineconeClient();
 
 export const generatePrompt = async ({ prompt, answers = [] }: any) => {
   // Send a request to the OpenAI API for embeddings based on query
-  console.log('Generate Prompt');
+  console.log('Generate Prompt for', prompt);
   const embeddingResponse = await openai.createEmbedding({
     model: 'text-embedding-ada-002',
     input: prompt
