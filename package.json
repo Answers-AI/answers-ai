@@ -8,8 +8,8 @@
   ],
   "scripts": {
     "build": "dotenv -- turbo run build",
-    "dev": "dotenv -- turbo run dev dev-inngest",
-    "dev-redis": "docker run -p 6379:6379 -d redis:redis",
+    "dev": "dotenv -- turbo run dev dev-docker dev-inngest",
+    "dev-docker": "docker-compose up -d",
     "dev-inngest": "npx inngest-cli@latest dev -u http://localhost:3000/api/inngest",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""

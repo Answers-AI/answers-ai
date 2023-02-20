@@ -26,7 +26,7 @@ The project uses Inngest, a JavaScript-based open-source event-driven platform t
 
 The following are the available Inngest functions that can be triggered in response to specific events:
 
-processSyncSlack: Process the SYNC_SLACK event
+processSyncSlack: Process the SYNCED_SLACK event
 processJiraUpdated: Process the SYNCED_JIRA event
 procesProjectUpdated: Process the PROJECT_UPDATED event
 processUpsertedIssues: Process the UPSERTED_ISSUES event
