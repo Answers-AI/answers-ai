@@ -51,7 +51,7 @@ export const processJiraUpdated = inngest.createFunction(
       chunkArray(
         projects?.filter(
           (project) =>
-            (!projectKeysFilter?.length || projectKeysFilter?.includes(project.key)) &&
+            projectKeysFilter?.includes(project.key) &&
             ![
               // 'IFWEB',
               'STWEB',

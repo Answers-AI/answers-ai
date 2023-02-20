@@ -10,7 +10,7 @@
     "INNGEST_SERVER_URL"
   ],
   "pipeline": {
-    "//#dev-redis": { "cache": false, "persistent": true },
+    "//#dev-docker": { "cache": false, "persistent": true },
     "//#dev-inngest": { "cache": false, "persistent": true },
     "build": {
       "dependsOn": ["^build"],

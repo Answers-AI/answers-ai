@@ -7,7 +7,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
   await cors(req, res);
   // Chunk projects into batches of 10
   inngest.send({
-    name: 'SYNC_SLACK',
+    name: 'SYNCED_SLACK',
     data: {}
   });
   res.status(200).json({});
