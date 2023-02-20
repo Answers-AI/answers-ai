@@ -1,4 +1,5 @@
 import { Inngest } from 'inngest';
+import PineconeClient from './pinecone/client';
 import {
   getJiraComments,
   getJiraProjects,
@@ -8,12 +9,11 @@ import {
   prepareAllForEmbedding
 } from './jira';
 import { getJiraTickets } from './jira/getJiraTickets';
-import PineconeClient from './pinecone/client';
 import JiraIssueModel from './jira/models/issue';
 import JiraThreadModel from './jira/models/thread';
-import { chunkArray } from './utilities/utils';
 import { jiraIssueLoader } from './jira';
-import JiraCommentModel from './jira/models/comment';
+
+import { chunkArray } from './utilities/utils';
 
 const inngest = new Inngest({ name: 'My app' });
 
@@ -25,23 +25,24 @@ const COMMENTS_BATCH_SIZE = 50;
 const DISABLE_EMBEDDING = false;
 
 export const processSyncSlack = inngest.createFunction(
-  { name: 'Process SYNC_SLACK event' },
-  { event: 'SYNC_SLACK' },
+  { name: 'Process SYNCED_SLACK event' },
+  { event: 'SYNCED_SLACK' },
   async ({ event }) => {
     const jobId = LAST_JOB_ID++;
-    const { projectKeys: projectKeysFilter } = event.data;
-    console.time('SYNC_SLACK:' + jobId);
+    const {} = event.data;
+    console.log('SYNCED_SLACK:' + jobId);
+    console.time('SYNCED_SLACK:' + jobId);
 
-    console.timeEnd('SYNC_SLACK:' + jobId);
+    console.timeEnd('SYNCED_SLACK:' + jobId);
   }
 );
 export const processJiraUpdated = inngest.createFunction(
-  { name: 'Process SYNC_JIRA event' },
-  { event: 'SYNC_JIRA' },
+  { name: 'Process SYNCED_JIRA event' },
+  { event: 'SYNCED_JIRA' },
   async ({ event }) => {
     const jobId = LAST_JOB_ID++;
     const { projectKeys: projectKeysFilter } = event.data;
-    console.time('SYNC_JIRA:' + jobId);
+    console.time('SYNCED_JIRA:' + jobId);
     const projects = await getJiraProjects();
     // Chunk projects into batches of 10
 
@@ -68,7 +69,7 @@ export const processJiraUpdated = inngest.createFunction(
         JIRA_PROJECT_BATCH_SIZE
       ).map((batchProjects: JiraProject[], i) => {
         const eventData = {
-          key: `${jobId}_PROJECT_UPDATED_BATCH_${i * JIRA_PROJECT_BATCH_SIZE}-${
+          key: `${jobId}_UPDATED_PROJECT_BATCH_${i * JIRA_PROJECT_BATCH_SIZE}-${
             (i + 1) * JIRA_PROJECT_BATCH_SIZE
           }:`,
           batchSize: JIRA_PROJECT_BATCH_SIZE,
@@ -77,21 +78,21 @@ export const processJiraUpdated = inngest.createFunction(
         };
         //TODO: Save to Redis by issue key
         //TODO: In event only send issue keys
-        inngest.send({ name: 'PROJECT_UPDATED', data: eventData });
+        inngest.send({ name: 'UPDATED_PROJECT', data: eventData });
       })
     );
 
-    console.timeEnd('SYNC_JIRA:' + jobId);
+    console.timeEnd('SYNCED_JIRA:' + jobId);
   }
 );
 export const procesProjectUpdated = inngest.createFunction(
-  { name: 'Process PROJECT_UPDATED event' },
-  { event: 'PROJECT_UPDATED' },
+  { name: 'Process UPDATED_PROJECT event' },
+  { event: 'UPDATED_PROJECT' },
   async ({ event }) => {
     const jobId = LAST_JOB_ID++;
 
     const projectKeys: JiraProject[] = event.data.projectKeys;
-    console.time('PROJECT_UPDATED:' + jobId);
+    console.time('UPDATED_PROJECT:' + jobId);
     // Chunk projects into batches of 10
     const issues = await getJiraTickets({
       jql: `project in (${projectKeys?.join(',')})`
@@ -110,7 +111,7 @@ export const procesProjectUpdated = inngest.createFunction(
     await Promise.all(
       chunkArray(issues, JIRA_ISSUE_BATCH_SIZE).map((batchIssues: JiraIssue[], i) => {
         const eventData = {
-          key: `${jobId}_ISSUES_UPSERTED_BATCH_${i * JIRA_ISSUE_BATCH_SIZE}-${
+          key: `${jobId}_UPSERTED_ISSUES_BATCH_${i * JIRA_ISSUE_BATCH_SIZE}-${
             (i + 1) * JIRA_ISSUE_BATCH_SIZE
           }:`,
           total: issues.length,
@@ -120,11 +121,11 @@ export const procesProjectUpdated = inngest.createFunction(
         };
         //TODO: Save to Redis by issue key
         //TODO: In event only send issue keys
-        inngest.send({ name: 'ISSUES_UPSERTED', data: eventData });
+        inngest.send({ name: 'UPSERTED_ISSUES', data: eventData });
       })
     );
     // return issues;
-    console.timeEnd('PROJECT_UPDATED:' + jobId);
+    console.timeEnd('UPDATED_PROJECT:' + jobId);
   }
 );
 
@@ -135,8 +136,8 @@ const pinecone = new PineconeClient({
 
 let LAST_JOB_ID = 0;
 export const processUpsertedIssues = inngest.createFunction(
-  { name: 'Process ISSUES_UPSERTED event' },
-  { event: 'ISSUES_UPSERTED' },
+  { name: 'Process UPSERTED_ISSUES event' },
+  { event: 'UPSERTED_ISSUES' },
   async ({ event }) => {
     try {
       const { issuesKeys, key } = event.data;
@@ -147,7 +148,7 @@ export const processUpsertedIssues = inngest.createFunction(
       await Promise.all(
         chunkArray(issuesKeys, EMBEDDING_BATCH_SIZE).map((batchIssues: JiraIssue[], i) => {
           const eventData = {
-            key: `ISSUES_EMBEDDING_UPDATED_BATCH_${
+            key: `UPDATED_ISSUES_EMBEDDING_BATCH_${
               i * Math.min(batchIssues?.length, EMBEDDING_BATCH_SIZE)
             }-${(i + 1) * Math.min(batchIssues?.length, EMBEDDING_BATCH_SIZE)}:`,
             total: issuesKeys.length,
@@ -156,14 +157,14 @@ export const processUpsertedIssues = inngest.createFunction(
           };
           //TODO: Save to Redis by issue key
           //TODO: In event only send issue keys
-          inngest.send({ name: 'ISSUES_EMBEDDING_UPDATED', data: eventData });
+          inngest.send({ name: 'UPDATED_ISSUES_EMBEDDING', data: eventData });
         })
       );
 
       await Promise.all(
         chunkArray(issuesKeys, COMMENTS_BATCH_SIZE).map((batchIssues: JiraIssue[], i) => {
           const eventData = {
-            key: `ISSUES_COMMENTS_UPDATED_BATCH_${
+            key: `UPDATED_ISSUES_COMMENTS_BATCH_${
               i * Math.min(batchIssues?.length, COMMENTS_BATCH_SIZE)
             }-${(i + 1) * Math.min(batchIssues?.length, COMMENTS_BATCH_SIZE)}:`,
             total: issuesKeys.length,
@@ -171,7 +172,7 @@ export const processUpsertedIssues = inngest.createFunction(
           };
           //TODO: Save to Redis by issue key
           //TODO: In event only send issue keys
-          inngest.send({ name: 'ISSUES_COMMENTS_UPDATED', data: eventData });
+          inngest.send({ name: 'UPDATED_ISSUES_COMMENTS', data: eventData });
         })
       );
       console.timeEnd(key);
@@ -183,12 +184,12 @@ export const processUpsertedIssues = inngest.createFunction(
 );
 
 export const processIssuesComments = inngest.createFunction(
-  { name: 'Process ISSUES_COMMENTS_UPDATED event' },
-  { event: 'ISSUES_COMMENTS_UPDATED' },
+  { name: 'Process UPDATED_ISSUES_COMMENTS event' },
+  { event: 'UPDATED_ISSUES_COMMENTS' },
   async ({ event }) => {
     try {
       const { issuesKeys, key } = event.data;
-      console.time('ISSUES_COMMENTS_UPDATED:' + key);
+      console.time('UPDATED_ISSUES_COMMENTS:' + key);
 
       const jiraThreads = await Promise.all(
         issuesKeys?.map(async (issueKey: any) =>
@@ -206,7 +207,7 @@ export const processIssuesComments = inngest.createFunction(
       await Promise.all(
         chunkArray(jiraThreads, COMMENTS_BATCH_SIZE).map((threads: JiraComment[], i) => {
           const eventData = {
-            key: `ISSUES_COMMENTS_UPDATED_${i * Math.min(threads?.length, COMMENTS_BATCH_SIZE)}-${
+            key: `UPDATED_ISSUES_COMMENTS_${i * Math.min(threads?.length, COMMENTS_BATCH_SIZE)}-${
               (i + 1) * Math.min(threads?.length, COMMENTS_BATCH_SIZE)
             }:`,
             total: jiraThreads.length,
@@ -215,11 +216,11 @@ export const processIssuesComments = inngest.createFunction(
           };
           //TODO: Save to Redis by issue key
           //TODO: In event only send issue keys
-          return inngest.send({ name: 'COMMENTS_EMBEDDING_UPDATED', data: eventData });
+          return inngest.send({ name: 'UPDATED_COMMENTS_EMBEDDING', data: eventData });
         })
       );
       // return issues;
-      console.timeEnd('PROJECT_UPDATED:' + key);
+      console.timeEnd('UPDATED_PROJECT:' + key);
     } catch (e) {
       console.log(e);
       throw e;
@@ -229,7 +230,7 @@ export const processIssuesComments = inngest.createFunction(
 
 export const processEmbeddings = inngest.createFunction(
   { name: 'Process EMBEDDING_UPDATED event' },
-  { event: 'ISSUES_EMBEDDING_UPDATED' },
+  { event: 'UPDATED_ISSUES_EMBEDDING' },
   async ({ event }) => {
     // await step.sleep('0.2s');
     try {
@@ -250,8 +251,8 @@ export const processEmbeddings = inngest.createFunction(
   }
 );
 export const processCommentsEmbeddings = inngest.createFunction(
-  { name: 'Process COMMENTS_EMBEDDING_UPDATED event' },
-  { event: 'COMMENTS_EMBEDDING_UPDATED' },
+  { name: 'Process UPDATED_COMMENTS_EMBEDDING event' },
+  { event: 'UPDATED_COMMENTS_EMBEDDING' },
   async ({ event }) => {
     // await step.sleep('0.2s');
     try {
