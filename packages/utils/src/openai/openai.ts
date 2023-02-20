@@ -29,8 +29,7 @@ class OpenAI {
           ?.then(async (res) => {
             // console.log('Respoonse', res);
             return res?.data?.data?.map((d) => d?.embedding);
-          }),
-      cacheExpirationInSeconds: 10000
+          })
     });
   }
 

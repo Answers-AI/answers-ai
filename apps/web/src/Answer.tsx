@@ -2,7 +2,7 @@
 import React from 'react';
 import { Avatar, Card, CardContent, styled } from '@mui/material';
 import { JsonViewer } from '@textea/json-viewer';
-import { deepOrange, deepPurple } from '@mui/material/colors';
+// import { deepOrange, deepPurple } from '@mui/material/colors';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
@@ -43,7 +43,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 export const Answer = ({ answer, prompt, error, ...other }: any) => (
   <Card sx={{ display: 'flex', padding: 2 }}>
-    <Avatar sx={{ bgcolor: answer ? deepPurple[500] : deepOrange[500] }}>
+    <Avatar sx={{ bgcolor: answer ? 'primary.main' : 'secondary.main' }}>
       {answer ? 'AI' : 'MT'}
     </Avatar>
     <CardContent sx={{ py: 0, px: 2, width: '100%', display: 'flex', flexDirection: 'column' }}>

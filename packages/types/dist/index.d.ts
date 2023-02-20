@@ -10,11 +10,11 @@ export type RecommendedPrompt = {
     views?: number;
 };
 export interface AppSettings {
-    services?: {
+    services: {
         name: string;
         enabled: boolean;
     }[];
-    jira?: {
+    jira: {
         projects?: {
             key: string;
             enabled: boolean;

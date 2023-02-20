@@ -184,34 +184,15 @@ const DeveloperTools = ({ appSettings }: { appSettings: AppSettings }) => {
     setInputValue(event.target.value);
   };
 
-  const handleSyncJira = async () => {
-    setIsLoadingJira(true);
-
-    addAnswer({ prompt: 'Can you please sync all jira tickets?' });
+  const handleSync = async (name: string) => {
+    addAnswer({ prompt: `Can you please sync all ${name} tickets?` });
     try {
-      await axios.post(`/api/sync/jira`);
+      await axios.post(`/api/sync/${name}`);
       addAnswer({
-        answer: 'Synced Jira event sent. Go to <a href="/events">events</a> to track the status.'
+        answer: `Synced ${name} event sent. Go to <a href="/events">events</a> to track the status.`
       });
     } catch (error) {
       console.log(error);
-    } finally {
-      setIsLoadingJira(false);
-    }
-  };
-  const handleSyncSlack = async () => {
-    setIsLoadingSlack(true);
-
-    addAnswer({ prompt: 'Can you please sync all Slack tickets?' });
-    try {
-      await axios.post(`/api/sync/slack`);
-      addAnswer({
-        answer: 'Synced Slack event sent. Go to <a href="/events">events</a> to track the status.'
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoadingSlack(false);
     }
   };
 
@@ -264,18 +245,16 @@ const DeveloperTools = ({ appSettings }: { appSettings: AppSettings }) => {
           {appSettings?.services?.map((service) => (
             <Button
               sx={{
-                position: 'relative',
-                label: { transition: '2.s', opacity: isLoadingJira ? 0 : 1 }
+                position: 'relative'
               }}
               variant="outlined"
               color="primary"
               disabled={!service.enabled}
-              onClick={handleSyncJira}>
-              {isLoadingJira ? <CircularProgress size={24} sx={{ position: 'absolute' }} /> : null}
-              <label>Sync {service.name}</label>
+              onClick={() => handleSync(service.name)}>
+              Sync {service.name}
             </Button>
           ))}
-          <Button
+          {/* <Button
             sx={{
               position: 'relative',
               label: { transition: '2.s', opacity: isLoadingJira ? 0 : 1 }
@@ -299,7 +278,7 @@ const DeveloperTools = ({ appSettings }: { appSettings: AppSettings }) => {
             onClick={handleSyncSlack}>
             {isLoadingSlack ? <CircularProgress size={24} sx={{ position: 'absolute' }} /> : null}
             <label>Sync Slack</label>
-          </Button>
+          </Button> */}
 
           <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
             <>

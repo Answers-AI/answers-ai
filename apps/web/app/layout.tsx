@@ -1,21 +1,23 @@
 'use client';
-import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
+import {
+  Avatar,
+  createTheme,
+  CssBaseline,
+  PaletteMode,
+  ThemeProvider,
+  Typography
+} from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import NextLink from 'next/link';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
+
 import List from '@mui/material/List';
 // import CssBaseline from '@mui/material/CssBaseline';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -24,22 +26,40 @@ import MessageIcon from '@mui/icons-material/QueryBuilder';
 import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { amber, deepOrange, grey } from '@mui/material/colors';
+// import { useRouter } from 'next/navigation';
 
 const queryClient = new QueryClient();
-
-// Create MUI dark theme
-const theme = createTheme({
+const getDesignTokens = (mode: PaletteMode) => ({
   palette: {
-    mode: 'dark',
+    mode,
     primary: {
-      main: '#1976d2'
+      ...amber,
+      ...(mode === 'dark' && {
+        main: amber[300]
+      })
     },
-    secondary: {
-      main: '#9e03bc'
+    // ...(mode === 'dark' && {
+    //   background: {
+    //     default: deepOrange[900],
+    //     paper: deepOrange[900]
+    //   }
+    // }),
+    text: {
+      ...(mode === 'light'
+        ? {
+            primary: grey[900],
+            secondary: grey[800]
+          }
+        : {
+            primary: '#fff',
+            secondary: grey[500]
+          })
     }
   }
 });
+
+const darkModeTheme = createTheme(getDesignTokens('dark'));
 
 const drawerWidth = 240;
 
@@ -123,14 +143,14 @@ export default function RootLayout({
   };
 }) {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={darkModeTheme}>
       <CssBaseline />
       <QueryClientProvider client={queryClient}>
-        <html lang="en" style={{ height: '100%' }}>
-          <body style={{ height: '100%', display: 'flex' }}>
+        <html lang="en" style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
+          <body style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
             <AppDrawer {...params} />
-            {children}
-            <ReactQueryDevtools position="top-right" />
+            <main style={{ flex: 1 }}>{children}</main>
+            {/* <ReactQueryDevtools position="top-right" /> */}
           </body>
         </html>
       </QueryClientProvider>
@@ -144,21 +164,22 @@ const AppDrawer = (params: any) => {
   //   return path;
   // }, []);
   const { pathname } = params;
-  const {} = useRouter();
+  // const {} = useRouter();
 
   return (
     <Drawer variant="permanent">
-      <DrawerHeader>
+      <DrawerHeader sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         {/* <IconButton onClick={handleDrawerClose}>
           {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         </IconButton> */}
+        <Avatar>AI</Avatar>
       </DrawerHeader>
       <Divider />
       <List>
         {[
           { text: 'Message', link: '/', icon: <HomeIcon /> },
-          { text: 'Settings', link: '/settings', icon: <SettingsIcon /> },
-          { text: 'Inngest', link: '/events', icon: <MessageIcon /> }
+          { text: 'Inngest', link: '/events', icon: <MessageIcon /> },
+          { text: 'Settings', link: '/settings', icon: <SettingsIcon /> }
         ].map(({ text, link, icon }) => (
           // <NextLink key={text} href={link} passHref>
           <ListItem disablePadding sx={{ display: 'block' }}>
