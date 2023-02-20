@@ -15,6 +15,7 @@ const DEFAULT_SETTINGS = {
   ],
   jira: {}
 };
+
 let appSettings: AppSettings;
 
 export async function GET(request: Request) {

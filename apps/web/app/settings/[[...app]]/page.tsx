@@ -1,9 +1,8 @@
+import React from 'react';
+import { AppSettings } from 'types';
+
 import JiraSettings from '../../../src/JiraSettings';
 import SlackSettings from '../../../src/SlackSettings';
-
-import { AppSettings } from 'types';
-import React from 'react';
-// import useAppSettings from 'useAppSettings';
 
 const SETTINGS: { [key: string]: any } = {
   jira: JiraSettings,
@@ -25,4 +24,5 @@ const AppSettingPage = async ({ params }: any) => {
 
   return null;
 };
+
 export default AppSettingPage;

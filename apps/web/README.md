@@ -27,11 +27,15 @@ The project uses Inngest, a JavaScript-based open-source event-driven platform t
 The following are the available Inngest functions that can be triggered in response to specific events:
 
 processSyncSlack: Process the SYNC_SLACK event
-processJiraUpdated: Process the SYNC_JIRA event
+processJiraUpdated: Process the SYNCED_JIRA event
 procesProjectUpdated: Process the PROJECT_UPDATED event
-processUpsertedIssues: Process the ISSUES_UPSERTED event
+processUpsertedIssues: Process the UPSERTED_ISSUES event
 
 ### Running the dev Inngest server
+
+# The dev server is ran automatically when using turbo
+
+# To run it manually, follow these steps:
 
 1- Run the following command to start the dev server:
 

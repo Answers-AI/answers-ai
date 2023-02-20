@@ -1,5 +1,5 @@
 {
-  "name": "ISSUES_UPSERTED",
+  "name": "UPSERTED_ISSUES",
   "data": {
     "issues": [
       {
@@ -16,7 +16,7 @@
 
 
 {
-  "name": "SYNC_JIRA",
+  "name": "SYNCED_JIRA",
   "data": {
     "projects":["DRATA"]
   }
