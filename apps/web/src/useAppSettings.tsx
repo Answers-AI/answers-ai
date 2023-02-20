@@ -29,13 +29,13 @@ const useAppSettings = () => {
   //   // }
   // });
 
-  const { mutate } = useMutation(saveAppSettings);
+  const { mutate, isLoading } = useMutation(saveAppSettings);
 
   const updateAppSettings = (newSettings: AppSettings) => {
     mutate(newSettings);
   };
 
-  return { updateAppSettings };
+  return { updateAppSettings, isLoading };
 };
 
 export default useAppSettings;

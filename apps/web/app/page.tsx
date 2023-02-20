@@ -6,7 +6,6 @@ const Homepage = async () => {
     cache: 'no-store'
   });
   const settings = await response.json();
-  console.log('AppSettings', settings);
 
   return <DeveloperTools appSettings={settings} />;
 };
