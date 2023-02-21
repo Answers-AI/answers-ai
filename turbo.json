@@ -7,7 +7,9 @@
     "PINECONE_ENVIRONMENT",
     "PINECONE_INDEX",
     "INNGEST_SIGNING_KEY",
-    "INNGEST_SERVER_URL"
+    "INNGEST_SERVER_URL",
+    "GITHUB_ID",
+    "GITHUB_SECRET"
   ],
   "pipeline": {
     "//#dev-docker": { "cache": false, "persistent": true },

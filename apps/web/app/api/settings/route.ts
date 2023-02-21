@@ -4,77 +4,25 @@ import { getJiraProjects, JiraProject } from 'utils/dist/jira';
 import { deepmerge } from 'utils/dist/deepmerge';
 // import cors from '../../../src/cors';
 import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../../pages/api/auth/[...nextauth]';
+import { getAppSettings } from 'getAppSettings';
 
 const prisma = new PrismaClient();
 
-const DEFAULT_SETTINGS = {
-  services: [
-    { name: 'jira', enabled: true },
-    { name: 'slack', enabled: true },
-    { name: 'notion', enabled: false },
-    { name: 'github', enabled: false },
-    { name: 'drive', enabled: false },
-    { name: 'contentful', enabled: false }
-  ],
-  jira: {}
-};
-
-export async function GET(request: Request) {
-  // TODO: Move this into a middleware
-  let user;
-  // TODO: Verify user ownership or permisson scope
-  user = await prisma.user.findUnique({
-    where: {
-      username: 'maxtechera-2'
-    }
-  });
-
-  if (!user) {
-    // TODO - Improve creating a user by default
-    user = await prisma.user.create({
-      data: {
-        username: 'maxtechera-2',
-        email: 'maxi.techera-2g@gmail.com',
-        appSettings: DEFAULT_SETTINGS
-      }
-    });
-    const jiraProjects = await getJiraProjects().then((projects) =>
-      projects.map((project) => ({ name: project?.name, key: project?.key }))
-    );
-    const projectsSettingsByKey = user?.appSettings?.jira?.projects?.reduce(
-      (acc: any, project: JiraProject) => {
-        acc[project.key] = { ...project, enabled: false };
-        return acc;
-      },
-      {}
-    );
-
-    const appSettings = deepmerge(
-      { ...DEFAULT_SETTINGS, ...user?.appSettings },
-      {
-        jira: {
-          projects: jiraProjects.map((project) => ({
-            ...projectsSettingsByKey?.[project.key],
-            ...project
-          }))
-        }
-      }
-    );
-    return NextResponse.json(appSettings);
-  }
-  return NextResponse.json(user?.appSettings);
+export async function GET(req: Request, res: Response) {
+  const appSettings = await getAppSettings();
+  return NextResponse.json(appSettings);
 }
 export async function POST(request: Request) {
-  const newSettings = await request.json();
-
-  let user;
-
-  // TODO: Verify user ownership or permisson scope
-  user = await prisma.user.findUnique({
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) return NextResponse.redirect('/auth');
+  const user = await prisma.user.findUnique({
     where: {
-      username: 'maxtechera-2'
+      email: session?.user?.email
     }
   });
+  const newSettings = await request.json();
 
   // Add all possible jiraprojects on every update
   const jiraProjects = await getJiraProjects().then((projects) =>
@@ -89,8 +37,8 @@ export async function POST(request: Request) {
     },
     {}
   );
-  // console.log('projectsSettingsByKey', projectsSettingsByKey);
-  const appSettings = deepmerge(DEFAULT_SETTINGS, {
+  console.log('projectsSettingsByKey', projectsSettingsByKey);
+  const appSettings = deepmerge({}, user?.appSettings, {
     jira: {
       projects: jiraProjects.map((project) => ({
         ...project,
@@ -98,13 +46,12 @@ export async function POST(request: Request) {
       }))
     }
   });
+  console.log('appSettings', appSettings?.jira?.projects);
 
-  if (!user) {
-  } else {
-    await prisma.user.update({
-      where: { username: 'maxtechera-2' },
-      data: { appSettings }
-    });
-  }
-  return NextResponse.json(appSettings);
+  await prisma.user.update({
+    where: { email: session?.user?.email },
+    data: { appSettings }
+  });
+
+  return NextResponse.json(user);
 }

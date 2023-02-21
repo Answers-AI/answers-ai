@@ -1,3 +1,4 @@
+import { getAppSettings } from '../../../src/getAppSettings';
 import React from 'react';
 import { AppSettings } from 'types';
 
@@ -10,8 +11,7 @@ const SETTINGS: { [key: string]: any } = {
 };
 
 const AppSettingPage = async ({ params }: any) => {
-  const response = await fetch(`http://localhost:3000/api/settings`, { cache: 'no-store' });
-  const appSettings: AppSettings = await response.json();
+  const appSettings = await getAppSettings();
   const Component = SETTINGS[params.app];
   if (!Component && params.app)
     return (
