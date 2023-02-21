@@ -12,22 +12,36 @@ import {
   Container,
   IconButton,
   Input,
-  TextField,
-  Typography
+  styled,
+  TextField
 } from '@mui/material';
 import { JsonViewer } from '@textea/json-viewer';
 import { RecommendedPrompt } from 'types';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { deepOrange, deepPurple } from '@mui/material/colors';
 import PromptCard from './PromptCard';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
+import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
+import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
+import MuiAccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+
 const DEFAULT_PROMPTS = [
   {
-    title: 'Assigned tickets',
-    prompt: 'What tickets are assigned to Max Techera?'
+    title: 'Unassinged tickets',
+    prompt:
+      'What open tickets not unassigned? Provide a overview including at least title, description, priority for each ticket.'
   },
+  {
+    title: 'Ongoing tickets',
+    prompt:
+      'What tickets are assigned to Max Techera and status is: scheduled, open, in progress, discovery, new ticket? Provide a overview of the current status for each one.'
+  },
+
   {
     title: 'Drata tickets',
     prompt:
@@ -41,20 +55,33 @@ const DEFAULT_PROMPTS = [
     prompt:
       'Has the ticket been tested and validated, and are there any issues or defects that need to be addressed?'
   },
+  {
+    prompt:
+      'When answering with code examples wrap it between code tags like <code>{examples}</code> and explain it below.'
+  },
 
   {
     title: 'Ticket status',
     prompt: 'What is the status?'
   },
   {
+    title: 'Ticket details',
+    prompt:
+      'What is the details for this ticket? Provide a overview including at least title, description, priority for each ticket '
+  },
+  {
     title: 'Next steps',
-    prompt: 'What are the next steps?'
+    prompt:
+      'What are the next steps? Provide information for each ticket. If the ticket is parent ticket, provide information for each child ticket.'
   },
   {
     title: 'Priority of ticket',
     prompt: 'What is the priority for each ticket?'
   }
 ];
+type CallbackType = (data: string[]) => void;
+
+type InitCallbackType = (cb: CallbackType) => void;
 
 const DeveloperTools: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
@@ -62,13 +89,71 @@ const DeveloperTools: React.FC = () => {
   const [answers, setAnswers] = useState<any[]>([]);
   const [isLoadingJira, setIsLoadingJira] = useState(false);
   const [isLoadingSlack, setIsLoadingSlack] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [generatedResponse, setGeneratedResponse] = useState<any>({});
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const generateResponse = async (aPrompt: string) => {
+    setGeneratedResponse('');
+    setIsLoading(true);
+    const response = await fetch('/api/ai/stream', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        prompt: aPrompt,
+        answers
+      })
+    });
+
+    if (!response.ok) {
+      console.log(response);
+      throw new Error(response.statusText);
+    }
+
+    const data = response.body;
+    if (!data) {
+      return;
+    }
+    const reader = data.getReader();
+    const decoder = new TextDecoder();
+    let done = false;
+    // let curr = '';
+    let answer;
+    let extra: any;
+    while (!done) {
+      const { value, done: doneReading } = await reader.read();
+      done = doneReading;
+      const chunkValue = decoder.decode(value);
+      if (!extra) {
+        setGeneratedResponse((prev: any) => {
+          let curr = (prev?.answer || '') + chunkValue;
+          const [jsonData, ...rest] = curr.split('JSON_END');
+          if (jsonData && rest?.length) {
+            extra = JSON.parse(jsonData);
+            curr = rest.join('');
+          }
+          answer = curr;
+          return { answer: curr, ...extra };
+        });
+      } else {
+        setGeneratedResponse((prev: any) => {
+          const curr = (prev?.answer || '') + chunkValue;
+          answer = curr;
+          return { answer: curr, ...extra };
+        });
+      }
+    }
+    addAnswer({ answer: answer, ...extra });
+    setGeneratedResponse({});
+    setIsLoading(false);
+  };
 
   const [showPrompts, setShowPrompts] = useState(false);
   const addAnswer = (answer: any) => setAnswers((currentAnswers) => [...currentAnswers, answer]);
 
   const { data, isFetching } = useQuery({
-    enabled: !!prompt,
+    enabled: !!prompt && false,
     queryKey: ['completion', prompt],
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -126,6 +211,7 @@ const DeveloperTools: React.FC = () => {
     setAnswers([...answers, { prompt: inputValue }]);
     setShowPrompts(false);
     setInputValue('');
+    generateResponse(inputValue);
   };
 
   const handlePromptClick = (prompt: string) => {
@@ -134,6 +220,7 @@ const DeveloperTools: React.FC = () => {
     addAnswer({ prompt });
     setInputValue('');
     setShowPrompts(false);
+    generateResponse(prompt);
   };
   return (
     <>
@@ -151,7 +238,11 @@ const DeveloperTools: React.FC = () => {
             {answers.map((answer, index) => (
               <Answer {...answer} key={index} />
             ))}
-            {(isFetching || isLoadingJira) && answers?.length ? <Answer answer={'...'} /> : null}
+            {generatedResponse?.context && <Answer {...generatedResponse} />}
+            {(isFetching || isLoadingJira || (isLoading && !generatedResponse?.answer)) &&
+            answers?.length ? (
+              <Answer answer={'...'} />
+            ) : null}
             {!answers?.length || showPrompts ? (
               <DefaultPrompts prompts={DEFAULT_PROMPTS} handlePromptClick={handlePromptClick} />
             ) : null}
@@ -227,20 +318,53 @@ interface DefaultPromptsProps {
 const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) => (
   <Grid2 container spacing={2} sx={{ width: '100%' }}>
     {prompts?.map((prompt) => (
-      <Grid2 xs={6}>
+      <Grid2 xs={6} key={prompt?.prompt}>
         <PromptCard {...prompt} onClick={() => handlePromptClick(prompt?.prompt)} />
       </Grid2>
     ))}
   </Grid2>
 );
 
+const Accordion = styled((props: AccordionProps) => (
+  <MuiAccordion disableGutters elevation={0} square {...props} />
+))(({ theme }) => ({
+  'border': `1px solid ${theme.palette.divider}`,
+  '&:not(:last-child)': {
+    borderBottom: 0
+  },
+  '&:before': {
+    display: 'none'
+  }
+}));
+
+const AccordionSummary = styled((props: AccordionSummaryProps) => (
+  <MuiAccordionSummary
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+    {...props}
+  />
+))(({ theme }) => ({
+  'backgroundColor':
+    theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, .05)' : 'rgba(0, 0, 0, .03)',
+  'flexDirection': 'row-reverse',
+  '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+    transform: 'rotate(90deg)'
+  },
+  '& .MuiAccordionSummary-content': {
+    marginLeft: theme.spacing(1)
+  }
+}));
+
+const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderTop: '1px solid rgba(0, 0, 0, .125)'
+}));
+
 const Answer = ({ answer, prompt, error, ...other }: any) => (
   <Card sx={{ display: 'flex', padding: 2 }}>
     <Avatar sx={{ bgcolor: answer ? deepPurple[500] : deepOrange[500] }}>
       {answer ? 'AI' : 'MT'}
     </Avatar>
-    <CardContent
-      sx={{ py: 0, px: 2, width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>
+    <CardContent sx={{ py: 0, px: 2, width: '100%', display: 'flex', flexDirection: 'column' }}>
       {error ? (
         <>
           <Typography variant="subtitle1" color="text.secondary" component="div">
@@ -250,7 +374,6 @@ const Answer = ({ answer, prompt, error, ...other }: any) => (
             rootName="response"
             value={error}
             theme={'dark'}
-            defaultInspectDepth={0}
             collapseStringsAfterLength={100}
           />
         </>
@@ -258,21 +381,74 @@ const Answer = ({ answer, prompt, error, ...other }: any) => (
       {answer ? (
         <>
           <Typography
-            sx={{ whiteSpace: 'pre-line' }}
+            sx={{
+              whiteSpace: 'pre-line',
+              paddingBottom: 2,
+              code: { color: 'white', backgroundColor: 'black', padding: 2 }
+            }}
             variant="subtitle1"
             color="text.secondary"
             component="div">
-            {answer}
+            <span dangerouslySetInnerHTML={{ __html: answer }} />
           </Typography>
-
           {other?.context ? (
-            <JsonViewer
-              rootName="response"
-              value={other}
-              theme={'dark'}
-              defaultInspectDepth={0}
-              collapseStringsAfterLength={100}
-            />
+            // Use the @mui accordion component to wrap the context and response
+
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Context</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography
+                  sx={{ whiteSpace: 'pre-line' }}
+                  variant="body1"
+                  color="text.secondary"
+                  component="div">
+                  {other?.context}
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {other?.pineconeData ? (
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Pinecone</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <JsonViewer
+                  rootName=""
+                  value={other?.pineconeData}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {other?.completionData ? (
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Completion</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <JsonViewer
+                  rootName=""
+                  value={other?.completionData}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
+              </AccordionDetails>
+            </Accordion>
           ) : null}
         </>
       ) : null}

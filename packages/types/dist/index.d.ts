@@ -3,7 +3,8 @@ export type PineconeObject = {
 };
 export type PineconeVector = {};
 export type RecommendedPrompt = {
-    question: string;
+    title?: string;
+    prompt: string;
     actor?: string;
     likes?: number;
     views?: number;

@@ -4,9 +4,6 @@
   "description": "Content Parser for Open AI",
   "private": true,
   "type": "module",
-  "main": "./dist/index.js",
-  "source": "./src/index.ts",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist/**"
   ],
@@ -41,8 +38,11 @@
     "csv": "^6.2.7",
     "csv-parser": "^3.0.0",
     "csv-stringify": "^6.2.4",
+    "dataloader": "^2.2.2",
     "dotenv": "^16.0.3",
+    "eventsource-parser": "^0.1.0",
     "gpt-3-encoder": "^1.1.4",
+    "inngest": "^1.2.0",
     "ioredis": "^5.3.1",
     "jira.js": "^2.16.0",
     "natural": "^6.2.0",

@@ -1,17 +1,37 @@
-import { Configuration, OpenAIApi } from 'openai';
+import { Configuration, CreateEmbeddingRequestInput, OpenAIApi } from 'openai';
 
-const defaultModel = 'text-embedding-ada-002';
 import Redis from 'ioredis';
+import redisLoader from '../redisLoader';
+import DataLoader from 'dataloader';
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 class OpenAI {
+  defaultModel = 'text-embedding-ada-002';
   openai: OpenAIApi;
   redis: any;
+  loader: DataLoader<any, any>;
   constructor() {
     const configuration = new Configuration({
       apiKey: process.env.OPENAI_API_KEY
     });
     this.openai = new OpenAIApi(configuration);
     this.redis = new Redis(process.env.REDIS_CONNECTION_STRING as string);
+    this.loader = redisLoader<CreateEmbeddingRequestInput, number[]>({
+      keyPrefix: 'openai',
+      redisConfig: process.env.REDIS_CONNECTION_STRING as string,
+      getValuesFn: (keys) =>
+        this.openai
+          .createEmbedding({
+            //@ts-expect-error
+            input: keys,
+            model: this.defaultModel
+          })
+          ?.then(async (res) => {
+            // console.log('Respoonse', res);
+            return res?.data?.data?.map((d) => d?.embedding);
+          }),
+      cacheExpirationInSeconds: 10000
+    });
   }
 
   //TODO: Test if we're hitting rate limits
@@ -32,30 +52,12 @@ class OpenAI {
   //   }
   // }
 
-  async createEmbedding(input: any, model = defaultModel) {
+  async createEmbedding(
+    input: CreateEmbeddingRequestInput,
+    model = this.defaultModel
+  ): Promise<number[]> {
     try {
-      // Create hashKey from json input
-      const hashKey = Buffer.from('v1-' + JSON.stringify(input)).toString('base64');
-      try {
-        const cachedEmbedding = await this.redis.get(hashKey);
-
-        if (cachedEmbedding) {
-          return JSON.parse(cachedEmbedding);
-        }
-      } catch (err) {
-        console.warn('NO REDIS CONNECTION, SKIPPING CACHE LOOKUP');
-      }
-      const response = await this.openai.createEmbedding({
-        model,
-        input
-      });
-      console.log('CreateEmbedding->No Cache hit');
-      const embedding = response?.data?.data[0]?.embedding;
-      if (!embedding) {
-        throw new Error('No embedding returned');
-      }
-      await this.redis.set(hashKey, JSON.stringify(embedding));
-      return embedding;
+      return this.loader.load(input);
     } catch (error) {
       console.error(`Error creating embedding: ${error}`);
       throw error;
