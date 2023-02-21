@@ -40,13 +40,11 @@ export async function getAppSettings() {
     const jiraProjects = await getJiraProjects().then((projects) =>
       projects.map((project) => ({ name: project?.name, key: project?.key }))
     );
-    const projectsSettingsByKey = (user?.appSettings as any)?.jira?.projects?.reduce(
-      (acc: any, project: JiraProject) => {
+    const projectsSettingsByKey =
+      (user?.appSettings as any)?.jira?.projects?.reduce((acc: any, project: JiraProject) => {
         acc[project.key] = project;
         return acc;
-      },
-      {}
-    );
+      }, {}) || {};
     const appSettings = deepmerge(
       { ...DEFAULT_SETTINGS, ...(user?.appSettings as any) },
       {

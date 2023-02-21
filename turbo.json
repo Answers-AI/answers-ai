@@ -23,6 +23,16 @@
       "dependsOn": [],
       "outputs": []
     },
+    "db:migrate": {
+      "cache": false,
+      "dependsOn": [],
+      "outputs": []
+    },
+    "db:deploy": {
+      "cache": false,
+      "dependsOn": [],
+      "outputs": []
+    },
     "web#build": {
       "dependsOn": ["^build", "generate:schema"],
       "outputs": ["dist/**", ".next/**"]
