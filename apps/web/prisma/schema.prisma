@@ -18,7 +18,20 @@ model User {
   name          String?
   appSettings Json
   image String @default("")
+  prompts Prompt[]
 }
+
+model Prompt {
+  id            Int         @id @default(autoincrement())
+  user User  @relation(fields: userId, references: id)
+  userId Int
+
+  title String
+  description String
+  likes Int
+  prompt String
+}
+
 
 model AppSettings {
   id            Int         @id @default(autoincrement())
