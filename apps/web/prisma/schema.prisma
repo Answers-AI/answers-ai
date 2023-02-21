@@ -12,11 +12,11 @@ datasource db {
 
 model User {
   id            Int         @id @default(autoincrement())
-  username String @unique
+  username String? @unique
   email         String      @unique
   name          String?
   appSettings Json
-  
+  image String @default("")
 }
 
 model AppSettings {

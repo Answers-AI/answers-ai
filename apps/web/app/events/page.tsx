@@ -1,9 +1,9 @@
 import AppSyncToolbar from '../../src/AppSyncToolbar';
 import React from 'react';
+import { getAppSettings } from '../../src/getAppSettings';
 
 const Inngest = async () => {
-  const response = await fetch(`http://localhost:3000/api/settings`, { cache: 'no-store' });
-  const appSettings = await response.json();
+  const appSettings = await getAppSettings();
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>

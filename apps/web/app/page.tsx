@@ -1,13 +1,18 @@
+import { getAppSettings } from '../src/getAppSettings';
+import { getServerSession } from 'next-auth';
 import React from 'react';
+import { authOptions } from '../pages/api/auth/[...nextauth]';
 import DeveloperTools from '../src/DeveloperTools';
 
 const Homepage = async () => {
-  const response = await fetch(`http://localhost:3000/api/settings`, {
-    cache: 'no-store'
-  });
-  const settings = await response.json();
+  const session = await getServerSession(authOptions);
+  console.log('Session', session);
+  if (!session) {
+    return <a href={'/auth'}>Redirect</a>;
+  }
 
-  return <DeveloperTools appSettings={settings} />;
+  const appSettings = await getAppSettings();
+  return <DeveloperTools appSettings={appSettings} />;
 };
 export const metadata = {
   title: 'Answers AI',
