@@ -18,6 +18,15 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"]
     },
+    "generate:schema": {
+      "cache": false,
+      "dependsOn": [],
+      "outputs": []
+    },
+    "web#build": {
+      "dependsOn": ["^build", "generate:schema"],
+      "outputs": ["dist/**", ".next/**"]
+    },
     "lint": {
       "outputs": []
     },
