@@ -13,7 +13,6 @@
     "dev": "tsc -w",
     "lint": "TIMING=1 eslint \"src/**/*.ts*\"",
     "test": "jest",
-    "start": "node index.js",
     "airtable": "node -r dotenv/config airtable.js",
     "jira": "node -r dotenv/config src/jira.js",
     "slack": "node -r dotenv/config src/slack.js",

@@ -14,6 +14,7 @@ export async function GET(req: Request, res: Response) {
   const appSettings = await getAppSettings();
   return NextResponse.json(appSettings);
 }
+
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) return NextResponse.redirect('/auth');

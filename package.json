@@ -8,8 +8,9 @@
   ],
   "scripts": {
     "build": "dotenv -- turbo run build",
-    "db:migrate": "cd ./apps/web && pnpm db:migrate",
+    "db:migrate": "dotenv -- pnpm --filter web db:migrate",
     "db:deploy": "dotenv -- turbo run db:deploy",
+    "start": "dotenv -- turbo run start dev-docker dev-inngest",
     "dev": "dotenv -- turbo run dev dev-docker dev-inngest",
     "dev-docker": "docker-compose up -d",
     "dev-inngest": "npx inngest-cli@latest dev -u http://localhost:3000/api/inngest",
