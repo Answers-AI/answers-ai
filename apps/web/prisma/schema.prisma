@@ -6,12 +6,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = "postgresql://example_user:example_password@localhost:5432/example_db?schema=public"
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
   id            Int         @id @default(autoincrement())
+
   username String? @unique
   email         String      @unique
   name          String?
@@ -20,7 +22,8 @@ model User {
 }
 
 model AppSettings {
-  id             Int          @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
+
   services       AppService[]
   jiraSettings   JiraSettings @relation(fields: [jiraSettingsId], references: [id])
   // User           User[]
@@ -28,7 +31,8 @@ model AppSettings {
 }
 
 model AppService {
-  id            Int          @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
+
   name          String
   enabled       Boolean
   AppSettings   AppSettings? @relation(fields: [appSettingsId], references: [id])
@@ -36,13 +40,15 @@ model AppService {
 }
 
 model JiraSettings {
-  id          Int                  @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
+
   projects    JiraProjectSetting[]
   AppSettings AppSettings[]
 }
 
 model JiraProjectSetting {
-  id             Int           @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
+
   key            String
   enabled        Boolean
   JiraSettings   JiraSettings? @relation(fields: [jiraSettingsId], references: [id])

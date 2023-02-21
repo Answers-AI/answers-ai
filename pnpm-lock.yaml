@@ -7,11 +7,13 @@ importers:
       dotenv-cli: latest
       eslint-config-custom: workspace:*
       prettier: latest
+      prisma: ^4.10.1
       turbo: latest
     devDependencies:
       dotenv-cli: 7.0.0
       eslint-config-custom: link:packages/eslint-config-custom
       prettier: 2.8.4
+      prisma: 4.10.1
       turbo: 1.8.1
 
   apps/web:
@@ -1263,7 +1265,6 @@ packages:
   /@prisma/engines/4.10.1:
     resolution: {integrity: sha512-B3tcTxjx196nuAu1GOTKO9cGPUgTFHYRdkPkTS4m5ptb2cejyBlH9X7GOfSt3xlI7p4zAJDshJP4JJivCg9ouA==}
     requiresBuild: true
-    dev: false
 
   /@rushstack/eslint-patch/1.2.0:
     resolution: {integrity: sha512-sXo/qW2/pAcmT43VoRKOJbDOfV3cYpq3szSVfIThQXNt+E4DfKj361vaAt3c88U5tPUxzEswam7GW48PJqtKAg==}
@@ -5818,7 +5819,6 @@ packages:
     requiresBuild: true
     dependencies:
       '@prisma/engines': 4.10.1
-    dev: false
 
   /progress/2.0.3:
     resolution: {integrity: sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==}
