@@ -9,4 +9,17 @@ export type RecommendedPrompt = {
     likes?: number;
     views?: number;
 };
+export interface AppService {
+    name: string;
+    enabled: boolean;
+}
+export interface AppSettings {
+    services: AppService[];
+    jira: {
+        projects?: {
+            key: string;
+            enabled: boolean;
+        }[];
+    };
+}
 //# sourceMappingURL=index.d.ts.map

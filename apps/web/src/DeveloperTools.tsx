@@ -1,26 +1,17 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import axios from 'axios';
 import Button from '@mui/material/Button';
-import {
-  Box,
-  CardMedia,
-  CircularProgress,
-  Container,
-  FormControlLabel,
-  IconButton,
-  Input,
-  Switch,
-  TextField,
-  ToggleButton
-} from '@mui/material';
-import { RecommendedPrompt } from 'types';
+import { Box, FormControlLabel, Switch, TextField } from '@mui/material';
+import { AppSettings, RecommendedPrompt } from 'types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PromptCard from './PromptCard';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Answer } from './Answer';
+import { useStreamedResponse } from './useStreamedResponse';
+import AppSyncToolbar from 'AppSyncToolbar';
 
 const DEFAULT_PROMPTS = [
   {
@@ -81,80 +72,21 @@ type CallbackType = (data: string[]) => void;
 
 type InitCallbackType = (cb: CallbackType) => void;
 
-const DeveloperTools: React.FC = () => {
+const DeveloperTools = ({ appSettings }: { appSettings: AppSettings }) => {
   const [inputValue, setInputValue] = useState('');
   const [prompt, setPrompt] = useState('');
   const [answers, setAnswers] = useState<any[]>([]);
-  const [isLoadingJira, setIsLoadingJira] = useState(false);
-  const [isLoadingSlack, setIsLoadingSlack] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [generatedResponse, setGeneratedResponse] = useState<any>({});
-  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const addAnswer = useCallback(
+    (answer: any) => setAnswers((currentAnswers) => [...currentAnswers, answer]),
+    []
+  );
+  const { isLoading, generatedResponse, generateResponse } = useStreamedResponse({
+    answers,
+    addAnswer
+  });
   const [useStreaming, setUseStreaming] = useState(false);
-  const generateResponse = async (aPrompt: string) => {
-    setGeneratedResponse('');
-    setIsLoading(true);
-    const response = await fetch('/api/ai/stream', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        prompt: aPrompt,
-        answers
-      })
-    });
-
-    if (!response.ok) {
-      console.log(response);
-      throw new Error(response.statusText);
-    }
-
-    const data = response.body;
-    if (!data) {
-      return;
-    }
-    const reader = data.getReader();
-    const decoder = new TextDecoder();
-    let done = false;
-    // let curr = '';
-    let answer;
-    let extra: any;
-    while (!done) {
-      const { value, done: doneReading } = await reader.read();
-      done = doneReading;
-      const chunkValue = decoder.decode(value);
-      if (!extra) {
-        setGeneratedResponse((prev: any) => {
-          let curr = (prev?.answer || '') + chunkValue;
-          const [jsonData, ...rest] = curr.split('JSON_END');
-          console.log('OnChunk->JSonData', { curr, jsonData });
-          if (jsonData && rest?.length) {
-            extra = JSON.parse(jsonData);
-            curr = rest.join('');
-            console.log('JSONOnChunk', { rest, extra, curr });
-          }
-          answer = curr;
-          return { answer: curr, ...extra };
-        });
-      } else {
-        // console.log('OnChunk', { curr, jsonData });
-        setGeneratedResponse((prev: any) => {
-          const curr = (prev?.answer || '') + chunkValue;
-          console.log('OnChunk', { curr, extra });
-
-          answer = curr;
-          return { answer: curr, ...extra };
-        });
-      }
-    }
-    addAnswer({ answer: answer, ...extra });
-    setGeneratedResponse({});
-    setIsLoading(false);
-  };
-
   const [showPrompts, setShowPrompts] = useState(false);
-  const addAnswer = (answer: any) => setAnswers((currentAnswers) => [...currentAnswers, answer]);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
 
   const { data, isFetching } = useQuery({
     enabled: !!prompt && !useStreaming,
@@ -182,34 +114,15 @@ const DeveloperTools: React.FC = () => {
     setInputValue(event.target.value);
   };
 
-  const handleSyncJira = async () => {
-    setIsLoadingJira(true);
-
-    addAnswer({ prompt: 'Can you please sync all jira tickets?' });
+  const handleSync = async (name: string) => {
+    addAnswer({ prompt: `Can you please sync all ${name} tickets?` });
     try {
-      await axios.post(`/api/sync/jira`);
+      await axios.post(`/api/sync/${name}`);
       addAnswer({
-        answer: 'Synced Jira event sent. Go to <a href="/events">events</a> to track the status.'
+        answer: `Synced ${name} event sent. Go to <a href="/events">events</a> to track the status.`
       });
     } catch (error) {
       console.log(error);
-    } finally {
-      setIsLoadingJira(false);
-    }
-  };
-  const handleSyncSlack = async () => {
-    setIsLoadingSlack(true);
-
-    addAnswer({ prompt: 'Can you please sync all Slack tickets?' });
-    try {
-      await axios.post(`/api/sync/slack`);
-      addAnswer({
-        answer: 'Synced Slack event sent. Go to <a href="/events">events</a> to track the status.'
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoadingSlack(false);
     }
   };
 
@@ -248,8 +161,7 @@ const DeveloperTools: React.FC = () => {
               <Answer {...answer} key={index} />
             ))}
             {generatedResponse?.answer && <Answer {...generatedResponse} />}
-            {(isFetching || isLoadingJira || (isLoading && !generatedResponse?.answer)) &&
-            answers?.length ? (
+            {(isFetching || (isLoading && !generatedResponse?.answer)) && answers?.length ? (
               <Answer answer={'...'} />
             ) : null}
             {!answers?.length || showPrompts ? (
@@ -259,7 +171,16 @@ const DeveloperTools: React.FC = () => {
         </Box>
 
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
+          <AppSyncToolbar
+            appSettings={appSettings}
+            onSync={(service) =>
+              addAnswer({
+                answer: `Synced ${service.name} event sent. Go to <a href="/events">events</a> to track the status.`
+              })
+            }
+          />
+
+          {/* <Button
             sx={{
               position: 'relative',
               label: { transition: '2.s', opacity: isLoadingJira ? 0 : 1 }
@@ -283,7 +204,7 @@ const DeveloperTools: React.FC = () => {
             onClick={handleSyncSlack}>
             {isLoadingSlack ? <CircularProgress size={24} sx={{ position: 'absolute' }} /> : null}
             <label>Sync Slack</label>
-          </Button>
+          </Button> */}
 
           <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
             <>
