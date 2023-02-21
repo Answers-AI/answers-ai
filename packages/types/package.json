@@ -1,0 +1,14 @@
+{
+  "name": "types",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "devDependencies": {
+    "@types/node": "^18.13.0",
+    "tsconfig": "workspace:*",
+    "typescript": "^4.8.4"
+  }
+}
