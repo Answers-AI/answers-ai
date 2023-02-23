@@ -1,7 +1,7 @@
 import Pinecone from '../pinecone/client';
 import JiraStatusCategory from './models/statusCategory';
 import JiraStatus from './models/status';
-import JiraComment from './models/comment';
+import JiraCommentModel from './models/comment';
 import JiraClient from './client';
 import { getJiraTickets } from './getJiraTickets';
 import redisLoader from '../redisLoader';
@@ -19,6 +19,7 @@ export const jiraClient = new JiraClient();
 // };
 export type JiraProject = { key: string; archived: any };
 export type JiraIssue = { key: string; self: string; id: string; fields: any; archived: any };
+export type JiraComment = { key: string; self: string; id: string; fields: any; archived: any };
 export const getJiraProjects = async () => {
   let projects: JiraProject[] = await jiraClient.fetchJiraData(`/project`);
   return projects.filter((project) => !project.archived);
@@ -49,7 +50,7 @@ export const jiraIssueLoader = redisLoader<string, JiraIssue>({
   cacheExpirationInSeconds: 0
 });
 
-const getJiraComments = async (issueKey: any) => {
+export const getJiraComments = async (issueKey: any) => {
   let comments = await jiraClient.fetchJiraData(`/issue/${issueKey}/comment`);
 
   if (!comments?.comments?.length) return null;
@@ -66,9 +67,9 @@ const getJiraComments = async (issueKey: any) => {
   //     return comments;
   //   }
   // }
-  const jiraComments = comments.comments.map(
-    (comment: any) => new JiraComment({ ...comment, issueId: issueKey })
-  );
+  // console.log('JIRA COMMENTS');
+  // console.log(comments.comments[0]);
+  const jiraComments = comments.comments;
   return jiraComments;
 };
 

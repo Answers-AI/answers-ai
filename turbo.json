@@ -6,9 +6,12 @@
     "PINECONE_API_KEY",
     "PINECONE_ENVIRONMENT",
     "PINECONE_INDEX",
-    "INNGEST_SIGNING_KEY"
+    "INNGEST_SIGNING_KEY",
+    "INNGEST_SERVER_URL"
   ],
   "pipeline": {
+    "//#dev-redis": { "cache": false, "persistent": true },
+    "//#dev-inngest": { "cache": false, "persistent": true },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"]
@@ -16,7 +19,14 @@
     "lint": {
       "outputs": []
     },
+    "start": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**"],
+      "cache": false,
+      "persistent": true
+    },
     "dev": {
+      "persistent": true,
       "cache": false
     }
   }

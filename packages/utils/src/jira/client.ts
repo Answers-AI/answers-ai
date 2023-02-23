@@ -4,7 +4,9 @@ import Redis from 'ioredis';
 class JiraClient {
   redis: Redis;
   headers: { Authorization: string; Accept: string };
-  constructor() {
+  cacheExpireTime: number;
+  constructor({ cacheExpireTime = 60 * 60 * 24 } = {}) {
+    this.cacheExpireTime = cacheExpireTime;
     this.redis = new Redis(process.env.REDIS_CONNECTION_STRING as string);
     this.headers = {
       Authorization: `Basic ${Buffer.from(`brad@lastrev.com:${process.env.JIRA_API}`).toString(
@@ -59,6 +61,7 @@ class JiraClient {
       }
       data = response?.data;
       if (cache) await this.redis.set(hashKey, JSON.stringify(data));
+      if (cache) await this.redis.expire(hashKey, this.cacheExpireTime);
     }
     // console.timeEnd('FetchJiraData:' + endpoint);
     return data;

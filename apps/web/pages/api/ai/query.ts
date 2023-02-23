@@ -40,7 +40,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     } catch (error: any) {
       console.log('OPENAI-ERROR', error?.response?.data);
 
-      res.status(500).json({ prompt: prompt, error: error?.response?.data } as any);
+      res
+        .status(500)
+        .json({ prompt: prompt, error: error?.response?.data, context, pineconeData } as any);
       return;
     }
     const answer = completionData.choices[0].text;

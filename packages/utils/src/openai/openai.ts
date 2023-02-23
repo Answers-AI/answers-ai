@@ -29,8 +29,7 @@ class OpenAI {
           ?.then(async (res) => {
             // console.log('Respoonse', res);
             return res?.data?.data?.map((d) => d?.embedding);
-          }),
-      cacheExpirationInSeconds: 10000
+          })
     });
   }
 
@@ -57,6 +56,7 @@ class OpenAI {
     model = this.defaultModel
   ): Promise<number[]> {
     try {
+      // console.log('CreateEmbedding', input);
       return this.loader.load(input);
     } catch (error) {
       console.error(`Error creating embedding: ${error}`);
