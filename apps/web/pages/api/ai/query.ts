@@ -10,6 +10,8 @@ type Data = {
 };
 
 import { Configuration, OpenAIApi } from 'openai';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]';
 
 const initializeOpenAI = () => {
   const configuration = new Configuration({
@@ -22,9 +24,10 @@ export const openai = initializeOpenAI();
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await cors(req, res);
-
+  const session = await getServerSession(req, res, authOptions);
+  console.log('Query', { session });
   let completionData;
-  const { prompt, pineconeData, context } = await generatePrompt(req.body);
+  const { prompt, pineconeData, context } = await generatePrompt(req.body, session?.user);
   try {
     try {
       console.time('OpenAI->createCompletion');

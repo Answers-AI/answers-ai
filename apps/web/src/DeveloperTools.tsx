@@ -6,7 +6,6 @@ import { Box, FormControlLabel, Switch, TextField } from '@mui/material';
 import { AppSettings, RecommendedPrompt } from 'types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PromptCard from './PromptCard';
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Answer } from './Answer';
@@ -72,7 +71,7 @@ type CallbackType = (data: string[]) => void;
 
 type InitCallbackType = (cb: CallbackType) => void;
 
-const DeveloperTools = ({ appSettings }: { appSettings: AppSettings }) => {
+const DeveloperTools = ({ appSettings, prompts }: { appSettings: AppSettings; prompts: any }) => {
   const [inputValue, setInputValue] = useState('');
   const [prompt, setPrompt] = useState('');
   const [answers, setAnswers] = useState<any[]>([]);
@@ -165,7 +164,7 @@ const DeveloperTools = ({ appSettings }: { appSettings: AppSettings }) => {
               <Answer answer={'...'} />
             ) : null}
             {!answers?.length || showPrompts ? (
-              <DefaultPrompts prompts={DEFAULT_PROMPTS} handlePromptClick={handlePromptClick} />
+              <DefaultPrompts prompts={[...prompts]} handlePromptClick={handlePromptClick} />
             ) : null}
           </Box>
         </Box>
@@ -261,13 +260,17 @@ interface DefaultPromptsProps {
 }
 
 const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) => (
-  <Grid2 container spacing={2} sx={{ width: '100%' }}>
+  <Box
+    sx={{
+      width: '100%',
+      display: 'grid',
+      gap: 2,
+      gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
+    }}>
     {prompts?.map((prompt) => (
-      <Grid2 xs={6} key={prompt?.prompt}>
-        <PromptCard {...prompt} onClick={() => handlePromptClick(prompt?.prompt)} />
-      </Grid2>
+      <PromptCard {...prompt} onClick={() => handlePromptClick(prompt?.prompt)} />
     ))}
-  </Grid2>
+  </Box>
 );
 
 export default DeveloperTools;

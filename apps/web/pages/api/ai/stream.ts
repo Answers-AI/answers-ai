@@ -11,13 +11,20 @@ const handler = async (req: Request): Promise<Response> => {
     answers?: string;
   };
 
-  const { prompt, pineconeData, context } = await fetch('http://localhost:3000/api/ai/prompt', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(args)
-  }).then((res) => res.json());
+  const { prompt, pineconeData, context } = await fetch(
+    `${
+      process.env.VERCEL_URL?.includes('localhost')
+        ? `http://${process.env.VERCEL_URL}`
+        : `https://${process.env.VERCEL_URL}`
+    }/api/ai/prompt`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(args)
+    }
+  ).then((res) => res.json());
   // const { prompt } = await generatePrompt(args);
   // const { prompt } = args;
   console.log('args', args, { prompt });

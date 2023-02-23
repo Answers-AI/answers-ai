@@ -1,6 +1,6 @@
 import { Inngest } from 'inngest';
 import { serve } from 'inngest/next';
-import * as IngestFunctions from 'utils/dist/ingest';
+import * as IngestFunctions from 'utils/dist/eventIngestFunctions';
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ name: 'My App' });

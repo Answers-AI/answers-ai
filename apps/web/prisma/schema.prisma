@@ -25,11 +25,12 @@ model Prompt {
   id            Int         @id @default(autoincrement())
   user User  @relation(fields: userId, references: id)
   userId Int
-
-  title String
-  description String
-  likes Int
-  prompt String
+  prompt String @unique
+  title String?
+  description String?
+  likes Int @default(0)
+  dislikes Int @default(0)
+  usages Int @default(0)
 }
 
 

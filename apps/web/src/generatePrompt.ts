@@ -10,10 +10,32 @@ export const openai = initializeOpenAI();
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from 'pineconeQuery';
 export const pinecone = new PineconeClient();
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../pages/api/auth/[...nextauth]';
 
-export const generatePrompt = async ({ prompt, answers = [] }: any) => {
+const prisma = new PrismaClient();
+
+export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) => {
   // Send a request to the OpenAI API for embeddings based on query
+
   console.log('Generate Prompt for', prompt);
+
+  // const session = await getServerSession(authOptions);
+  // if (!session?.user) {
+  //   throw new Error('Not Authenticated');
+  // }
+
+  let savedPrompt = await prisma.prompt.findFirst({
+    where: { prompt }
+  });
+  if (!savedPrompt) {
+    savedPrompt = await prisma.prompt.create({
+      data: { user: { connect: { email: user?.email } }, prompt, likes: 0, usages: 0 }
+    });
+  }
+
+  console.log('Generate Prompt for', savedPrompt);
   const embeddingResponse = await openai.createEmbedding({
     model: 'text-embedding-ada-002',
     input: prompt
@@ -38,6 +60,10 @@ export const generatePrompt = async ({ prompt, answers = [] }: any) => {
   ].join('\n');
 
   console.time('OpenAI->createCompletion');
+  await prisma.prompt.update({
+    where: { id: savedPrompt.id },
+    data: { usages: savedPrompt.usages + 1 }
+  });
   return {
     prompt: `Answer the following question based on the context provided.
                 \n\nCONTEXT:\n${context}\n\n

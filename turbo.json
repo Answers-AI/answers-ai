@@ -9,7 +9,8 @@
     "INNGEST_SIGNING_KEY",
     "INNGEST_SERVER_URL",
     "GITHUB_ID",
-    "GITHUB_SECRET"
+    "GITHUB_SECRET",
+    "VERCEL_URL"
   ],
   "pipeline": {
     "//#dev-docker": { "cache": false, "persistent": true },
@@ -47,7 +48,7 @@
       "persistent": true
     },
     "dev": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "generate:schema"],
       "persistent": true,
       "cache": false
     }
