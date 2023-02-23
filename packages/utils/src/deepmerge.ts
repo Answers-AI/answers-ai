@@ -1,4 +1,4 @@
-export function deepmerge(target: { [x: string]: any }, ...sources: any[]) {
+export function deepmerge(target: { [x: string]: any }, ...sources: any[]): any {
   if (!sources.length) return target;
   const source = sources.shift();
 

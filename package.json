@@ -8,6 +8,8 @@
   ],
   "scripts": {
     "build": "dotenv -- turbo run build",
+    "db:migrate": "cd ./apps/web && pnpm db:migrate",
+    "db:deploy": "dotenv -- turbo run db:deploy",
     "dev": "dotenv -- turbo run dev dev-docker dev-inngest",
     "dev-docker": "docker-compose up -d",
     "dev-inngest": "npx inngest-cli@latest dev -u http://localhost:3000/api/inngest",
@@ -18,6 +20,7 @@
     "dotenv-cli": "latest",
     "eslint-config-custom": "workspace:*",
     "prettier": "latest",
+    "prisma": "^4.10.1",
     "turbo": "latest"
   },
   "engines": {

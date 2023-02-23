@@ -23,3 +23,8 @@ export interface AppSettings {
     }[];
   };
 }
+
+export type User = {
+  email: string;
+  appSettings: AppSettings;
+};

@@ -22,4 +22,8 @@ export interface AppSettings {
         }[];
     };
 }
+export type User = {
+    email: string;
+    appSettings: AppSettings;
+};
 //# sourceMappingURL=index.d.ts.map

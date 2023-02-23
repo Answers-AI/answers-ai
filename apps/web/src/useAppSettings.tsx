@@ -2,12 +2,6 @@ import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { AppSettings } from 'types';
 
-const fetchAppSettings = async (): Promise<AppSettings> => {
-  const response = await fetch('/api/settings');
-  const data = await response.json();
-  return data;
-};
-
 const saveAppSettings = async (data: AppSettings): Promise<AppSettings> => {
   const response = await fetch('/api/settings', {
     method: 'POST',
