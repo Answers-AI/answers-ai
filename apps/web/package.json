@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "generate:schema": "prisma generate",
+    "db:migrate": "prisma migrate",
+    "db:deploy": "prisma deploy",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -13,6 +16,7 @@
     "@emotion/styled": "^11.10.6",
     "@mui/material": "^5.11.9",
     "@pinecone-database/pinecone": "^0.0.5",
+    "@prisma/client": "^4.10.1",
     "@tanstack/react-query": "^4.24.6",
     "@tanstack/react-query-devtools": "^4.24.6",
     "@textea/json-viewer": "^2.13.1",
@@ -21,7 +25,9 @@
     "inngest": "^1.2.0",
     "ioredis": "^5.3.1",
     "next": "13.1.7-canary.21",
+    "next-auth": "^4.19.2",
     "openai": "^3.1.0",
+    "prisma": "^4.10.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "utils": "workspace:*"

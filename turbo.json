@@ -7,13 +7,34 @@
     "PINECONE_ENVIRONMENT",
     "PINECONE_INDEX",
     "INNGEST_SIGNING_KEY",
-    "INNGEST_SERVER_URL"
+    "INNGEST_SERVER_URL",
+    "GITHUB_ID",
+    "GITHUB_SECRET"
   ],
   "pipeline": {
-    "//#dev-redis": { "cache": false, "persistent": true },
+    "//#dev-docker": { "cache": false, "persistent": true },
     "//#dev-inngest": { "cache": false, "persistent": true },
     "build": {
       "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**"]
+    },
+    "generate:schema": {
+      "cache": false,
+      "dependsOn": [],
+      "outputs": []
+    },
+    "db:migrate": {
+      "cache": false,
+      "dependsOn": [],
+      "outputs": []
+    },
+    "db:deploy": {
+      "cache": false,
+      "dependsOn": [],
+      "outputs": []
+    },
+    "web#build": {
+      "dependsOn": ["^build", "generate:schema"],
       "outputs": ["dist/**", ".next/**"]
     },
     "lint": {

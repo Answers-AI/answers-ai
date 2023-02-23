@@ -17,7 +17,7 @@ export const jiraClient = new JiraClient();
 //   let statusCategories = await jiraClient.fetchJiraData(`/statuscategory`);
 //   return statusCategories.map((statusCategory) => new JiraStatusCategory(statusCategory));
 // };
-export type JiraProject = { key: string; archived: any };
+export type JiraProject = { key: string; name: string; archived: any };
 export type JiraIssue = { key: string; self: string; id: string; fields: any; archived: any };
 export type JiraComment = { key: string; self: string; id: string; fields: any; archived: any };
 export const getJiraProjects = async () => {

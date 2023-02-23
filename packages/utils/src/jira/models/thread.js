@@ -12,7 +12,7 @@ class JiraThread extends JiraObject {
   static tidy(thread) {
     return {
       id: thread?.id,
-      issueKey: thread?.issueKey,
+      // issueKey: thread?.issueKey,
       // objectType: 'JIRA comments thread',
       text: thread?.text || createContext(thread, this.jiraAdfToMarkdown)
     };
@@ -26,7 +26,7 @@ class JiraThread extends JiraObject {
     chunkArray(comments, chunkSize).forEach((chunk, idx) => {
       const vector = {
         id: thread?.id,
-        issueKey: `${this.object.uid}${idx}`,
+        // issueKey: `${this.object.uid}${idx}`,
         // objectType: 'JIRA comments thread',
         text: thread?.text || createContext({ ...thread, comments: chunk }, this.jiraAdfToMarkdown)
       };
