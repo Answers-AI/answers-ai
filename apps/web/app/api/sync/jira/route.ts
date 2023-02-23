@@ -6,8 +6,6 @@ export async function POST() {
   const appSettings = await getAppSettings();
   inngest.send({
     name: 'SYNCED_JIRA',
-    data: {
-      projectKeys: appSettings?.jira?.projects?.filter((p: any) => p.enabled).map((p: any) => p.key)
-    }
+    data: {}
   });
 }

@@ -43,7 +43,7 @@ pnpm run dev
 
 Redis is used as a cache layer for OpenAi, Jira and general purpose key-value storage, in development this will run with Docker and Production uses a hosted database.
 
-The the database is configured through `REDIS_CONNECTION_STRING`.
+The the database is configured through `REDIS_URL`.
 
 [Example usage](packages/utils/src/redisLoader.ts)
 

@@ -148,6 +148,7 @@ const AppsDrawer = ({
       ]}
       renderItem={(item) => (
         <ListItemButton
+          key={item?.link}
           href={item?.link}
           sx={{ display: 'flex', gap: 2 }}
           selected={activeApp == item?.text}

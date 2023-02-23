@@ -12,6 +12,8 @@ type Data = {
 import { Configuration, OpenAIApi } from 'openai';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
 const initializeOpenAI = () => {
   const configuration = new Configuration({
@@ -27,7 +29,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const session = await getServerSession(req, res, authOptions);
   console.log('Query', { session });
   let completionData;
-  const { prompt, pineconeData, context } = await generatePrompt(req.body, session?.user);
+  const { prompt, pineconeData, context, savedPrompt } = await generatePrompt(
+    req.body,
+    session?.user
+  );
   try {
     try {
       console.time('OpenAI->createCompletion');
@@ -48,9 +53,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         .json({ prompt: prompt, error: error?.response?.data, context, pineconeData } as any);
       return;
     }
+    // Get the recommended changes from the API response\
     const answer = completionData.choices[0].text;
 
-    // Get the recommended changes from the API response
+    if (answer)
+      await prisma.prompt.update({
+        where: { id: savedPrompt.id },
+        data: {
+          answers: {
+            createMany: {
+              data: [{ text: answer }]
+            }
+          }
+        }
+      });
 
     res.status(200).json({
       prompt,

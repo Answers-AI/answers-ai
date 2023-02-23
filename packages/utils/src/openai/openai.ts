@@ -15,10 +15,10 @@ class OpenAI {
       apiKey: process.env.OPENAI_API_KEY
     });
     this.openai = new OpenAIApi(configuration);
-    this.redis = new Redis(process.env.REDIS_CONNECTION_STRING as string);
+    this.redis = new Redis(process.env.REDIS_URL as string);
     this.loader = redisLoader<CreateEmbeddingRequestInput, number[]>({
       keyPrefix: 'openai',
-      redisConfig: process.env.REDIS_CONNECTION_STRING as string,
+      redisConfig: process.env.REDIS_URL as string,
       getValuesFn: (keys) =>
         this.openai
           .createEmbedding({

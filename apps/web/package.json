@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "generate:schema": "prisma generate",
-    "db:migrate": "prisma migrate",
-    "db:deploy": "prisma deploy",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -22,6 +22,7 @@
     "@textea/json-viewer": "^2.13.1",
     "axios": "^1.3.2",
     "cors": "^2.8.5",
+    "encoding": "^0.1.13",
     "inngest": "^1.2.0",
     "ioredis": "^5.3.1",
     "next": "13.1.7-canary.22",

@@ -27,6 +27,7 @@ const AppSyncToolbar = ({
     <Box sx={{ display: 'flex', gap: 2, p: 2 }}>
       {appSettings?.services?.map((service) => (
         <Button
+          key={service?.name}
           sx={{
             position: 'relative'
           }}

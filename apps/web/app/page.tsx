@@ -14,13 +14,12 @@ const Homepage = async () => {
       usages: 'desc'
     }
   });
-  console.log('Rpompts', prompts);
   if (!session) {
     return <a href={'/auth'}>Redirect</a>;
   }
 
   const appSettings = await getAppSettings();
-  return <DeveloperTools appSettings={appSettings} prompts={prompts} />;
+  return <DeveloperTools user={session?.user} appSettings={appSettings} prompts={prompts} />;
 };
 
 export const metadata = {

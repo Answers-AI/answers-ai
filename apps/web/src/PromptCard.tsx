@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Box, Typography, IconButton, Card, CardContent, CardActions, Button } from '@mui/material';
+import React from 'react';
+import { Box, Typography, Card, CardContent, CardActions, Button } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import error from 'next/error';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 interface PromptCardProps {
   title?: string;

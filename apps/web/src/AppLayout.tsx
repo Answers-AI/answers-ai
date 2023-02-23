@@ -173,8 +173,8 @@ export default function AppLayout({
     </SessionProvider>
   );
 }
-const AppDrawer = ({ session, params }: any) => {
-  console.log('params', params);
+const AppDrawer = ({ params }: any) => {
+  // console.log('params', params);
   // const activeLink = React.useEffect(() => {
   //   const path = window.location.pathname;
   //   return path;
@@ -198,7 +198,7 @@ const AppDrawer = ({ session, params }: any) => {
           { text: 'Settings', link: '/settings', icon: <SettingsIcon /> }
         ].map(({ text, link, icon }) => (
           // <NextLink key={text} href={link} passHref>
-          <ListItem disablePadding sx={{ display: 'block' }}>
+          <ListItem key={text} disablePadding sx={{ display: 'block' }}>
             <ListItemButton
               aria-label={text}
               href={link}

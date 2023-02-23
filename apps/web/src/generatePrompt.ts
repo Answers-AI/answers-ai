@@ -11,15 +11,11 @@ import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from 'pineconeQuery';
 export const pinecone = new PineconeClient();
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../pages/api/auth/[...nextauth]';
 
 const prisma = new PrismaClient();
 
 export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) => {
   // Send a request to the OpenAI API for embeddings based on query
-
-  console.log('Generate Prompt for', prompt);
 
   // const session = await getServerSession(authOptions);
   // if (!session?.user) {
@@ -35,7 +31,7 @@ export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) 
     });
   }
 
-  console.log('Generate Prompt for', savedPrompt);
+  console.log('Saved Prompt', savedPrompt);
   const embeddingResponse = await openai.createEmbedding({
     model: 'text-embedding-ada-002',
     input: prompt
@@ -65,6 +61,7 @@ export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) 
     data: { usages: savedPrompt.usages + 1 }
   });
   return {
+    savedPrompt,
     prompt: `Answer the following question based on the context provided.
                 \n\nCONTEXT:\n${context}\n\n
                 Question:\n${prompt}\n\nAnswer:\n`,

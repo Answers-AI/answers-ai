@@ -41,10 +41,10 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: theme.spacing(2),
   borderTop: '1px solid rgba(0, 0, 0, .125)'
 }));
-export const Answer = ({ answer, prompt, error, ...other }: any) => (
+export const Answer = ({ user, answer, prompt, error, ...other }: any) => (
   <Card sx={{ display: 'flex', padding: 2 }}>
     <Avatar sx={{ bgcolor: answer ? 'primary.main' : 'secondary.main' }}>
-      {answer ? 'AI' : 'MT'}
+      {answer ? 'AI' : user?.name?.charAt(0)}
     </Avatar>
     <CardContent sx={{ py: 0, px: 2, width: '100%', display: 'flex', flexDirection: 'column' }}>
       {error ? (

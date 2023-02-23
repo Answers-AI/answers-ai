@@ -18,8 +18,10 @@ const DEFAULT_SETTINGS = {
   jira: {}
 };
 
-export async function getAppSettings() {
-  const session = await getServerSession(authOptions);
+export async function getAppSettings(req?: any, res?: any) {
+  const session = await (req && res
+    ? getServerSession(req, res, authOptions)
+    : getServerSession(authOptions));
   // if (!session?.user?.email) return NextResponse.redirect('/auth');
   // TODO: Move this into a middleware
 

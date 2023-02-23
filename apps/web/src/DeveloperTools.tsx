@@ -71,7 +71,15 @@ type CallbackType = (data: string[]) => void;
 
 type InitCallbackType = (cb: CallbackType) => void;
 
-const DeveloperTools = ({ appSettings, prompts }: { appSettings: AppSettings; prompts: any }) => {
+const DeveloperTools = ({
+  appSettings,
+  user,
+  prompts
+}: {
+  appSettings: AppSettings;
+  user: any;
+  prompts: any;
+}) => {
   const [inputValue, setInputValue] = useState('');
   const [prompt, setPrompt] = useState('');
   const [answers, setAnswers] = useState<any[]>([]);
@@ -161,7 +169,7 @@ const DeveloperTools = ({ appSettings, prompts }: { appSettings: AppSettings; pr
             ))}
             {generatedResponse?.answer && <Answer {...generatedResponse} />}
             {(isFetching || (isLoading && !generatedResponse?.answer)) && answers?.length ? (
-              <Answer answer={'...'} />
+              <Answer user={user} answer={'...'} />
             ) : null}
             {!answers?.length || showPrompts ? (
               <DefaultPrompts prompts={[...prompts]} handlePromptClick={handlePromptClick} />

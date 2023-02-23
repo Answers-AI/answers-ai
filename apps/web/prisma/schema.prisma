@@ -31,8 +31,15 @@ model Prompt {
   likes Int @default(0)
   dislikes Int @default(0)
   usages Int @default(0)
+  answers Answer[] 
 }
 
+model Answer { 
+  id            Int         @id @default(autoincrement())
+  prompt Prompt @relation(fields: promptId, references: id)
+  promptId Int
+  text String
+}
 
 model AppSettings {
   id            Int         @id @default(autoincrement())

@@ -45,7 +45,7 @@ export const fetchJiraIssue = async (issueId: string) => {
 };
 export const jiraIssueLoader = redisLoader<string, JiraIssue>({
   keyPrefix: 'jira:issue',
-  redisConfig: process.env.REDIS_CONNECTION_STRING as string,
+  redisConfig: process.env.REDIS_URL as string,
   getValuesFn: (keys) => getJiraTickets({ jql: `key in (${keys?.join(',')})` }),
   cacheExpirationInSeconds: 0
 });

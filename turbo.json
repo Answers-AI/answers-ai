@@ -7,6 +7,7 @@
     "PINECONE_ENVIRONMENT",
     "PINECONE_INDEX",
     "INNGEST_SIGNING_KEY",
+    "INNGEST_EVENT_KEY",
     "INNGEST_SERVER_URL",
     "GITHUB_ID",
     "GITHUB_SECRET",
@@ -15,23 +16,26 @@
   "pipeline": {
     "//#dev-docker": { "cache": false, "persistent": true },
     "//#dev-inngest": { "cache": false, "persistent": true },
+    "//#db:healthcheck": { "cache": false, "persistent": true },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"]
     },
     "generate:schema": {
       "cache": false,
-      "dependsOn": [],
+      "dependsOn": ["db:deploy"],
       "outputs": []
     },
     "db:migrate": {
       "cache": false,
       "dependsOn": [],
+      "inputs": ["prisma/**"],
       "outputs": []
     },
     "db:deploy": {
       "cache": false,
       "dependsOn": [],
+      "inputs": ["prisma/**"],
       "outputs": []
     },
     "web#build": {

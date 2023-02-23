@@ -7,7 +7,7 @@ class JiraClient {
   cacheExpireTime: number;
   constructor({ cacheExpireTime = 60 * 60 * 24 } = {}) {
     this.cacheExpireTime = cacheExpireTime;
-    this.redis = new Redis(process.env.REDIS_CONNECTION_STRING as string);
+    this.redis = new Redis(process.env.REDIS_URL as string);
     this.headers = {
       Authorization: `Basic ${Buffer.from(`brad@lastrev.com:${process.env.JIRA_API}`).toString(
         'base64'

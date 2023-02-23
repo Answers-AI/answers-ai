@@ -21,6 +21,7 @@ export async function OpenAIStream(payload: any, extra?: any) {
       close: () => void;
       enqueue: (arg0: Uint8Array) => void;
       error: (arg0: unknown) => void;
+      onDone: () => void;
     }) {
       controller.enqueue(encoder.encode(JSON.stringify(extra) + 'JSON_END'));
 
@@ -47,9 +48,24 @@ export async function OpenAIStream(payload: any, extra?: any) {
       }
 
       const parser = createParser(onParse);
+      let answer = '';
       for await (const chunk of res.body as any) {
-        parser.feed(decoder.decode(chunk));
+        let decoded = decoder.decode(chunk);
+        answer += decoded;
+        parser.feed(decoded);
       }
+      console.log('StreamAnswer', answer);
+      // if (answer)
+      //   await prisma.prompt.update({
+      //     where: { id: savedPrompt.id },
+      //     data: {
+      //       answers: {
+      //         createMany: {
+      //           data: [{ text: answer }]
+      //         }
+      //       }
+      //     }
+      //   });
     }
   });
 
