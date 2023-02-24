@@ -40,24 +40,13 @@ export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) 
       : pineconeData?.matches?.map((item: any) => item?.metadata?.text))
   ].join('\n');
 
-  let savedPrompt = await prisma.prompt.findFirst({
-    where: { prompt }
+  await inngest.send({
+    name: 'answers/prompt.upserted',
+    data: {
+      prompt,
+      user
+    }
   });
-
-  if (!savedPrompt) {
-    await inngest.send({
-      name: 'answers/prompt.created',
-      data: { user: { connect: { email: user?.email } }, prompt, likes: 0, usages: 0 }
-    });
-  } else {
-    await inngest.send({
-      name: 'answers/prompt.updated',
-      data: {
-        where: { id: savedPrompt.id },
-        data: { usages: savedPrompt.usages + 1 }
-      }
-    });
-  }
 
   return {
     prompt: `Answer the following question based on the context provided.

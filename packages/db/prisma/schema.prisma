@@ -32,8 +32,8 @@ model Prompt {
   title String?
   description String?
   answers Answer[] 
-  user User  @relation(fields: userId, references: id)
-  userId Int
+  users User[]
+
 }
 
 model Answer { 

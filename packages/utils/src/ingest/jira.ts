@@ -236,6 +236,9 @@ export const processEmbeddings = inngest.createFunction(
       console.time(key);
       const issues = await jiraIssueLoader.loadMany(issuesKeys);
 
+      // TODO - select jira -> pinecone transformer here
+      // Should default to jira issue
+      // Should be able to enable other transformers
       const vectorData = await prepareAllForEmbedding(
         issues.map((issue: any) => new JiraIssueModel(issue))
       );
