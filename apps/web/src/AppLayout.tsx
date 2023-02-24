@@ -25,6 +25,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MessageIcon from '@mui/icons-material/QueryBuilder';
 import HomeIcon from '@mui/icons-material/Home';
+import StorageIcon from '@mui/icons-material/Storage';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
@@ -195,6 +196,7 @@ const AppDrawer = ({ params }: any) => {
         {[
           { text: 'Message', link: '/', icon: <HomeIcon /> },
           { text: 'Inngest', link: '/events', icon: <MessageIcon /> },
+          { text: 'Store', link: '/store', icon: <StorageIcon /> },
           { text: 'Settings', link: '/settings', icon: <SettingsIcon /> }
         ].map(({ text, link, icon }) => (
           // <NextLink key={text} href={link} passHref>

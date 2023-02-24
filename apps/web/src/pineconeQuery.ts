@@ -12,7 +12,7 @@ export const pineconeQuery = async (embeddings: number[]) => {
 
     const result = await pinecone.Index(process.env.PINECONE_INDEX).query({
       vector: embeddings,
-      topK: 20,
+      topK: 5,
       includeMetadata: true,
       namespace: 'jira'
     });

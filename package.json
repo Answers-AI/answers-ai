@@ -10,7 +10,7 @@
     "build": "dotenv -- turbo run build",
     "db:migrate": "dotenv -- pnpm --filter web db:migrate -- dev",
     "db:deploy": "dotenv -- turbo run db:deploy",
-    "db:healthcheck": "dotenv -- curl -sSf $REDIS_URL >/dev/null && curl -sSf $DATABASE_URL >/dev/null && echo \"Both Redis and Postgres are up\"",
+    "db:studio": "dotenv -- pnpm --filter web db:studio",
     "start": "dotenv -- turbo run start",
     "dev": "docker-compose up -d && echo 'Docker running, use `pnpm logs web` to see logs'",
     "dev:turbo": "dotenv -- turbo run dev dev-inngest",

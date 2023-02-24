@@ -28,6 +28,19 @@ services:
   #   command: npm run dev-inngest
   #   depends_on:
   #     - web
+  studio:
+    image: node:latest
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - '5555:5555'
+    command: pnpm db:studio
+    depends_on:
+      - web
   redis:
     image: redis:latest
     ports:
