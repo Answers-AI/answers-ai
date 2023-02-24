@@ -1,11 +1,12 @@
-import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { deepmerge } from 'utils/dist/deepmerge';
 import { getJiraProjects, JiraProject } from 'utils/dist/jira';
 
 import { authOptions } from '../pages/api/auth/[...nextauth]';
 
+import { PrismaClient } from 'db/dist';
 const prisma = new PrismaClient();
+
 const DEFAULT_SETTINGS = {
   services: [
     { name: 'jira', enabled: true },

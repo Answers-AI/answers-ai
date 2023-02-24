@@ -21,7 +21,7 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"]
     },
-    "generate:schema": {
+    "db:generate": {
       "cache": false,
       "dependsOn": ["db:deploy"],
       "outputs": []
@@ -39,7 +39,7 @@
       "outputs": []
     },
     "web#build": {
-      "dependsOn": ["^build", "generate:schema"],
+      "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"]
     },
     "lint": {
@@ -52,7 +52,7 @@
       "persistent": true
     },
     "dev": {
-      "dependsOn": ["^build", "generate:schema"],
+      "dependsOn": ["^build"],
       "persistent": true,
       "cache": false
     }

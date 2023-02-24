@@ -12,7 +12,8 @@ type Data = {
 import { Configuration, OpenAIApi } from 'openai';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from 'db/dist';
+import { inngest } from '../../../src/ingestClient';
 const prisma = new PrismaClient();
 
 const initializeOpenAI = () => {
@@ -29,10 +30,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const session = await getServerSession(req, res, authOptions);
 
   let completionData;
-  const { prompt, pineconeData, context, savedPrompt } = await generatePrompt(
-    req.body,
-    session?.user
-  );
+  const { prompt, answers } = req.body;
+  const {
+    prompt: finalPrompt,
+    pineconeData,
+    context
+  } = await generatePrompt({ prompt, answers }, session?.user);
   try {
     try {
       console.time('OpenAI->createCompletion');
@@ -56,20 +59,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     // Get the recommended changes from the API response\
     const answer = completionData.choices[0].text;
 
-    if (answer)
-      await prisma.prompt.update({
-        where: { id: savedPrompt.id },
-        data: {
-          answers: {
-            createMany: {
-              data: [{ text: answer }]
-            }
-          }
-        }
+    if (prompt && answer) {
+      await inngest.send({
+        name: 'answers/prompt.answered',
+        data: { prompt, answer: answer }
       });
-
+    }
     res.status(200).json({
-      prompt,
+      prompt: finalPrompt,
       answer,
       context,
       pineconeData,
@@ -82,9 +79,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       // Get the error message and status code from the response
       const { message, status, data } = error.response;
 
-      res.status(500).json({ prompt: prompt, error: data } as any);
+      res.status(500).json({ prompt: finalPrompt, error: data } as any);
     } else {
-      res.status(500).json({ prompt: prompt, error });
+      res.status(500).json({ prompt: finalPrompt, error });
     }
   }
 };

@@ -36,15 +36,16 @@ importers:
       '@types/react-dom': ^18.0.7
       axios: ^1.3.2
       cors: ^2.8.5
+      db: workspace:*
       encoding: ^0.1.13
       eslint: 7.32.0
       eslint-config-custom: workspace:*
+      experimental-prisma-webpack-plugin: ^0.0.5
       inngest: ^1.2.0
       ioredis: ^5.3.1
       next: 13.1.7-canary.22
       next-auth: ^4.19.2
       openai: ^3.1.0
-      prisma: ^4.10.1
       react: 18.2.0
       react-dom: 18.2.0
       tsconfig: workspace:*
@@ -56,19 +57,20 @@ importers:
       '@emotion/styled': 11.10.6_oouaibmszuch5k64ms7uxp2aia
       '@mui/material': 5.11.9_xqeqsl5kvjjtyxwyi3jhw3yuli
       '@pinecone-database/pinecone': 0.0.5
-      '@prisma/client': 4.10.1_prisma@4.10.1
+      '@prisma/client': 4.10.1
       '@tanstack/react-query': 4.24.6_biqbaboplfbrettd7655fr4n2y
       '@tanstack/react-query-devtools': 4.24.6_r32zdxeb7iubg3qfkymfterewe
       '@textea/json-viewer': 2.13.1_zula6vjvt3wdocc4mwcxqa6nzi
       axios: 1.3.3
       cors: 2.8.5
+      db: link:../../packages/db
       encoding: 0.1.13
+      experimental-prisma-webpack-plugin: 0.0.5
       inngest: 1.2.0_encoding@0.1.13
       ioredis: 5.3.1
       next: 13.1.7-canary.22_pjwopsidmaokadturxaafygjp4
       next-auth: 4.19.2_kzzhb63dv2jbeb4qsj74dfvuf4
       openai: 3.1.0
-      prisma: 4.10.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       utils: link:../../packages/utils
@@ -83,6 +85,31 @@ importers:
       eslint-config-custom: link:../../packages/eslint-config-custom
       tsconfig: link:../../packages/tsconfig
       types: link:../../packages/types
+      typescript: 4.9.5
+
+  packages/db:
+    specifiers:
+      '@prisma/client': ^4.10.1
+      '@types/jest': ^26.0.22
+      '@types/node': ^18.11.9
+      eslint: ^7.32.0
+      eslint-config-custom: workspace:*
+      jest: ^26.6.3
+      prisma: ^4.10.1
+      tsconfig: workspace:*
+      types: workspace:*
+      typescript: ^4.8.3
+    dependencies:
+      '@prisma/client': 4.10.1_prisma@4.10.1
+      prisma: 4.10.1
+    devDependencies:
+      '@types/jest': 26.0.24
+      '@types/node': 18.13.0
+      eslint: 7.32.0
+      eslint-config-custom: link:../eslint-config-custom
+      jest: 26.6.3
+      tsconfig: link:../tsconfig
+      types: link:../types
       typescript: 4.9.5
 
   packages/eslint-config-custom:
@@ -120,6 +147,7 @@ importers:
       '@contentful/app-sdk': ^4.15.0
       '@contentful/rich-text-from-markdown': ^15.16.3
       '@pinecone-database/pinecone': ^0.0.5
+      '@prisma/client': ^4.10.1
       '@slack/web-api': ^6.8.1
       '@types/jest': ^26.0.22
       '@types/node': ^18.11.9
@@ -131,6 +159,7 @@ importers:
       csv-parser: ^3.0.0
       csv-stringify: ^6.2.4
       dataloader: ^2.2.2
+      db: workspace:*
       dotenv: ^16.0.3
       eslint: ^7.32.0
       eslint-config-custom: workspace:*
@@ -153,6 +182,7 @@ importers:
       '@contentful/app-sdk': 4.16.0_u7f6bgiup7w5sfdcoer7otydty
       '@contentful/rich-text-from-markdown': 15.16.3
       '@pinecone-database/pinecone': 0.0.5
+      '@prisma/client': 4.10.1
       '@slack/web-api': 6.8.1
       airtable: 0.11.6
       axios: 1.3.3
@@ -162,6 +192,7 @@ importers:
       csv-parser: 3.0.0
       csv-stringify: 6.2.4
       dataloader: 2.2.2
+      db: link:../db
       dotenv: 16.0.3
       eventsource-parser: 0.1.0
       gpt-3-encoder: 1.1.4
@@ -1249,6 +1280,19 @@ packages:
 
   /@popperjs/core/2.11.6:
     resolution: {integrity: sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==}
+
+  /@prisma/client/4.10.1:
+    resolution: {integrity: sha512-VonXLJZybdt8e5XZH5vnIGCRNnIh6OMX1FS3H/yzMGLT3STj5TJ/OkMcednrvELgk8PK89Vo3aSh51MWNO0axA==}
+    engines: {node: '>=14.17'}
+    requiresBuild: true
+    peerDependencies:
+      prisma: '*'
+    peerDependenciesMeta:
+      prisma:
+        optional: true
+    dependencies:
+      '@prisma/engines-version': 4.10.1-2.aead147aa326ccb985dcfed5b065b4fdabd44b19
+    dev: false
 
   /@prisma/client/4.10.1_prisma@4.10.1:
     resolution: {integrity: sha512-VonXLJZybdt8e5XZH5vnIGCRNnIh6OMX1FS3H/yzMGLT3STj5TJ/OkMcednrvELgk8PK89Vo3aSh51MWNO0axA==}
@@ -3324,6 +3368,10 @@ packages:
       jest-message-util: 26.6.2
       jest-regex-util: 26.0.0
     dev: true
+
+  /experimental-prisma-webpack-plugin/0.0.5:
+    resolution: {integrity: sha512-jPT5+xHCjZ2xszcv8VFvMrkK5M+gRtfaSrra+5jjn/KsWDDB/Oa95iDjmaiA3IUJZOPBkqhkF+ipA/J8/k0sMg==}
+    dev: false
 
   /extend-shallow/2.0.1:
     resolution: {integrity: sha512-zCnTtlxNoAiDc3gqY2aYAWFx7XWWiasuF2K8Me5WbN8otHKTUKBwjPtNpRs/rbUZm7KxWAaNj7P1a/p52GbVug==}

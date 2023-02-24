@@ -35,10 +35,10 @@ export const AppDrawer = ({ params }: any) => {
         {[
           { text: 'Message', link: '/', icon: <HomeIcon /> },
           { text: 'Settings', link: '/settings', icon: <SettingsIcon /> },
-          { component: <Divider /> },
+          { component: <Divider key="divider" /> },
           { text: 'Inngest', link: '/events', icon: <MessageIcon /> },
           { text: 'Store', link: '/store', icon: <StorageIcon /> }
-        ].map((item) =>
+        ].map((item, idx) =>
           item?.component ? (
             item?.component
           ) : (

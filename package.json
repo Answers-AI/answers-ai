@@ -8,9 +8,9 @@
   ],
   "scripts": {
     "build": "dotenv -- turbo run build",
-    "db:migrate": "dotenv -- pnpm --filter web db:migrate -- dev",
+    "db:migrate": "dotenv -- pnpm --filter db db:migrate -- dev",
     "db:deploy": "dotenv -- turbo run db:deploy",
-    "db:studio": "dotenv -- pnpm --filter web db:studio",
+    "db:studio": "dotenv -- pnpm --filter db db:studio",
     "start": "dotenv -- turbo run start",
     "dev": "docker-compose up -d && echo 'Docker running, use `pnpm logs web` to see logs'",
     "dev:turbo": "dotenv -- turbo run dev dev-inngest",

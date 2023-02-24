@@ -3,12 +3,12 @@ import { NextResponse } from 'next/server';
 import { getJiraProjects, JiraProject } from 'utils/dist/jira';
 import { deepmerge } from 'utils/dist/deepmerge';
 // import cors from '../../../src/cors';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from 'db/dist';
+const prisma = new PrismaClient();
+
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../pages/api/auth/[...nextauth]';
 import { getAppSettings } from 'getAppSettings';
-
-const prisma = new PrismaClient();
 
 export async function GET(req: Request, res: Response) {
   const appSettings = await getAppSettings();

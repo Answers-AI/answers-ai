@@ -10,31 +10,17 @@ export const openai = initializeOpenAI();
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from 'pineconeQuery';
 export const pinecone = new PineconeClient();
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from 'db/dist';
+import { inngest } from './ingestClient';
 
 const prisma = new PrismaClient();
 
 export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) => {
-  // Send a request to the OpenAI API for embeddings based on query
-
-  // const session = await getServerSession(authOptions);
-  // if (!session?.user) {
-  //   throw new Error('Not Authenticated');
-  // }
-
-  let savedPrompt = await prisma.prompt.findFirst({
-    where: { prompt }
-  });
-  if (!savedPrompt) {
-    savedPrompt = await prisma.prompt.create({
-      data: { user: { connect: { email: user?.email } }, prompt, likes: 0, usages: 0 }
-    });
-  }
-
   const embeddingResponse = await openai.createEmbedding({
     model: 'text-embedding-ada-002',
     input: prompt
   });
+
   const embeddings = embeddingResponse.data?.data[0]?.embedding;
 
   let pineconeData;
@@ -54,13 +40,26 @@ export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) 
       : pineconeData?.matches?.map((item: any) => item?.metadata?.text))
   ].join('\n');
 
-  console.time('OpenAI->createCompletion');
-  await prisma.prompt.update({
-    where: { id: savedPrompt.id },
-    data: { usages: savedPrompt.usages + 1 }
+  let savedPrompt = await prisma.prompt.findFirst({
+    where: { prompt }
   });
+
+  if (!savedPrompt) {
+    await inngest.send({
+      name: 'answers/prompt.created',
+      data: { user: { connect: { email: user?.email } }, prompt, likes: 0, usages: 0 }
+    });
+  } else {
+    await inngest.send({
+      name: 'answers/prompt.updated',
+      data: {
+        where: { id: savedPrompt.id },
+        data: { usages: savedPrompt.usages + 1 }
+      }
+    });
+  }
+
   return {
-    savedPrompt,
     prompt: `Answer the following question based on the context provided.
                 \n\nCONTEXT:\n${context}\n\n
                 Question:\n${prompt}\n\nAnswer:\n`,

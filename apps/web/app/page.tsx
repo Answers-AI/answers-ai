@@ -1,14 +1,14 @@
 import { getAppSettings } from '../src/getAppSettings';
 import { getServerSession } from 'next-auth';
 import React from 'react';
-import { authOptions } from '../pages/api/auth/[...nextauth]';
+import { PrismaClient } from 'db/dist';
+
 import DeveloperTools from '../src/DeveloperTools';
-import { PrismaClient } from '@prisma/client';
+import { authOptions } from '../pages/api/auth/[...nextauth]';
 
 const prisma = new PrismaClient();
 
 const Homepage = async ({ params }: any) => {
-  console.log('Homepage', params);
   const session = await getServerSession(authOptions);
   const prompts = await prisma.prompt.findMany({
     orderBy: {

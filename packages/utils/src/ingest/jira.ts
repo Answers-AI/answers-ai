@@ -1,5 +1,4 @@
-import { Inngest } from 'inngest';
-import PineconeClient from './pinecone/client';
+import PineconeClient from '../pinecone/client';
 import {
   getJiraComments,
   getJiraProjects,
@@ -7,15 +6,14 @@ import {
   JiraIssue,
   JiraProject,
   prepareAllForEmbedding
-} from './jira';
-import { getJiraTickets } from './jira/getJiraTickets';
-import JiraIssueModel from './jira/models/issue';
-import JiraThreadModel from './jira/models/thread';
-import { jiraIssueLoader } from './jira';
+} from '../jira';
+import { getJiraTickets } from '../jira/getJiraTickets';
+import JiraIssueModel from '../jira/models/issue';
+import JiraThreadModel from '../jira/models/thread';
+import { jiraIssueLoader } from '../jira';
 
-import { chunkArray } from './utilities/utils';
-
-const inngest = new Inngest({ name: 'My app' });
+import { chunkArray } from '../utilities/utils';
+import { inngest } from './client';
 
 const JIRA_ISSUE_BATCH_SIZE = 1000;
 const JIRA_PROJECT_BATCH_SIZE = 5;
