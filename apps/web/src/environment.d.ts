@@ -10,6 +10,7 @@ declare global {
       INNGEST_SERVER_URL?: string;
       GITHUB_ID: string;
       GITHUB_SECRET: string;
+      DB_STUDIO_SERVER_URL?: string;
       NODE_ENV: 'development' | 'production';
     }
   }

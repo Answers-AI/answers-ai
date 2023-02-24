@@ -7,7 +7,8 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const Homepage = async () => {
+const Homepage = async ({ params }: any) => {
+  console.log('Homepage', params);
   const session = await getServerSession(authOptions);
   const prompts = await prisma.prompt.findMany({
     orderBy: {

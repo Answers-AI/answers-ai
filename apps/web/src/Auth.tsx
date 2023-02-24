@@ -1,5 +1,5 @@
-import { getServerSession } from 'next-auth';
-import { signIn, signOut, useSession } from 'next-auth/react';
+'use client';
+import React from 'react';
 import { AppSettings, AppService } from 'types';
 
 const Auth = ({
@@ -9,13 +9,11 @@ const Auth = ({
   // appSettings: AppSettings;
   onSync?: (s: AppService) => void;
 }) => {
-  // const session = useSession();local
-  return (
-    <div style={{}}>
-      <button color="inherit" onClick={() => signIn()}>
-        Sign In
-      </button>
-    </div>
-  );
+  // TODO: Use Server redirect: https://github.com/vercel/next.js/pull/43510
+  // return redirect('/api/auth/signin');
+  React.useEffect(() => {
+    window.location.href = '/api/auth/signin';
+  }, []);
+  return <div></div>;
 };
 export default Auth;

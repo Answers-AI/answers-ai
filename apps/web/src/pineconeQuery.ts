@@ -2,7 +2,6 @@ import { PineconeClient } from '@pinecone-database/pinecone';
 export const pinecone = new PineconeClient();
 
 export const pineconeQuery = async (embeddings: number[]) => {
-  console.log('PineconeQuery');
   console.time('PineconeQuery');
   try {
     await pinecone.init({

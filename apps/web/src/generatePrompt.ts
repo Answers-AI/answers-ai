@@ -31,7 +31,6 @@ export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) 
     });
   }
 
-  console.log('Saved Prompt', savedPrompt);
   const embeddingResponse = await openai.createEmbedding({
     model: 'text-embedding-ada-002',
     input: prompt

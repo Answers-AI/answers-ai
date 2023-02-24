@@ -1,39 +1,22 @@
 'use client';
-import {
-  Avatar,
-  createTheme,
-  CssBaseline,
-  PaletteMode,
-  ThemeProvider,
-  Typography
-} from '@mui/material';
+import { createTheme, CssBaseline, PaletteMode, ThemeProvider, Typography } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import NextLink from 'next/link';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import { SessionProvider, signIn, signOut } from 'next-auth/react';
+import { SessionProvider, signIn } from 'next-auth/react';
 
-import List from '@mui/material/List';
 // import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import MessageIcon from '@mui/icons-material/QueryBuilder';
-import HomeIcon from '@mui/icons-material/Home';
-import StorageIcon from '@mui/icons-material/Storage';
-import SettingsIcon from '@mui/icons-material/Settings';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 import React from 'react';
 import { amber, deepOrange, grey } from '@mui/material/colors';
 import { Session } from 'next-auth';
 import Auth from './Auth';
-// import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
+import { AppDrawer } from './AppDrawer';
 
 const queryClient = new QueryClient();
 const getDesignTokens = (mode: PaletteMode) => ({
@@ -90,7 +73,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
   }
 });
 
-const DrawerHeader = styled('div')(({ theme }) => ({
+export const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-end',
@@ -120,7 +103,7 @@ const AppBar = styled(MuiAppBar, {
     })
   })
 }));
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+export const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     width: drawerWidth,
     flexShrink: 0,
@@ -174,74 +157,3 @@ export default function AppLayout({
     </SessionProvider>
   );
 }
-const AppDrawer = ({ params }: any) => {
-  // console.log('params', params);
-  // const activeLink = React.useEffect(() => {
-  //   const path = window.location.pathname;
-  //   return path;
-  // }, []);
-  const { pathname } = params;
-  // const {} = useRouter();
-
-  return (
-    <Drawer variant="permanent">
-      <DrawerHeader sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        {/* <IconButton onClick={handleDrawerClose}>
-          {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-        </IconButton> */}
-        <Avatar>AI</Avatar>
-      </DrawerHeader>
-      <Divider />
-      <List sx={{ flex: '1' }}>
-        {[
-          { text: 'Message', link: '/', icon: <HomeIcon /> },
-          { text: 'Inngest', link: '/events', icon: <MessageIcon /> },
-          { text: 'Store', link: '/store', icon: <StorageIcon /> },
-          { text: 'Settings', link: '/settings', icon: <SettingsIcon /> }
-        ].map(({ text, link, icon }) => (
-          // <NextLink key={text} href={link} passHref>
-          <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              aria-label={text}
-              href={link}
-              sx={{
-                minHeight: 48,
-                ...(pathname === link ? { bgcolor: 'primary.main' } : {}),
-                px: 2.5
-              }}>
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  justifyContent: 'center'
-                }}>
-                {icon}
-              </ListItemIcon>
-              <ListItemText primary={text} sx={{ opacity: 0 }} />
-            </ListItemButton>
-          </ListItem>
-          // </NextLink>
-        ))}
-      </List>
-      <ListItem disablePadding sx={{ display: 'block' }}>
-        <ListItemButton
-          aria-label={'sign out'}
-          // href={link}
-          onClick={() => signOut()}
-          sx={{
-            minHeight: 48,
-            // ...(pathname === link ? { bgcolor: 'primary.main' } : {}),
-            px: 2.5
-          }}>
-          <ListItemIcon
-            sx={{
-              minWidth: 0,
-              justifyContent: 'center'
-            }}>
-            <ExitToAppIcon />
-          </ListItemIcon>
-          {/* <ListItemText primary={} sx={{ opacity: 0 }} /> */}
-        </ListItemButton>
-      </ListItem>
-    </Drawer>
-  );
-};

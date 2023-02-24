@@ -23,15 +23,15 @@ model User {
 
 model Prompt {
   id            Int         @id @default(autoincrement())
-  user User  @relation(fields: userId, references: id)
-  userId Int
+  usages Int @default(0)
+  likes Int @default(0)
+  dislikes Int @default(0)
   prompt String @unique
   title String?
   description String?
-  likes Int @default(0)
-  dislikes Int @default(0)
-  usages Int @default(0)
   answers Answer[] 
+  user User  @relation(fields: userId, references: id)
+  userId Int
 }
 
 model Answer { 

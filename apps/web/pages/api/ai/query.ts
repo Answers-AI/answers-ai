@@ -27,7 +27,7 @@ export const openai = initializeOpenAI();
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await cors(req, res);
   const session = await getServerSession(req, res, authOptions);
-  console.log('Query', { session });
+
   let completionData;
   const { prompt, pineconeData, context, savedPrompt } = await generatePrompt(
     req.body,
