@@ -1,0 +1,25 @@
+{
+  "name": "jira/issues.upserted",
+  "data": {
+    "issues": [
+      {
+       
+          "objectType": "JIRA Issue",
+          "text": "For jira issue DRATA-286\nThe objectType is JIRA Project, The issueType is Development, The issueId is DRATA-286, The description is \n## The problem\nCurrently running yarn build in a local environment fails with the following error:\nThis means that you can’t build and deploy the static version of the site on a local environment but also that e2e tests currently have to be run against a dev deployment, which shouldn’t be the case. This is currently hindering our ability to test rapidly and reliably before we put code into github.\nAs I was working on  I even found that a couple tests were failing locally (against a dev deployment) but NOT on the pipeline (against a static deployment on Vercel). This is likely due to loading times being significantly higher on a dev deployment.\n, The summary is Fix broken build command in local environment, The statusName is Resolved, The statusCategory is Done, The account is Drata Billables, The reporter is Andres Quilodran, The assignee is undefined, The priority is P2 - Regular, The parentIssueId is DRATA-7, The projectName is Drata, ",
+          "uid": "DRATA-286"
+        
+      }
+    
+    ]
+  }
+}
+
+
+{
+  "name": "jira/app.sync",
+  "data": {
+    "projects":["DRATA"]
+  }
+}
+
+

@@ -1,7 +1,27 @@
+import { getAppSettings } from '../src/getAppSettings';
+import { getServerSession } from 'next-auth';
 import React from 'react';
-import DeveloperTools from '../src/DeveloperTools';
+import { PrismaClient } from 'db/dist';
 
-const Homepage = () => <DeveloperTools />;
+import DeveloperTools from '../src/DeveloperTools';
+import { authOptions } from '../pages/api/auth/[...nextauth]';
+
+const prisma = new PrismaClient();
+
+const Homepage = async ({ params }: any) => {
+  const session = await getServerSession(authOptions);
+  const prompts = await prisma.prompt.findMany({
+    orderBy: {
+      usages: 'desc'
+    }
+  });
+  if (!session) {
+    return <a href={'/auth'}>Redirect</a>;
+  }
+
+  const appSettings = await getAppSettings();
+  return <DeveloperTools user={session?.user} appSettings={appSettings} prompts={prompts} />;
+};
 
 export const metadata = {
   title: 'Answers AI',

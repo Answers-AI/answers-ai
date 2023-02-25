@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+ output   = "../dist"
+ referentialIntegrity = "prisma"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int         @id @default(autoincrement())
+
+  username String? @unique
+  email         String      @unique
+  name          String?
+  appSettings Json
+  image String @default("")
+  prompts Prompt[]
+}
+
+model Prompt {
+  id            Int         @id @default(autoincrement())
+  usages Int @default(0)
+  likes Int @default(0)
+  dislikes Int @default(0)
+  prompt String @unique
+  title String?
+  description String?
+  answers Answer[] 
+  users User[]
+
+}
+
+model Answer { 
+  id            Int         @id @default(autoincrement())
+  prompt Prompt @relation(fields: promptId, references: id)
+  promptId Int
+  text String
+}
+
+model AppSettings {
+  id            Int         @id @default(autoincrement())
+
+  services       AppService[]
+  jiraSettings   JiraSettings @relation(fields: [jiraSettingsId], references: [id])
+  // User           User[]
+  jiraSettingsId Int
+}
+
+model AppService {
+  id            Int         @id @default(autoincrement())
+
+  name          String
+  enabled       Boolean
+  AppSettings   AppSettings? @relation(fields: [appSettingsId], references: [id])
+  appSettingsId Int?
+}
+
+model JiraSettings {
+  id            Int         @id @default(autoincrement())
+
+  projects    JiraProjectSetting[]
+  AppSettings AppSettings[]
+}
+
+model JiraProjectSetting {
+  id            Int         @id @default(autoincrement())
+
+  key            String
+  enabled        Boolean
+  JiraSettings   JiraSettings? @relation(fields: [jiraSettingsId], references: [id])
+  jiraSettingsId Int?
+}

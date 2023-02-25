@@ -8,19 +8,27 @@
   ],
   "scripts": {
     "build": "dotenv -- turbo run build",
-    "dev": "dotenv -- turbo run dev",
+    "db:migrate": "dotenv -- pnpm --filter db db:migrate -- dev",
+    "db:deploy": "dotenv -- turbo run db:deploy",
+    "db:studio": "dotenv -- pnpm --filter db db:studio",
+    "start": "dotenv -- turbo run start",
+    "dev": "docker-compose up -d && echo 'Docker running, use pnpm logs web to see logs'",
+    "dev:turbo": "dotenv -- turbo run dev dev-inngest",
+    "logs": "docker-compose logs -f",
+    "dev-inngest": "npx inngest-cli@latest dev -u http://web:3000/api/inngest > /inngest.log 2>&1",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
     "dotenv-cli": "latest",
     "eslint-config-custom": "workspace:*",
+    "inngest-cli": "^0.10.0",
     "prettier": "latest",
+    "prisma": "^4.10.1",
     "turbo": "latest"
   },
   "engines": {
     "node": ">=14.0.0"
   },
-  "dependencies": {},
   "packageManager": "pnpm@7.12.2"
 }

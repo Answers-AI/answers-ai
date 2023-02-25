@@ -1,40 +1,24 @@
-'use client';
-import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { getServerSession, Session } from 'next-auth';
+import { authOptions } from '../pages/api/auth/[...nextauth]';
+import AppLayout from '../src/AppLayout';
+import React from 'react';
 
-const queryClient = new QueryClient();
-
-// Create MUI dark theme
-const theme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#1976d2'
-    },
-    secondary: {
-      main: '#9e03bc'
-    }
-  }
-});
-export default function RootLayout({
+export default async function RootLayout({
   // Layouts must accept a children prop.
+  params,
   // This will be populated with nested layouts or pages
   children
 }: {
   children: React.ReactNode;
+  params: {
+    slug: string;
+  };
 }) {
+  const session = await getServerSession(authOptions);
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <QueryClientProvider client={queryClient}>
-        <html lang="en" style={{ height: '100%' }}>
-          <body style={{ height: '100%' }}>
-            {children}
-            <ReactQueryDevtools position="top-right" />
-          </body>
-        </html>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <AppLayout session={session as Session} params={params}>
+      {children}
+    </AppLayout>
   );
 }
