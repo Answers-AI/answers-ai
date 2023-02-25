@@ -1,12 +1,5 @@
 import PineconeClient from '../pinecone/client';
-import {
-  getJiraComments,
-  getJiraProjects,
-  JiraComment,
-  JiraIssue,
-  JiraProject,
-  prepareAllForEmbedding
-} from '../jira';
+import { getJiraComments, getJiraProjects, JiraComment, JiraIssue, JiraProject } from '../jira';
 import { getJiraTickets } from '../jira/getJiraTickets';
 import JiraIssueModel from '../jira/models/issue';
 import JiraThreadModel from '../jira/models/thread';
@@ -16,6 +9,7 @@ import { chunkArray } from '../utilities/utils';
 import { inngest } from './client';
 import { EventVersionHandler } from './EventVersionHandler';
 import { AppSettings } from 'types';
+import { prepareAllForEmbedding } from '../prepareAllForEmbedding';
 
 const JIRA_ISSUE_BATCH_SIZE = 1000;
 const JIRA_PROJECT_BATCH_SIZE = 5;
@@ -59,16 +53,19 @@ export const processJiraUpdated: EventVersionHandler<{ appSettings: AppSettings 
         JIRA_PROJECT_BATCH_SIZE
       ).map((batchProjects: JiraProject[], i) => {
         const eventData = {
-          key: `${jobId}_jira/project.sync_BATCH_${i * JIRA_PROJECT_BATCH_SIZE}-${
-            (i + 1) * JIRA_PROJECT_BATCH_SIZE
-          }:`,
-          batchSize: JIRA_PROJECT_BATCH_SIZE,
+          _page: i,
+          _batchSize: JIRA_PROJECT_BATCH_SIZE,
           total: projects.length,
           projectKeys: batchProjects?.map((project) => project.key)
         };
         //TODO: Save to Redis by issue key
         //TODO: In event only send issue keys
-        inngest.send({ v: '1', name: 'jira/project.sync', data: eventData });
+        inngest.send({
+          v: '1',
+          ts: new Date().valueOf(),
+          name: 'jira/project.sync',
+          data: eventData
+        });
       })
     );
 
@@ -97,17 +94,20 @@ export const procesProjectUpdated: EventVersionHandler<{ projectKeys: string[] }
     await Promise.all(
       chunkArray(issues, JIRA_ISSUE_BATCH_SIZE).map((batchIssues: JiraIssue[], i) => {
         const eventData = {
-          key: `${jobId}_jira/issues.upserted_BATCH_${i * JIRA_ISSUE_BATCH_SIZE}-${
-            (i + 1) * JIRA_ISSUE_BATCH_SIZE
-          }:`,
-          total: issues.length,
-          batchSize: JIRA_ISSUE_BATCH_SIZE,
+          _page: i,
+          _total: issues.length,
+          _batchSize: JIRA_ISSUE_BATCH_SIZE,
           projectKeys,
           issuesKeys: batchIssues?.map((issue) => issue.key)
         };
         //TODO: Save to Redis by issue key
         //TODO: In event only send issue keys
-        inngest.send({ v: '1', name: 'jira/issues.upserted', data: eventData });
+        inngest.send({
+          v: '1',
+          ts: new Date().valueOf(),
+          name: 'jira/issues.upserted',
+          data: eventData
+        });
       })
     );
   }
@@ -136,7 +136,12 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
           };
           //TODO: Save to Redis by issue key
           //TODO: In event only send issue keys
-          inngest.send({ v: '1', name: 'jira/issue.embeddings.upserted', data: eventData });
+          inngest.send({
+            v: '1',
+            ts: new Date().valueOf(),
+            name: 'jira/issue.embeddings.upserted',
+            data: eventData
+          });
         })
       );
 
@@ -145,11 +150,17 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
           const eventData = {
             _page: i,
             _total: issuesKeys.length,
+            _batchSize: COMMENTS_BATCH_SIZE,
             issuesKeys: batchIssues
           };
           //TODO: Save to Redis by issue key
           //TODO: In event only send issue keys
-          inngest.send({ v: '1', name: 'jira/issueComments.upserted', data: eventData });
+          inngest.send({
+            v: '1',
+            ts: new Date().valueOf(),
+            name: 'jira/issueComments.upserted',
+            data: eventData
+          });
         })
       );
     } catch (e) {
@@ -188,7 +199,12 @@ export const processIssuesComments: EventVersionHandler<{ issuesKeys: string[] }
         };
         //TODO: Save to Redis by issue key
         //TODO: In event only send issue keys
-        return inngest.send({ v: '1', name: 'jira/threads.embeddings.upserted', data: eventData });
+        return inngest.send({
+          v: '1',
+          ts: new Date().valueOf(),
+          name: 'jira/threads.embeddings.upserted',
+          data: eventData
+        });
       })
     );
   }

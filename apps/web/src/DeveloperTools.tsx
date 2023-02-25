@@ -276,7 +276,7 @@ const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) => 
       gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
     }}>
     {prompts?.map((prompt) => (
-      <PromptCard {...prompt} onClick={() => handlePromptClick(prompt?.prompt)} />
+      <PromptCard key={prompt.id} {...prompt} onClick={() => handlePromptClick(prompt?.prompt)} />
     ))}
   </Box>
 );

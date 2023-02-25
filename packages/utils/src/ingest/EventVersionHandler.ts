@@ -21,18 +21,19 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
     return inngest.createFunction(
       { name: `Process ${eventName} event` },
       { event: eventName },
-      async ({ event, ts, ...other }) => {
+      async ({ event, ...other }) => {
+        const { ts, v } = event;
         try {
           console.time(`[${ts}]Processing  ${eventName}`);
           const versions = Object.keys(eventHandlerMap[eventName]);
           let handler;
-          if (!event.v) {
+          if (!v) {
             throw new Error(`No version for ${eventName}`);
           } else {
-            if (versions.includes(event.v)) {
-              handler = eventHandlerMap[eventName][event.v];
+            if (versions.includes(v)) {
+              handler = eventHandlerMap[eventName][v];
             } else {
-              throw new Error(`No handler for ${eventName}:${event.v}`);
+              throw new Error(`No handler for ${eventName}:${v}`);
             }
           }
           await handler({ event, ts, ...other } as any);
@@ -46,6 +47,10 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
     );
   });
 
+  console.log(
+    'EventVersionHandlers',
+    Object.entries(eventHandlerMap)?.map(([e, versions]) => `${e}[${Object.keys(versions)}]`)
+  );
   return inngestFunctions;
 };
 

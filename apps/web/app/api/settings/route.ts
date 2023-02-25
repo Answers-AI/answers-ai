@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     },
     {}
   );
-  const appSettings = deepmerge({}, user?.appSettings, {
+  const appSettings = deepmerge({}, user?.appSettings, newSettings, {
     jira: {
       projects: jiraProjects.map((project) => ({
         ...project,
@@ -46,7 +46,6 @@ export async function POST(request: Request) {
       }))
     }
   });
-
   await prisma.user.update({
     where: { email: session?.user?.email },
     data: { appSettings }
