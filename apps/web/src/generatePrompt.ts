@@ -10,10 +10,7 @@ export const openai = initializeOpenAI();
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from 'pineconeQuery';
 export const pinecone = new PineconeClient();
-import { PrismaClient } from 'db/dist';
 import { inngest } from './ingestClient';
-
-const prisma = new PrismaClient();
 
 export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) => {
   const embeddingResponse = await openai.createEmbedding({
@@ -42,9 +39,9 @@ export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) 
 
   await inngest.send({
     name: 'answers/prompt.upserted',
+    user,
     data: {
-      prompt,
-      user
+      prompt
     }
   });
 

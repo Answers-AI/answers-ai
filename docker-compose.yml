@@ -29,7 +29,6 @@ services:
   #   depends_on:
   #     - web
   studio:
-    image: node:latest
     build:
       context: .
       dockerfile: apps/web/Dockerfile

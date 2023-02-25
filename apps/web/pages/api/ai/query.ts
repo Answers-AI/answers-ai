@@ -62,6 +62,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     if (prompt && answer) {
       await inngest.send({
         name: 'answers/prompt.answered',
+        user: session?.user,
         data: { prompt, answer: answer }
       });
     }

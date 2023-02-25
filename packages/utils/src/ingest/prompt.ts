@@ -6,8 +6,8 @@ export const answersPromptUpserted = inngest.createFunction(
   { name: 'Process answers/prompt.upserted event' },
   { event: 'answers/prompt.upserted' },
   async ({ event }) => {
-    const { data } = event;
-    const { prompt, user } = data;
+    const { data, user } = event;
+    const { prompt } = data;
     const savedPrompt = await prisma.prompt.findUnique({ where: { prompt: data?.prompt } });
     await prisma.prompt.upsert({
       where: { prompt: data?.prompt },
