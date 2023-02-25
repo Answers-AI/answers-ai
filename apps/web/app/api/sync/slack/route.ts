@@ -8,7 +8,8 @@ export async function POST() {
   const session = await getServerSession(authOptions);
   const user = session?.user;
 
-  inngest.send({
+  await inngest.send({
+    version: '1',
     name: 'slack/app.sync',
     user,
     data: { appSettings }

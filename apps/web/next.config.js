@@ -1,6 +1,9 @@
 const { PrismaPlugin } = require('experimental-prisma-webpack-plugin');
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true'
+});
 
-module.exports = {
+module.exports = withBundleAnalyzer({
   experimental: {
     appDir: true
   },
@@ -13,4 +16,4 @@ module.exports = {
 
     return config;
   }
-};
+});
