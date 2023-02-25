@@ -46,10 +46,10 @@ class PineconeClient {
 
   async writeVectorToIndex(vector) {
     console.time('writeVectorToIndex');
+    await this.init();
     const index = this.client.Index(this.indexName);
-
     //TODO: Remove after testing
-    await this.deleteIndex(index);
+    // await this.deleteIndex(index);
 
     await index.upsert({
       vectors: [vector],
@@ -61,6 +61,7 @@ class PineconeClient {
 
   async writeVectorsToIndex(vectors) {
     // console.time('writeVectorsToIndex');
+    await this.init();
 
     const index = this.client.Index(this.indexName);
 

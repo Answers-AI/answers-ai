@@ -38,6 +38,8 @@ export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) 
   ].join('\n');
 
   await inngest.send({
+    v: '1',
+    ts: new Date().valueOf(),
     name: 'answers/prompt.upserted',
     user,
     data: {

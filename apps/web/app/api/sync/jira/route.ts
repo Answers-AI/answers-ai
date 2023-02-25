@@ -9,6 +9,8 @@ export async function POST() {
   const user = session?.user;
 
   await inngest.send({
+    v: '1',
+    ts: new Date().valueOf(),
     name: 'jira/app.sync',
     user,
     data: { appSettings }

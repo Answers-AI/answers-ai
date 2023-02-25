@@ -9,7 +9,8 @@ export async function POST() {
   const user = session?.user;
 
   await inngest.send({
-    version: '1',
+    v: '1',
+    ts: new Date().valueOf(),
     name: 'slack/app.sync',
     user,
     data: { appSettings }
