@@ -4,13 +4,11 @@ import { getJiraProjects, JiraProject } from 'utils/dist/jira';
 
 import { authOptions } from '../pages/api/auth/[...nextauth]';
 
-import { PrismaClient } from 'db/dist';
+import { prisma } from 'db/dist';
 
 import SlackClient from 'utils/dist/slack/client';
 import { AppSettings, SlackChannel, SlackChannelSetting } from 'types';
 const slackClient = new SlackClient(process.env.SLACK_TOKEN);
-
-const prisma = new PrismaClient();
 
 const DEFAULT_SETTINGS = {
   services: [

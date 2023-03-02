@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
- output   = "../dist"
+ output   = "../generated/prisma-client"
  referentialIntegrity = "prisma"
 }
 

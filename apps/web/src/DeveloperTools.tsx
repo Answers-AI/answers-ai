@@ -91,7 +91,7 @@ const DeveloperTools = ({
     answers,
     addAnswer
   });
-  const [useStreaming, setUseStreaming] = useState(false);
+  const [useStreaming, setUseStreaming] = useState(true);
   const [showPrompts, setShowPrompts] = useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
 

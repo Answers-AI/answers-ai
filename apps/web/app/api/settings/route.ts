@@ -3,8 +3,7 @@ import { NextResponse } from 'next/server';
 import { getJiraProjects, JiraProject } from 'utils/dist/jira';
 import { deepmerge } from 'utils/dist/deepmerge';
 // import cors from '../../../src/cors';
-import { PrismaClient } from 'db/dist';
-const prisma = new PrismaClient();
+import { prisma } from 'db/dist';
 
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../pages/api/auth/[...nextauth]';

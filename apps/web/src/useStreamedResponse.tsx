@@ -44,7 +44,11 @@ export const useStreamedResponse = ({ answers, addAnswer }: any) => {
           const [jsonData, ...rest] = current.split('JSON_END');
 
           if (jsonData && rest?.length) {
-            extra = JSON.parse(jsonData);
+            try {
+              extra = JSON.parse(jsonData);
+            } catch (e) {
+              console.log('ParseError', e);
+            }
             current = rest.join('');
           }
           answer = current;
