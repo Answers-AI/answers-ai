@@ -6,7 +6,7 @@ import { Box, FormControlLabel, Switch, TextField } from '@mui/material';
 import { AppSettings, RecommendedPrompt } from 'types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PromptCard from './PromptCard';
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from '@mui/icons-material/PlusOne';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Answer } from './Answer';
 import { useStreamedResponse } from './useStreamedResponse';

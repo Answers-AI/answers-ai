@@ -5,11 +5,14 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 module.exports = withBundleAnalyzer({
   experimental: {
-    appDir: true
+    appDir: true,
+    serverComponentsExternalPackages: ['@prisma/client']
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],
+
   webpack: (config, { isServer }) => {
+    config.externals = [...config.externals, 'db'];
     // if (isServer) {
     config.plugins = [...config.plugins, new PrismaPlugin()];
     // }

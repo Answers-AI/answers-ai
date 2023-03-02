@@ -31,7 +31,7 @@
       "cache": false,
       "dependsOn": [],
       "inputs": ["prisma/**"],
-      "outputs": ["dist/**"]
+      "outputs": []
     },
     "db:deploy": {
       "cache": false,
@@ -40,7 +40,7 @@
       "outputs": ["dist/**"]
     },
     "web#build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "db#build"],
       "outputs": ["dist/**", ".next/**"]
     },
     "lint": {
