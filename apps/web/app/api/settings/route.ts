@@ -3,8 +3,7 @@ import { NextResponse } from 'next/server';
 import { getJiraProjects, JiraProject } from 'utils/dist/jira';
 import { deepmerge } from 'utils/dist/deepmerge';
 // import cors from '../../../src/cors';
-import { PrismaClient } from 'db/dist';
-const prisma = new PrismaClient();
+import { prisma } from 'db/dist';
 
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../pages/api/auth/[...nextauth]';
@@ -38,7 +37,7 @@ export async function POST(request: Request) {
     },
     {}
   );
-  const appSettings = deepmerge({}, user?.appSettings, {
+  const appSettings = deepmerge({}, user?.appSettings, newSettings, {
     jira: {
       projects: jiraProjects.map((project) => ({
         ...project,
@@ -46,7 +45,6 @@ export async function POST(request: Request) {
       }))
     }
   });
-
   await prisma.user.update({
     where: { email: session?.user?.email },
     data: { appSettings }

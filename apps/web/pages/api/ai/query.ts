@@ -12,9 +12,8 @@ type Data = {
 import { Configuration, OpenAIApi } from 'openai';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]';
-import { PrismaClient } from 'db/dist';
+import { prisma } from 'db/dist';
 import { inngest } from '../../../src/ingestClient';
-const prisma = new PrismaClient();
 
 const initializeOpenAI = () => {
   const configuration = new Configuration({

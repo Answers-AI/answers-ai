@@ -76,6 +76,7 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
             {localSettings &&
               localSettings?.jira?.projects?.map((project) => (
                 <FormControlLabel
+                  key={project.key}
                   control={
                     <Checkbox
                       name={project.key}

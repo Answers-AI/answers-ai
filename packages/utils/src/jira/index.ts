@@ -1,15 +1,10 @@
-import Pinecone from '../pinecone/client';
-import JiraStatusCategory from './models/statusCategory';
-import JiraStatus from './models/status';
-import JiraCommentModel from './models/comment';
+// import JiraStatusCategory from './models/statusCategory';
+// import JiraStatus from './models/status';
+// import JiraCommentModel from './models/comment';
 import JiraClient from './client';
 import { getJiraTickets } from './getJiraTickets';
 import redisLoader from '../redisLoader';
 
-const pinecone = new Pinecone({
-  namespace: 'jira',
-  indexName: process.env.PINECONE_INDEX
-});
 // const answerSession = new AnswerSession({ namespace: "jira" });
 export const jiraClient = new JiraClient();
 
@@ -71,27 +66,6 @@ export const getJiraComments = async (issueKey: any) => {
   // console.log(comments.comments[0]);
   const jiraComments = comments.comments;
   return jiraComments;
-};
-
-export const prepareAllForEmbedding = async (jiraObjects: any[]) => {
-  // console.log('prepareAllForEmbedding');
-  // console.time('prepareAllForEmbedding');
-  let preparedStatuses;
-  try {
-    if (!jiraObjects) throw new Error('Invalid jiraObjects');
-    let promises = [];
-
-    for (const obj of jiraObjects) {
-      if (obj) promises.push(obj.prepareForEmbedding());
-    }
-    preparedStatuses = await Promise.all(promises);
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-
-  // console.timeEnd('prepareAllForEmbedding');
-  return preparedStatuses;
 };
 
 // const indexAllJiraStatuses = async () => {

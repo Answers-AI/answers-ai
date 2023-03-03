@@ -47,14 +47,14 @@ class SlackApiClient {
       });
       channels.push(...result.channels);
       cursor = result.response_metadata.next_cursor;
-      console.log('running');
+      // console.log('running');
     } while (cursor);
-    console.log('mid initChannelCache');
+    // console.log('mid initChannelCache');
     for (const channel of channels) {
-      this.cache.channels[channel.id] = new SlackChannel(this.client, channel);
-      console.log('setting');
+      this.cache.channels[channel.id] = channel;
+      // console.log('setting');
     }
-    console.log('end initChannelCache');
+    // console.log('end initChannelCache');
   }
 
   async initGroupCache() {
@@ -77,6 +77,9 @@ class SlackApiClient {
   }
 
   async getChannel(channelId) {
+    if (!Object.keys(this.cache.channels).length) {
+      await this.initChannelCache();
+    }
     if (this.cache.channels[channelId]) {
       return this.cache.channels[channelId];
     }
@@ -86,6 +89,12 @@ class SlackApiClient {
     this.cache.channels[channelId] = channel;
 
     return channel;
+  }
+  async getChannels() {
+    if (!Object.keys(this.cache.channels).length) {
+      await this.initChannelCache();
+    }
+    return Object.values(this.cache.channels);
   }
 
   async getUser(userId) {

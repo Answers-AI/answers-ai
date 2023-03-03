@@ -12,10 +12,10 @@
     "db:deploy": "dotenv -- turbo run db:deploy",
     "db:studio": "dotenv -- pnpm --filter db db:studio",
     "start": "dotenv -- turbo run start",
-    "dev": "docker-compose up -d && echo 'Docker running, use pnpm logs web to see logs'",
-    "dev:turbo": "dotenv -- turbo run dev dev-inngest",
+    "dev-docker": "docker-compose up -d && echo 'Docker running, use pnpm logs web to see logs'",
+    "dev": "dotenv -- turbo run dev dev-inngest dev-docker",
     "logs": "docker-compose logs -f",
-    "dev-inngest": "npx inngest-cli@latest dev -u http://web:3000/api/inngest > /inngest.log 2>&1",
+    "dev-inngest": "npx inngest-cli@latest dev -u http://localhost:3000/api/inngest > /dev/null 2>&1 &",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },

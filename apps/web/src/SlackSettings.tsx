@@ -6,16 +6,18 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
-  Button
+  Button,
+  Typography,
+  Paper
 } from '@mui/material';
 import React, { useState } from 'react';
-import { AppSettings } from 'types';
+import { AppSettings, SlackChannelSetting } from 'types';
 import useAppSettings from 'useAppSettings';
 export interface SlackSettingsProps {
   appSettings: AppSettings;
 }
 export const SlackSettings = ({ appSettings }: SlackSettingsProps) => {
-  const { updateAppSettings } = useAppSettings();
+  const { isLoading, updateAppSettings } = useAppSettings();
   const [localSettings, setLocalSettings] = useState<AppSettings>(appSettings);
   React.useEffect(() => {
     setLocalSettings(appSettings);
@@ -27,42 +29,27 @@ export const SlackSettings = ({ appSettings }: SlackSettingsProps) => {
   // const handleSlackProjectsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //   setLocalSettings((prevSettings) => ({
   //     ...prevSettings,
-  //     SlackProjects: event.target.value.split(',')
+  //     slackChannels: event.target.value.split(',')
   //   }));
   // };
 
-  // const handleEnableProject = (project: { key: string; enabled: boolean }) => {
-  //   setLocalSettings((prevSettings) => ({
-  //     ...prevSettings,
-  //     Slack: {
-  //       ...prevSettings?.Slack,
-  //       projects: prevSettings?.Slack?.projects?.map((p) => {
-  //         if (p.key === project.key) {
-  //           return {
-  //             ...p,
-  //             enabled: !p.enabled
-  //           };
-  //         }
-  //         return p;
-  //       })
-  //     }
-  //   }));
-  // };
-  const handleEnableService = (service: { name: string; enabled: boolean }) => {
+  const handleEnableChannel = (channel: SlackChannelSetting) => {
     setLocalSettings((prevSettings) => ({
       ...prevSettings,
-      services: prevSettings?.services?.map((p) => {
-        if (p.name === service.name) {
-          return {
-            ...p,
-            enabled: !p.enabled
-          };
-        }
-        return p;
-      })
+      slack: {
+        ...prevSettings?.slack,
+        channels: prevSettings?.slack?.channels?.map((c) => {
+          if (c.id === channel.id) {
+            return {
+              ...c,
+              enabled: !c.enabled
+            };
+          }
+          return c;
+        })
+      }
     }));
   };
-  // // return <div>Loading...</div>;
 
   return (
     <Box
@@ -70,45 +57,52 @@ export const SlackSettings = ({ appSettings }: SlackSettingsProps) => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-start',
+
         gap: 2
       }}>
-      <FormControl sx={{}} component="fieldset" variant="standard">
-        <FormLabel component="legend">Slack Projects</FormLabel>
-        {/* <FormGroup
-          sx={
-            {
-              // display: 'flex',
-            }
-          }>
-          {appSettings &&
-            appSettings?.Slack?.projects?.map((project) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name={project.key}
-                    checked={project.enabled}
-                    onChange={() => handleEnableProject(project)}
-                  />
-                }
-                label={project.key}
-              />
-            ))}
-        </FormGroup> */}
-        {/* <FormHelperText>Be careful</FormHelperText> */}
-      </FormControl>
+      <Typography variant="h5">Slack</Typography>
+      <Paper sx={{ p: 2 }}>
+        <FormControl sx={{}} component="fieldset" variant="standard">
+          <FormLabel component="legend">
+            <strong>Enabled Channels</strong>
+          </FormLabel>
+          <FormGroup
+            sx={{
+              display: 'flex',
+              flexDirection: 'row'
+            }}>
+            {localSettings &&
+              localSettings?.slack?.channels?.map((channel) => (
+                <FormControlLabel
+                  key={channel.id}
+                  control={
+                    <Checkbox
+                      name={channel.name}
+                      checked={channel.enabled}
+                      onChange={() => handleEnableChannel(channel)}
+                    />
+                  }
+                  label={channel.name}
+                />
+              ))}
+          </FormGroup>
+          {/* <FormHelperText>Be careful</FormHelperText> */}
+        </FormControl>
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 2 }}>
-        <Button type="button" variant="contained" onClick={handleSave}>
-          Save
-        </Button>
-        <Button
-          type="button"
-          color="error"
-          variant="outlined"
-          onClick={() => setLocalSettings(appSettings)}>
-          Discard
-        </Button>
-      </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 2, py: 2 }}>
+          <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
+            Save
+          </Button>
+          {/* <Button
+            type="button"
+            color="error"
+            variant="outlined"
+            onClick={() => setLocalSettings(appSettings)}
+            disabled={isLoading}>
+            Discard
+          </Button> */}
+        </Box>
+      </Paper>
     </Box>
   );
 };

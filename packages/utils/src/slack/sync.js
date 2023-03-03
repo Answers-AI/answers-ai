@@ -1,7 +1,7 @@
-import AnswerSession from './utilities/answerSession';
-import SlackClient from './slack/client';
-import SlackMessage from './slack/models/message';
-import SlackChannel from './slack/models/channel';
+import AnswerSession from '../utilities/answerSession';
+import SlackClient from './client';
+import SlackMessage from './models/message';
+import SlackChannel from './models/channel';
 
 const answerSession = new AnswerSession({ namespace: 'slack' });
 
@@ -12,7 +12,7 @@ answerSession.initPinecone({
 
 const slackClient = new SlackClient(process.env.SLACK_TOKEN);
 
-const indexSingleSlackChannel = async (channelId) => {
+export const indexSingleSlackChannel = async (channelId) => {
   console.time('indexSingleSlackChannel');
   // console.log(slackClient.cache.channels);
   const channel = await slackClient.getChannel(channelId);
@@ -26,11 +26,10 @@ const indexSingleSlackChannel = async (channelId) => {
   //   }
 
   //   const data = await Promise.all(promises);
-  // console.log(
-  //   messages.map(async (m) => {
-  //     return await m.getTidiedInfo();
-  //   })
-  // );
+
+  messages.map(async (m) => {
+    return await m.getTidiedInfo();
+  });
 
   //   const vectorData = await answerSession.prepareAllForEmbedding(data);
   // answerSession.addVectors(vectorData);
@@ -184,11 +183,13 @@ export const syncSlack = async () => {
           // );
         } else {
           console.time(channel.cache.info.name);
-          await indexSingleSlackChannel(channel.channelId);
+          await indexSingleSlackChannel(channel.id);
           console.timeEnd(channel.cache.info.name);
         }
       } catch (error) {
-        console.error(`Error indexing Slack messages for channel ${channel.cache.info.name}: ${error}`);
+        console.error(
+          `Error indexing Slack messages for channel ${channel.cache.info.name}: ${error}`
+        );
 
         break; // Stop the loop if there is an error
       }

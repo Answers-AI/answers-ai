@@ -4,6 +4,7 @@ export type PineconeObject = {
 
 export type PineconeVector = {};
 export type RecommendedPrompt = {
+  id: string;
   title?: string;
   prompt: string;
   actor?: string;
@@ -22,9 +23,18 @@ export interface AppSettings {
       enabled: boolean;
     }[];
   };
+  slack: {
+    channels?: SlackChannelSetting[];
+  };
 }
 
 export type User = {
   email: string;
   appSettings: AppSettings;
 };
+
+export type SlackChannel = { id: string; name: string };
+export interface SlackChannelSetting extends SlackChannel {
+  enabled: boolean;
+}
+export type SlackMessage = {};

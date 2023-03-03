@@ -6,7 +6,7 @@ import { Box, FormControlLabel, Switch, TextField } from '@mui/material';
 import { AppSettings, RecommendedPrompt } from 'types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PromptCard from './PromptCard';
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from '@mui/icons-material/PlusOne';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Answer } from './Answer';
 import { useStreamedResponse } from './useStreamedResponse';
@@ -91,7 +91,7 @@ const DeveloperTools = ({
     answers,
     addAnswer
   });
-  const [useStreaming, setUseStreaming] = useState(false);
+  const [useStreaming, setUseStreaming] = useState(true);
   const [showPrompts, setShowPrompts] = useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
@@ -276,7 +276,7 @@ const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) => 
       gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
     }}>
     {prompts?.map((prompt) => (
-      <PromptCard {...prompt} onClick={() => handlePromptClick(prompt?.prompt)} />
+      <PromptCard key={prompt.id} {...prompt} onClick={() => handlePromptClick(prompt?.prompt)} />
     ))}
   </Box>
 );

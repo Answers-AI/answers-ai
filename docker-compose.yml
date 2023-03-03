@@ -1,20 +1,20 @@
 version: '3'
 
 services:
-  web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-    working_dir: /app
-    volumes:
-      - .:/app
-    ports:
-      - '3000:3000'
-      - '8288:8288'
-    depends_on:
-      - redis
-      - postgres
-    command: pnpm dev:turbo
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/web/Dockerfile
+  #   working_dir: /app
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - '3000:3000'
+  #     - '8288:8288'
+  #   depends_on:
+  #     - redis
+  #     - postgres
+  #   command: pnpm dev:turbo
   # TODO: Figure out how to run this in a separate container
   # Current issue with sending the messages
   # inngest:
@@ -40,8 +40,8 @@ services:
     ports:
       - '5555:5555'
     command: pnpm db:studio
-    depends_on:
-      - web
+    # depends_on:
+    #   - web
   redis:
     image: redis:latest
     ports:

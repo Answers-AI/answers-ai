@@ -1,6 +1,5 @@
-import { PrismaClient } from 'db/dist';
+import { prisma } from 'db/dist';
 import { EventVersionHandler } from './EventVersionHandler';
-const prisma = new PrismaClient();
 
 export const answersPromptUpserted: EventVersionHandler<{ prompt: string }> = {
   v: '1',
