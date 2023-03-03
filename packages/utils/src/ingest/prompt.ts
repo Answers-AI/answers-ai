@@ -1,11 +1,11 @@
-import { inngest } from './client';
 import { PrismaClient } from 'db/dist';
+import { EventVersionHandler } from './EventVersionHandler';
 const prisma = new PrismaClient();
 
-export const answersPromptUpserted = inngest.createFunction(
-  { name: 'Process answers/prompt.upserted event' },
-  { event: 'answers/prompt.upserted' },
-  async ({ event }) => {
+export const answersPromptUpserted: EventVersionHandler<{ prompt: string }> = {
+  v: '1',
+  event: 'answers/prompt.upserted',
+  handler: async ({ event }) => {
     const { data, user } = event;
     const { prompt } = data;
     const savedPrompt = await prisma.prompt.findUnique({ where: { prompt: data?.prompt } });
@@ -17,12 +17,12 @@ export const answersPromptUpserted = inngest.createFunction(
       }
     });
   }
-);
+};
 
-export const answersPromptAnswered = inngest.createFunction(
-  { name: 'Process answers/prompt.answered event' },
-  { event: 'answers/prompt.answered' },
-  async ({ event }) => {
+export const answersPromptAnswered: EventVersionHandler<{ prompt: string; answer: string }> = {
+  v: '1',
+  event: 'answers/prompt.answered',
+  handler: async ({ event }) => {
     const { data } = event;
     await prisma.prompt.update({
       where: { prompt: data?.prompt },
@@ -33,4 +33,4 @@ export const answersPromptAnswered = inngest.createFunction(
       }
     });
   }
-);
+};
