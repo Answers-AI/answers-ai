@@ -10,7 +10,12 @@ export const answersPromptUpserted: EventVersionHandler<{ prompt: string }> = {
     const savedPrompt = await prisma.prompt.findUnique({ where: { prompt: data?.prompt } });
     await prisma.prompt.upsert({
       where: { prompt: data?.prompt },
-      create: { users: { connect: { email: user?.email } }, prompt, likes: 0, usages: 1 },
+      create: {
+        ...(user?.email && { users: { connect: { email: user?.email } } }),
+        prompt,
+        likes: 0,
+        usages: 1
+      },
       update: {
         usages: (savedPrompt?.usages || 0) + 1
       }

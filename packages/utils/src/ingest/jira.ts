@@ -1,7 +1,5 @@
-import PineconeClient from '../pinecone/client';
 import { getJiraComments, getJiraProjects, JiraComment, JiraIssue, JiraProject } from '../jira';
 import { getJiraTickets } from '../jira/getJiraTickets';
-import JiraIssueModel from '../jira/models/issue';
 import JiraThreadModel from '../jira/models/thread';
 import { jiraIssueLoader } from '../jira';
 
@@ -9,7 +7,6 @@ import { chunkArray } from '../utilities/utils';
 import { inngest } from './client';
 import { EventVersionHandler } from './EventVersionHandler';
 import { AppSettings } from 'types';
-import { prepareAllForEmbedding } from '../prepareAllForEmbedding';
 
 const JIRA_ISSUE_BATCH_SIZE = 1000;
 const JIRA_PROJECT_BATCH_SIZE = 5;
@@ -72,6 +69,7 @@ export const processJiraUpdated: EventVersionHandler<{ appSettings: AppSettings 
     console.timeEnd('jira/app.sync:' + jobId);
   }
 };
+
 export const procesProjectUpdated: EventVersionHandler<{ projectKeys: string[] }> = {
   event: 'jira/project.sync',
   v: '1',
@@ -112,11 +110,6 @@ export const procesProjectUpdated: EventVersionHandler<{ projectKeys: string[] }
     );
   }
 };
-
-const pinecone = new PineconeClient({
-  namespace: 'jira',
-  indexName: process.env.PINECONE_INDEX
-});
 
 export let LAST_JOB_ID = 0;
 export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; key: string }> = {
@@ -209,37 +202,3 @@ export const processIssuesComments: EventVersionHandler<{ issuesKeys: string[] }
     );
   }
 };
-
-export const processEmbeddings: EventVersionHandler<{ issuesKeys: string[] }> = {
-  event: 'jira/issue.embeddings.upserted',
-  v: '1',
-  handler: async ({ event }) => {
-    const { issuesKeys } = event.data;
-
-    const issues = await jiraIssueLoader.loadMany(issuesKeys);
-
-    // TODO - select jira -> pinecone transformer here
-    // Should default to jira issue
-    // Should be able to enable other transformers
-    const vectorData = await prepareAllForEmbedding(
-      issues.map((issue: any) => new JiraIssueModel(issue))
-    );
-    console.log('vectorData', vectorData[0]);
-    if (!DISABLE_EMBEDDING) await pinecone.writeVectorsToIndex(vectorData);
-  }
-};
-export const processCommentsEmbeddings: EventVersionHandler<{ threads: JiraThreadModel[] }> = {
-  event: 'jira/threads.embeddings.upserted',
-  v: '1',
-  handler: async ({ event }) => {
-    const { threads } = event.data;
-
-    const vectorData = await prepareAllForEmbedding(
-      threads.map((thread) => new JiraThreadModel(thread.object))
-    );
-    console.log('vectorData', vectorData?.length);
-    if (!DISABLE_EMBEDDING) await pinecone.writeVectorsToIndex(vectorData);
-  }
-};
-
-export const test = {};
