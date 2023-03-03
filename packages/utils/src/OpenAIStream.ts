@@ -54,7 +54,7 @@ export async function OpenAIStream(payload: any, extra?: any) {
         answer += decoded;
         parser.feed(decoded);
       }
-      console.log('StreamAnswer', answer);
+
       // if (answer)
       //   await prisma.prompt.update({
       //     where: { id: savedPrompt.id },
