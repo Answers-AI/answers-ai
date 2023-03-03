@@ -46,7 +46,6 @@ export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) 
       prompt
     }
   });
-
   return {
     prompt: `Answer the following question based on the context provided.
                 \n\nCONTEXT:\n${context}\n\n
