@@ -58,10 +58,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
         </CardContent>
         <CardActions>
           {usages ? (
-            <Button
-              size="small"
-              color="primary"
-              startIcon={<VisibilityIcon sx={{ fontSize: 12 }} />}>
+            <Button size="small" disabled startIcon={<VisibilityIcon sx={{ fontSize: 12 }} />}>
               {usages}
             </Button>
           ) : null}

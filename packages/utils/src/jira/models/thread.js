@@ -11,8 +11,9 @@ class JiraThread extends JiraObject {
 
   static tidy(thread) {
     return {
-      id: thread?.id,
-      // issueKey: thread?.issueKey,
+      id: thread?.id?.toLowerCase(),
+      issueKey: thread?.issueKey?.toLowerCase(),
+      project: thread.issueKey?.split('-')[0]?.toLowerCase(),
       // objectType: 'JIRA comments thread',
       text: thread?.text || createContext(thread, this.jiraAdfToMarkdown)
     };
@@ -35,6 +36,8 @@ class JiraThread extends JiraObject {
     return vectors;
   }
 }
+
+// TODO : Use feature flag to determine context parser
 const createContext = (metadata, jiraAdfToMarkdown) => {
   // let string = 'The context for ' + id + ' ';
   let string = '';

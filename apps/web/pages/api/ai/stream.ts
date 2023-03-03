@@ -1,5 +1,4 @@
 import { OpenAIStream } from 'utils/dist/OpenAIStream';
-// import { generatePrompt } from '../../../src/generatePrompt';
 import cors from '../../../src/corsEdge';
 
 export const config = {
@@ -16,11 +15,11 @@ const handler = async (req: Request): Promise<Response> => {
       })
     );
   }
+  const args = (await req.json()) as {
+    prompt?: string;
+    answers?: string;
+  };
   try {
-    const args = (await req.json()) as {
-      prompt?: string;
-      answers?: string;
-    };
     const { prompt, pineconeData, context } = await fetch(
       `${
         process.env.VERCEL_URL?.includes('localhost')
@@ -38,8 +37,9 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('args', args, { prompt });
 
     const payload = {
-      model: 'text-davinci-003',
-      prompt,
+      model: 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: prompt }],
+
       temperature: 0.7,
       top_p: 1,
       frequency_penalty: 0,
@@ -49,17 +49,12 @@ const handler = async (req: Request): Promise<Response> => {
       n: 1
     };
 
-    // const stream = await OpenAIStream(payload, {
-    //   pineconeData,
-    //   context
-    // });
-
     const stream = await OpenAIStream(payload, { pineconeData, context });
     return cors(req, new Response(stream));
   } catch (error) {
     const payload = {
-      model: 'text-davinci-003',
-      prompt: args?.prompt,
+      model: 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: args.prompt }],
       temperature: 0.7,
       top_p: 1,
       frequency_penalty: 0,
@@ -71,8 +66,6 @@ const handler = async (req: Request): Promise<Response> => {
     const stream = await OpenAIStream(payload);
     return new Response(stream);
   }
-  // const { prompt } = await generatePrompt(args);
-  // const { prompt } = args;
 };
 
 export default handler;

@@ -60,7 +60,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         model: 'gpt-3.5-turbo',
         messages: completionMessages,
         max_tokens: 700,
-        temperature: 0
+        temperature: 0,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
       });
       completionData = data;
 

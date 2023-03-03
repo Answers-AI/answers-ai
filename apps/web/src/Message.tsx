@@ -73,23 +73,20 @@ export const Message = ({ content, role, user, error, prompt, ...other }: any) =
             component="div">
             <span dangerouslySetInnerHTML={{ __html: content }} />
           </Typography>
-
-          {other?.pineconeData ? (
+          {prompt ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header">
-                <Typography variant="overline">Pinecone</Typography>
+                <Typography variant="overline">Prompt</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <JsonViewer
-                  rootName=""
-                  value={other?.pineconeData}
-                  theme={'dark'}
-                  // defaultInspectDepth={0}
-                  collapseStringsAfterLength={100}
-                />
+                {prompt && !error ? (
+                  <Typography variant="subtitle1" color="text.secondary" component="div">
+                    {prompt}
+                  </Typography>
+                ) : null}
               </AccordionDetails>
             </Accordion>
           ) : null}
@@ -113,8 +110,7 @@ export const Message = ({ content, role, user, error, prompt, ...other }: any) =
               </AccordionDetails>
             </Accordion>
           ) : null}
-
-          {prompt ? (
+          {other?.extra?.filteredData || other?.extra?.unfilteredData ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
@@ -123,9 +119,17 @@ export const Message = ({ content, role, user, error, prompt, ...other }: any) =
                 <Typography variant="overline">Final prompt</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography variant="subtitle1" color="text.secondary" component="div">
-                  {prompt}
-                </Typography>
+                <JsonViewer
+                  rootName="pineconeData"
+                  value={{
+                    filter: other?.extra?.filter,
+                    filteredData: other?.extra?.filteredData,
+                    unfilteredData: other?.extra?.unfilteredData
+                  }}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
               </AccordionDetails>
             </Accordion>
           ) : null}
@@ -141,6 +145,27 @@ export const Message = ({ content, role, user, error, prompt, ...other }: any) =
                 <JsonViewer
                   rootName=""
                   value={other?.completionData}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+
+          {other?.extra ? (
+            // Use the @mui accordion component to wrap the extra and response
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">extra</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <JsonViewer
+                  rootName=""
+                  value={other?.extra}
                   theme={'dark'}
                   // defaultInspectDepth={0}
                   collapseStringsAfterLength={100}
