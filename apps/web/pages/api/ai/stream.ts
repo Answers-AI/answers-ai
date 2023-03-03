@@ -1,17 +1,26 @@
 import { OpenAIStream } from 'utils/dist/OpenAIStream';
 // import { generatePrompt } from '../../../src/generatePrompt';
+import cors from '../../../src/corsEdge';
 
 export const config = {
   runtime: 'edge'
 };
 
 const handler = async (req: Request): Promise<Response> => {
-  const args = (await req.json()) as {
-    prompt?: string;
-    answers?: string;
-  };
-
+  if (req.method === 'OPTIONS') {
+    return cors(
+      req,
+      new Response(JSON.stringify({ message: 'Hello World!' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    );
+  }
   try {
+    const args = (await req.json()) as {
+      prompt?: string;
+      answers?: string;
+    };
     const { prompt, pineconeData, context } = await fetch(
       `${
         process.env.VERCEL_URL?.includes('localhost')
@@ -46,7 +55,7 @@ const handler = async (req: Request): Promise<Response> => {
     // });
 
     const stream = await OpenAIStream(payload, { pineconeData, context });
-    return new Response(stream);
+    return cors(req, new Response(stream));
   } catch (error) {
     const payload = {
       model: 'text-davinci-003',
