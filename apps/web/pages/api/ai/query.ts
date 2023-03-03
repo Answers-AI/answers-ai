@@ -38,9 +38,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   try {
     try {
       console.time('OpenAI->createCompletion');
-      const { data } = await openai.createCompletion({
-        model: 'text-davinci-003',
-        prompt: prompt,
+      // TODO: Move this to app settings or feature flag
+      const { data } = await openai.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: finalPrompt }],
         max_tokens: 700,
         temperature: 0
       });
@@ -56,7 +57,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       return;
     }
     // Get the recommended changes from the API response\
-    const answer = completionData.choices[0].text;
+    const answer = completionData.choices[0]?.message?.content;
 
     if (prompt && answer) {
       await inngest.send({
