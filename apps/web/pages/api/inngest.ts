@@ -5,6 +5,7 @@ import * as jiraFunctions from 'utils/dist/ingest/jira';
 import * as promptFunctions from 'utils/dist/ingest/prompt';
 import * as slackFunctions from 'utils/dist/ingest/slack';
 import * as embeddingsFunctions from 'utils/dist/ingest/embeddings';
+import * as webFunctions from 'utils/dist/ingest/web';
 
 // Create a client to send and receive events
 
@@ -14,7 +15,8 @@ const functions = Object.values({
   ...jiraFunctions,
   ...slackFunctions,
   ...embeddingsFunctions,
-  ...promptFunctions
+  ...promptFunctions,
+  ...webFunctions
 });
 
 const inngestFunctions = createInngestFunctions(functions as any);
