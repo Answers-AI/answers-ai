@@ -29,9 +29,9 @@ export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) 
   }
 
   const context = [
-    ...answers
-      ?.filter((item: any) => !!item?.answer || !!item?.context)
-      ?.map((item: any) => `${item?.answer}, ${item?.context}`),
+    // ...answers
+    //   ?.filter((item: any) => !!item?.answer || !!item?.context)
+    //   ?.map((item: any) => `${item?.answer}, ${item?.context}`),
     ...(!pineconeData?.matches
       ? []
       : pineconeData?.matches?.map((item: any) => item?.metadata?.text))
@@ -47,9 +47,14 @@ export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) 
     }
   });
   return {
-    prompt: `Answer the following question based on the context provided.
+    prompt: `
+You are a helpful assistant expert in software project management. You will provide answers with related information.
+Answer the following request based on the context provided.
+I will give you the questions in the format: 
+CONTEXT: {CONTEXT}
+Question: {QUESTION}
                 \n\nCONTEXT:\n${context}\n\n
-                Question:\n${prompt}\n\nAnswer:\n`,
+                Question:\n${prompt}\n\nAnswer:{ANSWER} Sources:{sources}\n`,
     pineconeData,
     context
   };

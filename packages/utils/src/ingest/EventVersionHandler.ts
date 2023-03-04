@@ -28,7 +28,8 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
           const versions = Object.keys(eventHandlerMap[eventName]);
           let handler;
           if (!v) {
-            throw new Error(`No version for ${eventName}`);
+            console.warn(`No version for ${eventName} using v=1`);
+            handler = eventHandlerMap[eventName][1];
           } else {
             if (versions.includes(v)) {
               handler = eventHandlerMap[eventName][v];
@@ -36,7 +37,7 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
               throw new Error(`No handler for ${eventName}:${v}`);
             }
           }
-          await handler({ event, ts, ...other } as any);
+          await handler({ event, ...other } as any);
           console.timeEnd(`[${ts}]Processing  ${eventName}`);
         } catch (error) {
           console.error(`[${ts}]Error processing ${eventName}`);
@@ -56,6 +57,7 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
 
 export type EventHandler<T> = (args: {
   event: { v: string; data: T; user?: any };
+  step: any;
 }) => Promise<void>;
 
 export type EventVersionHandler<T> = {
