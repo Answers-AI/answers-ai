@@ -30,6 +30,9 @@ export interface AppSettings {
   slack: {
     channels?: SlackChannelSetting[];
   };
+  web: {
+    urls?: WebSetting[];
+  };
 }
 
 export type User = {
@@ -47,3 +50,7 @@ export type Message = {
   role: string;
   content: string;
 };
+export type WebPage = { url: string; content: string };
+export interface WebSetting extends WebPage {
+  enabled: boolean;
+}
