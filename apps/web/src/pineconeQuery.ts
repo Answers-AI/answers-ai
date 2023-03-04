@@ -13,7 +13,7 @@ export const pineconeQuery = async (embeddings: number[]) => {
       vector: embeddings,
       topK: 5,
       includeMetadata: true,
-      namespace: 'jira'
+      namespace: process.env.PINECONE_INDEX_NAMESPACE
     });
 
     console.timeEnd('PineconeQuery');

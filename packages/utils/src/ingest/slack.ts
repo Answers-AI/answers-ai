@@ -45,7 +45,8 @@ export const processSlackUpdated: EventVersionHandler<{ appSettings: AppSettings
           v: '1',
           ts: new Date().valueOf(),
           name: 'slack/channel.sync',
-          data: eventData
+          data: eventData,
+          user: event.user
         });
       })
     );
@@ -85,7 +86,8 @@ export const procesChannelUpdated: EventVersionHandler<{
             v: '1',
             ts: new Date().valueOf(),
             name: 'slack/message.embeddings.upserted',
-            data: eventData
+            data: eventData,
+            user: event.user
           });
         }
       )
@@ -110,6 +112,6 @@ export const processMessageEmbeddingsUpserted: EventVersionHandler<{
 };
 
 const pinecone = new PineconeClient({
-  namespace: 'slack',
+  namespace: process.env.PINECONE_INDEX_NAMESPACE,
   indexName: process.env.PINECONE_INDEX
 });

@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 
-export const useStreamedResponse = ({ answers, addAnswer }: any) => {
+export const useStreamedResponse = ({ messages, addMessage }: any) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [generatedResponse, setGeneratedResponse] = useState<any>({});
@@ -15,7 +15,7 @@ export const useStreamedResponse = ({ answers, addAnswer }: any) => {
       },
       body: JSON.stringify({
         prompt: aPrompt,
-        answers
+        messages
       })
     });
 
@@ -32,7 +32,7 @@ export const useStreamedResponse = ({ answers, addAnswer }: any) => {
     const decoder = new TextDecoder();
     let done = false;
     // let curr = '';
-    let answer;
+    let message;
     let extra: any;
     while (!done) {
       const { value, done: doneReading } = await reader.read();
@@ -40,7 +40,7 @@ export const useStreamedResponse = ({ answers, addAnswer }: any) => {
       const chunkValue = decoder.decode(value);
       if (!extra) {
         setGeneratedResponse((prev: any) => {
-          let current = (prev?.answer || '') + chunkValue;
+          let current = (prev?.message || '') + chunkValue;
           const [jsonData, ...rest] = current.split('JSON_END');
 
           if (jsonData && rest?.length) {
@@ -51,21 +51,21 @@ export const useStreamedResponse = ({ answers, addAnswer }: any) => {
             }
             current = rest.join('');
           }
-          answer = current;
-          return { answer: current, ...extra };
+          message = current;
+          return { message: current, ...extra };
         });
       } else {
         // console.log('OnChunk', { curr, jsonData });
         setGeneratedResponse((prev: any) => {
-          const curr = (prev?.answer || '') + chunkValue;
+          const curr = (prev?.message || '') + chunkValue;
           console.log('OnChunk', { curr, extra });
 
-          answer = curr;
-          return { answer: curr, ...extra };
+          message = curr;
+          return { message: curr, ...extra };
         });
       }
     }
-    addAnswer({ answer: answer, ...extra });
+    addMessage({ message: message, ...extra });
     setGeneratedResponse({});
     setIsLoading(false);
   };

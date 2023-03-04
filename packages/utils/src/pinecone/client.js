@@ -68,7 +68,7 @@ class PineconeClient {
     //TODO: Remove after testing
     // await this.deleteIndex(index);
     // console.log('Vector', vectors[0]);
-    let pineconeUpsertPromises = chunkArray(vectors, 50);
+    let pineconeUpsertPromises = chunkArray(vectors, 100);
     pineconeUpsertPromises.map(async (chunkedVectors) => {
       const upsertRequest = {
         vectors: chunkedVectors,
@@ -77,8 +77,8 @@ class PineconeClient {
       try {
         await index.upsert(upsertRequest);
       } catch (error) {
-        // console.log('Error', error);
-        throw error;
+        console.log('Error', error);
+        return { error };
       }
     });
 

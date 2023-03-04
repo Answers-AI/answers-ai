@@ -2,7 +2,11 @@ export type PineconeObject = {
   vectors: PineconeVector[];
 };
 
-export type PineconeVector = {};
+export type PineconeVector = {
+  text: string;
+  metadata: any;
+  uid: string;
+};
 export type RecommendedPrompt = {
   id: string;
   title?: string;
@@ -38,3 +42,8 @@ export interface SlackChannelSetting extends SlackChannel {
   enabled: boolean;
 }
 export type SlackMessage = {};
+
+export type Message = {
+  role: string;
+  content: string;
+};

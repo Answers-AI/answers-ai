@@ -9,11 +9,17 @@ type Data = {
   error?: any;
 };
 
-import { Configuration, OpenAIApi } from 'openai';
+import {
+  ChatCompletionRequestMessage,
+  ChatCompletionRequestMessageRoleEnum,
+  Configuration,
+  OpenAIApi
+} from 'openai';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]';
 import { prisma } from 'db/dist';
 import { inngest } from '../../../src/ingestClient';
+import { Message } from 'types';
 
 const initializeOpenAI = () => {
   const configuration = new Configuration({
@@ -29,19 +35,30 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const session = await getServerSession(req, res, authOptions);
 
   let completionData;
-  const { prompt, answers } = req.body;
+  let completionMessages: ChatCompletionRequestMessage[];
+  // GEt last item from messages
+  const messages: { role: ChatCompletionRequestMessageRoleEnum; content: string }[] =
+    req.body.messages;
+  const lastMessage = messages[messages.length - 1];
+  const restMessages = messages.slice(0, messages.length - 1);
+  const prompt = lastMessage.content;
   const {
     prompt: finalPrompt,
     pineconeData,
     context
-  } = await generatePrompt({ prompt, answers }, session?.user);
+  } = await generatePrompt({ prompt, messages }, session?.user);
   try {
     try {
       console.time('OpenAI->createCompletion');
+      completionMessages = [
+        ...restMessages?.map(({ role, content }) => ({ role, content })),
+        { role: 'user', content: finalPrompt }
+      ];
+      console.log('OpenAI->createCompletion', { completionMessages });
       // TODO: Move this to app settings or feature flag
       const { data } = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: finalPrompt }],
+        messages: completionMessages,
         max_tokens: 700,
         temperature: 0
       });
@@ -57,22 +74,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       return;
     }
     // Get the recommended changes from the API response\
-    const answer = completionData.choices[0]?.message?.content;
+    const message = completionData.choices[0]?.message;
 
-    if (prompt && answer) {
+    if (prompt && message) {
       await inngest.send({
         v: '1',
         ts: new Date().valueOf(),
-        name: 'answers/prompt.answered',
+        name: 'messages/prompt.answered',
         user: session?.user,
-        data: { prompt, answer: answer }
+        data: { prompt, message }
       });
     }
     res.status(200).json({
       prompt: finalPrompt,
-      answer,
+      role: 'assistant',
+      content: message?.content,
       context,
       pineconeData,
+      completionMessages,
       completionData
     } as any);
   } catch (error: any) {

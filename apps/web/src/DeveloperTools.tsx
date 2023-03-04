@@ -8,7 +8,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PromptCard from './PromptCard';
 import AddIcon from '@mui/icons-material/PlusOne';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Answer } from './Answer';
+import { Message } from './Message';
 import { useStreamedResponse } from './useStreamedResponse';
 import AppSyncToolbar from 'AppSyncToolbar';
 
@@ -82,18 +82,19 @@ const DeveloperTools = ({
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [prompt, setPrompt] = useState('');
-  const [answers, setAnswers] = useState<any[]>([]);
-  const addAnswer = useCallback(
-    (answer: any) => setAnswers((currentAnswers) => [...currentAnswers, answer]),
+  const [messages, setMessages] = useState<any[]>([]);
+  const addMessage = useCallback(
+    (message: any) => setMessages((currentMessages) => [...currentMessages, message]),
     []
   );
   const { isLoading, generatedResponse, generateResponse } = useStreamedResponse({
-    answers,
-    addAnswer
+    messages,
+    addMessage
   });
-  const [useStreaming, setUseStreaming] = useState(true);
+  const [useStreaming, setUseStreaming] = useState(false);
   const [showPrompts, setShowPrompts] = useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const { data, isFetching } = useQuery({
     enabled: !!prompt && !useStreaming,
@@ -105,28 +106,29 @@ const DeveloperTools = ({
     retry: false,
     queryFn: () =>
       axios
-        .post(`/api/ai/query`, { prompt, answers })
+        .post(`/api/ai/query`, { prompt, messages })
         .then((res) => res.data)
         .catch((error) => ({
           error: error?.response?.data?.error
         })),
     onSuccess: (data) => {
-      if (answers?.length) addAnswer(data);
+      if (messages?.length) addMessage(data);
     }
   });
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [answers]);
+  }, [messages]);
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
   const handleSync = async (name: string) => {
-    addAnswer({ prompt: `Can you please sync all ${name} tickets?` });
+    addMessage({ role: 'user', content: `Can you please sync all ${name} tickets?` });
     try {
       await axios.post(`/api/sync/${name}`);
-      addAnswer({
-        answer: `Synced ${name} event sent. Go to <a href="/events">events</a> to track the status.`
+      addMessage({
+        role: 'system',
+        message: `Synced ${name} event sent. Go to <a href="/events">events</a> to track the status.`
       });
     } catch (error) {
       console.log(error);
@@ -136,7 +138,7 @@ const DeveloperTools = ({
   const handleSubmit = () => {
     if (!inputValue) return;
     setPrompt(inputValue);
-    setAnswers([...answers, { prompt: inputValue }]);
+    setMessages([...messages, { role: 'user', content: inputValue }]);
     setShowPrompts(false);
     setInputValue('');
     if (useStreaming) generateResponse(inputValue);
@@ -144,13 +146,15 @@ const DeveloperTools = ({
 
   const handlePromptClick = (prompt: string) => {
     if (!prompt) return;
-    setPrompt(prompt);
-    addAnswer({ prompt });
-    setInputValue('');
-    setShowPrompts(false);
 
-    if (useStreaming) generateResponse(prompt);
+    // addMessage({ role: 'user', content: prompt });
+    setInputValue(prompt);
+    setShowPrompts(false);
+    inputRef.current?.focus();
+
+    // if (useStreaming) generateResponse(prompt);
   };
+  console.log('MEssages', messages);
   return (
     <>
       <Box
@@ -164,14 +168,14 @@ const DeveloperTools = ({
         }}>
         <Box sx={{ width: '100%', flex: 1, overflowX: 'auto' }} ref={scrollRef}>
           <Box sx={{ width: '100%', gap: 2, flexDirection: 'column', display: 'flex' }}>
-            {answers.map((answer, index) => (
-              <Answer {...answer} key={index} />
+            {messages.map((message, index) => (
+              <Message {...message} key={index} />
             ))}
-            {generatedResponse?.answer && <Answer {...generatedResponse} />}
-            {(isFetching || (isLoading && !generatedResponse?.answer)) && answers?.length ? (
-              <Answer user={user} answer={'...'} />
+            {generatedResponse?.message && <Message {...generatedResponse} />}
+            {(isFetching || (isLoading && !generatedResponse?.message)) && messages?.length ? (
+              <Message user={user} message={'...'} />
             ) : null}
-            {!answers?.length || showPrompts ? (
+            {!messages?.length || showPrompts ? (
               <DefaultPrompts prompts={[...prompts]} handlePromptClick={handlePromptClick} />
             ) : null}
           </Box>
@@ -181,8 +185,9 @@ const DeveloperTools = ({
           <AppSyncToolbar
             appSettings={appSettings}
             onSync={(service) =>
-              addAnswer({
-                answer: `Synced ${service.name} event sent. Go to <a href="/events">events</a> to track the status.`
+              addMessage({
+                role: 'assistant',
+                content: `Synced ${service.name} event sent. Go to <a href="/events">events</a> to track the status.`
               })
             }
           />
@@ -229,8 +234,8 @@ const DeveloperTools = ({
                 label={'Stream'}
               />
             </>
-            {answers?.length ? (
-              <Button variant="outlined" color="primary" onClick={() => setAnswers([])}>
+            {messages?.length ? (
+              <Button variant="outlined" color="primary" onClick={() => setMessages([])}>
                 <DeleteIcon />
               </Button>
             ) : null}
@@ -242,6 +247,7 @@ const DeveloperTools = ({
 
         <Box sx={{ position: 'relative' }}>
           <TextField
+            inputRef={inputRef}
             variant="filled"
             fullWidth
             placeholder="What is the status of the ticket?"

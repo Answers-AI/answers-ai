@@ -1,25 +1,21 @@
 import { getJiraComments, getJiraProjects, JiraComment, JiraIssue, JiraProject } from '../jira';
 import { getJiraTickets } from '../jira/getJiraTickets';
-import JiraThreadModel from '../jira/models/thread';
 import { jiraIssueLoader } from '../jira';
 
 import { chunkArray } from '../utilities/utils';
 import { inngest } from './client';
 import { EventVersionHandler } from './EventVersionHandler';
 import { AppSettings } from 'types';
+import { jiraAdfToMarkdown } from '../utilities/jiraAdfToMarkdown';
 
 const JIRA_ISSUE_BATCH_SIZE = 1000;
 const JIRA_PROJECT_BATCH_SIZE = 5;
-const EMBEDDING_BATCH_SIZE = 300;
-const COMMENTS_BATCH_SIZE = 50;
-
-const DISABLE_EMBEDDING = false;
+const PINECONE_VECTORS_BATCH_SIZE = 100;
 
 export const processJiraUpdated: EventVersionHandler<{ appSettings: AppSettings }> = {
   event: 'jira/app.sync',
   v: '1',
   handler: async ({ event }) => {
-    const jobId = LAST_JOB_ID++;
     const { appSettings } = event.data;
     const projectKeysFilter = appSettings?.jira?.projects
       ?.filter((p) => p.enabled)
@@ -61,12 +57,11 @@ export const processJiraUpdated: EventVersionHandler<{ appSettings: AppSettings 
           v: '1',
           ts: new Date().valueOf(),
           name: 'jira/project.sync',
-          data: eventData
+          data: eventData,
+          user: event.user
         });
       })
     );
-
-    console.timeEnd('jira/app.sync:' + jobId);
   }
 };
 
@@ -74,7 +69,6 @@ export const procesProjectUpdated: EventVersionHandler<{ projectKeys: string[] }
   event: 'jira/project.sync',
   v: '1',
   handler: async ({ event }) => {
-    const jobId = LAST_JOB_ID++;
     const { projectKeys } = event.data;
 
     // Chunk projects into batches of 10
@@ -104,101 +98,110 @@ export const procesProjectUpdated: EventVersionHandler<{ projectKeys: string[] }
           v: '1',
           ts: new Date().valueOf(),
           name: 'jira/issues.upserted',
-          data: eventData
+          data: eventData,
+          user: event.user
         });
       })
     );
   }
 };
 
-export let LAST_JOB_ID = 0;
 export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; key: string }> = {
   event: 'jira/issues.upserted',
   v: '1',
-  handler: async ({ event }) => {
+  handler: async ({ event, step }) => {
     try {
       const { issuesKeys } = event.data;
+      await step.run('Fetch comments page', async () => {
+        const issues = (await jiraIssueLoader.loadMany(issuesKeys)) as JiraIssue[];
 
-      await Promise.all(
-        chunkArray(issuesKeys, EMBEDDING_BATCH_SIZE).map((batchIssues: JiraIssue[], i) => {
-          const eventData = {
-            _page: i,
-            _total: issuesKeys.length,
-            _batchSize: EMBEDDING_BATCH_SIZE,
-            issuesKeys: batchIssues
-          };
-          //TODO: Save to Redis by issue key
-          //TODO: In event only send issue keys
-          inngest.send({
-            v: '1',
-            ts: new Date().valueOf(),
-            name: 'jira/issue.embeddings.upserted',
-            data: eventData
-          });
-        })
-      );
+        // TODO: Create a JiraIssueCommentsLoader
+        // or TODO: Pull issue and comments from Prisma
+        const jiraIssueComments = await Promise.all(
+          issues?.map(async (issue) =>
+            getJiraComments(issue?.id)
+              .then((comments) => ({ ...issue, comments }))
+              .catch((err) => null)
+          )
+        );
 
-      await Promise.all(
-        chunkArray(issuesKeys, COMMENTS_BATCH_SIZE).map((batchIssues: JiraIssue[], i) => {
-          const eventData = {
-            _page: i,
-            _total: issuesKeys.length,
-            _batchSize: COMMENTS_BATCH_SIZE,
-            issuesKeys: batchIssues
-          };
-          //TODO: Save to Redis by issue key
-          //TODO: In event only send issue keys
-          inngest.send({
-            v: '1',
-            ts: new Date().valueOf(),
-            name: 'jira/issueComments.upserted',
-            data: eventData
-          });
-        })
-      );
+        const summarize = (issue: any) =>
+          `Details for ${issue?.key} are ${Object.entries({
+            'status category': issue?.fields.status?.statusCategory?.name,
+            'status': issue?.fields.status?.name,
+            'account': issue?.fields.customfield_10037?.value,
+            'priority': issue?.fields.priority?.name,
+            'the project name': issue?.fields.project?.name,
+            'the reporter': issue?.fields.reporter?.displayName,
+            'assigned to': issue?.fields.assignee?.displayName || 'Unassigned',
+            'assignee email': issue?.fields.assignee?.email,
+            'the parent key': issue?.fields.parent?.key,
+            'the link': `https://lastrev.atlassian.net/browse/${issue?.key}`,
+            'the description': issue?.fields.description
+              ? jiraAdfToMarkdown(issue?.fields.description)
+              : '',
+            'the summary': issue?.fields?.summary
+          })
+            .filter(([key, value]) => !!value)
+            .map(([key, value]) => `${key} is ${value}`)
+            ?.join(', ')}\n The comments for ${issue?.key} are ${issue?.comments
+            ?.map(
+              ({ author, body, updated, self }: any) =>
+                // `[${updated} - ${author?.displayName}](${self}): ${jiraAdfToMarkdown(body)}`
+                `${author?.displayName} at ${updated}: "${jiraAdfToMarkdown(body)}"`
+            )
+            ?.join('\n')}.
+`;
+
+        const vectors = jiraIssueComments
+          ?.filter((issue) => !!issue)
+          ?.map((issue) =>
+            !!issue
+              ? {
+                  uid: `JiraIssue_${issue?.key}`,
+                  text: summarize(issue),
+                  metadata: {
+                    'key': issue?.key,
+                    'account': issue?.fields.customfield_10037?.value,
+                    'projectName': issue?.fields.project?.name,
+                    'reporter': issue?.fields.reporter?.displayName,
+                    'assignee name': issue?.fields.assignee?.displayName || 'Unassigned',
+                    'assignee email': issue?.fields.assignee?.email,
+                    'priority': issue?.fields.priority?.name,
+                    'status': issue?.fields.status?.name,
+                    'status category': issue?.fields.status?.statusCategory?.name,
+                    'parent key': issue?.fields.parent?.key,
+                    'description': issue?.fields.description
+                      ? jiraAdfToMarkdown(issue?.fields.description)
+                      : ''
+                  }
+                }
+              : ''
+          );
+
+        if (vectors?.length)
+          await Promise.all(
+            chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
+              //TODO: Save to Redis by issue key
+              //TODO: In event only send issue keys
+              inngest.send({
+                v: '1',
+                ts: new Date().valueOf(),
+                name: 'pinecone/vectors.upserted',
+                data: {
+                  _page: i,
+                  _total: vectors.length,
+                  _batchSize: PINECONE_VECTORS_BATCH_SIZE,
+                  vectors: batchVectors
+                },
+                user: event.user
+              });
+            })
+          );
+      });
     } catch (e) {
       console.log(e);
       throw e;
     }
-  }
-};
-
-export const processIssuesComments: EventVersionHandler<{ issuesKeys: string[] }> = {
-  event: 'jira/issueComments.upserted',
-  v: '1',
-  handler: async ({ event }) => {
-    const { issuesKeys } = event.data;
-
-    const jiraThreads = await Promise.all(
-      issuesKeys?.map(async (issueKey: any) =>
-        getJiraComments(issueKey).then((comments) => new JiraThreadModel({ issueKey, comments }))
-      )
-    )?.then((threads) => threads.filter((thread) => !!thread?.object?.text));
-    // console.log('Comments to sync:', jiraThreads[0]);
-    // Prime redis loader with the issues using the hashKey function
-    // try {
-    //   // @ts-ignore
-    //   await jiraIssueLoader.primeAll(issues.map((issue) => [issue.key, issue]));
-    // } catch (error) {
-    //   console.log('Error priming loader', error);
-    // }
-    await Promise.all(
-      chunkArray(jiraThreads, COMMENTS_BATCH_SIZE).map((threads: JiraComment[], i) => {
-        const eventData = {
-          _page: i,
-          _total: jiraThreads.length,
-          _batchSize: COMMENTS_BATCH_SIZE,
-          threads: threads
-        };
-        //TODO: Save to Redis by issue key
-        //TODO: In event only send issue keys
-        return inngest.send({
-          v: '1',
-          ts: new Date().valueOf(),
-          name: 'jira/threads.embeddings.upserted',
-          data: eventData
-        });
-      })
-    );
   }
 };

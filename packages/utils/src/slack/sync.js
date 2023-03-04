@@ -6,7 +6,7 @@ import SlackChannel from './models/channel';
 const answerSession = new AnswerSession({ namespace: 'slack' });
 
 answerSession.initPinecone({
-  namespace: 'slack',
+  namespace: process.env.PINECONE_INDEX_NAMESPACE,
   indexName: 'adam-test-jira-2023-02-08-01'
 });
 

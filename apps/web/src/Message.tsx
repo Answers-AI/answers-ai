@@ -41,10 +41,10 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: theme.spacing(2),
   borderTop: '1px solid rgba(0, 0, 0, .125)'
 }));
-export const Answer = ({ user, answer, prompt, error, ...other }: any) => (
+export const Message = ({ content, role, user, error, prompt, ...other }: any) => (
   <Card sx={{ display: 'flex', padding: 2 }}>
-    <Avatar sx={{ bgcolor: answer ? 'primary.main' : 'secondary.main' }}>
-      {answer ? 'AI' : user?.name?.charAt(0)}
+    <Avatar sx={{ bgcolor: role == 'user' ? 'primary.main' : 'secondary.main' }}>
+      {role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
     </Avatar>
     <CardContent sx={{ py: 0, px: 2, width: '100%', display: 'flex', flexDirection: 'column' }}>
       {error ? (
@@ -60,7 +60,7 @@ export const Answer = ({ user, answer, prompt, error, ...other }: any) => (
           />
         </>
       ) : null}
-      {answer ? (
+      {content ? (
         <>
           <Typography
             sx={{
@@ -71,8 +71,28 @@ export const Answer = ({ user, answer, prompt, error, ...other }: any) => (
             variant="subtitle1"
             color="text.secondary"
             component="div">
-            <span dangerouslySetInnerHTML={{ __html: answer }} />
+            <span dangerouslySetInnerHTML={{ __html: content }} />
           </Typography>
+
+          {other?.pineconeData ? (
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Pinecone</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <JsonViewer
+                  rootName=""
+                  value={other?.pineconeData}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
           {other?.context ? (
             // Use the @mui accordion component to wrap the context and response
             <Accordion TransitionProps={{ unmountOnExit: true }}>
@@ -93,22 +113,19 @@ export const Answer = ({ user, answer, prompt, error, ...other }: any) => (
               </AccordionDetails>
             </Accordion>
           ) : null}
-          {other?.pineconeData ? (
+
+          {prompt ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header">
-                <Typography variant="overline">Pinecone</Typography>
+                <Typography variant="overline">Final prompt</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <JsonViewer
-                  rootName=""
-                  value={other?.pineconeData}
-                  theme={'dark'}
-                  // defaultInspectDepth={0}
-                  collapseStringsAfterLength={100}
-                />
+                <Typography variant="subtitle1" color="text.secondary" component="div">
+                  {prompt}
+                </Typography>
               </AccordionDetails>
             </Accordion>
           ) : null}
@@ -132,11 +149,6 @@ export const Answer = ({ user, answer, prompt, error, ...other }: any) => (
             </Accordion>
           ) : null}
         </>
-      ) : null}
-      {prompt && !error && !answer ? (
-        <Typography variant="subtitle1" color="text.secondary" component="div">
-          {prompt}
-        </Typography>
       ) : null}
     </CardContent>
   </Card>
