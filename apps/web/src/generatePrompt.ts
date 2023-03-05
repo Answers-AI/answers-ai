@@ -1,4 +1,5 @@
 import { Configuration, OpenAIApi } from 'openai';
+import prompts from '../../../packages/utils/dist/prompts';
 
 const initializeOpenAI = () => {
   const configuration = new Configuration({
@@ -47,14 +48,7 @@ export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) 
     }
   });
   return {
-    prompt: `
-You are a helpful assistant expert in software project management. You will provide answers with related information.
-Answer the following request based on the context provided.
-I will give you the questions in the format: 
-CONTEXT: {CONTEXT}
-Question: {QUESTION}
-                \n\nCONTEXT:\n${context}\n\n
-                Question:\n${prompt}\n\nAnswer:{ANSWER} Sources:{sources}\n`,
+    prompt: prompts.bradprompts.queries.bundlestatus(prompt, context),
     pineconeData,
     context
   };

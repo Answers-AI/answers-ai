@@ -1,6 +1,7 @@
 import { getJiraComments, getJiraProjects, JiraComment, JiraIssue, JiraProject } from '../jira';
 import { getJiraTickets } from '../jira/getJiraTickets';
 import { jiraIssueLoader } from '../jira';
+import prompts from '../prompts';
 
 import { chunkArray } from '../utilities/utils';
 import { inngest } from './client';
@@ -11,6 +12,7 @@ import { jiraAdfToMarkdown } from '../utilities/jiraAdfToMarkdown';
 const JIRA_ISSUE_BATCH_SIZE = 1000;
 const JIRA_PROJECT_BATCH_SIZE = 5;
 const PINECONE_VECTORS_BATCH_SIZE = 100;
+const PINECONE_INDEX_NAMESPACE = process.env.PINECONE_INDEX_NAMESPACE || 'default';
 
 export const processJiraUpdated: EventVersionHandler<{ appSettings: AppSettings }> = {
   event: 'jira/app.sync',
@@ -124,34 +126,8 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
               .catch((err) => null)
           )
         );
+                  
 
-        const summarize = (issue: any) =>
-          `Details for ${issue?.key} are ${Object.entries({
-            'status category': issue?.fields.status?.statusCategory?.name,
-            'status': issue?.fields.status?.name,
-            'account': issue?.fields.customfield_10037?.value,
-            'priority': issue?.fields.priority?.name,
-            'the project name': issue?.fields.project?.name,
-            'the reporter': issue?.fields.reporter?.displayName,
-            'assigned to': issue?.fields.assignee?.displayName || 'Unassigned',
-            'assignee email': issue?.fields.assignee?.email,
-            'the parent key': issue?.fields.parent?.key,
-            'the link': `https://lastrev.atlassian.net/browse/${issue?.key}`,
-            'the description': issue?.fields.description
-              ? jiraAdfToMarkdown(issue?.fields.description)
-              : '',
-            'the summary': issue?.fields?.summary
-          })
-            .filter(([key, value]) => !!value)
-            .map(([key, value]) => `${key} is ${value}`)
-            ?.join(', ')}\n The comments for ${issue?.key} are ${issue?.comments
-            ?.map(
-              ({ author, body, updated, self }: any) =>
-                // `[${updated} - ${author?.displayName}](${self}): ${jiraAdfToMarkdown(body)}`
-                `${author?.displayName} at ${updated}: "${jiraAdfToMarkdown(body)}"`
-            )
-            ?.join('\n')}.
-`;
 
         const vectors = jiraIssueComments
           ?.filter((issue) => !!issue)
@@ -159,22 +135,8 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
             !!issue
               ? {
                   uid: `JiraIssue_${issue?.key}`,
-                  text: summarize(issue),
-                  metadata: {
-                    'key': issue?.key,
-                    'account': issue?.fields.customfield_10037?.value,
-                    'projectName': issue?.fields.project?.name,
-                    'reporter': issue?.fields.reporter?.displayName,
-                    'assignee name': issue?.fields.assignee?.displayName || 'Unassigned',
-                    'assignee email': issue?.fields.assignee?.email,
-                    'priority': issue?.fields.priority?.name,
-                    'status': issue?.fields.status?.name,
-                    'status category': issue?.fields.status?.statusCategory?.name,
-                    'parent key': issue?.fields.parent?.key,
-                    'description': issue?.fields.description
-                      ? jiraAdfToMarkdown(issue?.fields.description)
-                      : ''
-                  }
+                  text: prompts.bradprompts.summarizer(issue), // TODO: Make the summarizer configurable via environment variables
+                  metadata: prompts.bradprompts.metadata(issue), // TODO: Make the metadata configurable via environment variables
                 }
               : ''
           );

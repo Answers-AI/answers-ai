@@ -19,7 +19,8 @@ const JIRA_FIELDS = [
   'comments',
   'priority',
   'parent',
-  'project'
+  'project',
+  'summary'
 ];
 export const getJiraTickets = async ({
   jql,
@@ -44,6 +45,7 @@ export const getJiraTickets = async ({
     let data: { issues: JiraIssue[]; errors?: any; isLast: boolean; total: number } =
       await jiraClient.fetchJiraData(endpoint, { cache: false });
     console.debug(`getJiraTickets ->JQL:${jql}` + 'Total: ' + data.total);
+
 
     // console.log(data?.issues[0]);
     // if (!data || data.errors) {

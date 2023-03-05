@@ -8,10 +8,10 @@ import AnswerSession from './utilities/answerSession';
 import JiraClient from './jira/client';
 
 const pinecone = new Pinecone({
-  namespace: 'jira',
+  namespace: process.env.PINECONE_INDEX_NAMESPACE,
   indexName: process.env.PINECONE_INDEX
 });
-const answerSession = new AnswerSession({ namespace: 'jira' });
+const answerSession = new AnswerSession({ namespace: process.env.PINECONE_INDEX_NAMESPACE });
 const jiraClient = new JiraClient();
 
 const getIssueFieldJsonLdContext = async () => {

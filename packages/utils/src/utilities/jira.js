@@ -70,7 +70,7 @@ const writeObjectToFile = (obj) => {
     if (currentFileSize + jsonStringSize > maxFileSize) {
       fs.writeFileSync(
         `${outputFileName}-${currentFileIndex}.json`,
-        JSON.stringify({ namespace: 'jira', vectors: currentFileArray })
+        JSON.stringify({ namespace: process.env.PINECONE_INDEX_NAMESPACE, vectors: currentFileArray })
       );
       currentFileIndex++;
       currentFileArray = [];
@@ -82,7 +82,7 @@ const writeObjectToFile = (obj) => {
 
   fs.writeFileSync(
     `${outputFileName}-${currentFileIndex}.json`,
-    JSON.stringify({ namespace: 'jira', vectors: currentFileArray })
+    JSON.stringify({ namespace: process.env.PINECONE_INDEX_NAMESPACE, vectors: currentFileArray })
   );
 };
 
