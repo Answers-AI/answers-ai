@@ -6,7 +6,7 @@ export async function OpenAIStream(payload: any, extra?: any) {
 
   let counter = 0;
   // @ts-expect-error
-  const res = await fetch('https://api.openai.com/v1/completions', {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${process.env.OPENAI_API_KEY ?? ''}`
@@ -34,8 +34,9 @@ export async function OpenAIStream(payload: any, extra?: any) {
           }
           try {
             const json = JSON.parse(data);
-            const text = json.choices[0].text;
-            if (counter < 2 && (text.match(/\n/) || []).length) {
+            const text = json.choices[0].delta.content;
+            // console.log('StreamChunk', text);
+            if (counter < 2 && (text?.match(/\n/) || []).length) {
               return;
             }
             const queue = encoder.encode(text);

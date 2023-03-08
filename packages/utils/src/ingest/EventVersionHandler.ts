@@ -48,10 +48,6 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
     );
   });
 
-  console.log(
-    'EventVersionHandlers',
-    Object.entries(eventHandlerMap)?.map(([e, versions]) => `${e}[${Object.keys(versions)}]`)
-  );
   return inngestFunctions;
 };
 
