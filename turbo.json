@@ -39,10 +39,16 @@
       "inputs": ["prisma/**"],
       "outputs": ["dist/**"]
     },
+    "db#build": {
+      "cache": false,
+      "inputs": ["prisma/**"],
+      "outputs": ["dist/**"]
+    },
     "web#build": {
       "dependsOn": ["^build", "db#build"],
       "outputs": ["dist/**", ".next/**"]
     },
+
     "lint": {
       "outputs": []
     },

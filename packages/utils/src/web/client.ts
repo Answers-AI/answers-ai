@@ -3,7 +3,7 @@ import Redis from 'ioredis';
 
 class WebClient {
   redis: Redis;
-  headers: { Authorization?: string; Accept: string };
+  headers: { Authorization?: string; Accept: string; Cookie?: string };
   cacheExpireTime: number;
   constructor({ cacheExpireTime = 60 * 60 * 24 } = {}) {
     this.cacheExpireTime = cacheExpireTime;
@@ -44,20 +44,29 @@ class WebClient {
         console.log(err);
       }
     }
-    if (!data) {
-      const response = await axios.get(url, {
-        method: 'GET',
-        headers: this.headers
-      });
 
-      // TODO: Add handler for HTTP requests
-      // if (response.status === 429) {
-      //   await this.handleRateLimit(response);
-      //   return null;
-      // }
-      data = response?.data;
-      if (cache) await this.redis.set(hashKey, JSON.stringify(data));
-      if (cache) await this.redis.expire(hashKey, this.cacheExpireTime);
+    if (!data) {
+      try {
+        const response = await axios.get(url, {
+          method: 'GET',
+          headers: this.headers
+        });
+
+        if (response.status !== 200) {
+          throw new Error(`Failed to fetch data from ${url}. Status: ${response.status}`);
+        }
+
+        // TODO: Add handler for HTTP requests
+        // if (response.status === 429) {
+        //   await this.handleRateLimit(response);
+        //   return null;
+        // }
+        data = response?.data;
+        if (cache) await this.redis.set(hashKey, JSON.stringify(data));
+        if (cache) await this.redis.expire(hashKey, this.cacheExpireTime);
+      } catch (err) {
+        console.error(`Error fetching data from ${url}`, err);
+      }
     }
 
     return data;

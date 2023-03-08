@@ -48,7 +48,7 @@ export const generatePrompt = async ({ prompt, answers = [] }: any, user?: any) 
   });
   return {
     prompt: `
-You are a helpful assistant expert in software project management. You will provide answers with related information.
+You are a helpful assistant. You will provide answers with related information.
 Answer the following request based on the context provided.
 I will give you the questions in the format: 
 CONTEXT: {CONTEXT}

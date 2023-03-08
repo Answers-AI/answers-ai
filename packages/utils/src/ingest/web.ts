@@ -1,126 +1,125 @@
 import { inngest } from './client';
-import { WebPage } from '../web';
-import { getWebPages } from '../web/getWebPages';
 import { webPageLoader } from '../web';
-
 import { EventVersionHandler } from './EventVersionHandler';
 import { chunkArray } from '../utilities/utils';
+import { WebPage } from 'types';
+import { extractUrlsFromSitemap } from '../utilities/getSitemapUrls';
 
-const BATCH_SIZE = 1000;
-const EMBEDDING_BATCH_SIZE = 300;
+const PINECONE_VECTORS_BATCH_SIZE = 100;
 
-export const processWebScrape: EventVersionHandler<{ url: string }> = {
+export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
+  event: 'web/domain.sync',
+  v: '1',
+  handler: async ({ event }) => {
+    const data = event.data;
+    const { domain } = data;
+
+    const urls = await extractUrlsFromSitemap(`${domain}/sitemap.xml`); // TODO: Write parser for XML
+
+    const webPages = (await webPageLoader.loadMany(urls)) as WebPage[];
+
+    const summarize = (page: any) =>
+      `Details for ${page?.url} is ${Object.entries({
+        content: page?.content
+      })
+        .filter(([key, value]) => !!value)
+        .map(([key, value]) => `${key}: ${value}`)}`;
+
+    const vectors = webPages.flatMap((page) => {
+      const headingsRegex = /(^|\n)###?\s/g;
+      const headingsArray = page.content.split(headingsRegex);
+
+      return (
+        headingsArray
+          // .filter((_: any, i: number) => i % 2 !== 0)
+          .map((heading: any, i: any) => ({
+            uid: `WebPage_${page.url}_${i}`,
+            text: summarize({ ...page, content: heading }),
+            metadata: {
+              url: page?.url
+            }
+          }))
+      );
+    });
+
+    if (vectors?.length)
+      await Promise.all(
+        chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
+          //TODO: Save to Redis by page url
+          //TODO: In event only send page urls
+          inngest.send({
+            v: '1',
+            ts: new Date().valueOf(),
+            name: 'pinecone/vectors.upserted',
+            data: {
+              _page: i,
+              _total: vectors.length,
+              _batchSize: PINECONE_VECTORS_BATCH_SIZE,
+              vectors: batchVectors
+            },
+            user: event.user
+          });
+        })
+      );
+  }
+};
+
+export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
   event: 'web/page.sync',
   v: '1',
   handler: async ({ event }) => {
     const data = event.data;
-    const { url } = data;
-    const urls = [url];
-    // Chunk projects into batches of 10
-    const webPages = await getWebPages({
-      url
+    const { urls: iUrls } = data;
+
+    // TODO: Write parser for XML
+    // const sitemapUrl: string = iUrls[0];
+
+    // const urls = await getSitemapLinks(sitemapUrl);
+
+    const webPages = (await webPageLoader.loadMany(iUrls)) as WebPage[];
+
+    const summarize = (page: any) =>
+      `Details for ${page?.url} is ${Object.entries({
+        content: page?.content
+      })
+        .filter(([key, value]) => !!value)
+        .map(([key, value]) => `${key}: ${value}`)}`;
+
+    const vectors = webPages.flatMap((page) => {
+      const headingsRegex = /(^|\n)###?\s/g;
+      const headingsArray = page.content.split(headingsRegex);
+
+      return (
+        headingsArray
+          // .filter((_: any, i: number) => i % 2 !== 0)
+          .map((heading: any, i: any) => ({
+            uid: `WebPage_${page.url}_${i}`,
+            text: summarize({ ...page, content: heading }),
+            metadata: {
+              url: page?.url
+            }
+          }))
+      );
     });
 
-    console.log('webPages', webPages);
-
-    try {
-      // @ts-ignore
-      await webPageLoader.primeAll(webPages.map((page) => [page.url, page]));
-    } catch (error) {
-      console.log('Error priming loader', error);
-    }
-
-    // Chunk the pages into batches of BATCH_SIZE
-    await Promise.all(
-      chunkArray(urls, BATCH_SIZE).map((batchPages: WebPage[], i) => {
-        const eventData = {
-          _page: i,
-          _total: urls.length,
-          _batchSize: BATCH_SIZE,
-          pageUrls: batchPages?.map((page) => page.url)
-        };
-        //TODO: Save to Redis by page url
-        //TODO: In event only send page url
-        inngest.send({
-          v: '1',
-          ts: new Date().valueOf(),
-          name: 'web/page.upserted',
-          data: eventData
-        });
-      })
-    );
-
-    // const response = await axios.get(data.url, {
-    //   method: 'GET',
-    //   headers: {
-    //     Accept: 'text/plain'
-    //   }
-    // });
-    // const $ = cheerio.load(response.data);
-    // const elements = $('body')
-    //   .children()
-    //   .filter((i, el) => {
-    //     return !$(el).is('header, footer');
-    //   });
-    // const mkdown = NodeHtmlMarkdown.translate(
-    //   /* html */ response.data,
-    //   /* options (optional) */ {},
-    //   /* customTranslators (optional) */ undefined,
-    //   /* customCodeBlockTranslators (optional) */ undefined
-    // );
-
-    // console.log(mkdown);
-  }
-};
-
-export let LAST_JOB_ID = 0;
-export const processUpsertedPages: EventVersionHandler<{ pageUrls: string[]; key: string }> = {
-  event: 'web/page.upserted',
-  v: '1',
-  handler: async ({ event }) => {
-    try {
-      const { pageUrls } = event.data;
-
+    if (vectors?.length)
       await Promise.all(
-        chunkArray(pageUrls, EMBEDDING_BATCH_SIZE).map((batchIssues: WebPage[], i) => {
-          const eventData = {
-            _page: i,
-            _total: pageUrls.length,
-            _batchSize: EMBEDDING_BATCH_SIZE,
-            pageUrls: batchIssues
-          };
-          //TODO: Save to Redis by issue key
-          //TODO: In event only send issue keys
+        chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
+          //TODO: Save to Redis by page url
+          //TODO: In event only send page urls
           inngest.send({
             v: '1',
             ts: new Date().valueOf(),
-            name: 'web/page.embeddings.upserted',
-            data: eventData
+            name: 'pinecone/vectors.upserted',
+            data: {
+              _page: i,
+              _total: vectors.length,
+              _batchSize: PINECONE_VECTORS_BATCH_SIZE,
+              vectors: batchVectors
+            },
+            user: event.user
           });
         })
       );
-
-      // await Promise.all(
-      //   chunkArray(pageUrls, COMMENTS_BATCH_SIZE).map((batchIssues: JiraIssue[], i) => {
-      //     const eventData = {
-      //       _page: i,
-      //       _total: pageUrls.length,
-      //       _batchSize: COMMENTS_BATCH_SIZE,
-      //       pageUrls: batchIssues
-      //     };
-      //     //TODO: Save to Redis by issue key
-      //     //TODO: In event only send issue keys
-      //     inngest.send({
-      //       v: '1',
-      //       ts: new Date().valueOf(),
-      //       name: 'jira/issueComments.upserted',
-      //       data: eventData
-      //     });
-      //   })
-      // );
-    } catch (e) {
-      console.log(e);
-      throw e;
-    }
   }
 };

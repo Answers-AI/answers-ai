@@ -16,11 +16,11 @@ const handler = async (req: Request): Promise<Response> => {
       })
     );
   }
+  const args = (await req.json()) as {
+    prompt?: string;
+    answers?: string;
+  };
   try {
-    const args = (await req.json()) as {
-      prompt?: string;
-      answers?: string;
-    };
     const { prompt, pineconeData, context } = await fetch(
       `${
         process.env.VERCEL_URL?.includes('localhost')
@@ -35,7 +35,7 @@ const handler = async (req: Request): Promise<Response> => {
         body: JSON.stringify(args)
       }
     ).then((res) => res.json());
-    console.log('args', args, { prompt });
+    // console.log('args', args, { prompt });
 
     const payload = {
       model: 'text-davinci-003',

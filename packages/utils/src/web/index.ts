@@ -1,23 +1,30 @@
 import WebClient from './client';
-import { getWebPages } from './getWebPages';
+import { getWebPage } from './getWebPage';
 import redisLoader from '../redisLoader';
 
 export const webClient = new WebClient();
 
-export type WebPage = { url: string; content: string };
+export type WebPage = {
+  url: string;
+  content: string;
+  title?: string;
+  description?: string;
+  h1Tags?: string[];
+};
 
 export const webPageLoader = redisLoader<string, WebPage>({
   keyPrefix: 'web:page',
   redisConfig: process.env.REDIS_URL as string,
-  getValuesFn: (keys) => getWebPages({ url: `key in (${keys?.join(',')})` }),
-  cacheExpirationInSeconds: 0
+  // getValuesFn: (keys) => Promise.all(keys.map((url) => getWebPage({ url }))),
+  getValuesFn: async (keys) => {
+    const results: WebPage[] = [];
+    for (const url of keys) {
+      const result = await getWebPage({ url });
+      results.push(result);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+    return Promise.all(results);
+  },
+  cacheExpirationInSeconds: 0,
+  disableCache: true
 });
-
-export const indexAllWebPages = async (options: {
-  url: string;
-  batchSize?: number;
-  maxResults?: number;
-}) => {
-  const data = await getWebPages(options);
-  if (data) console.log('WebPage', data[0]);
-};

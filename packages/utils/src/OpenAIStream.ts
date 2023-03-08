@@ -5,7 +5,7 @@ export async function OpenAIStream(payload: any, extra?: any) {
   const decoder = new TextDecoder();
 
   let counter = 0;
-  // @ts-expect-error
+  // @tss-expect-error
   const res = await fetch('https://api.openai.com/v1/completions', {
     headers: {
       'Content-Type': 'application/json',
@@ -17,12 +17,7 @@ export async function OpenAIStream(payload: any, extra?: any) {
 
   // @ts-expect-error
   const stream = new ReadableStream({
-    async start(controller: {
-      close: () => void;
-      enqueue: (arg0: Uint8Array) => void;
-      error: (arg0: unknown) => void;
-      onDone: () => void;
-    }) {
+    async start(controller: ReadableByteStreamController) {
       controller.enqueue(encoder.encode(JSON.stringify(extra) + 'JSON_END'));
 
       function onParse(event: ParsedEvent | ReconnectInterval) {
@@ -66,6 +61,7 @@ export async function OpenAIStream(payload: any, extra?: any) {
       //       }
       //     }
       //   });
+      controller.close();
     }
   });
 

@@ -54,7 +54,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         ...restMessages?.map(({ role, content }) => ({ role, content })),
         { role: 'user', content: finalPrompt }
       ];
-      console.log('OpenAI->createCompletion', { completionMessages });
+      // console.log('OpenAI->createCompletion', { completionMessages });
       // TODO: Move this to app settings or feature flag
       const { data } = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
