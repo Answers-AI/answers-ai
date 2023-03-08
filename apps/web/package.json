@@ -22,7 +22,7 @@
     "cors": "^2.8.5",
     "db": "workspace:*",
     "encoding": "^0.1.13",
-    "experimental-prisma-webpack-plugin": "^0.0.5",
+    "experimental-prisma-webpack-plugin": "workspace:*",
     "inngest": "^1.2.0",
     "ioredis": "^5.3.1",
     "next": "13.1.7-canary.22",

@@ -15,26 +15,29 @@ class JiraIssue extends JiraObject {
     const { fields, key } = issue;
     // console.log(fields);
     const attrs = {
-      'objectType': 'JIRA Issue',
+      objectType: 'JIRA Issue',
       // issueTypeId: fields?.issuetype?.id,
       // issueType: fields?.issuetype?.name,
       // 'issue id': key,
-      'account': fields.customfield_10037?.value,
-      'projectName': fields.project?.name,
-      'reporter': fields.reporter?.displayName,
-      'assignee name': fields.assignee?.displayName || 'Unassigned',
-      'assignee email': fields.assignee?.email,
-      'priority': fields.priority?.name,
-      'comments': fields?.comments,
+      account: fields.customfield_10037?.value?.toLowerCase(),
+      project: fields.project?.name?.toLowerCase(),
+      reporter: fields.reporter?.displayName?.toLowerCase(),
+      assignee: fields.assignee?.displayName || 'Unassigned'?.toLowerCase(),
+      assignee_email: fields.assignee?.email?.toLowerCase(),
+      priority: fields.priority?.name?.toLowerCase(),
+      comments: fields?.comments?.toLowerCase(),
       // priorityId: fields.priority?.id,
       // creatorId: fields.creator?.accountId,
       // creator: fields.creator?.displayName,
       // statusId: parseInt(fields.status?.id, 10),
-      'status': fields.status?.name,
-      'status category': fields.status?.statusCategory?.name,
-      'parent key': fields.parent?.key,
-      'description': fields.description ? JiraIssue.jiraAdfToMarkdown(fields.description) : '',
-      'summary': fields?.summary
+      status: fields.status?.name?.toLowerCase(),
+      status_category: fields.status?.statusCategory?.name?.toLowerCase(),
+      parent_key: fields.parent?.key?.toLowerCase(),
+      description: (fields.description
+        ? JiraIssue.jiraAdfToMarkdown(fields.description)
+        : ''
+      )?.toLowerCase(),
+      summary: fields?.summary?.toLowerCase()
       // statusCategoryId: fields.status?.statusCategory?.id,
       // reporterId: fields.reporter?.accountId,
       // assigneeId: fields.assignee?.accountId,
@@ -48,7 +51,7 @@ class JiraIssue extends JiraObject {
     };
 
     return {
-      // ...attrs,
+      ...attrs,
       text: createContext(key, attrs)
     };
   }
@@ -60,7 +63,7 @@ const createContext = (id, metadata) => {
     .filter((key) => !!metadata[key])
     .map((key) => {
       if (metadata.hasOwnProperty(key)) {
-        return `${key} is ${metadata[key]}`;
+        return `${key?.replaceAll('_', ' ')} is ${metadata[key]}`;
       }
     })
     ?.join(', ');

@@ -8,7 +8,7 @@ import AnswerSession from './utilities/answerSession';
 import JiraClient from './jira/client';
 
 const pinecone = new Pinecone({
-  namespace: 'jira',
+  namespace: process.env.PINECONE_INDEX_NAMESPACE,
   indexName: process.env.PINECONE_INDEX
 });
 const answerSession = new AnswerSession({ namespace: 'jira' });
@@ -45,7 +45,9 @@ class JiraEndpoint {
   constructor(endpoint) {
     this.endpoint = endpoint;
     this.headers = {
-      Authorization: `Basic ${Buffer.from(`brad@lastrev.com:${process.env.JIRA_API}`).toString('base64')}`,
+      Authorization: `Basic ${Buffer.from(`brad@lastrev.com:${process.env.JIRA_API}`).toString(
+        'base64'
+      )}`,
       Accept: 'application/json'
     };
   }
@@ -69,7 +71,9 @@ class JSONLDSchema {
   }
 
   getIds(data, property) {
-    return new Set(data.filter((item) => item[property] && item[property].type).map((item) => item.id));
+    return new Set(
+      data.filter((item) => item[property] && item[property].type).map((item) => item.id)
+    );
   }
 
   getPropertyValues(data, property) {
