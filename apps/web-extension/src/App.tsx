@@ -1,11 +1,14 @@
 import React from 'react';
 import { Box, Button, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
-import useAI from './useAI';
+import useAI, { syncAi } from './useAI';
 import TurndownService from 'turndown';
 
 var turndownService = new TurndownService();
 var activeTabId: any;
 //@ts-ignore
+
+const getCleanedUrl = (url?: string) =>
+  url ? url.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/[\/\\]/g, '') : '';
 
 chrome.tabs.onActivated.addListener(function (activeInfo) {
   activeTabId = activeInfo.tabId;
@@ -26,40 +29,65 @@ async function getActiveTab() {
 
 const App = () => {
   const [namespace, setNamespace] = React.useState('web');
-
-  const handleChange = (_event: React.MouseEvent<HTMLElement>, newNamespace: string) => {
-    setNamespace(newNamespace);
-  };
   const [inputValue, setInputValue] = React.useState('');
-  const { generatedResponse, generateResponse, answers, setPrompt, addAnswer } = useAI({
-    useStreaming: true
-  });
-  const handleSubmit = () => {
-    if (!inputValue) return;
-    setPrompt(inputValue);
-    addAnswer({ prompt: inputValue });
 
-    setInputValue('');
-    generateResponse(inputValue);
+  const handleChange = async (_event: React.MouseEvent<HTMLElement>, newNamespace: string) => {
+    setNamespace(newNamespace);
+    let tab = await getActiveTab();
+
+    if (tab) {
+      if (newNamespace === 'currentPage') {
+        setFilter({ cleanedUrl: getCleanedUrl(tab.url) });
+        await syncAi({ url: tab.url });
+      } else if (newNamespace === 'currentDomain') {
+        // TODO: Pull by domain
+        setFilter({ cleanedUrl: getCleanedUrl(tab.url) });
+      }
+    }
   };
+
+  const { generatedResponse, generateResponse, answers, filter, setPrompt, addAnswer, setFilter } =
+    useAI({
+      useStreaming: false
+    });
+
+  const handleSubmit = async () => {
+    if (!inputValue) return;
+
+    // let queryOptions = { active: true, lastFocusedWindow: true };
+    let tab = await getActiveTab();
+
+    if (tab) {
+      setFilter({ cleanedUrl: getCleanedUrl(tab.url) }); // TODO: update if it should be more general
+      setPrompt(inputValue);
+      addAnswer({ prompt: inputValue });
+
+      setInputValue('');
+      generateResponse(inputValue, filter);
+    }
+  };
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
+
   const handleSummarize = async () => {
-    let queryOptions = { active: true, lastFocusedWindow: true };
+    // let queryOptions = { active: true, lastFocusedWindow: true };
     //@ts-ignore
     let tab = await getActiveTab();
 
-    console.log({ tab });
     if (tab) {
-      const content = turndownService.turndown('<h1>Hello world!</h1>');
+      // const content = turndownService.turndown('<h1>Hello world!</h1>');
 
-      let prompt = `Summarize this page: ${content}`;
+      // let prompt = `Summarize this page: ${content}`;
+      let prompt = `Summarize the content.`;
+      let filter = { cleanedUrl: getCleanedUrl(tab.url) };
+      setFilter(filter);
       setPrompt(prompt);
       addAnswer({ prompt });
 
       setInputValue('');
-      generateResponse(prompt);
+      generateResponse(prompt, filter);
     }
   };
 
@@ -100,7 +128,7 @@ const App = () => {
         exclusive
         onChange={handleChange}
         aria-label="Filter">
-        <ToggleButton value="internet">Internet</ToggleButton>
+        {/* <ToggleButton value="internet">Internet</ToggleButton> */}
         <ToggleButton value="currentPage">This page</ToggleButton>
         <ToggleButton value="currentDomain">This domain</ToggleButton>
       </ToggleButtonGroup>

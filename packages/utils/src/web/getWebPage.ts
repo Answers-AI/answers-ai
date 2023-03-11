@@ -2,6 +2,7 @@ import { WebPage, webClient } from './index';
 import cheerio from 'cheerio';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 import { Readability } from '@mozilla/readability';
+//@ts-ignore-next-line
 import { JSDOM } from 'jsdom';
 
 interface ContentItem {
@@ -9,19 +10,49 @@ interface ContentItem {
   content: string;
 }
 
-const seoHeaderSelectors: string[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-
-const sectionSelectors: string[] = ['section', '.section'];
-
 const contentElementSelectors: string[] = [
   'main',
   'article',
   '.content',
   '.entry-content',
   '#content',
-  '#main-content',
-  'body'
+  '#main-content'
 ];
+
+const removeDuplicateHeaders = (markdown: string): string => {
+  const regex = /^(#+)(.*)$/gm;
+  const headers: { level: number; start: number; end: number }[] = [];
+
+  // Find all the headers and their positions
+  let match;
+  while ((match = regex.exec(markdown)) !== null) {
+    headers.push({
+      level: match[1].length,
+      start: match.index,
+      end: match.index + match[0].length
+    });
+  }
+
+  // Loop through the headers and remove duplicates
+  for (let i = headers.length - 1; i >= 1; i--) {
+    const currentHeader = headers[i];
+    const prevHeader = headers[i - 1];
+
+    if (currentHeader.level === prevHeader.level) {
+      // Check if there is non-white space content between the headers
+      const content = markdown.substring(prevHeader.end, currentHeader.start);
+      if (!/^\s*$/s.test(content)) {
+        continue;
+      }
+
+      // Remove the previous header
+      markdown = markdown.substring(0, prevHeader.start) + markdown.substring(prevHeader.end);
+      headers.splice(i - 1, 1);
+    }
+  }
+
+  return markdown;
+};
 
 const excludeSelectors: string[] = [
   'header',
@@ -38,110 +69,67 @@ const excludeSelectors: string[] = [
   'link',
   '[role="tree"]',
   'svg',
-  'video'
+  'video',
+  'canvas',
+  'form'
 ];
 
-const flattenContent = (content: ContentItem[]): string => {
-  let html = '';
-
-  content.forEach((item) => {
-    switch (item.type) {
-      case 'header':
-        html += `<h1>${item.content}</h1>`;
-        break;
-      case 'section':
-        html += `<section>${item.content}</section>`;
-        break;
-      case 'paragraph':
-        html += `<p>${item.content}</p>`;
-        break;
-      default:
-        break;
-    }
-  });
-
-  return html;
-};
-
 export const getWebPage = async ({ url }: { url: string }): Promise<WebPage> => {
+  console.log('====================================');
+  console.log(`===Fetching webpage: ${url}`);
   try {
-    console.log('====================================');
-    console.log(`===Fetching webpage: ${url}`);
+    const pageHtml = await webClient.fetchWebData(url, { cache: false });
+    if (!pageHtml) throw new Error(`No valid HTML returned for url: ${url}`);
 
-    const webpage = await webClient.fetchWebData(url, { cache: false }).then((result) => {
-      const doc = new JSDOM(result, {
-        url
-      });
+    const $ = cheerio.load(pageHtml);
+    //Remove for sure unneeded elements
+    $(excludeSelectors.join(',')).remove();
 
-      const reader = new Readability(doc.window.document);
-      const article = reader.parse();
-      const title = article?.title || '';
-      const description = article?.excerpt || '';
-      const h1Tags = null;
-      // const $ = cheerio.load(result);
-
-      // const title = $('title').text();
-      // const description = $('meta[name="description"]').attr('content');
-      // const h1Tags = $('h1')
-      //   .map((i, el) => $(el).text())
-      //   .get();
-
-      // let content = '';
-
-      // $(excludeSelectors.join(',')).remove();
-
-      // contentElementSelectors.some((selector) => {
-      //   const elements = $(selector);
-      //   if (elements.length > 0) {
-      //     content = elements.html() || '';
-      //     return true;
-      //   }
-      //   return false;
-      // });
-
-      // const $content = $(`<div>${content}</div>`);
-      // const contentArray: ContentItem[] = [];
-
-      // $content.children().each((i, el) => {
-      //   const $el = $(el);
-      //   const tagName = $el.prop('tagName')?.toLowerCase() || '';
-      //   const textContent = $el.text().trim();
-
-      //   if (seoHeaderSelectors.includes(tagName)) {
-      //     contentArray.push({ type: 'header', content: textContent });
-      //   } else if (sectionSelectors.includes(tagName)) {
-      //     contentArray.push({ type: 'section', content: textContent });
-      //   } else {
-      //     const lastItem = contentArray[contentArray.length - 1];
-      //     if (lastItem && lastItem.type === 'paragraph') {
-      //       lastItem.content += ` ${textContent}`;
-      //     } else {
-      //       contentArray.push({ type: 'paragraph', content: textContent });
-      //     }
-      //   }
-      // });
-
-      // const flattenedContent = flattenContent(contentArray);
-
-      const mkdown = NodeHtmlMarkdown.translate(
-        /* html */ article?.content || '', //$content.html() || '',
-        /* options (optional) */ {
-          maxConsecutiveNewlines: 1
-        },
-        /* customTranslators (optional) */ undefined,
-        /* customCodeBlockTranslators (optional) */ undefined
-      );
-
-      console.log(`Markdown content: ${mkdown.length} characters`);
-
-      return {
-        url,
-        title,
-        description,
-        content: mkdown
-      };
+    // Re-wrapping content to hack scoring a bit.
+    $(contentElementSelectors.join(',')).each(function () {
+      //@ts-ignore-next-line
+      $(this).replaceWith($(this).html());
     });
-    return webpage;
+
+    // Remove all querystring props
+    $('a').each(function () {
+      const url = $(this).attr('href');
+
+      if (url && url.includes('?')) {
+        const [baseUrl] = url.split('?');
+        $(this).attr('href', baseUrl);
+      }
+    });
+
+    const dom = new JSDOM(`<article>${$.html()}</article>`, { url });
+
+    const document = dom.window.document;
+
+    const reader = new Readability(document, {
+      debug: false,
+      keepClasses: false,
+      disableJSONLD: false
+    });
+    const article = reader.parse();
+
+    const rawMarkdown = NodeHtmlMarkdown.translate(
+      /* html */ article?.content || '', //$content.html() || '',
+      /* options */ {
+        maxConsecutiveNewlines: 1
+      },
+      /* customTranslators (optional) */ undefined,
+      /* customCodeBlockTranslators (optional) */ undefined
+    );
+    const mkdown = removeDuplicateHeaders(rawMarkdown);
+
+    const pageData = {
+      url,
+      title: article?.title,
+      description: article?.excerpt,
+      content: mkdown
+    };
+
+    return pageData;
   } catch (error) {
     console.error('getWebPage:ERROR', error);
     throw error;

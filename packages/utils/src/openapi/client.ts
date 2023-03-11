@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Redis from 'ioredis';
 
-class WebClient {
+class OpenApiClient {
   redis: Redis;
   headers: { Authorization?: string; Accept: string; Cookie?: string };
   cacheExpireTime: number;
@@ -9,27 +9,13 @@ class WebClient {
     this.cacheExpireTime = cacheExpireTime;
     this.redis = new Redis(process.env.REDIS_URL as string);
     this.headers = {
-      Accept: 'text/plain'
+      Accept: 'application/json'
     };
   }
 
-  // async handleRateLimit(response: AxiosResponse) {
-  //   let retryAfter = response.headers['Retry-After'];
-  //   let resetTime = response.headers['X-RateLimit-Reset'];
-
-  //   if (retryAfter) {
-  //     console.log(`Too many requests, retrying after ${retryAfter} seconds.`);
-  //     await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
-  //   } else if (resetTime) {
-  //     console.log(`Too many requests, retrying after ${resetTime}.`);
-  //     // let timeToWait = new Date(resetTime) - new Date();
-  //     // await new Promise((resolve) => setTimeout(resolve, timeToWait));
-  //   }
-  // }
-
-  async fetchWebData(url: string, { cache = true }: { cache?: boolean } = {}) {
+  async fetchOpenApiData(url: string, { cache = true }: { cache?: boolean } = {}) {
     let data;
-    // Add cache around this call to Web
+    // Add cache around this call to OpenApi
     //TODO remove custom implementation when issue is fixed: https://github.com/RasCarlito/axios-cache-adapter/issues/272
     const hashKey = 'v4-get-' + url;
     if (cache) {
@@ -57,13 +43,11 @@ class WebClient {
         }
 
         // TODO: Add handler for HTTP requests
-        // if (response.status === 429) {
-        //   await this.handleRateLimit(response);
-        //   return null;
-        // }
         data = response?.data;
-        if (cache) await this.redis.set(hashKey, JSON.stringify(data));
-        if (cache) await this.redis.expire(hashKey, this.cacheExpireTime);
+        if (cache) {
+          await this.redis.set(hashKey, JSON.stringify(data));
+          await this.redis.expire(hashKey, this.cacheExpireTime);
+        }
       } catch (err) {
         console.error(`Error fetching data from ${url}`, err);
         data = false;
@@ -74,4 +58,4 @@ class WebClient {
   }
 }
 
-export default WebClient;
+export default OpenApiClient;

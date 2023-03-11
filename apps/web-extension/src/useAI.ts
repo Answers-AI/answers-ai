@@ -6,6 +6,7 @@ import { useStreamedResponse } from './useStreamedResponse';
 const useAI = (options: { useStreaming?: boolean } = {}) => {
   const [prompt, setPrompt] = useState('');
   const [answers, setAnswers] = useState<any[]>([]);
+  const [filter, setFilter] = useState({});
   const addAnswer = useCallback(
     (answer: any) => setAnswers((currentAnswers) => [...currentAnswers, answer]),
     []
@@ -16,7 +17,6 @@ const useAI = (options: { useStreaming?: boolean } = {}) => {
   });
   const [useStreaming, setUseStreaming] = useState(!!options.useStreaming);
   // const scrollRef = React.useRef<HTMLDivElement>(null);
-
   const { data, isFetching } = useQuery({
     enabled: !!prompt && !useStreaming,
     queryKey: ['completion', prompt],
@@ -29,7 +29,8 @@ const useAI = (options: { useStreaming?: boolean } = {}) => {
       axios
         .post((import.meta.env.VITE_API_URL || 'http://localhost:3000/api') + `/ai/query`, {
           prompt,
-          answers
+          answers,
+          filter
         })
         .then((res) => res.data)
         .catch((error) => ({
@@ -43,6 +44,8 @@ const useAI = (options: { useStreaming?: boolean } = {}) => {
     answers,
     prompt,
     setPrompt,
+    filter,
+    setFilter,
     isLoading,
     generatedResponse,
     generateResponse,
@@ -52,6 +55,18 @@ const useAI = (options: { useStreaming?: boolean } = {}) => {
     setUseStreaming,
     addAnswer
   };
+};
+
+export const syncAi = async (options: { url?: string } = {}) => {
+  const { url } = options;
+  console.log('syncai', url);
+  const response = await axios.post(
+    (import.meta.env.VITE_API_URL || 'http://localhost:3000/api') + `/sync/web`,
+
+    url
+  );
+  console.log('response', response);
+  return response.data;
 };
 
 export default useAI;

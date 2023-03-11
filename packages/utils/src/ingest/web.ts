@@ -1,3 +1,4 @@
+import { URL } from 'url';
 import { inngest } from './client';
 import { webPageLoader } from '../web';
 import { EventVersionHandler } from './EventVersionHandler';
@@ -6,6 +7,74 @@ import { WebPage } from 'types';
 import { extractUrlsFromSitemap } from '../utilities/getSitemapUrls';
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
+
+const getTitleText = (page: any) => {
+  if (!page.title) return '';
+  return `the title of the page is "${page.title}" and`;
+};
+
+const getCleanedUrl = (url: string) =>
+  url.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/[\/\\]/g, '');
+
+const getUniqueUrls = (urls: string[]) =>
+  Array.from(
+    new Set(
+      urls.map((url) => {
+        const parsedUrl = new URL(url);
+        const hostname = parsedUrl.hostname.replace(/^www\./i, '');
+        const path = parsedUrl.pathname.replace(/\/+$/, ''); // remove trailing slashes
+        return `https://${hostname}${path.replace(/\/+/g, '/')}`;
+      })
+    )
+  );
+
+const getUniqueDomains = (urls: string[]) =>
+  urls.map((url) => {
+    const parsedUrl = new URL(url);
+    return `https://${parsedUrl.hostname.replace(/^www\./i, '')}`;
+  });
+
+const summarize = (page: any) =>
+  `For webpage URL "${page?.url}" ${getTitleText(page)} the content is:\n${page?.content}`;
+
+export const processWebUrlScrape: EventVersionHandler<{ urls: string[]; byDomain: boolean }> = {
+  event: 'web/urls.sync',
+  v: '1',
+  handler: async ({ event }) => {
+    const data = event.data;
+    const { urls, byDomain } = data;
+
+    if (byDomain) {
+      const domains = getUniqueDomains(urls);
+      const domainPromises = domains.map((domain) => {
+        inngest.send({
+          v: event.v,
+          ts: new Date().valueOf(),
+          name: 'web/domain.sync',
+          data: {
+            domain
+          },
+          user: event.user
+        });
+      });
+
+      if (domainPromises?.length) {
+        await Promise.all(domainPromises);
+      }
+    } else {
+      const uniqueUrls = getUniqueUrls(urls);
+      await inngest.send({
+        v: event.v,
+        ts: new Date().valueOf(),
+        name: 'web/page.sync',
+        data: {
+          urls: uniqueUrls
+        },
+        user: event.user
+      });
+    }
+  }
+};
 
 export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
   event: 'web/domain.sync',
@@ -18,31 +87,21 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
 
     const webPages = (await webPageLoader.loadMany(urls)) as WebPage[];
 
-    const summarize = (page: any) =>
-      `Details for ${page?.url} is ${Object.entries({
-        content: page?.content
-      })
-        .filter(([key, value]) => !!value)
-        .map(([key, value]) => `${key}: ${value}`)}`;
-
     const vectors = webPages.flatMap((page) => {
-      const headingsRegex = /(^|\n)###?\s/g;
+      const headingsRegex = /(^|\n)##\s/g;
       const headingsArray = page.content.split(headingsRegex);
 
-      return (
-        headingsArray
-          // .filter((_: any, i: number) => i % 2 !== 0)
-          .map((heading: any, i: any) => ({
-            uid: `WebPage_${page.url}_${i}`,
-            text: summarize({ ...page, content: heading }),
-            metadata: {
-              url: page?.url
-            }
-          }))
-      );
+      return headingsArray.map((heading: any, i: any) => ({
+        uid: `WebPage_${page.url}_${i}`,
+        text: summarize({ ...page, content: heading }),
+        metadata: {
+          url: page?.url,
+          cleanedUrl: getCleanedUrl(page?.url)
+        }
+      }));
     });
 
-    if (vectors?.length)
+    if (vectors?.length) {
       await Promise.all(
         chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
           //TODO: Save to Redis by page url
@@ -61,6 +120,7 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
           });
         })
       );
+    }
   }
 };
 
@@ -78,31 +138,21 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
 
     const webPages = (await webPageLoader.loadMany(iUrls)) as WebPage[];
 
-    const summarize = (page: any) =>
-      `Details for ${page?.url} is ${Object.entries({
-        content: page?.content
-      })
-        .filter(([key, value]) => !!value)
-        .map(([key, value]) => `${key}: ${value}`)}`;
-
     const vectors = webPages.flatMap((page) => {
-      const headingsRegex = /(^|\n)###?\s/g;
+      const headingsRegex = /\n+(?=\s*##\s(?!#))/;
       const headingsArray = page.content.split(headingsRegex);
 
-      return (
-        headingsArray
-          // .filter((_: any, i: number) => i % 2 !== 0)
-          .map((heading: any, i: any) => ({
-            uid: `WebPage_${page.url}_${i}`,
-            text: summarize({ ...page, content: heading }),
-            metadata: {
-              url: page?.url
-            }
-          }))
-      );
+      return headingsArray.map((heading: any, i: any) => ({
+        uid: `WebPage_${page.url}_${i}`,
+        text: summarize({ ...page, content: heading }),
+        metadata: {
+          url: page?.url,
+          cleanedUrl: getCleanedUrl(page?.url)
+        }
+      }));
     });
 
-    if (vectors?.length)
+    if (vectors?.length) {
       await Promise.all(
         chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
           //TODO: Save to Redis by page url
@@ -121,5 +171,6 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
           });
         })
       );
+    }
   }
 };

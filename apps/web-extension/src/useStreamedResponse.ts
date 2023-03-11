@@ -5,7 +5,7 @@ export const useStreamedResponse = ({ answers, addAnswer }: any) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [generatedResponse, setGeneratedResponse] = useState<any>({});
-  const generateResponse = async (aPrompt: string) => {
+  const generateResponse = async (aPrompt: string, filter: any) => {
     setGeneratedResponse('');
     setIsLoading(true);
     const response = await fetch(import.meta.env.VITE_API_URL + '/ai/stream', {
@@ -15,7 +15,8 @@ export const useStreamedResponse = ({ answers, addAnswer }: any) => {
       },
       body: JSON.stringify({
         prompt: aPrompt,
-        answers
+        answers,
+        filter
       })
     });
 

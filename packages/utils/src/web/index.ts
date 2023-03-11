@@ -9,7 +9,6 @@ export type WebPage = {
   content: string;
   title?: string;
   description?: string;
-  h1Tags?: string[];
 };
 
 export const webPageLoader = redisLoader<string, WebPage>({
@@ -21,10 +20,10 @@ export const webPageLoader = redisLoader<string, WebPage>({
     for (const url of keys) {
       const result = await getWebPage({ url });
       results.push(result);
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
     return Promise.all(results);
   },
   cacheExpirationInSeconds: 0,
-  disableCache: true
+  disableCache: false
 });

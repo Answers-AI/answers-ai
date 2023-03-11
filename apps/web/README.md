@@ -28,6 +28,9 @@ The following are the available Inngest functions that can be triggered in respo
 
 processSyncSlack: Process the slack/app.sync event
 processJiraUpdated: Process the jira/app.sync event
+processWebPageUpdated: Process the web/page.sync event
+processWebDomainUpdated: Process the web/domain.sync event
+processJiraUpdated: Process the jira/app.sync event
 procesProjectUpdated: Process the PROJECT_UPDATED event
 processUpsertedIssues: Process the jira/issues.upserted event
 
