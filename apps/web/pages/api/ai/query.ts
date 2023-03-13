@@ -39,12 +39,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   // GEt last item from messages
   const messages: { role: ChatCompletionRequestMessageRoleEnum; content: string }[] =
     req.body.messages;
-  const filter = req.body.filter || {};
 
-  const lastMessage = messages?.length ? messages[messages.length - 1] : null;
-  const restMessages = messages?.length ? messages.slice(0, messages.length - 1) : [];
-  const prompt = lastMessage?.content || '';
-  console.log(`query.ts ${JSON.stringify({ prompt, messages, filter })}`);
+  const prompt = req.body.prompt;
+  const filter = req.body.filter || {};
   const {
     prompt: finalPrompt,
     pineconeData,
@@ -54,7 +51,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     try {
       console.time('OpenAI->createCompletion');
       completionMessages = [
-        ...restMessages?.map(({ role, content }) => ({ role, content })),
+        ...messages?.map(({ role, content }) => ({ role, content })),
         { role: 'user', content: finalPrompt }
       ];
       // console.log('OpenAI->createCompletion', { completionMessages });

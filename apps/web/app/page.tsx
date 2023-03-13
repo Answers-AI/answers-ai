@@ -5,6 +5,7 @@ import { prisma } from 'db/dist';
 
 import DeveloperTools from '../src/DeveloperTools';
 import { authOptions } from '../pages/api/auth/[...nextauth]';
+import { AnswersProvider } from '../src/AnswersContext';
 
 const Homepage = async ({ params }: any) => {
   const session = await getServerSession(authOptions);
@@ -19,7 +20,12 @@ const Homepage = async ({ params }: any) => {
   });
 
   const appSettings = await getAppSettings();
-  return <DeveloperTools user={session?.user} appSettings={appSettings} prompts={prompts} />;
+
+  return (
+    <AnswersProvider>
+      <DeveloperTools user={session?.user} appSettings={appSettings} prompts={prompts} />;
+    </AnswersProvider>
+  );
 };
 
 export const metadata = {

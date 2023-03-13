@@ -1,20 +1,31 @@
 'use client';
 import { useState } from 'react';
 
-export const useStreamedResponse = ({ messages, addMessage }: any) => {
+export const useStreamedResponse = ({
+  messages,
+  filters,
+  apiUrl,
+  onChunk
+}: {
+  messages?: any[];
+  filters?: any;
+  apiUrl: string;
+  onChunk: (chunk: { role: string; content: string }) => void;
+}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [generatedResponse, setGeneratedResponse] = useState<any>({});
   const generateResponse = async (aPrompt: string) => {
     setGeneratedResponse('');
     setIsLoading(true);
-    const response = await fetch('/api/ai/stream', {
+    const response = await fetch(`${apiUrl || '/api'}/ai/stream`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         prompt: aPrompt,
+        filters,
         messages
       })
     });
@@ -32,40 +43,33 @@ export const useStreamedResponse = ({ messages, addMessage }: any) => {
     const decoder = new TextDecoder();
     let done = false;
     // let curr = '';
-    let message;
     let extra: any;
+    let content = '';
+
     while (!done) {
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
       const chunkValue = decoder.decode(value);
-      if (!extra) {
-        setGeneratedResponse((prev: any) => {
-          let current = (prev?.message || '') + chunkValue;
-          const [jsonData, ...rest] = current.split('JSON_END');
 
-          if (jsonData && rest?.length) {
-            try {
-              extra = JSON.parse(jsonData);
-            } catch (e) {
-              console.log('ParseError', e);
-            }
-            current = rest.join('');
+      content = (content || '') + chunkValue;
+      if (!extra) {
+        const [jsonData, ...rest] = content.split('JSON_END');
+        if (jsonData && rest?.length) {
+          try {
+            extra = JSON.parse(jsonData);
+            console.log('ParsedExtra', extra);
+          } catch (e) {
+            console.log('ParseError', e);
           }
-          message = current;
-          return { message: current, ...extra };
-        });
+          content = rest.join('');
+        }
+        onChunk({ role: 'assistant', content, ...extra });
       } else {
         // console.log('OnChunk', { curr, jsonData });
-        setGeneratedResponse((prev: any) => {
-          const curr = (prev?.message || '') + chunkValue;
-          console.log('OnChunk', { curr, extra });
-
-          message = curr;
-          return { message: curr, ...extra };
-        });
+        // console.log('OnChunk', { curr, extra });
+        onChunk({ role: 'assistant', content, ...extra });
       }
     }
-    addMessage({ message: message, ...extra });
     setGeneratedResponse({});
     setIsLoading(false);
   };

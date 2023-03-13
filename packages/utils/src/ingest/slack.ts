@@ -17,7 +17,7 @@ import { prepareAllForEmbedding } from '../prepareAllForEmbedding';
 import SlackClient from '../slack/client';
 const slackClient = new SlackClient(process.env.SLACK_TOKEN);
 
-slackClient.initDataLookups();
+// slackClient.initDataLookups();
 
 export const processSlackUpdated: EventVersionHandler<{ appSettings: AppSettings }> = {
   event: 'slack/app.sync',

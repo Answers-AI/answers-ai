@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import { useStreamedResponse } from './useStreamedResponse';
 
 const useAI = (options: { useStreaming?: boolean } = {}) => {
+  const [filters, setFilters] = useState({});
   const [prompt, setPrompt] = useState('');
   const [answers, setAnswers] = useState<any[]>([]);
   const [filter, setFilter] = useState({});
@@ -53,7 +54,9 @@ const useAI = (options: { useStreaming?: boolean } = {}) => {
     isFetching,
     useStreaming,
     setUseStreaming,
-    addAnswer
+    addAnswer,
+    filters,
+    setFilters
   };
 };
 

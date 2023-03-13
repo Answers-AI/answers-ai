@@ -11,7 +11,7 @@ importers:
       prisma: ^4.10.1
       turbo: latest
     devDependencies:
-      dotenv-cli: 7.0.0
+      dotenv-cli: 7.1.0
       eslint-config-custom: link:packages/eslint-config-custom
       inngest-cli: 0.10.0
       prettier: 2.8.4
@@ -28,7 +28,6 @@ importers:
       '@next/bundle-analyzer': ^13.2.1
       '@pinecone-database/pinecone': ^0.0.5
       '@prisma/client': ^4.10.1
-      '@tanstack/react-query': ^4.24.6
       '@tanstack/react-query-devtools': ^4.24.6
       '@textea/json-viewer': ^2.13.1
       '@types/cors': ^2.8.13
@@ -60,8 +59,7 @@ importers:
       '@mui/material': 5.11.9_xqeqsl5kvjjtyxwyi3jhw3yuli
       '@pinecone-database/pinecone': 0.0.5
       '@prisma/client': 4.10.1
-      '@tanstack/react-query': 4.24.6_biqbaboplfbrettd7655fr4n2y
-      '@tanstack/react-query-devtools': 4.24.6_r32zdxeb7iubg3qfkymfterewe
+      '@tanstack/react-query-devtools': 4.24.6_biqbaboplfbrettd7655fr4n2y
       '@textea/json-viewer': 2.13.1_zula6vjvt3wdocc4mwcxqa6nzi
       axios: 1.3.3
       cors: 2.8.5
@@ -1817,7 +1815,7 @@ packages:
     resolution: {integrity: sha512-Tfru6YTDTCpX7dKVwHp/sosw/dNjEdzrncduUjIkQxn7n7u+74HT2ZrGtwwrU6Orws4x7zp3FKRqBPWVVhpx9w==}
     dev: false
 
-  /@tanstack/react-query-devtools/4.24.6_r32zdxeb7iubg3qfkymfterewe:
+  /@tanstack/react-query-devtools/4.24.6_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-d8CN4ZTtLkdCNi9x4Hogma0fdhlv7ckknv/RLuV4nbUciUoZEvhg1cI0+vp/1aY4W3jq9vH0BD/eUQKecgY15Q==}
     peerDependencies:
       '@tanstack/react-query': 4.24.6
@@ -1825,7 +1823,6 @@ packages:
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
       '@tanstack/match-sorter-utils': 8.7.6
-      '@tanstack/react-query': 4.24.6_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       superjson: 1.12.2
@@ -3538,8 +3535,8 @@ packages:
       domelementtype: 2.3.0
       domhandler: 5.0.3
 
-  /dotenv-cli/7.0.0:
-    resolution: {integrity: sha512-XfMzVdpdDTRnlcgvFLg3lSyiLXqFxS4tH7RbK5IxkC4XIUuxPyrGoDufkfLjy/dA28EILzEu+mros6h8aQmyGg==}
+  /dotenv-cli/7.1.0:
+    resolution: {integrity: sha512-motytjZFQB3ZtGTIN4c0vnFgv4kuNZ2WxVnGY6PVFiygCzkm3IFBBguDUzezd9HgNA0OYYd6vNCWlozs0Q1Zxg==}
     hasBin: true
     dependencies:
       cross-spawn: 7.0.3

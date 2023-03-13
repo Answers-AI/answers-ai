@@ -95,14 +95,10 @@ export const generatePrompt = async ({ prompt, answers = [], filter = {} }: any,
   // TODO: Need to be able to select this by feature flag
 
   return {
-    prompt: `
-You are a helpful assistant. You will provide answers with related information.
-Answer the following request based on the context provided.
-I will give you the questions in the format: 
-CONTEXT: {CONTEXT}
-Question: {QUESTION}
-                \n\nCONTEXT:\n${context}\n\n
-                Question:\n${prompt}\n\nAnswer:{ANSWER} Sources:{sources}\n`,
+    prompt: `You are a helpful assistant. You will provide answers with related information. 
+Answer the following request based on the context provided. ${
+      context ? `CONTEXT: ${context}` : ''
+    } ${prompt}`,
     pineconeData,
     filteredData,
     unfilteredData,

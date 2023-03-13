@@ -1,16 +1,15 @@
 'use client';
 import React, { useCallback, useState } from 'react';
-import axios from 'axios';
 import Button from '@mui/material/Button';
 import { Box, FormControlLabel, Switch, TextField } from '@mui/material';
 import { AppSettings, RecommendedPrompt } from 'types';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PromptCard from './PromptCard';
 import AddIcon from '@mui/icons-material/PlusOne';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Message } from './Message';
-import { useStreamedResponse } from './useStreamedResponse';
-import AppSyncToolbar from 'AppSyncToolbar';
+
+import AppSyncToolbar from './AppSyncToolbar';
+import { useAnswers } from './AnswersContext';
 
 const DEFAULT_PROMPTS = [
   {
@@ -69,8 +68,6 @@ const DEFAULT_PROMPTS = [
 ];
 type CallbackType = (data: string[]) => void;
 
-type InitCallbackType = (cb: CallbackType) => void;
-
 const DeveloperTools = ({
   appSettings,
   user,
@@ -81,40 +78,12 @@ const DeveloperTools = ({
   prompts: any;
 }) => {
   const [inputValue, setInputValue] = useState('');
-  const [prompt, setPrompt] = useState('');
-  const [messages, setMessages] = useState<any[]>([]);
-  const addMessage = useCallback(
-    (message: any) => setMessages((currentMessages) => [...currentMessages, message]),
-    []
-  );
-  const { isLoading, generatedResponse, generateResponse } = useStreamedResponse({
-    messages,
-    addMessage
-  });
-  const [useStreaming, setUseStreaming] = useState(false);
   const [showPrompts, setShowPrompts] = useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const { data, isFetching } = useQuery({
-    enabled: !!prompt && !useStreaming,
-    queryKey: ['completion', prompt],
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    cacheTime: 0,
-    retry: false,
-    queryFn: () =>
-      axios
-        .post(`/api/ai/query`, { prompt, messages })
-        .then((res) => res.data)
-        .catch((error) => ({
-          error: error?.response?.data?.error
-        })),
-    onSuccess: (data) => {
-      if (messages?.length) addMessage(data);
-    }
-  });
+  const { messages, sendMessage, clearMessages, isLoading, useStreaming, setUseStreaming } =
+    useAnswers();
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
@@ -122,39 +91,20 @@ const DeveloperTools = ({
     setInputValue(event.target.value);
   };
 
-  const handleSync = async (name: string) => {
-    addMessage({ role: 'user', content: `Can you please sync all ${name} tickets?` });
-    try {
-      await axios.post(`/api/sync/${name}`);
-      addMessage({
-        role: 'system',
-        message: `Synced ${name} event sent. Go to <a href="/events">events</a> to track the status.`
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleSubmit = () => {
     if (!inputValue) return;
-    setPrompt(inputValue);
-    setMessages([...messages, { role: 'user', content: inputValue }]);
+    sendMessage(inputValue);
     setShowPrompts(false);
     setInputValue('');
-    if (useStreaming) generateResponse(inputValue);
   };
 
   const handlePromptClick = (prompt: string) => {
     if (!prompt) return;
-
-    // addMessage({ role: 'user', content: prompt });
     setInputValue(prompt);
     setShowPrompts(false);
     inputRef.current?.focus();
-
-    // if (useStreaming) generateResponse(prompt);
   };
-  console.log('MEssages', messages);
+
   return (
     <>
       <Box
@@ -171,10 +121,7 @@ const DeveloperTools = ({
             {messages.map((message, index) => (
               <Message {...message} key={index} />
             ))}
-            {generatedResponse?.message && <Message {...generatedResponse} />}
-            {(isFetching || (isLoading && !generatedResponse?.message)) && messages?.length ? (
-              <Message user={user} message={'...'} />
-            ) : null}
+            {isLoading ? <Message user={user} role="assistant" content={'...'} /> : null}
             {!messages?.length || showPrompts ? (
               <DefaultPrompts prompts={[...prompts]} handlePromptClick={handlePromptClick} />
             ) : null}
@@ -182,41 +129,7 @@ const DeveloperTools = ({
         </Box>
 
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <AppSyncToolbar
-            appSettings={appSettings}
-            onSync={(service) =>
-              addMessage({
-                role: 'assistant',
-                content: `Synced ${service.name} event sent. Go to <a href="/events">events</a> to track the status.`
-              })
-            }
-          />
-
-          {/* <Button
-            sx={{
-              position: 'relative',
-              label: { transition: '2.s', opacity: isLoadingJira ? 0 : 1 }
-            }}
-            variant="outlined"
-            color="primary"
-            disabled={isLoadingJira}
-            onClick={handleSyncJira}>
-            {isLoadingJira ? <CircularProgress size={24} sx={{ position: 'absolute' }} /> : null}
-            <label>Sync Jira</label>
-          </Button>
-
-          <Button
-            sx={{
-              position: 'relative',
-              label: { transition: '2.s', opacity: isLoadingSlack ? 0 : 1 }
-            }}
-            variant="outlined"
-            color="primary"
-            disabled={isLoadingSlack}
-            onClick={handleSyncSlack}>
-            {isLoadingSlack ? <CircularProgress size={24} sx={{ position: 'absolute' }} /> : null}
-            <label>Sync Slack</label>
-          </Button> */}
+          <AppSyncToolbar appSettings={appSettings} />
 
           <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
             <>
@@ -235,7 +148,7 @@ const DeveloperTools = ({
               />
             </>
             {messages?.length ? (
-              <Button variant="outlined" color="primary" onClick={() => setMessages([])}>
+              <Button variant="outlined" color="primary" onClick={clearMessages}>
                 <DeleteIcon />
               </Button>
             ) : null}
@@ -259,7 +172,7 @@ const DeveloperTools = ({
             variant="contained"
             color="primary"
             onClick={handleSubmit}
-            disabled={!inputValue || isFetching}
+            disabled={!inputValue || isLoading}
             sx={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }}>
             Send
           </Button>

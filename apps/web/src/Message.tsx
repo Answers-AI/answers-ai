@@ -41,7 +41,21 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: theme.spacing(2),
   borderTop: '1px solid rgba(0, 0, 0, .125)'
 }));
-export const Message = ({ content, role, user, error, prompt, ...other }: any) => (
+export const Message = ({
+  content,
+  role,
+  user,
+  error,
+  prompt,
+  extra,
+  pineconeData,
+  filteredData,
+  unfilteredData,
+  context,
+  completionData,
+  filters,
+  ...other
+}: any) => (
   <Card sx={{ display: 'flex', padding: 2 }}>
     <Avatar sx={{ bgcolor: role == 'user' ? 'primary.main' : 'secondary.main' }}>
       {role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
@@ -71,7 +85,7 @@ export const Message = ({ content, role, user, error, prompt, ...other }: any) =
             variant="subtitle1"
             color="text.secondary"
             component="div">
-            <span dangerouslySetInnerHTML={{ __html: content }} />
+            {content}
           </Typography>
           {prompt ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
@@ -90,7 +104,7 @@ export const Message = ({ content, role, user, error, prompt, ...other }: any) =
               </AccordionDetails>
             </Accordion>
           ) : null}
-          {other?.context ? (
+          {context ? (
             // Use the @mui accordion component to wrap the context and response
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
@@ -105,12 +119,12 @@ export const Message = ({ content, role, user, error, prompt, ...other }: any) =
                   variant="body1"
                   color="text.secondary"
                   component="div">
-                  {other?.context}
+                  {context}
                 </Typography>
               </AccordionDetails>
             </Accordion>
           ) : null}
-          {other?.extra?.filteredData || other?.extra?.unfilteredData ? (
+          {filteredData || unfilteredData ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
@@ -122,9 +136,9 @@ export const Message = ({ content, role, user, error, prompt, ...other }: any) =
                 <JsonViewer
                   rootName="pineconeData"
                   value={{
-                    filter: other?.extra?.filter,
-                    filteredData: other?.extra?.filteredData,
-                    unfilteredData: other?.extra?.unfilteredData
+                    filters,
+                    filteredData: filteredData,
+                    unfilteredData: unfilteredData
                   }}
                   theme={'dark'}
                   // defaultInspectDepth={0}
@@ -133,7 +147,7 @@ export const Message = ({ content, role, user, error, prompt, ...other }: any) =
               </AccordionDetails>
             </Accordion>
           ) : null}
-          {other?.completionData ? (
+          {completionData ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
@@ -144,7 +158,7 @@ export const Message = ({ content, role, user, error, prompt, ...other }: any) =
               <AccordionDetails>
                 <JsonViewer
                   rootName=""
-                  value={other?.completionData}
+                  value={completionData}
                   theme={'dark'}
                   // defaultInspectDepth={0}
                   collapseStringsAfterLength={100}
@@ -153,7 +167,7 @@ export const Message = ({ content, role, user, error, prompt, ...other }: any) =
             </Accordion>
           ) : null}
 
-          {other?.extra ? (
+          {Object.keys(other)?.length ? (
             // Use the @mui accordion component to wrap the extra and response
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
@@ -165,7 +179,7 @@ export const Message = ({ content, role, user, error, prompt, ...other }: any) =
               <AccordionDetails>
                 <JsonViewer
                   rootName=""
-                  value={other?.extra}
+                  value={other}
                   theme={'dark'}
                   // defaultInspectDepth={0}
                   collapseStringsAfterLength={100}
