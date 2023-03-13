@@ -8,14 +8,15 @@ import { authOptions } from '../pages/api/auth/[...nextauth]';
 
 const Homepage = async ({ params }: any) => {
   const session = await getServerSession(authOptions);
+  if (!session) {
+    return <a href={'/auth'}>Redirect</a>;
+  }
+
   const prompts = await prisma.prompt.findMany({
     orderBy: {
       usages: 'desc'
     }
   });
-  if (!session) {
-    return <a href={'/auth'}>Redirect</a>;
-  }
 
   const appSettings = await getAppSettings();
   return <DeveloperTools user={session?.user} appSettings={appSettings} prompts={prompts} />;

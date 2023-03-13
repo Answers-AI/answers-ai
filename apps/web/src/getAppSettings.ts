@@ -7,8 +7,10 @@ import { authOptions } from '../pages/api/auth/[...nextauth]';
 import { prisma } from 'db/dist';
 
 import SlackClient from 'utils/dist/slack/client';
-import { AppSettings, SlackChannel, SlackChannelSetting } from 'types';
+import WebClient from 'utils/dist/web/client';
+import { AppSettings, SlackChannel, SlackChannelSetting, WebPage, WebSetting } from 'types';
 const slackClient = new SlackClient(process.env.SLACK_TOKEN);
+const webClient = new WebClient();
 
 const DEFAULT_SETTINGS = {
   services: [
@@ -64,6 +66,14 @@ export async function getAppSettings(req?: any, res?: any) {
         {}
       ) || {};
 
+    // Load all possible web pages on every update
+    const urls = await webClient.fetchWebData('https://www.lastrev.com');
+    const urlSettings =
+      (user?.appSettings as any)?.web?.urls?.reduce((acc: any, url: string) => {
+        acc[url] = url;
+        return acc;
+      }, {}) || {};
+
     const appSettings = deepmerge(
       { ...DEFAULT_SETTINGS, ...(user?.appSettings as any) },
       {
@@ -80,6 +90,10 @@ export async function getAppSettings(req?: any, res?: any) {
             ...channel,
             ...channelsSettingsById[channel.id]
           }))
+        },
+        web: {
+          ...(user?.appSettings as any)?.web,
+          urls: [{ url: 'https://www.lastrev.com' }]
         }
       }
     );

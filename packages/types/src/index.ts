@@ -30,6 +30,13 @@ export interface AppSettings {
   slack: {
     channels?: SlackChannelSetting[];
   };
+  web: {
+    urls?: WebSetting[];
+    domains?: WebSetting[];
+  };
+  openapi: {
+    urls?: OpenApiSetting[];
+  };
 }
 
 export type User = {
@@ -47,3 +54,19 @@ export type Message = {
   role: string;
   content: string;
 };
+
+export type WebPage = { url: string; content: string };
+export interface WebSetting extends WebPage {
+  enabled: boolean;
+}
+
+export type OpenApi = {
+  paths: string[];
+  info: {
+    title: string;
+    version: string;
+  };
+};
+export interface OpenApiSetting extends OpenApi {
+  enabled: boolean;
+}

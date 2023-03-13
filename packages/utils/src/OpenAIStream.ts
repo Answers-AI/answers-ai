@@ -1,4 +1,5 @@
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser';
+import { ReadableByteStreamController } from 'stream/web';
 
 export async function OpenAIStream(payload: any, extra?: any) {
   const encoder = new TextEncoder();
@@ -17,12 +18,7 @@ export async function OpenAIStream(payload: any, extra?: any) {
 
   // @ts-expect-error
   const stream = new ReadableStream({
-    async start(controller: {
-      close: () => void;
-      enqueue: (arg0: Uint8Array) => void;
-      error: (arg0: unknown) => void;
-      onDone: () => void;
-    }) {
+    async start(controller: ReadableByteStreamController) {
       controller.enqueue(encoder.encode(JSON.stringify(extra) + 'JSON_END'));
 
       function onParse(event: ParsedEvent | ReconnectInterval) {
@@ -67,6 +63,7 @@ export async function OpenAIStream(payload: any, extra?: any) {
       //       }
       //     }
       //   });
+      controller.close();
     }
   });
 

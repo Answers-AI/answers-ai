@@ -39,14 +39,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   // GEt last item from messages
   const messages: { role: ChatCompletionRequestMessageRoleEnum; content: string }[] =
     req.body.messages;
-  const lastMessage = messages[messages.length - 1];
-  const restMessages = messages.slice(0, messages.length - 1);
-  const prompt = lastMessage.content;
+  const filter = req.body.filter || {};
+
+  const lastMessage = messages?.length ? messages[messages.length - 1] : null;
+  const restMessages = messages?.length ? messages.slice(0, messages.length - 1) : [];
+  const prompt = lastMessage?.content || '';
+  console.log(`query.ts ${JSON.stringify({ prompt, messages, filter })}`);
   const {
     prompt: finalPrompt,
     pineconeData,
     context
-  } = await generatePrompt({ prompt, messages }, session?.user);
+  } = await generatePrompt({ prompt, messages, filter }, session?.user);
   try {
     try {
       console.time('OpenAI->createCompletion');
@@ -54,7 +57,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         ...restMessages?.map(({ role, content }) => ({ role, content })),
         { role: 'user', content: finalPrompt }
       ];
-      console.log('OpenAI->createCompletion', { completionMessages });
+      // console.log('OpenAI->createCompletion', { completionMessages });
       // TODO: Move this to app settings or feature flag
       const { data } = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
