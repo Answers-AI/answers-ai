@@ -29,7 +29,7 @@ export const generatePrompt = async ({ prompt, answers = [], filter = {} }: any,
   let filteredData, unfilteredData;
   try {
     // Request openAI to extract params from the question
-    if (!hasDefaultFilter) {
+    if (false && !hasDefaultFilter) {
       const { data } = await openai.createCompletion({
         model: 'text-davinci-003',
         prompt: `
@@ -66,7 +66,7 @@ export const generatePrompt = async ({ prompt, answers = [], filter = {} }: any,
       Object.keys(filter).length
         ? pineconeQuery(embeddings, { filter, topK: 20 })
         : { matches: [] },
-      !hasDefaultFilter ? pineconeQuery(embeddings, { topK: 5 }) : { matches: [] } // TODO: Use topK from config
+      !hasDefaultFilter ? pineconeQuery(embeddings, { topK: 20 }) : { matches: [] } // TODO: Use topK from config
     ]);
     // console.log('filteredData', JSON.stringify(filteredData.matches, null, 2));
     pineconeData = [...(unfilteredData?.matches || []), ...(filteredData?.matches || [])];

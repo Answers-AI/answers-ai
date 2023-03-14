@@ -83,7 +83,11 @@ export const Message = ({ content, role, user, error, prompt, ...other }: any) =
               </AccordionSummary>
               <AccordionDetails>
                 {prompt && !error ? (
-                  <Typography variant="subtitle1" color="text.secondary" component="div">
+                  <Typography
+                    variant="subtitle1"
+                    color="text.secondary"
+                    component="div"
+                    sx={{ whiteSpace: 'pre-line' }}>
                     {prompt}
                   </Typography>
                 ) : null}

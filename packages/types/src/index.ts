@@ -27,6 +27,12 @@ export interface AppSettings {
       enabled: boolean;
     }[];
   };
+  confluence: {
+    spaces?: {
+      key: string;
+      enabled: boolean;
+    };
+  };
   slack: {
     channels?: SlackChannelSetting[];
   };
@@ -68,5 +74,10 @@ export type OpenApi = {
   };
 };
 export interface OpenApiSetting extends OpenApi {
+  enabled: boolean;
+}
+
+export type ConfluencePage = { id: string; space: string; body: string };
+export interface ConfluenceSetting extends ConfluencePage {
   enabled: boolean;
 }

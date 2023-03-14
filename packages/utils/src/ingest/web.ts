@@ -83,7 +83,8 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
     const data = event.data;
     const { domain } = data;
 
-    const urls = await extractUrlsFromSitemap(`${domain}/sitemap.xml`); // TODO: Write parser for XML
+    let urls = await extractUrlsFromSitemap(`${domain}/sitemap.xml`);
+    if (!urls?.length) urls = await extractUrlsFromSitemap(`${domain}/sitemap-index.xml`);
 
     const webPages = (await webPageLoader.loadMany(urls)) as WebPage[];
 

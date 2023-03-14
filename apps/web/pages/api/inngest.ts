@@ -7,6 +7,7 @@ import * as slackFunctions from 'utils/dist/ingest/slack';
 import * as embeddingsFunctions from 'utils/dist/ingest/embeddings';
 import * as webFunctions from 'utils/dist/ingest/web';
 import * as openApiFunctions from 'utils/dist/ingest/openapi';
+import * as confluenceFunctions from 'utils/dist/ingest/confluence';
 
 // Create a client to send and receive events
 
@@ -18,7 +19,8 @@ const functions = Object.values({
   ...embeddingsFunctions,
   ...promptFunctions,
   ...webFunctions,
-  ...openApiFunctions
+  ...openApiFunctions,
+  ...confluenceFunctions
 });
 
 const inngestFunctions = createInngestFunctions(functions as any);
