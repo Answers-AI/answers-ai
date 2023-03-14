@@ -9,8 +9,9 @@
     "dist/**"
   ],
   "scripts": {
-    "dev": "tsc -w",
-    "build": "prisma migrate dev && pnpm db:generate && tsc",
+    "dev": "concurrently \"prisma generate --watch\" \"tsc -w\"",
+    "build": "prisma migrate deploy && prisma generate && tsc",
+    "prisma": "npx prisma",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.22",
     "@types/node": "^18.11.9",
+    "concurrently": "^7.6.0",
     "eslint": "^7.32.0",
     "eslint-config-custom": "workspace:*",
     "jest": "^26.6.3",

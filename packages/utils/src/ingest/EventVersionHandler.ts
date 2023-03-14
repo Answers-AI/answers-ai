@@ -1,5 +1,6 @@
 import { inngest } from './client';
 import { AppSettings } from 'types';
+import { User } from 'db/generated/prisma-client';
 
 export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknown>[]) => {
   // Group all functions by event name and version i.e eventHandlerMap['user.created']['1']
@@ -24,7 +25,7 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
       async ({ event, ...other }) => {
         const { ts, v } = event;
         try {
-          console.time(`[${ts}]Processing  ${eventName}`);
+          console.time(`[${ts}] Processing  ${eventName}`);
           const versions = Object.keys(eventHandlerMap[eventName]);
           let handler;
           if (!v) {
@@ -38,9 +39,9 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
             }
           }
           await handler({ event, ...other } as any);
-          console.timeEnd(`[${ts}]Processing  ${eventName}`);
+          console.timeEnd(`[${ts}] Processing  ${eventName}`);
         } catch (error) {
-          console.error(`[${ts}]Error processing ${eventName}`);
+          console.error(`[${ts}] Error processing ${eventName}`);
           console.log(error);
           throw error;
         }
@@ -52,9 +53,9 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
 };
 
 export type EventHandler<T> = (args: {
-  event: { v: string; data: T; user?: any };
+  event: { v: string; data: T; user?: User; ts: number };
   step: any;
-}) => Promise<void>;
+}) => Promise<unknown>;
 
 export type EventVersionHandler<T> = {
   event: string;

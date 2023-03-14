@@ -50,7 +50,20 @@ export const SlackSettings = ({ appSettings }: SlackSettingsProps) => {
       }
     }));
   };
+  const allToggled = localSettings?.slack?.channels?.every((p) => p.enabled);
 
+  const handleToggleAll = () => {
+    setLocalSettings((prevSettings) => ({
+      ...prevSettings,
+      slack: {
+        ...prevSettings?.jira,
+        channels: prevSettings?.slack?.channels?.map((p) => ({
+          ...p,
+          enabled: !allToggled
+        }))
+      }
+    }));
+  };
   return (
     <Box
       sx={{
@@ -63,9 +76,14 @@ export const SlackSettings = ({ appSettings }: SlackSettingsProps) => {
       <Typography variant="h5">Slack</Typography>
       <Paper sx={{ p: 2 }}>
         <FormControl sx={{}} component="fieldset" variant="standard">
-          <FormLabel component="legend">
-            <strong>Enabled Channels</strong>
-          </FormLabel>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <FormLabel component="legend">
+              <strong>Enabled Channels</strong>
+            </FormLabel>{' '}
+            <Button onClick={handleToggleAll}>
+              {allToggled ? 'Select' : 'Select'} All {localSettings?.slack?.channels?.length}
+            </Button>
+          </Box>
           <FormGroup
             sx={{
               display: 'flex',
@@ -78,7 +96,7 @@ export const SlackSettings = ({ appSettings }: SlackSettingsProps) => {
                   control={
                     <Checkbox
                       name={channel.name}
-                      checked={channel.enabled}
+                      checked={!!channel.enabled}
                       onChange={() => handleEnableChannel(channel)}
                     />
                   }

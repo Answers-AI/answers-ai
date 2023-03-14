@@ -1,21 +1,16 @@
 'use client';
-import { createTheme, CssBaseline, PaletteMode, ThemeProvider, Typography } from '@mui/material';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-
-import { SessionProvider, signIn } from 'next-auth/react';
-
-// import CssBaseline from '@mui/material/CssBaseline';
-
 import React from 'react';
-import { amber, deepOrange, grey } from '@mui/material/colors';
+import { CssBaseline, PaletteMode } from '@mui/material';
+import ThemeProvider from '@mui/material/styles/ThemeProvider';
+import createTheme from '@mui/material/styles/createTheme';
+
+import { SessionProvider } from 'next-auth/react';
+
+import { amber, grey } from '@mui/material/colors';
 import { Session } from 'next-auth';
 import Auth from './Auth';
-// import { useRouter } from 'next/router';
-import { useRouter } from 'next/navigation';
 import { AppDrawer } from './AppDrawer';
 
-const queryClient = new QueryClient();
 const getDesignTokens = (mode: PaletteMode) => ({
   palette: {
     mode,
@@ -64,22 +59,21 @@ export default function AppLayout({
     <SessionProvider session={session}>
       <ThemeProvider theme={darkModeTheme}>
         <CssBaseline />
-        <QueryClientProvider client={queryClient}>
-          <html lang="en" style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
-            <body style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
-              {session ? (
-                <>
-                  <AppDrawer params={params} session={session} />
-                  <main style={{ flex: 1 }}>{children}</main>
-                </>
-              ) : (
-                <Auth />
-              )}
 
-              {/* <ReactQueryDevtools position="top-right" /> */}
-            </body>
-          </html>
-        </QueryClientProvider>
+        <html lang="en" style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
+          <body style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
+            {session ? (
+              <>
+                <AppDrawer params={params} session={session} />
+                <main style={{ flex: 1 }}>{children}</main>
+              </>
+            ) : (
+              <Auth />
+            )}
+
+            {/* <ReactQueryDevtools position="top-right" /> */}
+          </body>
+        </html>
       </ThemeProvider>
     </SessionProvider>
   );

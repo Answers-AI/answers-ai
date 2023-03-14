@@ -53,6 +53,20 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
 
   // return <div>Loading...</div>;
 
+  const allToggled = localSettings?.jira?.projects?.every((p) => p.enabled);
+
+  const handleToggleAll = () => {
+    setLocalSettings((prevSettings) => ({
+      ...prevSettings,
+      jira: {
+        ...prevSettings?.jira,
+        projects: prevSettings?.jira?.projects?.map((p) => ({
+          ...p,
+          enabled: !allToggled
+        }))
+      }
+    }));
+  };
   return (
     <Box
       sx={{
@@ -65,9 +79,14 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
       <Typography variant="h5">Jira</Typography>
       <Paper sx={{ p: 2 }}>
         <FormControl sx={{}} component="fieldset" variant="standard">
-          <FormLabel component="legend">
-            <strong>Enabled Projects</strong>
-          </FormLabel>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <FormLabel color="primary" component="legend">
+              <strong>Enabled Projects</strong>
+            </FormLabel>
+            <Button onClick={handleToggleAll}>
+              {allToggled ? 'Select' : 'Deselect'} All {localSettings?.jira?.projects?.length}
+            </Button>
+          </Box>
           <FormGroup
             sx={{
               display: 'flex',
@@ -80,7 +99,7 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
                   control={
                     <Checkbox
                       name={project.key}
-                      checked={project.enabled}
+                      checked={!!project.enabled}
                       onChange={() => handleEnableProject(project)}
                     />
                   }
@@ -91,7 +110,7 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
           {/* <FormHelperText>Be careful</FormHelperText> */}
         </FormControl>
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 2, py: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, py: 2 }}>
           <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
             Save
           </Button>

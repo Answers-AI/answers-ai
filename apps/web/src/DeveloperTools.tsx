@@ -1,16 +1,16 @@
 'use client';
 import React, { useCallback, useState } from 'react';
-import axios from 'axios';
 import Button from '@mui/material/Button';
 import { Box, FormControlLabel, Switch, TextField } from '@mui/material';
-import { AppSettings, RecommendedPrompt } from 'types';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { AppSettings, RecommendedPrompt, Chat } from 'types';
 import PromptCard from './PromptCard';
-import AddIcon from '@mui/icons-material/PlusOne';
+
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Message } from './Message';
-import { useStreamedResponse } from './useStreamedResponse';
-import AppSyncToolbar from 'AppSyncToolbar';
+import { MessageCard } from './Message';
+
+import AppSyncToolbar from './AppSyncToolbar';
+import { useAnswers } from './AnswersContext';
+import FilterToolbar from './FilterToolbar';
 
 const DEFAULT_PROMPTS = [
   {
@@ -67,54 +67,25 @@ const DEFAULT_PROMPTS = [
     prompt: 'What is the priority for each ticket?'
   }
 ];
-type CallbackType = (data: string[]) => void;
-
-type InitCallbackType = (cb: CallbackType) => void;
 
 const DeveloperTools = ({
   appSettings,
   user,
-  prompts
+  prompts,
+  chats
 }: {
   appSettings: AppSettings;
+  chats: any[];
   user: any;
   prompts: any;
 }) => {
   const [inputValue, setInputValue] = useState('');
-  const [prompt, setPrompt] = useState('');
-  const [messages, setMessages] = useState<any[]>([]);
-  const addMessage = useCallback(
-    (message: any) => setMessages((currentMessages) => [...currentMessages, message]),
-    []
-  );
-  const { isLoading, generatedResponse, generateResponse } = useStreamedResponse({
-    messages,
-    addMessage
-  });
-  const [useStreaming, setUseStreaming] = useState(false);
   const [showPrompts, setShowPrompts] = useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const { data, isFetching } = useQuery({
-    enabled: !!prompt && !useStreaming,
-    queryKey: ['completion', prompt],
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    cacheTime: 0,
-    retry: false,
-    queryFn: () =>
-      axios
-        .post(`/api/ai/query`, { prompt, messages })
-        .then((res) => res.data)
-        .catch((error) => ({
-          error: error?.response?.data?.error
-        })),
-    onSuccess: (data) => {
-      if (messages?.length) addMessage(data);
-    }
-  });
+  const { error, messages, sendMessage, clearMessages, isLoading, useStreaming, setUseStreaming } =
+    useAnswers();
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
@@ -122,39 +93,20 @@ const DeveloperTools = ({
     setInputValue(event.target.value);
   };
 
-  const handleSync = async (name: string) => {
-    addMessage({ role: 'user', content: `Can you please sync all ${name} tickets?` });
-    try {
-      await axios.post(`/api/sync/${name}`);
-      addMessage({
-        role: 'system',
-        message: `Synced ${name} event sent. Go to <a href="/events">events</a> to track the status.`
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleSubmit = () => {
     if (!inputValue) return;
-    setPrompt(inputValue);
-    setMessages([...messages, { role: 'user', content: inputValue }]);
+    sendMessage(inputValue);
     setShowPrompts(false);
     setInputValue('');
-    if (useStreaming) generateResponse(inputValue);
   };
 
   const handlePromptClick = (prompt: string) => {
     if (!prompt) return;
-
-    // addMessage({ role: 'user', content: prompt });
     setInputValue(prompt);
     setShowPrompts(false);
     inputRef.current?.focus();
-
-    // if (useStreaming) generateResponse(prompt);
   };
-  console.log('MEssages', messages);
+
   return (
     <>
       <Box
@@ -169,11 +121,26 @@ const DeveloperTools = ({
         <Box sx={{ width: '100%', flex: 1, overflowX: 'auto' }} ref={scrollRef}>
           <Box sx={{ width: '100%', gap: 2, flexDirection: 'column', display: 'flex' }}>
             {messages.map((message, index) => (
-              <Message {...message} key={index} />
+              <MessageCard {...message} key={index} />
             ))}
-            {generatedResponse?.message && <Message {...generatedResponse} />}
-            {(isFetching || (isLoading && !generatedResponse?.message)) && messages?.length ? (
-              <Message user={user} message={'...'} />
+            {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
+
+            {!messages?.length ? (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                {chats?.map((chat) => (
+                  <Button key={chat.id} href={`/${chat.id}`}>
+                    {chat?.prompt?.content}
+                  </Button>
+                ))}
+              </Box>
+            ) : null}
+            {error ? (
+              <MessageCard
+                user={user}
+                role="assistant"
+                content={`There was an error completing your request, please try again`}
+                error={error}
+              />
             ) : null}
             {!messages?.length || showPrompts ? (
               <DefaultPrompts prompts={[...prompts]} handlePromptClick={handlePromptClick} />
@@ -181,71 +148,10 @@ const DeveloperTools = ({
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <AppSyncToolbar
-            appSettings={appSettings}
-            onSync={(service) =>
-              addMessage({
-                role: 'assistant',
-                content: `Synced ${service.name} event sent. Go to <a href="/events">events</a> to track the status.`
-              })
-            }
-          />
+        <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <FilterToolbar appSettings={appSettings} />
+          <AppSyncToolbar appSettings={appSettings} />
 
-          {/* <Button
-            sx={{
-              position: 'relative',
-              label: { transition: '2.s', opacity: isLoadingJira ? 0 : 1 }
-            }}
-            variant="outlined"
-            color="primary"
-            disabled={isLoadingJira}
-            onClick={handleSyncJira}>
-            {isLoadingJira ? <CircularProgress size={24} sx={{ position: 'absolute' }} /> : null}
-            <label>Sync Jira</label>
-          </Button>
-
-          <Button
-            sx={{
-              position: 'relative',
-              label: { transition: '2.s', opacity: isLoadingSlack ? 0 : 1 }
-            }}
-            variant="outlined"
-            color="primary"
-            disabled={isLoadingSlack}
-            onClick={handleSyncSlack}>
-            {isLoadingSlack ? <CircularProgress size={24} sx={{ position: 'absolute' }} /> : null}
-            <label>Sync Slack</label>
-          </Button> */}
-
-          <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-            <>
-              {/* Toggle component that updates when using query or streaming */}
-
-              <FormControlLabel
-                control={
-                  <Switch
-                    {...{ inputProps: { 'aria-label': 'Stream mode' } }}
-                    checked={useStreaming}
-                    onChange={() => setUseStreaming(!useStreaming)}
-                    name="Stream"
-                  />
-                }
-                label={'Stream'}
-              />
-            </>
-            {messages?.length ? (
-              <Button variant="outlined" color="primary" onClick={() => setMessages([])}>
-                <DeleteIcon />
-              </Button>
-            ) : null}
-            <Button variant="outlined" color="primary" onClick={() => setShowPrompts(true)}>
-              <AddIcon />
-            </Button>
-          </Box>
-        </Box>
-
-        <Box sx={{ position: 'relative' }}>
           <TextField
             inputRef={inputRef}
             variant="filled"
@@ -255,14 +161,45 @@ const DeveloperTools = ({
             onKeyPress={(e) => (e.key === 'Enter' ? handleSubmit() : null)}
             onChange={handleInputChange}
           />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            disabled={!inputValue || isFetching}
-            sx={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }}>
-            Send
-          </Button>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              position: 'absolute',
+              gap: 1,
+              right: 8,
+              bottom: 10
+            }}>
+            {/* Toggle component that updates when using query or streaming */}
+
+            <FormControlLabel
+              control={
+                <Switch
+                  {...{ inputProps: { 'aria-label': 'Stream mode' } }}
+                  checked={useStreaming}
+                  onChange={() => setUseStreaming(!useStreaming)}
+                  name="Stream"
+                />
+              }
+              label={'Stream'}
+            />
+            {messages?.length ? (
+              <Button variant="outlined" color="primary" onClick={clearMessages}>
+                <DeleteIcon />
+              </Button>
+            ) : null}
+            {/* <Button variant="outlined" color="primary" onClick={() => setShowPrompts(true)}>
+              <AddIcon />
+            </Button> */}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+              disabled={!inputValue || isLoading}
+              sx={{}}>
+              Send
+            </Button>
+          </Box>
         </Box>
       </Box>
     </>
@@ -282,7 +219,7 @@ const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) => 
       gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
     }}>
     {prompts?.map((prompt) => (
-      <PromptCard key={prompt.id} {...prompt} onClick={() => handlePromptClick(prompt?.prompt)} />
+      <PromptCard key={prompt.id} {...prompt} onClick={() => handlePromptClick(prompt?.content)} />
     ))}
   </Box>
 );

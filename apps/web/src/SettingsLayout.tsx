@@ -19,7 +19,8 @@ import {
   ListItem,
   ListItemButton,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Container
 } from '@mui/material';
 
 import { AppSettings } from 'types';
@@ -93,20 +94,23 @@ export const SettingsLayout = ({
   // return <div>Loading...</div>;
 
   return (
-    <Grid2 container sx={{ flex: 1, position: 'relative', p: 4, gap: 4 }}>
-      <Grid2
-        sx={{
-          height: '100%',
-          top: (theme) => theme.spacing(3),
-          overflow: 'auto',
-          position: 'sticky'
-        }}>
-        <AppsDrawer appSettings={appSettings} activeApp={activeApp} />
+    <Container maxWidth="xl">
+      <Grid2 container sx={{ flex: 1, position: 'relative', p: 4, gap: 4 }}>
+        <Grid2
+          sx={{
+            height: '100%',
+
+            top: (theme) => theme.spacing(3),
+            overflow: 'auto',
+            position: 'sticky'
+          }}>
+          <AppsDrawer appSettings={appSettings} activeApp={activeApp} />
+        </Grid2>
+        <Grid2 xs sx={{}}>
+          {children}
+        </Grid2>
       </Grid2>
-      <Grid2 xs sx={{}}>
-        {children}
-      </Grid2>
-    </Grid2>
+    </Container>
   );
 };
 

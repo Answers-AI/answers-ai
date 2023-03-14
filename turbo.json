@@ -15,10 +15,11 @@
     "VERCEL_URL"
   ],
   "pipeline": {
-    "//#dev-docker": { "cache": false, "persistent": true },
+    "//#dev-docker": { "cache": false },
     "//#dev-inngest": { "cache": false, "persistent": true },
     "//#db:healthcheck": { "cache": false, "persistent": true },
     "build": {
+      "outputMode": "new-only",
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"]
     },
@@ -30,18 +31,21 @@
     "db:migrate": {
       "cache": false,
       "dependsOn": [],
-      "inputs": ["prisma/**"],
       "outputs": []
     },
     "db:deploy": {
       "cache": false,
       "dependsOn": [],
-      "inputs": ["prisma/**"],
       "outputs": ["dist/**"]
     },
     "db#build": {
       "cache": false,
-      "inputs": ["prisma/**"],
+      "dependsOn": [],
+      "outputs": ["dist/**"]
+    },
+    "db#dev": {
+      "dependsOn": ["build"],
+      "cache": false,
       "outputs": ["dist/**"]
     },
     "web#build": {

@@ -6,12 +6,18 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 module.exports = withBundleAnalyzer({
   experimental: {
-    appDir: true,
-    serverComponentsExternalPackages: ['@prisma/client']
+    appDir: true
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],
-
+  modularizeImports: {
+    '@mui/material/?(((\\w*)?/?)*)': {
+      transform: '@mui/material/{{ matches.[1] }}/{{member}}'
+    },
+    '@mui/icons-material/?(((\\w*)?/?)*)': {
+      transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}'
+    }
+  },
   webpack: (config, { isServer }) => {
     config.externals = [...config.externals, 'db'];
     // if (isServer) {

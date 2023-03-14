@@ -3,17 +3,19 @@ import axios from 'axios';
 import { useState, useCallback } from 'react';
 import { useStreamedResponse } from './useStreamedResponse';
 
-const useAI = (options: { useStreaming?: boolean } = {}) => {
+const useAI = (options: { useStreaming?: boolean; filters?: any } = {}) => {
+  const [filters, setFilters] = useState({});
   const [prompt, setPrompt] = useState('');
   const [answers, setAnswers] = useState<any[]>([]);
-  const [filter, setFilter] = useState({});
+  // const [filter, setFilter] = useState({});
   const addAnswer = useCallback(
     (answer: any) => setAnswers((currentAnswers) => [...currentAnswers, answer]),
     []
   );
   const { isLoading, generatedResponse, generateResponse } = useStreamedResponse({
     answers,
-    addAnswer
+    addAnswer,
+    filters
   });
   const [useStreaming, setUseStreaming] = useState(!!options.useStreaming);
   // const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -30,7 +32,7 @@ const useAI = (options: { useStreaming?: boolean } = {}) => {
         .post((import.meta.env.VITE_API_URL || 'http://localhost:3000/api') + `/ai/query`, {
           prompt,
           answers,
-          filter
+          filter: options.filters
         })
         .then((res) => res.data)
         .catch((error) => ({
@@ -44,8 +46,7 @@ const useAI = (options: { useStreaming?: boolean } = {}) => {
     answers,
     prompt,
     setPrompt,
-    filter,
-    setFilter,
+    filters,
     isLoading,
     generatedResponse,
     generateResponse,
@@ -53,7 +54,9 @@ const useAI = (options: { useStreaming?: boolean } = {}) => {
     isFetching,
     useStreaming,
     setUseStreaming,
-    addAnswer
+    addAnswer,
+
+    setFilters
   };
 };
 
@@ -62,8 +65,7 @@ export const syncAi = async (options: { url?: string } = {}) => {
   console.log('syncai', url);
   const response = await axios.post(
     (import.meta.env.VITE_API_URL || 'http://localhost:3000/api') + `/sync/web`,
-
-    url
+    { url }
   );
   console.log('response', response);
   return response.data;

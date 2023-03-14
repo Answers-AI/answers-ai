@@ -37,19 +37,28 @@ const App = () => {
 
     if (tab) {
       if (newNamespace === 'currentPage') {
-        setFilter({ cleanedUrl: getCleanedUrl(tab.url) });
+        // setFilter({ cleanedUrl: getCleanedUrl(tab.url) });
         await syncAi({ url: tab.url });
       } else if (newNamespace === 'currentDomain') {
         // TODO: Pull by domain
-        setFilter({ cleanedUrl: getCleanedUrl(tab.url) });
+        // setFilter({ cleanedUrl: getCleanedUrl(tab.url) });
       }
     }
   };
 
-  const { generatedResponse, generateResponse, answers, filter, setPrompt, addAnswer, setFilter } =
-    useAI({
-      useStreaming: false
-    });
+  React.useEffect(() => {
+    (async () => {
+      let tab = await getActiveTab();
+
+      if (tab) {
+        await syncAi({ url: tab.url });
+      }
+    })();
+  }, []);
+
+  const { generatedResponse, generateResponse, answers, setPrompt, addAnswer } = useAI({
+    useStreaming: false
+  });
 
   const handleSubmit = async () => {
     if (!inputValue) return;
@@ -58,12 +67,12 @@ const App = () => {
     let tab = await getActiveTab();
 
     if (tab) {
-      setFilter({ cleanedUrl: getCleanedUrl(tab.url) }); // TODO: update if it should be more general
-      setPrompt(inputValue);
-      addAnswer({ prompt: inputValue });
+      // setFilter({ cleanedUrl: getCleanedUrl(tab.url) }); // TODO: update if it should be more general
+      // setPrompt(inputValue);
+      // addAnswer({ prompt: inputValue });
 
       setInputValue('');
-      generateResponse(inputValue, filter);
+      generateResponse(inputValue, { cleanedUrl: getCleanedUrl(tab.url) });
     }
   };
 
@@ -82,7 +91,7 @@ const App = () => {
       // let prompt = `Summarize this page: ${content}`;
       let prompt = `Summarize the content.`;
       let filter = { cleanedUrl: getCleanedUrl(tab.url) };
-      setFilter(filter);
+      // setFilter(filter);
       setPrompt(prompt);
       addAnswer({ prompt });
 
@@ -92,10 +101,18 @@ const App = () => {
   };
 
   React.useEffect(() => {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    const messageListener = (
+      message: any,
+      sender: chrome.runtime.MessageSender,
+      sendResponse: (response?: any) => void
+    ) => {
       // 2. A page requested user data, respond with a copy of `user`
       console.log('Message', message, sender, sendResponse);
-    });
+    };
+    chrome.runtime.onMessage.addListener(messageListener);
+    return () => {
+      chrome.runtime.onMessage.removeListener(messageListener);
+    };
   }, []);
 
   return (
