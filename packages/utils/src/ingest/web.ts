@@ -152,12 +152,13 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
       }));
     });
 
+    console.log('Processing web scrape', iUrls, vectors.length);
     if (vectors?.length) {
       await Promise.all(
         chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
           //TODO: Save to Redis by page url
           //TODO: In event only send page urls
-          inngest.send({
+          return inngest.send({
             v: '1',
             ts: new Date().valueOf(),
             name: 'pinecone/vectors.upserted',

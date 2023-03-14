@@ -89,13 +89,13 @@ const App = () => {
       // const content = turndownService.turndown('<h1>Hello world!</h1>');
 
       // let prompt = `Summarize this page: ${content}`;
-      let prompt = `Summarize the content.`;
+      let prompt = `Summarize`;
       let filter = { cleanedUrl: getCleanedUrl(tab.url) };
       // setFilter(filter);
       setPrompt(prompt);
       addAnswer({ prompt });
 
-      setInputValue('');
+      setInputValue('Summarize');
       generateResponse(prompt, filter);
     }
   };
