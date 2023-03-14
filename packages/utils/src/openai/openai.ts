@@ -19,6 +19,7 @@ class OpenAI {
     this.loader = redisLoader<CreateEmbeddingRequestInput, number[]>({
       keyPrefix: 'openai',
       redisConfig: process.env.REDIS_URL as string,
+      disableCache: true,
       getValuesFn: (keys) =>
         this.openai
           .createEmbedding({
