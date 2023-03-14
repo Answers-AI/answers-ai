@@ -1,4 +1,4 @@
-import { Configuration, OpenAIApi } from 'openai';
+import { ChatCompletionRequestMessageRoleEnum, Configuration, OpenAIApi } from 'openai';
 
 const initializeOpenAI = () => {
   const configuration = new Configuration({
@@ -11,17 +11,32 @@ import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from 'pineconeQuery';
 export const pinecone = new PineconeClient();
 import { inngest } from './ingestClient';
+import { Chat } from 'db/generated/prisma-client';
+import { AnswersFilters, Message } from 'types';
 
 // TODO: Generate Prompt by feature flag
 // TODO: Use templated prompts
-export const generatePrompt = async ({ prompt, answers = [], filter = {} }: any, user?: any) => {
+export const generatePrompt = async (
+  {
+    chat,
+    prompt,
+    messages = [],
+    filters = {}
+  }: {
+    chat: Chat;
+    prompt: string;
+    messages: { role: ChatCompletionRequestMessageRoleEnum; content: string }[];
+    filters: AnswersFilters;
+  },
+  user?: any
+) => {
   // TODO: use embeddingLoader
   const embeddingResponse = await openai.createEmbedding({
     model: 'text-embedding-ada-002',
     input: prompt
   });
 
-  const hasDefaultFilter = Object.keys(filter).length;
+  const hasDefaultFilter = Object.keys(filters).length;
 
   const embeddings = embeddingResponse.data?.data[0]?.embedding;
   // let filter = {};
@@ -52,8 +67,8 @@ export const generatePrompt = async ({ prompt, answers = [], filter = {} }: any,
           const match = filtersResponse.match(regex);
           console.log('Parsing AI Filter', { filtersResponse, match });
           if (match) {
-            filter = JSON.parse(match[0]);
-            console.log('Using AI Filter:', filter);
+            filters = JSON.parse(match[0]);
+            console.log('Using AI Filter:', filters);
           }
         } catch (error) {
           console.log('PINECONE ERROR: Could not parse filters', error);
@@ -63,8 +78,8 @@ export const generatePrompt = async ({ prompt, answers = [], filter = {} }: any,
 
     // TODO: Do multiple parallel queries for the prompt as different actors
     [filteredData, unfilteredData] = await Promise.all([
-      Object.keys(filter).length
-        ? pineconeQuery(embeddings, { filter, topK: 20 })
+      Object.keys(filters).length
+        ? pineconeQuery(embeddings, { filters, topK: 20 })
         : { matches: [] },
       !hasDefaultFilter ? pineconeQuery(embeddings, { topK: 5 }) : { matches: [] } // TODO: Use topK from config
     ]);
@@ -89,7 +104,8 @@ export const generatePrompt = async ({ prompt, answers = [], filter = {} }: any,
     name: 'answers/prompt.upserted',
     user,
     data: {
-      prompt
+      prompt,
+      chat
     }
   });
   // TODO: Need to be able to select this by feature flag
@@ -102,7 +118,7 @@ Answer the following request based on the context provided. ${
     pineconeData,
     filteredData,
     unfilteredData,
-    filter,
+    filters,
     context
   };
 };

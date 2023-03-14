@@ -33,6 +33,12 @@ export const openai = initializeOpenAI();
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await cors(req, res);
   const session = await getServerSession(req, res, authOptions);
+  // TODO: Extract into createCompletion
+
+  if (!session?.user?.email) {
+    res.status(401);
+    return;
+  }
 
   let completionData;
   let completionMessages: ChatCompletionRequestMessage[];
@@ -40,13 +46,50 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const messages: { role: ChatCompletionRequestMessageRoleEnum; content: string }[] =
     req.body.messages;
 
+  let chatId = req.body.chatId;
+
+  // TODO: Validate the user is in the chat or is allowed to send messages
+  let chat;
+  if (!chatId) {
+    chat = await prisma.chat.create({
+      data: {
+        users: {
+          connect: {
+            email: session.user.email
+          }
+        },
+        prompt: {
+          connect: {
+            content: req.body.prompt
+          }
+        }
+      }
+    });
+  } else {
+    chat = await prisma.chat.findUnique({
+      where: { id: chatId }
+    });
+  }
+
+  if (!chat) throw new Error('Chat not found');
+
   const prompt = req.body.prompt;
-  const filter = req.body.filter || {};
+  const filters = req.body.filters || {};
+
+  await inngest.send({
+    v: '1',
+    ts: new Date().valueOf(),
+    name: 'answers/message.sent',
+    user: session.user,
+    data: { role: 'user', chat, content: prompt, filters, messages }
+  });
+
   const {
     prompt: finalPrompt,
     pineconeData,
     context
-  } = await generatePrompt({ prompt, messages, filter }, session?.user);
+  } = await generatePrompt({ chat, prompt, messages, filters }, session?.user);
+
   try {
     try {
       console.time('OpenAI->createCompletion');
@@ -77,25 +120,26 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       return;
     }
     // Get the recommended changes from the API response\
-    const message = completionData.choices[0]?.message;
+    const answer = completionData.choices[0]?.message;
 
-    if (prompt && message) {
+    if (prompt && answer) {
       await inngest.send({
         v: '1',
         ts: new Date().valueOf(),
-        name: 'messages/prompt.answered',
-        user: session?.user,
-        data: { prompt, message }
+        name: 'answers/prompt.answered',
+        user: session.user,
+        data: { chat, messages, prompt, answer }
       });
     }
     res.status(200).json({
+      chat,
       prompt: finalPrompt,
       role: 'assistant',
-      content: message?.content,
+      content: answer?.content,
       context,
       pineconeData,
-      completionMessages,
-      completionData
+      completionData,
+      filters
     } as any);
   } catch (error: any) {
     console.log('Error', error);

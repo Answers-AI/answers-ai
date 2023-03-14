@@ -4,12 +4,13 @@ import Button from '@mui/material/Button';
 import { Box, FormControlLabel, Switch, TextField } from '@mui/material';
 import { AppSettings, RecommendedPrompt } from 'types';
 import PromptCard from './PromptCard';
-import AddIcon from '@mui/icons-material/PlusOne';
+
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Message } from './Message';
+import { MessageCard } from './Message';
 
 import AppSyncToolbar from './AppSyncToolbar';
 import { useAnswers } from './AnswersContext';
+import FilterToolbar from './FilterToolbar';
 
 const DEFAULT_PROMPTS = [
   {
@@ -66,7 +67,6 @@ const DEFAULT_PROMPTS = [
     prompt: 'What is the priority for each ticket?'
   }
 ];
-type CallbackType = (data: string[]) => void;
 
 const DeveloperTools = ({
   appSettings,
@@ -119,46 +119,19 @@ const DeveloperTools = ({
         <Box sx={{ width: '100%', flex: 1, overflowX: 'auto' }} ref={scrollRef}>
           <Box sx={{ width: '100%', gap: 2, flexDirection: 'column', display: 'flex' }}>
             {messages.map((message, index) => (
-              <Message {...message} key={index} />
+              <MessageCard {...message} key={index} />
             ))}
-            {isLoading ? <Message user={user} role="assistant" content={'...'} /> : null}
+            {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
             {!messages?.length || showPrompts ? (
               <DefaultPrompts prompts={[...prompts]} handlePromptClick={handlePromptClick} />
             ) : null}
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 2 }}>
+        <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <FilterToolbar appSettings={appSettings} />
           <AppSyncToolbar appSettings={appSettings} />
 
-          <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-            <>
-              {/* Toggle component that updates when using query or streaming */}
-
-              <FormControlLabel
-                control={
-                  <Switch
-                    {...{ inputProps: { 'aria-label': 'Stream mode' } }}
-                    checked={useStreaming}
-                    onChange={() => setUseStreaming(!useStreaming)}
-                    name="Stream"
-                  />
-                }
-                label={'Stream'}
-              />
-            </>
-            {messages?.length ? (
-              <Button variant="outlined" color="primary" onClick={clearMessages}>
-                <DeleteIcon />
-              </Button>
-            ) : null}
-            <Button variant="outlined" color="primary" onClick={() => setShowPrompts(true)}>
-              <AddIcon />
-            </Button>
-          </Box>
-        </Box>
-
-        <Box sx={{ position: 'relative' }}>
           <TextField
             inputRef={inputRef}
             variant="filled"
@@ -168,14 +141,45 @@ const DeveloperTools = ({
             onKeyPress={(e) => (e.key === 'Enter' ? handleSubmit() : null)}
             onChange={handleInputChange}
           />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            disabled={!inputValue || isLoading}
-            sx={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }}>
-            Send
-          </Button>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              position: 'absolute',
+              gap: 1,
+              right: 8,
+              bottom: 10
+            }}>
+            {/* Toggle component that updates when using query or streaming */}
+
+            <FormControlLabel
+              control={
+                <Switch
+                  {...{ inputProps: { 'aria-label': 'Stream mode' } }}
+                  checked={useStreaming}
+                  onChange={() => setUseStreaming(!useStreaming)}
+                  name="Stream"
+                />
+              }
+              label={'Stream'}
+            />
+            {messages?.length ? (
+              <Button variant="outlined" color="primary" onClick={clearMessages}>
+                <DeleteIcon />
+              </Button>
+            ) : null}
+            {/* <Button variant="outlined" color="primary" onClick={() => setShowPrompts(true)}>
+              <AddIcon />
+            </Button> */}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+              disabled={!inputValue || isLoading}
+              sx={{}}>
+              Send
+            </Button>
+          </Box>
         </Box>
       </Box>
     </>
@@ -195,7 +199,7 @@ const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) => 
       gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
     }}>
     {prompts?.map((prompt) => (
-      <PromptCard key={prompt.id} {...prompt} onClick={() => handlePromptClick(prompt?.prompt)} />
+      <PromptCard key={prompt.id} {...prompt} onClick={() => handlePromptClick(prompt?.content)} />
     ))}
   </Box>
 );

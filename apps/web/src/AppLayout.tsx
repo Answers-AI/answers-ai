@@ -1,18 +1,14 @@
 'use client';
-import { createTheme, CssBaseline, PaletteMode, ThemeProvider, Typography } from '@mui/material';
-
-// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-
-import { SessionProvider, signIn } from 'next-auth/react';
-
-// import CssBaseline from '@mui/material/CssBaseline';
-
 import React from 'react';
-import { amber, deepOrange, grey } from '@mui/material/colors';
+import { CssBaseline, PaletteMode } from '@mui/material';
+import ThemeProvider from '@mui/material/styles/ThemeProvider';
+import createTheme from '@mui/material/styles/createTheme';
+
+import { SessionProvider } from 'next-auth/react';
+
+import { amber, grey } from '@mui/material/colors';
 import { Session } from 'next-auth';
 import Auth from './Auth';
-// import { useRouter } from 'next/router';
-import { useRouter } from 'next/navigation';
 import { AppDrawer } from './AppDrawer';
 
 const getDesignTokens = (mode: PaletteMode) => ({

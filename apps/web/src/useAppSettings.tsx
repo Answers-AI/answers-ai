@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
 import { AppSettings } from 'types';
 
 const saveAppSettings = async (data: AppSettings): Promise<AppSettings> => {
@@ -15,21 +14,22 @@ const saveAppSettings = async (data: AppSettings): Promise<AppSettings> => {
 };
 
 const useAppSettings = () => {
-  // const { data, isLoading } = useQuery({
-  //   queryKey: ['appSettings'],
-  //   queryFn: fetchAppSettings
-  //   // onSuccess: (fetchedData) => {
-  //   //   setLocalSettings(fetchedData);
-  //   // }
-  // });
-
-  const { mutate, isLoading } = useMutation(saveAppSettings);
-
-  const updateAppSettings = (newSettings: AppSettings) => {
-    mutate(newSettings);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const updateAppSettings = async (newSettings: AppSettings) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const savedSettings = await saveAppSettings(newSettings);
+      setIsLoading(false);
+      return savedSettings;
+    } catch (err: any) {
+      setError(err);
+      setIsLoading(false);
+    }
   };
 
-  return { updateAppSettings, isLoading };
+  return { updateAppSettings, isLoading, error };
 };
 
 export default useAppSettings;

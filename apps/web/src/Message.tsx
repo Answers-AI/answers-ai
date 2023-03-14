@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
-import { Avatar, Card, CardContent, styled } from '@mui/material';
+import { Avatar, Card, CardContent } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { JsonViewer } from '@textea/json-viewer';
 // import { deepOrange, deepPurple } from '@mui/material/colors';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -9,6 +10,8 @@ import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
+import { Message } from 'types';
+import { User } from 'db/generated/prisma-client';
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -41,7 +44,23 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: theme.spacing(2),
   borderTop: '1px solid rgba(0, 0, 0, .125)'
 }));
-export const Message = ({
+
+interface MessageCardProps {
+  content: string;
+  role: string;
+  user?: User;
+  error?: object;
+  prompt?: string;
+  extra?: object;
+  pineconeData?: object;
+  filteredData?: object;
+  unfilteredData?: object;
+  context?: string;
+  completionData?: object;
+  filters?: object;
+}
+
+export const MessageCard = ({
   content,
   role,
   user,
@@ -55,7 +74,7 @@ export const Message = ({
   completionData,
   filters,
   ...other
-}: any) => (
+}: MessageCardProps) => (
   <Card sx={{ display: 'flex', padding: 2 }}>
     <Avatar sx={{ bgcolor: role == 'user' ? 'primary.main' : 'secondary.main' }}>
       {role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
@@ -85,7 +104,7 @@ export const Message = ({
             variant="subtitle1"
             color="text.secondary"
             component="div">
-            {content}
+            {content?.trim()}
           </Typography>
           {prompt ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>

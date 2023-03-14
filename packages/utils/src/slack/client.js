@@ -13,6 +13,7 @@ class SlackApiClient {
   }
 
   async initDataLookups() {
+    console.log('start initDataLookups');
     await this.initUserCache();
     await this.initChannelCache();
     // await this.initGroupCache();

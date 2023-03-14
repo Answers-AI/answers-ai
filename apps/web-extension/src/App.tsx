@@ -92,10 +92,18 @@ const App = () => {
   };
 
   React.useEffect(() => {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    const messageListener = (
+      message: any,
+      sender: chrome.runtime.MessageSender,
+      sendResponse: (response?: any) => void
+    ) => {
       // 2. A page requested user data, respond with a copy of `user`
       console.log('Message', message, sender, sendResponse);
-    });
+    };
+    chrome.runtime.onMessage.addListener(messageListener);
+    return () => {
+      chrome.runtime.onMessage.removeListener(messageListener);
+    };
   }, []);
 
   return (

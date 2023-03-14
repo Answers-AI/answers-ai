@@ -13,35 +13,113 @@ datasource db {
 }
 
 model User {
-  id            Int         @id @default(autoincrement())
-
-  username String? @unique
-  email         String      @unique
+  id            String    @id @default(cuid())
   name          String?
-  appSettings Json
-  image String @default("")
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+
+  appSettings Json?
+  chats Chat[]
+  messages Message[]
+  
   prompts Prompt[]
+
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  refresh_token_expires_in Int?
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Chat {
+  id            Int         @id @default(autoincrement())
+  prompt Prompt? @relation(fields: promptId, references: id)
+  promptId Int?
+  users User[] 
+  messages Message[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
 }
 
 model Prompt {
   id            Int         @id @default(autoincrement())
+  title String?
+  description String?
+
+  content String @unique
+  
+  chat Chat[] 
+  
   usages Int @default(0)
   likes Int @default(0)
   dislikes Int @default(0)
-  prompt String @unique
-  title String?
-  description String?
-  answers Answer[] 
+
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
+
+  answers Message[]
+
   users User[]
-
 }
 
-model Answer { 
+
+model Message {
   id            Int         @id @default(autoincrement())
-  prompt Prompt @relation(fields: promptId, references: id)
-  promptId Int
-  text String
+  role String @default("assistant")
+  content String
+
+  prompt Prompt? @relation(fields: promptId, references: id)
+  promptId Int?
+
+  user User? @relation(fields: userId, references: id) 
+  userId String?
+
+  chat Chat @relation(fields: chatId, references: id)
+  chatId Int
+  
+  likes Int @default(0)
+  dislikes Int @default(0)
+
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
 }
+
 
 model AppSettings {
   id            Int         @id @default(autoincrement())
@@ -50,6 +128,8 @@ model AppSettings {
   jiraSettings   JiraSettings @relation(fields: [jiraSettingsId], references: [id])
   // User           User[]
   jiraSettingsId Int
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
 }
 
 model AppService {
@@ -59,6 +139,8 @@ model AppService {
   enabled       Boolean
   AppSettings   AppSettings? @relation(fields: [appSettingsId], references: [id])
   appSettingsId Int?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
 }
 
 model JiraSettings {
@@ -66,6 +148,8 @@ model JiraSettings {
 
   projects    JiraProjectSetting[]
   AppSettings AppSettings[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
 }
 
 model JiraProjectSetting {
@@ -75,4 +159,7 @@ model JiraProjectSetting {
   enabled        Boolean
   JiraSettings   JiraSettings? @relation(fields: [jiraSettingsId], references: [id])
   jiraSettingsId Int?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
+
 }

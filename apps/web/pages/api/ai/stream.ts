@@ -18,7 +18,7 @@ const handler = async (req: Request): Promise<Response> => {
   const args = (await req.json()) as {
     prompt?: string;
     answers?: string;
-    filter?: any;
+    filters?: any;
   };
 
   try {

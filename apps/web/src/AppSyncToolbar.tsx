@@ -1,12 +1,14 @@
 'use client';
 import { Box, Button } from '@mui/material';
+import { useAnswers } from './AnswersContext';
 import axios from 'axios';
 import { AppSettings, AppService } from 'types';
 
 const useSync = ({ onSync }: { onSync?: (a: AppService) => void }) => {
+  const { filters } = useAnswers();
   const handleSync = async (service: AppService) => {
     try {
-      await axios.post(`/api/sync/${service?.name}`);
+      await axios.post(`/api/sync/${service?.name}`, { filters });
       if (onSync) onSync(service);
     } catch (error) {
       console.log(error);
@@ -24,7 +26,7 @@ const AppSyncToolbar = ({
 }) => {
   const { handleSync } = useSync({ onSync });
   return (
-    <Box sx={{ display: 'flex', gap: 2, p: 2 }}>
+    <Box sx={{ display: 'flex', gap: 2 }}>
       {appSettings?.services?.map((service) => (
         <Button
           key={service?.name}

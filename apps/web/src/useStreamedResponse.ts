@@ -2,11 +2,13 @@
 import { useState } from 'react';
 
 export const useStreamedResponse = ({
+  chatId,
   messages,
   filters,
   apiUrl,
   onChunk
 }: {
+  chatId?: number;
   messages?: any[];
   filters?: any;
   apiUrl: string;
@@ -24,6 +26,7 @@ export const useStreamedResponse = ({
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        chatId,
         prompt: aPrompt,
         filters,
         messages

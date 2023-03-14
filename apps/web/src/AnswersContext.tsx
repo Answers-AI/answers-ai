@@ -1,20 +1,15 @@
 'use client';
 import axios from 'axios';
+import { Chat } from 'db/generated/prisma-client';
+import { useRouter } from 'next/navigation';
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
+import { AnswersFilters } from 'types';
+import { deepmerge } from 'utils/dist/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
 
 interface Message {
   role: string;
   content: string;
-}
-
-interface AnswersFilters {
-  userName?: string[];
-  projectKey?: string[];
-  issueKey?: string[];
-  channelId?: string[];
-  url?: string[];
-  domain?: string[];
 }
 
 interface AnswersContextType {
@@ -47,13 +42,21 @@ interface AnswersProviderProps {
   children: React.ReactNode;
   apiUrl?: string;
   useStreaming?: boolean;
+  chat?: Chat;
 }
 
-export function AnswersProvider({ children, apiUrl = '/api' }: AnswersProviderProps) {
+export function AnswersProvider({
+  children,
+  chat,
+  apiUrl = '/api',
+  useStreaming: initialUseStreaming = false
+}: AnswersProviderProps) {
+  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   // const [messageIdx, setMessageIdx] = useState(0);
   const [filters, setFilters] = useState<AnswersFilters>({});
-  const [useStreaming, setUseStreaming] = useState(true);
+  const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
+  const [chatId, setChatId] = useState(chat?.id);
   const messageIdx = useRef(0);
 
   const addMessage = useCallback((message: Message) => {
@@ -64,6 +67,7 @@ export function AnswersProvider({ children, apiUrl = '/api' }: AnswersProviderPr
   }, []);
 
   const { isLoading, generateResponse } = useStreamedResponse({
+    chatId,
     filters,
     messages,
     apiUrl,
@@ -84,11 +88,13 @@ export function AnswersProvider({ children, apiUrl = '/api' }: AnswersProviderPr
         generateResponse(prompt);
       } else {
         const { data } = await axios.post(`${apiUrl}/ai/query`, {
+          chatId,
           prompt,
           messages,
           filters
         });
 
+        setChatId(data?.chat.id);
         addMessage(data);
       }
     },
@@ -96,10 +102,13 @@ export function AnswersProvider({ children, apiUrl = '/api' }: AnswersProviderPr
   );
 
   const updateFilter = (newFilter: AnswersFilters) => {
-    setFilters(newFilter);
+    setFilters(deepmerge({}, filters, newFilter));
   };
 
-  const clearMessages = () => setMessages([]);
+  const clearMessages = () => {
+    setMessages([]);
+    router.push('/');
+  };
 
   const contextValue = {
     messages,

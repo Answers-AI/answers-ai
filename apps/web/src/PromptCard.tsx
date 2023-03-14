@@ -5,7 +5,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 
 interface PromptCardProps {
   title?: string;
-  prompt: string;
+  content: string;
   actor?: string;
   likes?: number;
   views?: number;
@@ -15,7 +15,8 @@ interface PromptCardProps {
 
 const PromptCard: React.FC<PromptCardProps> = ({
   title,
-  prompt,
+
+  content,
   actor,
   likes,
   views,
@@ -50,9 +51,9 @@ const PromptCard: React.FC<PromptCardProps> = ({
             justifyContent: 'space-between',
             gap: 1
           }}>
-          {title || prompt ? (
+          {title || content ? (
             <Typography variant="subtitle1" color="text.secondary" component="div">
-              {title || prompt}
+              {title || content}
             </Typography>
           ) : null}
         </CardContent>

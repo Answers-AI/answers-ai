@@ -1,0 +1,80 @@
+import { deepmerge } from '../deepmerge';
+import { getJiraProjects, JiraProject } from '../jira';
+import SlackClient from '../slack/client';
+import { SlackChannelSetting } from 'types';
+import { User } from 'db/generated/prisma-client';
+
+const slackClient = new SlackClient(process.env.SLACK_TOKEN);
+
+const DEFAULT_SETTINGS = {
+  services: [
+    { name: 'jira', enabled: true },
+    { name: 'slack', enabled: true },
+    { name: 'notion', enabled: false },
+    { name: 'github', enabled: false },
+    { name: 'drive', enabled: false },
+    { name: 'contentful', enabled: false }
+  ],
+  jira: {}
+};
+
+export async function syncAppSettings(user: User) {
+  // if (!session?.user?.email) return NextResponse.redirect('/auth');
+  // TODO: Move this into a middleware
+
+  // TODO: Verify user ownership or permisson scope
+  if (user) {
+    // Load all possible jiraprojects on every update
+    const jiraProjects = await getJiraProjects().then((projects) =>
+      projects.map((project) => ({ name: project?.name, key: project?.key }))
+    );
+    const projectsSettingsByKey =
+      (user?.appSettings as any)?.jira?.projects?.reduce((acc: any, project: JiraProject) => {
+        acc[project.key] = project;
+        return acc;
+      }, {}) || {};
+
+    // Load all possible slack channels on every update
+    const channels = await slackClient.getChannels();
+    const channelsSettingsById =
+      (user?.appSettings as any)?.slack?.channels?.reduce(
+        (acc: any, channel: SlackChannelSetting) => {
+          acc[channel.id] = channel;
+          return acc;
+        },
+        {}
+      ) || {};
+
+    const urlSettings =
+      (user?.appSettings as any)?.web?.urls?.reduce((acc: any, url: string) => {
+        acc[url] = { url };
+        return acc;
+      }, {}) || {};
+
+    const appSettings = deepmerge(
+      { ...DEFAULT_SETTINGS, ...(user?.appSettings as any) },
+      {
+        jira: {
+          ...(user?.appSettings as any)?.jira,
+          projects: jiraProjects.map((project) => ({
+            ...project,
+            ...projectsSettingsByKey[project.key]
+          }))
+        },
+        slack: {
+          ...(user?.appSettings as any)?.slack,
+          channels: channels.map((channel) => ({
+            ...channel,
+            ...channelsSettingsById[channel.id]
+          }))
+        },
+        web: {
+          ...(user?.appSettings as any)?.web,
+          urls: urlSettings
+        }
+      }
+    );
+    return JSON.parse(JSON.stringify(appSettings));
+  }
+  return DEFAULT_SETTINGS;
+}
