@@ -25,5 +25,5 @@ export const webPageLoader = redisLoader<string, WebPage>({
     return Promise.all(results);
   },
   cacheExpirationInSeconds: 0,
-  disableCache: false
+  disableCache: true
 });
