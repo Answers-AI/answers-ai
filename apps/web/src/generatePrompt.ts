@@ -98,16 +98,17 @@ export const generatePrompt = async (
     ...(!pineconeData ? [] : pineconeData?.map((item: any) => item?.metadata?.text))
   ].join('\n');
 
-  await inngest.send({
-    v: '1',
-    ts: new Date().valueOf(),
-    name: 'answers/prompt.upserted',
-    user,
-    data: {
-      prompt,
-      chat
-    }
-  });
+  if (user)
+    await inngest.send({
+      v: '1',
+      ts: new Date().valueOf(),
+      name: 'answers/prompt.upserted',
+      user,
+      data: {
+        prompt,
+        chat
+      }
+    });
   // TODO: Need to be able to select this by feature flag
 
   return {
