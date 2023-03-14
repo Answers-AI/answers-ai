@@ -19,19 +19,29 @@ export const pineconeQuery = async (
     namespace = process.env.PINECONE_INDEX_NAMESPACE
   }: { filters?: AnswersFilters; topK?: number; namespace?: string }
 ) => {
-  console.time('PineconeQuery:' + JSON.stringify({ filters, topK, namespace }));
-
   try {
-    await pinecone.init({
-      environment: process.env.PINECONE_ENVIRONMENT,
-      apiKey: process.env.PINECONE_API_KEY
-    });
-
     // TODO: Use metadata inferred from the question
     // TODO: Use topK
     // TODO: Parse filters into pinecone filter
     // TODO: Generate the model filters by combining all inputs
-    const filter = filters;
+    const filter: any = {};
+    if (filters?.models) {
+      filter.model = {
+        $in: Object.keys(filters?.models)
+          ?.map((model) => {
+            return filters?.models?.[model];
+          })
+          .flat()
+      };
+    }
+    if (filters?.cleanedUrl) {
+      filter.cleanedUrl = { $in: [filters?.cleanedUrl] };
+    }
+    console.time('PineconeQuery:' + JSON.stringify({ filter, topK, namespace }));
+    await pinecone.init({
+      environment: process.env.PINECONE_ENVIRONMENT,
+      apiKey: process.env.PINECONE_API_KEY
+    });
     const result = await pinecone.Index(process.env.PINECONE_INDEX).query({
       vector: embeddings,
       topK,
@@ -40,10 +50,10 @@ export const pineconeQuery = async (
       namespace
     });
 
-    console.timeEnd('PineconeQuery:' + JSON.stringify({ filters, topK, namespace }));
+    console.timeEnd('PineconeQuery:' + JSON.stringify({ filter, topK, namespace }));
     return result.data;
   } catch (error) {
-    console.timeEnd('PineconeQuery:' + JSON.stringify({ filters, topK, namespace }));
+    console.timeEnd('PineconeQuery:' + JSON.stringify({ filter, topK, namespace }));
     console.error('PINECONE ERROR');
     throw error;
   }

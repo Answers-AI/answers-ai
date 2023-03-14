@@ -6,20 +6,22 @@ export const useStreamedResponse = ({
   messages,
   filters,
   apiUrl,
-  onChunk
+  onChunk,
+  onEnd
 }: {
   chatId?: number;
   messages?: any[];
   filters?: any;
   apiUrl: string;
   onChunk: (chunk: { role: string; content: string }) => void;
+  onEnd: () => void;
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
 
   const [generatedResponse, setGeneratedResponse] = useState<any>({});
   const generateResponse = async (aPrompt: string) => {
     setGeneratedResponse('');
-    setIsLoading(true);
+    setIsStreaming(true);
     const response = await fetch(`${apiUrl || '/api'}/ai/stream`, {
       method: 'POST',
       headers: {
@@ -74,7 +76,8 @@ export const useStreamedResponse = ({
       }
     }
     setGeneratedResponse({});
-    setIsLoading(false);
+    setIsStreaming(false);
+    onEnd();
   };
-  return { isLoading, generatedResponse, generateResponse };
+  return { isLoading: isStreaming, generatedResponse, generateResponse };
 };

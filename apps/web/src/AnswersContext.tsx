@@ -13,6 +13,7 @@ interface Message {
 }
 
 interface AnswersContextType {
+  error?: any;
   messages: Message[];
   sendMessage: (message: string) => void;
   clearMessages: () => void;
@@ -24,6 +25,7 @@ interface AnswersContextType {
 }
 
 const AnswersContext = createContext<AnswersContextType>({
+  error: null,
   messages: [],
   filters: {},
   useStreaming: true,
@@ -52,6 +54,8 @@ export function AnswersProvider({
   useStreaming: initialUseStreaming = false
 }: AnswersProviderProps) {
   const router = useRouter();
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   // const [messageIdx, setMessageIdx] = useState(0);
   const [filters, setFilters] = useState<AnswersFilters>({});
@@ -66,7 +70,7 @@ export function AnswersProvider({
     });
   }, []);
 
-  const { isLoading, generateResponse } = useStreamedResponse({
+  const { generateResponse } = useStreamedResponse({
     chatId,
     filters,
     messages,
@@ -78,27 +82,36 @@ export function AnswersProvider({
         newMessages[messageIdx.current] = chunk;
         return newMessages;
       });
-    }
+    },
+    onEnd: () => setIsLoading(false)
   });
 
   const sendMessage = useCallback(
     async (prompt: string) => {
+      setIsLoading(true);
+      setError(null);
       addMessage({ role: 'user', content: prompt });
-      if (useStreaming) {
-        generateResponse(prompt);
-      } else {
-        const { data } = await axios.post(`${apiUrl}/ai/query`, {
-          chatId,
-          prompt,
-          messages,
-          filters
-        });
+      try {
+        if (useStreaming) {
+          generateResponse(prompt);
+        } else {
+          const { data } = await axios.post(`${apiUrl}/ai/query`, {
+            chatId,
+            prompt,
+            messages,
+            filters
+          });
 
-        setChatId(data?.chat.id);
-        addMessage(data);
+          setChatId(data?.chat.id);
+          addMessage(data);
+          setIsLoading(false);
+        }
+      } catch (err: any) {
+        setError(err);
+        setIsLoading(false);
       }
     },
-    [useStreaming, generateResponse, apiUrl, messages, filters, addMessage]
+    [addMessage, useStreaming, generateResponse, apiUrl, chatId, messages, filters]
   );
 
   const updateFilter = (newFilter: AnswersFilters) => {
@@ -119,7 +132,8 @@ export function AnswersProvider({
     addMessage,
     isLoading,
     useStreaming,
-    setUseStreaming
+    setUseStreaming,
+    error
   };
   return <AnswersContext.Provider value={contextValue}>{children}</AnswersContext.Provider>;
 }

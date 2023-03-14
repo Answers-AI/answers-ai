@@ -20,7 +20,9 @@ const handler = async (req: Request): Promise<Response> => {
     answers?: string;
     filters?: any;
   };
-
+  const handleResponse = (response: any) => {
+    console.log('handleResponse', response);
+  };
   try {
     const { prompt, pineconeData, context } = await fetch(
       `${
@@ -49,7 +51,7 @@ const handler = async (req: Request): Promise<Response> => {
       n: 1
     };
 
-    const stream = await OpenAIStream(payload, { pineconeData, context });
+    const stream = await OpenAIStream(payload, { pineconeData, context }, handleResponse);
     return cors(req, new Response(stream));
   } catch (error) {
     const payload = {
@@ -63,7 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
       stream: true,
       n: 1
     };
-    const stream = await OpenAIStream(payload);
+    const stream = await OpenAIStream(payload, {}, handleResponse);
     return new Response(stream);
   }
 };

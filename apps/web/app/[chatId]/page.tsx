@@ -1,12 +1,13 @@
-import { getAppSettings } from '../src/getAppSettings';
+import { getAppSettings } from '../../src/getAppSettings';
 import { getServerSession } from 'next-auth';
 import React from 'react';
 import { prisma } from 'db/dist';
 
-import DeveloperTools from '../src/DeveloperTools';
-import { authOptions } from '../pages/api/auth/[...nextauth]';
-import { AnswersProvider } from '../src/AnswersContext';
+import DeveloperTools from '../../src/DeveloperTools';
+import { authOptions } from '../../pages/api/auth/[...nextauth]';
+import { AnswersProvider } from '../../src/AnswersContext';
 import { Chat, User } from 'db/generated/prisma-client';
+import { redirect } from 'next/navigation';
 
 export const revalidate = 1; // revalidate every minute
 
@@ -37,6 +38,9 @@ const Homepage = async ({ params }: any) => {
         id: params.chatId
       }
     });
+  }
+  if (!chat) {
+    return redirect('/');
   }
 
   const chats = await prisma.chat.findMany({

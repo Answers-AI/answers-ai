@@ -198,3 +198,163 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
     }
   }
 };
+export const processUpsertedIssuesAI: EventVersionHandler<{ issuesKeys: string[]; key: string }> = {
+  event: 'jira/issues.upserted',
+  v: 'jira-summarization-intentions-001',
+  handler: async ({ event, step }) => {
+    try {
+      const { issuesKeys } = event.data;
+      await step.run('Fetch comments page', async () => {
+        const issues = (await jiraIssueLoader.loadMany(issuesKeys)) as JiraIssue[];
+
+        // TODO: Create a JiraIssueCommentsLoader
+        // or TODO: Pull issue and comments from Prisma
+        const jiraIssueComments = await Promise.all(
+          issues?.map(async (issue) =>
+            getJiraComments(issue?.id)
+              .then((comments) => ({ ...issue, comments }))
+              .catch((err) => null)
+          )
+        );
+
+        const summarize = (issue: any) =>
+          `Details for ${issue?.key} are ${Object.entries({
+            'status category': issue?.fields.status?.statusCategory?.name,
+            'status': issue?.fields.status?.name,
+            'account': issue?.fields.customfield_10037?.value,
+            'priority': issue?.fields.priority?.name,
+            'the project name': issue?.fields.project?.name,
+            'the reporter': issue?.fields.reporter?.displayName,
+            'assigned to': issue?.fields.assignee?.displayName || 'Unassigned',
+            'assignee email': issue?.fields.assignee?.email,
+            'the parent key': issue?.fields.parent?.key,
+            'the link': `https://lastrev.atlassian.net/browse/${issue?.key}`,
+            'the description': issue?.fields.description
+              ? jiraAdfToMarkdown(issue?.fields.description)
+              : '',
+            'the summary': issue?.fields?.summary
+          })
+            .filter(([key, value]) => !!value)
+            .map(([key, value]) => `${key} is ${value}`)
+            ?.join(', ')}\n The comments for ${issue?.key} are ${issue?.comments
+            ?.map(
+              ({ author, body, updated, self }: any) =>
+                // `[${updated} - ${author?.displayName}](${self}): ${jiraAdfToMarkdown(body)}`
+                `${author?.displayName} at ${updated}: "${jiraAdfToMarkdown(body)}"`
+            )
+            ?.join('\n')}.
+`;
+
+        const vectors = [
+          {
+            text: ' The project manager summary is ....',
+            metadata: { intention: 'project manager' }
+          },
+          { text: ' The engineer summary is ....' }
+        ];
+
+        if (vectors?.length)
+          await Promise.all(
+            chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
+              //TODO: Save to Redis by issue key
+              //TODO: In event only send issue keys
+              inngest.send({
+                v: '1',
+                ts: new Date().valueOf(),
+                name: 'pinecone/vectors.upserted',
+                data: {
+                  _page: i,
+                  _total: vectors.length,
+                  _batchSize: PINECONE_VECTORS_BATCH_SIZE,
+                  vectors: batchVectors
+                },
+                user: event.user
+              });
+            })
+          );
+      });
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+};
+
+export const processUpsertedIssuesAIEng: EventVersionHandler<{
+  issuesKeys: string[];
+  key: string;
+}> = {
+  event: 'jira/issues.upserted',
+  v: 'jira-summarization-eng-001',
+  handler: async ({ event, step }) => {
+    try {
+      const { issuesKeys } = event.data;
+      await step.run('Fetch comments page', async () => {
+        const issues = (await jiraIssueLoader.loadMany(issuesKeys)) as JiraIssue[];
+
+        // TODO: Create a JiraIssueCommentsLoader
+        // or TODO: Pull issue and comments from Prisma
+        const jiraIssueComments = await Promise.all(
+          issues?.map(async (issue) =>
+            getJiraComments(issue?.id)
+              .then((comments) => ({ ...issue, comments }))
+              .catch((err) => null)
+          )
+        );
+
+        const summarize = (issue: any) =>
+          `Details for ${issue?.key} are ${Object.entries({
+            'status category': issue?.fields.status?.statusCategory?.name,
+            'status': issue?.fields.status?.name,
+            'account': issue?.fields.customfield_10037?.value,
+            'priority': issue?.fields.priority?.name,
+            'the project name': issue?.fields.project?.name,
+            'the reporter': issue?.fields.reporter?.displayName,
+            'assigned to': issue?.fields.assignee?.displayName || 'Unassigned',
+            'assignee email': issue?.fields.assignee?.email,
+            'the parent key': issue?.fields.parent?.key,
+            'the link': `https://lastrev.atlassian.net/browse/${issue?.key}`,
+            'the description': issue?.fields.description
+              ? jiraAdfToMarkdown(issue?.fields.description)
+              : '',
+            'the summary': issue?.fields?.summary
+          })
+            .filter(([key, value]) => !!value)
+            .map(([key, value]) => `${key} is ${value}`)
+            ?.join(', ')}\n The comments for ${issue?.key} are ${issue?.comments
+            ?.map(
+              ({ author, body, updated, self }: any) =>
+                // `[${updated} - ${author?.displayName}](${self}): ${jiraAdfToMarkdown(body)}`
+                `${author?.displayName} at ${updated}: "${jiraAdfToMarkdown(body)}"`
+            )
+            ?.join('\n')}.
+`;
+
+        const vectors = [{ text: ' The engineer summary is ....' }];
+
+        if (vectors?.length)
+          await Promise.all(
+            chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
+              //TODO: Save to Redis by issue key
+              //TODO: In event only send issue keys
+              inngest.send({
+                v: '1',
+                ts: new Date().valueOf(),
+                name: 'pinecone/vectors.upserted',
+                data: {
+                  _page: i,
+                  _total: vectors.length,
+                  _batchSize: PINECONE_VECTORS_BATCH_SIZE,
+                  vectors: batchVectors
+                },
+                user: event.user
+              });
+            })
+          );
+      });
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+};

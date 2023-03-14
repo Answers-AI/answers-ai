@@ -80,19 +80,6 @@ export const MessageCard = ({
       {role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
     </Avatar>
     <CardContent sx={{ py: 0, px: 2, width: '100%', display: 'flex', flexDirection: 'column' }}>
-      {error ? (
-        <>
-          <Typography variant="subtitle1" color="text.secondary" component="div">
-            Ooops! Could not complete your request! Try again with a different prompt.
-          </Typography>
-          <JsonViewer
-            rootName="response"
-            value={error}
-            theme={'dark'}
-            collapseStringsAfterLength={100}
-          />
-        </>
-      ) : null}
       {content ? (
         <>
           <Typography
@@ -206,6 +193,16 @@ export const MessageCard = ({
               </AccordionDetails>
             </Accordion>
           ) : null}
+        </>
+      ) : null}
+      {error ? (
+        <>
+          <JsonViewer
+            rootName="response"
+            value={error}
+            theme={'dark'}
+            collapseStringsAfterLength={100}
+          />
         </>
       ) : null}
     </CardContent>

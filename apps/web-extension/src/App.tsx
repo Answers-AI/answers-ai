@@ -46,10 +46,9 @@ const App = () => {
     }
   };
 
-  const { generatedResponse, generateResponse, answers, filter, setPrompt, addAnswer, setFilter } =
-    useAI({
-      useStreaming: false
-    });
+  const { generatedResponse, generateResponse, answers, setPrompt, addAnswer } = useAI({
+    useStreaming: false
+  });
 
   const handleSubmit = async () => {
     if (!inputValue) return;
@@ -58,12 +57,12 @@ const App = () => {
     let tab = await getActiveTab();
 
     if (tab) {
-      setFilter({ cleanedUrl: getCleanedUrl(tab.url) }); // TODO: update if it should be more general
-      setPrompt(inputValue);
-      addAnswer({ prompt: inputValue });
+      // setFilter({ cleanedUrl: getCleanedUrl(tab.url) }); // TODO: update if it should be more general
+      // setPrompt(inputValue);
+      // addAnswer({ prompt: inputValue });
 
       setInputValue('');
-      generateResponse(inputValue, filter);
+      generateResponse(inputValue, { cleanedUrl: getCleanedUrl(tab.url) });
     }
   };
 
@@ -82,12 +81,12 @@ const App = () => {
       // let prompt = `Summarize this page: ${content}`;
       let prompt = `Summarize the content.`;
       let filter = { cleanedUrl: getCleanedUrl(tab.url) };
-      setFilter(filter);
+      // setFilter(filter);
       setPrompt(prompt);
       addAnswer({ prompt });
 
       setInputValue('');
-      generateResponse(prompt, filter);
+      generateResponse(prompt);
     }
   };
 

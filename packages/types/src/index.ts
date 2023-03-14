@@ -45,6 +45,7 @@ export interface AnswersFilters {
   projectName?: string[];
   issueKey?: string[];
   channelId?: string[];
+  cleanedUrl?: string[];
   url?: string[];
   domain?: string[];
   models?: {
@@ -63,6 +64,14 @@ type Models = {
 export type User = {
   email: string;
   appSettings: AppSettings;
+};
+
+export type Prompt = {
+  content: string;
+};
+export type Chat = {
+  prompt: Prompt;
+  id: string;
 };
 
 export type SlackChannel = { id: string; name: string };

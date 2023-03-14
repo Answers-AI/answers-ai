@@ -57,12 +57,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
           connect: {
             email: session.user.email
           }
-        },
-        prompt: {
-          connect: {
-            content: req.body.prompt
-          }
         }
+        // prompt: {
+        //   connect: {
+        //     content: req.body.prompt
+        //   }
+        // }
       }
     });
   } else {
@@ -114,9 +114,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     } catch (error: any) {
       console.log('OPENAI-ERROR', error?.response?.data);
 
-      res
-        .status(500)
-        .json({ prompt: prompt, error: error?.response?.data, context, pineconeData } as any);
+      res.status(500).json({
+        prompt: prompt,
+        error: error?.response?.data,
+        context,
+        pineconeData,
+        filters
+      } as any);
       return;
     }
     // Get the recommended changes from the API response\

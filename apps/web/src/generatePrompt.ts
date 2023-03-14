@@ -79,13 +79,13 @@ export const generatePrompt = async (
     // TODO: Do multiple parallel queries for the prompt as different actors
     [filteredData, unfilteredData] = await Promise.all([
       Object.keys(filters).length
-        ? pineconeQuery(embeddings, { filters, topK: 20 })
+        ? pineconeQuery(embeddings, { filters, topK: 5 })
         : { matches: [] },
       !hasDefaultFilter ? pineconeQuery(embeddings, { topK: 5 }) : { matches: [] } // TODO: Use topK from config
     ]);
     // console.log('filteredData', JSON.stringify(filteredData.matches, null, 2));
     pineconeData = [...(unfilteredData?.matches || []), ...(filteredData?.matches || [])];
-    // console.log('pineconeData', JSON.stringify(pineconeData, null, 2));
+    console.log('pineconeData', JSON.stringify(pineconeData, null, 2));
     // const pineconeData = { matches: [] };
   } catch (error: any) {
     console.log('Pinecone Error', error);

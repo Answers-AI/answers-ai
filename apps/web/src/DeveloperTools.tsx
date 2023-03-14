@@ -2,7 +2,7 @@
 import React, { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
 import { Box, FormControlLabel, Switch, TextField } from '@mui/material';
-import { AppSettings, RecommendedPrompt } from 'types';
+import { AppSettings, RecommendedPrompt, Chat } from 'types';
 import PromptCard from './PromptCard';
 
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -71,9 +71,11 @@ const DEFAULT_PROMPTS = [
 const DeveloperTools = ({
   appSettings,
   user,
-  prompts
+  prompts,
+  chats
 }: {
   appSettings: AppSettings;
+  chats: Chat[];
   user: any;
   prompts: any;
 }) => {
@@ -82,7 +84,7 @@ const DeveloperTools = ({
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const { messages, sendMessage, clearMessages, isLoading, useStreaming, setUseStreaming } =
+  const { error, messages, sendMessage, clearMessages, isLoading, useStreaming, setUseStreaming } =
     useAnswers();
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -122,6 +124,24 @@ const DeveloperTools = ({
               <MessageCard {...message} key={index} />
             ))}
             {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
+
+            {!messages?.length ? (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                {chats?.map((chat) => (
+                  <Button key={chat.id} href={`/${chat.id}`}>
+                    {chat?.prompt?.content}
+                  </Button>
+                ))}
+              </Box>
+            ) : null}
+            {error ? (
+              <MessageCard
+                user={user}
+                role="assistant"
+                content={`There was an error completing your request, please try again`}
+                error={error}
+              />
+            ) : null}
             {!messages?.length || showPrompts ? (
               <DefaultPrompts prompts={[...prompts]} handlePromptClick={handlePromptClick} />
             ) : null}

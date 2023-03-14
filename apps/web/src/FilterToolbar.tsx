@@ -41,15 +41,17 @@ const FilterToolbar = ({
           gap: 2,
           gridTemplateRows: ''
         }}>
-        {Object.keys(appSettings?.models).map((model: any) => (
-          <MultiSelect
-            label={`${model} Model`}
-            sx={{ textTransform: 'capitalize' }}
-            options={appSettings?.models?.[model]}
-            value={filters?.models?.[model] || []}
-            onChange={(value: string[]) => updateFilter({ models: { [model]: value } })}
-          />
-        ))}
+        {appSettings?.models
+          ? Object.keys(appSettings?.models).map((model: any) => (
+              <MultiSelect
+                label={`${model} Model`}
+                sx={{ textTransform: 'capitalize' }}
+                options={appSettings?.models?.[model]}
+                value={filters?.models?.[model] || []}
+                onChange={(value: string[]) => updateFilter({ models: { [model]: value } })}
+              />
+            ))
+          : null}
       </Box>
     </>
   );

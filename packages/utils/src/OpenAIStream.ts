@@ -1,7 +1,7 @@
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser';
 import { ReadableByteStreamController } from 'stream/web';
 
-export async function OpenAIStream(payload: any, extra?: any) {
+export async function OpenAIStream(payload: any, extra: any, onEnd: (answer: string) => void) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
@@ -51,7 +51,7 @@ export async function OpenAIStream(payload: any, extra?: any) {
         answer += decoded;
         parser.feed(decoded);
       }
-
+      onEnd(answer);
       // if (answer)
       //   await prisma.prompt.update({
       //     where: { id: savedPrompt.id },
