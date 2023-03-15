@@ -13,9 +13,15 @@ export const pinecone = new PineconeClient();
 import { inngest } from './ingestClient';
 import { Chat } from 'db/generated/prisma-client';
 import { AnswersFilters, Message } from 'types';
+import { OpenAI } from 'langchain/llms';
+import { loadSummarizationChain } from 'langchain/chains';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
 // TODO: Generate Prompt by feature flag
 // TODO: Use templated prompts
+const model = new OpenAI({ temperature: 0, maxTokens: 1000 });
+const chain = loadSummarizationChain(model);
+
 export const generatePrompt = async (
   {
     chat,
@@ -79,13 +85,13 @@ export const generatePrompt = async (
     // TODO: Do multiple parallel queries for the prompt as different actors
     [filteredData, unfilteredData] = await Promise.all([
       Object.keys(filters).length
-        ? pineconeQuery(embeddings, { filters, topK: 5 })
+        ? pineconeQuery(embeddings, { filters, topK: 20 })
         : { matches: [] },
-      !hasDefaultFilter ? pineconeQuery(embeddings, { topK: 5 }) : { matches: [] } // TODO: Use topK from config
+      !hasDefaultFilter ? pineconeQuery(embeddings, { topK: 20 }) : { matches: [] } // TODO: Use topK from config
     ]);
     // console.log('filteredData', JSON.stringify(filteredData.matches, null, 2));
     pineconeData = [...(unfilteredData?.matches || []), ...(filteredData?.matches || [])];
-    console.log('pineconeData', JSON.stringify(pineconeData, null, 2));
+    // console.log('pineconeData', JSON.stringify(pineconeData, null, 2));
     // const pineconeData = { matches: [] };
   } catch (error: any) {
     console.log('Pinecone Error', error);
@@ -111,6 +117,31 @@ export const generatePrompt = async (
     });
   // TODO: Need to be able to select this by feature flag
 
+  /* Split the text into chunks. */
+  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 4000 });
+  if (context) {
+    const contextDocs = await textSplitter.createDocuments([context]);
+    /** Call the summarization chain. */
+
+    const summary = await chain.call({
+      input_documents: contextDocs,
+      prompt: prompt
+    });
+
+    console.log('SUMMARY', summary);
+    return {
+      prompt: `You are a helpful assistant. You will provide answers with related information. 
+Answer the following request based on the context provided. ${
+        summary ? `CONTEXT: ${summary.text}` : ''
+      } ${prompt}`,
+      pineconeData,
+      filteredData,
+      unfilteredData,
+      filters,
+      context,
+      summary
+    };
+  }
   return {
     prompt: `You are a helpful assistant. You will provide answers with related information. 
 Answer the following request based on the context provided. ${
@@ -121,5 +152,6 @@ Answer the following request based on the context provided. ${
     unfilteredData,
     filters,
     context
+    // summary
   };
 };

@@ -20,6 +20,13 @@ import { authOptions } from '../auth/[...nextauth]';
 import { prisma } from 'db/dist';
 import { inngest } from '../../../src/ingestClient';
 import { Message } from 'types';
+import { OpenAIChat } from 'langchain/llms';
+import { ChatVectorDBQAChain } from 'langchain/chains';
+import { OpenAIEmbeddings } from 'langchain/embeddings';
+import { PineconeStore } from 'langchain/vectorstores';
+
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { pinecone } from 'pineconeQuery';
 
 const initializeOpenAI = () => {
   const configuration = new Configuration({
@@ -85,47 +92,80 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     data: { role: 'user', chat, content: prompt, filters, messages }
   });
 
-  const {
-    prompt: finalPrompt,
-    pineconeData,
-    context
-  } = await generatePrompt({ chat, prompt, messages, filters }, session?.user);
+  // const {
+  //   prompt: finalPrompt,
+  //   pineconeData,
+  //   context,
+  //   summary
+  // } = await generatePrompt({ chat, prompt, messages, filters }, session?.user);
 
   try {
     try {
       console.time('OpenAI->createCompletion');
       completionMessages = [
         ...messages?.map(({ role, content }) => ({ role, content })),
-        { role: 'user', content: finalPrompt }
+        { role: 'user', content: prompt }
       ];
       // console.log('OpenAI->createCompletion', { completionMessages });
       // TODO: Move this to app settings or feature flag
-      const { data } = await openai.createChatCompletion({
-        model: 'gpt-3.5-turbo',
-        messages: completionMessages,
-        max_tokens: 700,
-        temperature: 0,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+      // const { data } = await openai.createChatCompletion({
+      //   model: 'gpt-3.5-turbo',
+      //   messages: completionMessages,
+      //   max_tokens: 700,
+      //   temperature: 0,
+      //   top_p: 1,
+      //   frequency_penalty: 0,
+      //   presence_penalty: 0
+      // });
+
+      /* Initialize the LLM to use to answer the question */
+      const model = new OpenAIChat({
+        modelName: 'gpt-3.5-turbo',
+        prefixMessages: completionMessages || [
+          { role: 'user', content: 'My name is ' + session.user.name },
+          { role: 'assistant', content: 'Hi there' }
+        ]
       });
-      completionData = data;
+
+      await pinecone.init({
+        environment: process.env.PINECONE_ENVIRONMENT,
+        apiKey: process.env.PINECONE_API_KEY
+      });
+      const index = pinecone.Index(process.env.PINECONE_INDEX);
+      const vectorStore = await PineconeStore.fromExistingIndex(
+        index,
+        new OpenAIEmbeddings(),
+        'text',
+        process.env.PINECONE_INDEX_NAMESPACE
+      );
+      const chain = ChatVectorDBQAChain.fromLLM(model, vectorStore, {
+        returnSourceDocuments: true
+      });
+
+      /* Create the chain */
+      /* Ask it a question */
+      const res = await chain.call({
+        question: prompt,
+        chat_history: ''
+        // chat_history: completionMessages?.map(({ content }) => content).join(' ')
+      });
+      completionData = res;
 
       console.timeEnd('OpenAI->createCompletion');
     } catch (error: any) {
-      console.log('OPENAI-ERROR', error?.response?.data);
+      console.log('OPENAI-ERROR', error);
 
       res.status(500).json({
         prompt: prompt,
         error: error?.response?.data,
-        context,
-        pineconeData,
+        // context,
+        // pineconeData,
         filters
       } as any);
       return;
     }
     // Get the recommended changes from the API response\
-    const answer = completionData.choices[0]?.message;
+    const answer = { content: completionData.text };
 
     if (prompt && answer) {
       await inngest.send({
@@ -138,11 +178,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     }
     res.status(200).json({
       chat,
-      prompt: finalPrompt,
+      prompt,
       role: 'assistant',
       content: answer?.content,
-      context,
-      pineconeData,
+      // context,
+      // summary,
+      // pineconeData,
       completionData,
       filters
     } as any);
@@ -153,9 +194,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       // Get the error message and status code from the response
       const { message, status, data } = error.response;
 
-      res.status(500).json({ prompt: finalPrompt, error: data } as any);
+      res.status(500).json({ prompt, error: data } as any);
     } else {
-      res.status(500).json({ prompt: finalPrompt, error });
+      res.status(500).json({ prompt, error });
     }
   }
 };
