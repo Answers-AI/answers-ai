@@ -1,22 +1,19 @@
 'use client';
 import axios from 'axios';
-import { Chat } from 'db/generated/prisma-client';
 import { useRouter } from 'next/navigation';
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
-import { AnswersFilters } from 'types';
+import { AnswersFilters, Chat, Journey, Message } from 'types';
 import { deepmerge } from 'utils/dist/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
 
-interface Message {
-  role: string;
-  content: string;
-}
-
 interface AnswersContextType {
+  chat?: Chat;
+  journey?: Journey;
   error?: any;
-  messages: Message[];
+  messages: Array<Message>;
   sendMessage: (message: string) => void;
   clearMessages: () => void;
+  regenerateAnswer: () => void;
   isLoading: boolean;
   filters: AnswersFilters;
   updateFilter: (newFilter: AnswersFilters) => void;
@@ -31,6 +28,7 @@ const AnswersContext = createContext<AnswersContextType>({
   useStreaming: true,
   updateFilter: () => {},
   sendMessage: () => {},
+  regenerateAnswer: () => {},
   clearMessages: () => {},
   isLoading: false,
   setUseStreaming: () => {}
@@ -44,11 +42,13 @@ interface AnswersProviderProps {
   children: React.ReactNode;
   apiUrl?: string;
   useStreaming?: boolean;
-  chat?: Chat;
+  chat?: Chat | null;
+  journey?: Journey;
 }
 
 export function AnswersProvider({
   children,
+  journey,
   chat,
   apiUrl = '/api',
   useStreaming: initialUseStreaming = false
@@ -56,11 +56,13 @@ export function AnswersProvider({
   const router = useRouter();
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
-  // const [messageIdx, setMessageIdx] = useState(0);
-  const [filters, setFilters] = useState<AnswersFilters>({});
+  const [messages, setMessages] = useState<Array<Message>>(chat?.messages ?? []);
+  const [filters, setFilters] = useState<AnswersFilters>(
+    deepmerge({}, journey?.filters, chat?.filters)
+  );
   const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
-  const [chatId, setChatId] = useState(chat?.id);
+  const [chatId, setChatId] = useState<string | undefined>(chat?.id);
+  const [journeyId, setJourneyId] = useState<string | undefined>(journey?.id);
   const messageIdx = useRef(0);
 
   const addMessage = useCallback((message: Message) => {
@@ -71,6 +73,7 @@ export function AnswersProvider({
   }, []);
 
   const { generateResponse } = useStreamedResponse({
+    journeyId,
     chatId,
     filters,
     messages,
@@ -90,12 +93,13 @@ export function AnswersProvider({
     async (prompt: string) => {
       setIsLoading(true);
       setError(null);
-      addMessage({ role: 'user', content: prompt });
+      addMessage({ role: 'user', content: prompt } as Message);
       try {
         if (useStreaming) {
           generateResponse(prompt);
         } else {
           const { data } = await axios.post(`${apiUrl}/ai/query`, {
+            journeyId,
             chatId,
             prompt,
             messages,
@@ -103,6 +107,7 @@ export function AnswersProvider({
           });
 
           setChatId(data?.chat.id);
+          setJourneyId(data?.chat.journeyId);
           addMessage(data);
           setIsLoading(false);
         }
@@ -111,15 +116,25 @@ export function AnswersProvider({
         setIsLoading(false);
       }
     },
-    [addMessage, useStreaming, generateResponse, apiUrl, chatId, messages, filters]
+    [addMessage, useStreaming, generateResponse, apiUrl, journeyId, chatId, messages, filters]
   );
 
   const updateFilter = (newFilter: AnswersFilters) => {
     setFilters(deepmerge({}, filters, newFilter));
   };
 
+  const regenerateAnswer = () => {
+    const [message] = messages.slice(-2);
+    setMessages(messages.slice(0, -2));
+    sendMessage(message.content);
+  };
+
   const clearMessages = () => {
     setMessages([]);
+    setChatId(undefined);
+    setJourneyId(undefined);
+    setFilters({});
+    setError(null);
     router.push('/');
   };
 
@@ -127,6 +142,7 @@ export function AnswersProvider({
     messages,
     sendMessage,
     clearMessages,
+    regenerateAnswer,
     filters,
     updateFilter,
     addMessage,

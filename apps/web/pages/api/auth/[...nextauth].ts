@@ -1,8 +1,18 @@
-import NextAuth, { AuthOptions } from 'next-auth';
+import NextAuth, { AuthOptions, DefaultSession } from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from 'db/dist';
 import { inngest } from 'ingestClient';
+import { User as AnswersUser } from 'types';
+import { USER_EVENTS } from 'utils/dist/ingest/auth';
+
+declare module 'next-auth' {
+  interface User extends AnswersUser {}
+
+  interface Session extends DefaultSession {
+    user?: AnswersUser;
+  }
+}
 
 export const authOptions: AuthOptions = {
   session: {
@@ -29,14 +39,7 @@ export const authOptions: AuthOptions = {
     //   return token
     // }
   },
-  events: [
-    'signIn',
-    'signOut',
-    'createUser',
-    'updateUser',
-    'linkAccount'
-    // 'session' //TODO: Figure out if necessary, too noisy
-  ].reduce(
+  events: USER_EVENTS.reduce(
     (acc, event) => ({
       ...acc,
       [event]: async (payload: any) => {

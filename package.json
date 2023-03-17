@@ -7,8 +7,9 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "dotenv -- turbo run dev dev-inngest",
-    "dev-docker": "docker-compose up -d && echo 'Docker running, use pnpm logs web to see logs'",
+    "dev": "dotenv -- turbo run dev dev-inngest dev-docker",
+    "dev-docker": "docker-compose up -d",
+    "docker-healthcheck": "wait-on -c wait-on-config.js",
     "build": "dotenv -- turbo run build",
     "db": "dotenv -- pnpm  --filter db prisma",
     "db:migrate": "dotenv -- pnpm db migrate dev",

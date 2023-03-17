@@ -10,8 +10,7 @@ import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
-import { Message } from 'types';
-import { User } from 'db/generated/prisma-client';
+import { Message, User } from 'types';
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -45,10 +44,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   borderTop: '1px solid rgba(0, 0, 0, .125)'
 }));
 
-interface MessageCardProps {
-  content: string;
-  role: string;
-  user?: User;
+interface MessageCardProps extends Partial<Message> {
   error?: object;
   prompt?: string;
   extra?: object;
@@ -56,6 +52,7 @@ interface MessageCardProps {
   filteredData?: object;
   unfilteredData?: object;
   context?: string;
+  summary?: string;
   completionData?: object;
   filters?: object;
 }
@@ -71,11 +68,12 @@ export const MessageCard = ({
   filteredData,
   unfilteredData,
   context,
+  summary,
   completionData,
   filters,
   ...other
 }: MessageCardProps) => (
-  <Card sx={{ display: 'flex', padding: 2 }}>
+  <Card sx={{ display: 'flex', padding: 2, width: '100%' }}>
     <Avatar sx={{ bgcolor: role == 'user' ? 'primary.main' : 'secondary.main' }}>
       {role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
     </Avatar>
@@ -120,6 +118,15 @@ export const MessageCard = ({
                 <Typography variant="overline">Context</Typography>
               </AccordionSummary>
               <AccordionDetails>
+                <Typography variant="overline">Summary</Typography>
+                <Typography
+                  sx={{ whiteSpace: 'pre-line' }}
+                  variant="body1"
+                  color="text.secondary"
+                  component="div">
+                  {summary}
+                </Typography>
+                <Typography variant="overline">Context</Typography>
                 <Typography
                   sx={{ whiteSpace: 'pre-line' }}
                   variant="body1"
@@ -130,21 +137,20 @@ export const MessageCard = ({
               </AccordionDetails>
             </Accordion>
           ) : null}
-          {filteredData || unfilteredData ? (
+          {pineconeData ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header">
-                <Typography variant="overline">Final prompt</Typography>
+                <Typography variant="overline">Pinecone Data</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <JsonViewer
                   rootName="pineconeData"
                   value={{
                     filters,
-                    filteredData: filteredData,
-                    unfilteredData: unfilteredData
+                    pineconeData
                   }}
                   theme={'dark'}
                   // defaultInspectDepth={0}
@@ -196,14 +202,22 @@ export const MessageCard = ({
         </>
       ) : null}
       {error ? (
-        <>
-          <JsonViewer
-            rootName="response"
-            value={error}
-            theme={'dark'}
-            collapseStringsAfterLength={100}
-          />
-        </>
+        <Accordion TransitionProps={{ unmountOnExit: true }}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header">
+            <Typography variant="overline">Error</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <JsonViewer
+              rootName="response"
+              value={error}
+              theme={'dark'}
+              collapseStringsAfterLength={100}
+            />
+          </AccordionDetails>
+        </Accordion>
       ) : null}
     </CardContent>
   </Card>

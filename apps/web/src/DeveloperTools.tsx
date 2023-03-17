@@ -1,8 +1,8 @@
 'use client';
 import React, { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
-import { Box, FormControlLabel, Switch, TextField } from '@mui/material';
-import { AppSettings, RecommendedPrompt, Chat } from 'types';
+import { Box, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
+import { AppSettings, RecommendedPrompt, Chat, Journey, User } from 'types';
 import PromptCard from './PromptCard';
 
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -11,6 +11,8 @@ import { MessageCard } from './Message';
 import AppSyncToolbar from './AppSyncToolbar';
 import { useAnswers } from './AnswersContext';
 import FilterToolbar from './FilterToolbar';
+import ChatCard from './ChatCard';
+import JourneySection from './JourneySection';
 
 const DEFAULT_PROMPTS = [
   {
@@ -72,22 +74,33 @@ const DeveloperTools = ({
   appSettings,
   user,
   prompts,
+  journeys,
   chats
 }: {
   appSettings: AppSettings;
-  chats: any[];
-  user: any;
-  prompts: any;
+  journeys?: Journey[];
+  chats?: Chat[];
+  user: User;
+  prompts?: any;
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [showPrompts, setShowPrompts] = useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const { error, messages, sendMessage, clearMessages, isLoading, useStreaming, setUseStreaming } =
-    useAnswers();
+  const {
+    error,
+    messages,
+    sendMessage,
+    clearMessages,
+    isLoading,
+    useStreaming,
+    setUseStreaming,
+    regenerateAnswer
+  } = useAnswers();
   React.useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+    if (messages?.length)
+      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -107,6 +120,7 @@ const DeveloperTools = ({
     inputRef.current?.focus();
   };
 
+  const handleNewJourneyChat = (journey: any) => () => {};
   return (
     <>
       <Box
@@ -119,36 +133,80 @@ const DeveloperTools = ({
           height: '100%'
         }}>
         <Box sx={{ width: '100%', flex: 1, overflowX: 'auto' }} ref={scrollRef}>
-          <Box sx={{ width: '100%', gap: 2, flexDirection: 'column', display: 'flex' }}>
+          <Box
+            sx={{
+              width: '100%',
+              gap: 2,
+              flexDirection: 'column',
+              display: 'flex'
+            }}>
             {messages.map((message, index) => (
-              <MessageCard {...message} key={index} />
+              <MessageCard {...message} key={`message_${index}`} />
             ))}
-            {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
 
+            {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
             {!messages?.length ? (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                {chats?.map((chat) => (
-                  <Button key={chat.id} href={`/${chat.id}`}>
-                    {chat?.prompt?.content}
-                  </Button>
-                ))}
-              </Box>
+              <>
+                <JourneySection journeys={journeys} />
+
+                {chats?.length ? (
+                  <>
+                    <Typography variant="h6">Chats</Typography>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        display: 'grid',
+                        gap: 2,
+                        gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
+                      }}>
+                      {chats?.map((chat) => (
+                        <ChatCard key={chat.id} {...chat} />
+                      ))}
+                    </Box>
+                  </>
+                ) : null}
+                <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
+              </>
             ) : null}
             {error ? (
-              <MessageCard
-                user={user}
-                role="assistant"
-                content={`There was an error completing your request, please try again`}
-                error={error}
-              />
+              <>
+                <MessageCard
+                  user={user}
+                  role="assistant"
+                  content={`There was an error completing your request, please try again`}
+                  error={error}
+                />
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    onClick={regenerateAnswer}
+                    variant="contained"
+                    color="primary"
+                    sx={{ margin: 'auto' }}>
+                    Retry
+                  </Button>
+                </Box>
+              </>
             ) : null}
-            {!messages?.length || showPrompts ? (
-              <DefaultPrompts prompts={[...prompts]} handlePromptClick={handlePromptClick} />
+
+            {messages?.length && !isLoading && !error ? (
+              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <Button onClick={regenerateAnswer} variant="outlined" color="primary">
+                  Regenerate answer
+                </Button>
+              </Box>
             ) : null}
           </Box>
         </Box>
 
-        <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box
+          sx={{
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+
+            gap: 2,
+            width: '100%'
+          }}>
           <FilterToolbar appSettings={appSettings} />
           <AppSyncToolbar appSettings={appSettings} />
 
@@ -211,17 +269,24 @@ interface DefaultPromptsProps {
 }
 
 const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) => (
-  <Box
-    sx={{
-      width: '100%',
-      display: 'grid',
-      gap: 2,
-      gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
-    }}>
-    {prompts?.map((prompt) => (
-      <PromptCard key={prompt.id} {...prompt} onClick={() => handlePromptClick(prompt?.content)} />
-    ))}
-  </Box>
+  <>
+    <Typography variant="h6">Recommended prompts</Typography>
+    <Box
+      sx={{
+        width: '100%',
+        display: 'grid',
+        gap: 2,
+        gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
+      }}>
+      {prompts?.map((prompt) => (
+        <PromptCard
+          key={prompt.id}
+          {...prompt}
+          onClick={() => handlePromptClick(prompt?.content)}
+        />
+      ))}
+    </Box>
+  </>
 );
 
 export default DeveloperTools;

@@ -1,47 +1,16 @@
 version: '3'
 
 services:
-  # web:
-  #   build:
-  #     context: .
-  #     dockerfile: apps/web/Dockerfile
-  #   working_dir: /app
-  #   volumes:
-  #     - .:/app
-  #   ports:
-  #     - '3000:3000'
-  #     - '8288:8288'
-  #   depends_on:
-  #     - redis
-  #     - postgres
-  #   command: pnpm dev:turbo
-  # TODO: Figure out how to run this in a separate container
-  # Current issue with sending the messages
-  # inngest:
-  #   image: node:latest
-  #   # build:
-  #   #   context: .
-  #   #   dockerfile: apps/web/Dockerfile
-  #   working_dir: /app
-  #   volumes:
-  #     - .:/app
-  #   ports:
-  #     - '8288:8288'
-  #   command: npm run dev-inngest
-  #   depends_on:
-  #     - web
   studio:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-    working_dir: /app
+    image: node:18
+    working_dir: /app/packages/db
     volumes:
       - .:/app
     ports:
       - '5555:5555'
-    command: pnpm db:studio
-    # depends_on:
-    #   - web
+    command: npx prisma studio
+    environment:
+      - DATABASE_URL=postgresql://example_user:example_password@postgres:5432/example_db?schema=public
   redis:
     image: redis:latest
     ports:

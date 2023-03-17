@@ -17,12 +17,15 @@ export const answersPromptUpserted: EventVersionHandler<{ prompt: string; chat: 
       create: {
         chat: { connect: { id: data?.chat?.id } },
         users: { connect: { email: user?.email } },
+        title: prompt,
         content: prompt,
         likes: 0,
         usages: 1,
         createdAt: new Date(ts)
       },
       update: {
+        chat: { connect: { id: data?.chat?.id } },
+        users: { connect: { email: user?.email } },
         usages: (savedPrompt?.usages || 0) + 1
       }
     });

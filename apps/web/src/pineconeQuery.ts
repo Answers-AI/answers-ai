@@ -15,7 +15,7 @@ export const pineconeQuery = async (
   embeddings: number[],
   {
     filters,
-    topK = 15,
+    topK = 20,
     namespace = process.env.PINECONE_INDEX_NAMESPACE
   }: { filters?: AnswersFilters; topK?: number; namespace?: string }
 ) => {
@@ -33,9 +33,19 @@ export const pineconeQuery = async (
         .flat()
     };
   }
-  if (filters?.cleanedUrl) {
+  if (filters?.projectName?.length) {
+    filter.project = { $in: filters?.projectName?.map((name) => name.toLowerCase()) };
+  }
+  if (filters?.status_category?.length) {
+    filter.status_category = { $in: filters?.status_category?.map((name) => name.toLowerCase()) };
+  }
+  if (filters?.assignee_name?.length) {
+    filter.assignee_name = { $in: filters?.assignee_name?.map((name) => name.toLowerCase()) };
+  }
+  if (filters?.cleanedUrl?.length) {
     filter.cleanedUrl = { $in: [filters?.cleanedUrl] };
   }
+
   try {
     console.time('PineconeQuery:' + JSON.stringify({ filter, topK, namespace }));
     await pinecone.init({
@@ -43,17 +53,15 @@ export const pineconeQuery = async (
       apiKey: process.env.PINECONE_API_KEY
     });
     const result = await pinecone.Index(process.env.PINECONE_INDEX).query({
-      queryRequest: {
-        vector: embeddings,
-        topK,
-        filter,
-        includeMetadata: true,
-        namespace
-      }
+      vector: embeddings,
+      topK,
+      filter,
+      includeMetadata: true,
+      namespace
     });
-
     console.timeEnd('PineconeQuery:' + JSON.stringify({ filter, topK, namespace }));
-    return result;
+    console.log('PINECONE RESULT', result?.data?.matches?.length);
+    return result?.data;
   } catch (error) {
     console.timeEnd('PineconeQuery:' + JSON.stringify({ filter, topK, namespace }));
     console.error('PINECONE ERROR');

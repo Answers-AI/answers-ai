@@ -84,7 +84,7 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
               <strong>Enabled Projects</strong>
             </FormLabel>
             <Button onClick={handleToggleAll}>
-              {allToggled ? 'Select' : 'Deselect'} All {localSettings?.jira?.projects?.length}
+              {allToggled ? 'Deselect' : 'Select'} All {localSettings?.jira?.projects?.length}
             </Button>
           </Box>
           <FormGroup
@@ -111,17 +111,17 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
         </FormControl>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, py: 2 }}>
-          <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
-            Save
-          </Button>
-          {/* <Button
+          <Button
             type="button"
             color="error"
-            variant="outlined"
+            variant="text"
             onClick={() => setLocalSettings(appSettings)}
             disabled={isLoading}>
             Discard
-          </Button> */}
+          </Button>
+          <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
+            Save
+          </Button>
         </Box>
       </Paper>
     </Box>

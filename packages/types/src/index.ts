@@ -1,3 +1,6 @@
+import * as DB from 'db/generated/prisma-client';
+
+import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
 export type PineconeObject = {
   vectors: PineconeVector[];
 };
@@ -20,24 +23,24 @@ export interface AppService {
   enabled: boolean;
 }
 export interface AppSettings {
-  services: AppService[];
-  jira: {
+  services?: AppService[];
+  jira?: {
     projects?: {
       key: string;
       enabled: boolean;
     }[];
   };
-  slack: {
+  slack?: {
     channels?: SlackChannelSetting[];
   };
-  web: {
+  web?: {
     urls?: WebSetting[];
     domains?: WebSetting[];
   };
-  openapi: {
+  openapi?: {
     urls?: OpenApiSetting[];
   };
-  models: Models;
+  models?: Models;
 }
 
 export interface AnswersFilters {
@@ -48,6 +51,8 @@ export interface AnswersFilters {
   cleanedUrl?: string[];
   url?: string[];
   domain?: string[];
+  status_category?: string[];
+  assignee_name?: string[];
   models?: {
     [key: string]: string[];
   };
@@ -61,18 +66,21 @@ type Models = {
   [key: string]: string[];
 };
 
-export type User = {
-  email: string;
+export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
-};
+}
 
-export type Prompt = {
+export interface Prompt extends DB.Prompt {
   content: string;
-};
-export type Chat = {
-  prompt: Prompt;
-  id: string;
-};
+}
+export interface Chat extends DB.Chat {
+  prompt: Prompt | null;
+  messages: Message[] | null;
+}
+
+export interface Journey extends DB.Journey {
+  chats: Chat[] | null;
+}
 
 export type SlackChannel = { id: string; name: string };
 export interface SlackChannelSetting extends SlackChannel {
@@ -80,11 +88,11 @@ export interface SlackChannelSetting extends SlackChannel {
 }
 export type SlackMessage = {};
 
-export type Message = {
-  id: string;
-  role: string;
+export interface Message extends Partial<DB.Message>, ChatCompletionRequestMessage {
+  user?: User | null;
+  role: ChatCompletionRequestMessageRoleEnum;
   content: string;
-};
+}
 
 export type WebPage = { url: string; content: string };
 export interface WebSetting extends WebPage {

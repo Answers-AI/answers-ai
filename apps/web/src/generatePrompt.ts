@@ -1,4 +1,4 @@
-import { ChatCompletionRequestMessageRoleEnum, Configuration, OpenAIApi } from 'openai';
+import { Configuration, OpenAIApi } from 'openai';
 
 const initializeOpenAI = () => {
   const configuration = new Configuration({
@@ -6,21 +6,27 @@ const initializeOpenAI = () => {
   });
   return new OpenAIApi(configuration);
 };
-export const openai = initializeOpenAI();
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from 'pineconeQuery';
-export const pinecone = new PineconeClient();
 import { inngest } from './ingestClient';
 import { Chat } from 'db/generated/prisma-client';
 import { AnswersFilters, Message } from 'types';
-import { OpenAI } from 'langchain/llms';
-import { loadSummarizationChain } from 'langchain/chains';
+import { PromptLayerOpenAI, OpenAI } from 'langchain/llms';
+import { loadQAMapReduceChain } from 'langchain/chains';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
-// TODO: Generate Prompt by feature flag
-// TODO: Use templated prompts
-const model = new OpenAI({ temperature: 0, maxTokens: 1000 });
-const chain = loadSummarizationChain(model);
+export const openai = initializeOpenAI();
+export const pinecone = new PineconeClient();
+
+const model = process.env.PROMPT_LAYER_API_KEY
+  ? new PromptLayerOpenAI({
+      temperature: 0,
+      promptLayerApiKey: process.env.PROMPT_LAYER_API_KEY
+    })
+  : new OpenAI({ temperature: 0 });
+
+const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 3000 });
+const qaChain = loadQAMapReduceChain(model);
 
 export const generatePrompt = async (
   {
@@ -31,79 +37,11 @@ export const generatePrompt = async (
   }: {
     chat: Chat;
     prompt: string;
-    messages: { role: ChatCompletionRequestMessageRoleEnum; content: string }[];
+    messages: Message[];
     filters: AnswersFilters;
   },
   user?: any
 ) => {
-  // TODO: use embeddingLoader
-  const embeddingResponse = await openai.createEmbedding({
-    model: 'text-embedding-ada-002',
-    input: prompt
-  });
-
-  const hasDefaultFilter = Object.keys(filters).length;
-
-  const embeddings = embeddingResponse.data?.data[0]?.embedding;
-  // let filter = {};
-  let pineconeData;
-  let filteredData, unfilteredData;
-  try {
-    // Request openAI to extract params from the question
-    if (!hasDefaultFilter) {
-      const { data } = await openai.createCompletion({
-        model: 'text-davinci-003',
-        prompt: `
-          Return the filters as a valid JSON object included in the following question. All keys and values must be lowercase. Reply format can be like:
-          { "project":"<project>", "status_category": "<status_category>" }
-          Only return from the available fields if you know the value: project
-          Question: ${prompt}`,
-        max_tokens: 700,
-        temperature: 0.1,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
-      }); // Get the recommended changes from the API response\
-      let filtersResponse = data.choices[0].text;
-
-      if (filtersResponse) {
-        filtersResponse = filtersResponse?.replace(/\\n/g, '')?.trim();
-        try {
-          const regex = /{.*}/s;
-          const match = filtersResponse.match(regex);
-          console.log('Parsing AI Filter', { filtersResponse, match });
-          if (match) {
-            filters = JSON.parse(match[0]);
-            console.log('Using AI Filter:', filters);
-          }
-        } catch (error) {
-          console.log('PINECONE ERROR: Could not parse filters', error);
-        }
-      }
-    }
-
-    // TODO: Do multiple parallel queries for the prompt as different actors
-    [filteredData, unfilteredData] = await Promise.all([
-      Object.keys(filters).length
-        ? pineconeQuery(embeddings, { filters, topK: 20 })
-        : { matches: [] },
-      !hasDefaultFilter ? pineconeQuery(embeddings, { topK: 20 }) : { matches: [] } // TODO: Use topK from config
-    ]);
-    // console.log('filteredData', JSON.stringify(filteredData.matches, null, 2));
-    pineconeData = [...(unfilteredData?.matches || []), ...(filteredData?.matches || [])];
-    // console.log('pineconeData', JSON.stringify(pineconeData, null, 2));
-    // const pineconeData = { matches: [] };
-  } catch (error: any) {
-    console.log('Pinecone Error', error);
-  }
-
-  const context = [
-    // ...answers
-    //   ?.filter((item: any) => item?.answer || item?.prompt)
-    //   ?.map((item: any) => `question:${item?.prompt}, answer:${item?.answer}`),
-    ...(!pineconeData ? [] : pineconeData?.map((item: any) => item?.metadata?.text))
-  ].join('\n');
-
   if (user)
     await inngest.send({
       v: '1',
@@ -115,43 +53,100 @@ export const generatePrompt = async (
         chat
       }
     });
-  // TODO: Need to be able to select this by feature flag
 
-  /* Split the text into chunks. */
-  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 4000 });
+  // TODO: Use history to generate a more accurate question to search for vectors
+  const history = messages
+    ?.filter((item: any) => item?.content)
+    ?.map((item: any) => `${item?.content}`)
+    ?.join('\n');
+
+  const embeddingResponse = await openai.createEmbedding({
+    model: 'text-embedding-ada-002',
+    input: prompt?.toLowerCase()
+  });
+
+  const hasDefaultFilter = Object.keys(filters).length;
+
+  const embeddings = embeddingResponse.data?.data[0]?.embedding;
+  let pineconeData;
+
+  try {
+    // Request openAI to extract params from the question
+    // if (!hasDefaultFilter) {
+    //   const { data } = await openai.createCompletion({
+    //     model: 'text-davinci-003',
+    //     prompt: `
+    //       Return the filters as a valid JSON object included in the following question. All keys and values must be lowercase. Reply format can be like:
+    //       { "project":"<project>", "status_category": "<status_category>" }
+    //       Only return from the available fields if you know the value: project
+    //       Question: ${prompt}`,
+    //     max_tokens: 700,
+    //     temperature: 0.1,
+    //     top_p: 1,
+    //     frequency_penalty: 0,
+    //     presence_penalty: 0
+    //   }); // Get the recommended changes from the API response\
+    //   let filtersResponse = data.choices[0].text;
+
+    //   if (filtersResponse) {
+    //     filtersResponse = filtersResponse?.replace(/\\n/g, '')?.trim();
+    //     try {
+    //       const regex = /{.*}/s;
+    //       const match = filtersResponse.match(regex);
+    //       console.log('Parsing AI Filter', { filtersResponse, match });
+    //       if (match) {
+    //         filters = JSON.parse(match[0]);
+    //         console.log('Using AI Filter:', filters);
+    //       }
+    //     } catch (error) {
+    //       console.log('PINECONE ERROR: Could not parse filters', error);
+    //     }
+    //   }
+    // }
+
+    // TODO: Do multiple parallel queries for each different data source by filters
+    const pineconeVectors = await Promise.all([
+      Object.keys(filters).length
+        ? pineconeQuery(embeddings, { filters, topK: 5 })
+        : { matches: [] },
+      !hasDefaultFilter ? pineconeQuery(embeddings, { topK: 5 }) : { matches: [] } // TODO: Use topK from config
+    ]);
+    // TODO: Filter pinecone data by threshold
+    pineconeData = pineconeVectors?.map((v) => v?.matches || []).flat();
+  } catch (error: any) {
+    console.log('Pinecone Error', error);
+  }
+
+  const context = [
+    `${history}`,
+    ...(!pineconeData ? [] : pineconeData?.map((item: any) => item?.metadata?.text))
+  ].join(' <SEP> ');
+
+  let summary = context;
+
   if (context) {
     const contextDocs = await textSplitter.createDocuments([context]);
-    /** Call the summarization chain. */
-
-    const summary = await chain.call({
-      input_documents: contextDocs,
-      prompt: prompt
-    });
-
-    console.log('SUMMARY', summary);
-    return {
-      prompt: `You are a helpful assistant. You will provide answers with related information. 
-Answer the following request based on the context provided. ${
-        summary ? `CONTEXT: ${summary.text}` : ''
-      } ${prompt}`,
-      pineconeData,
-      filteredData,
-      unfilteredData,
-      filters,
-      context,
-      summary
-    };
+    try {
+      if (contextDocs.length > 1) {
+        console.time('Summarization Chain');
+        const response = await qaChain.call({
+          input_documents: contextDocs,
+          question: prompt
+        });
+        summary = response.text;
+        console.timeEnd('Summarization Chain');
+      }
+    } catch (error) {
+      console.log('Error', error);
+      throw error;
+    }
   }
   return {
-    prompt: `You are a helpful assistant. You will provide answers with related information. 
-Answer the following request based on the context provided. ${
-      context ? `CONTEXT: ${context}` : ''
-    } ${prompt}`,
+    prompt: `${summary ? `CONTEXT: ${summary}` : ''} ${prompt}`,
+    messages,
     pineconeData,
-    filteredData,
-    unfilteredData,
     filters,
-    context
-    // summary
+    context,
+    summary
   };
 };

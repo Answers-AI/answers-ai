@@ -19,7 +19,9 @@ const JIRA_FIELDS = [
   'comments',
   'priority',
   'parent',
-  'project'
+  'project',
+  'summary',
+  'updated'
 ];
 export const getJiraTickets = async ({
   jql,
