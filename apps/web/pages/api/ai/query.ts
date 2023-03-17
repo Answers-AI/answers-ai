@@ -9,12 +9,8 @@ type Data = {
   error?: any;
 };
 
-import {
-  ChatCompletionRequestMessage,
-  ChatCompletionRequestMessageRoleEnum,
-  Configuration,
-  OpenAIApi
-} from 'openai';
+import { ChatCompletionRequestMessageRoleEnum, Configuration, OpenAIApi } from 'openai';
+
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]';
 import { prisma } from 'db/dist';
@@ -41,11 +37,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
 
   let completionData;
-  let completionMessages: ChatCompletionRequestMessage[];
-  // GEt last item from messages
-  const messages: { role: ChatCompletionRequestMessageRoleEnum; content: string }[] =
-    req.body.messages;
 
+  const previousMessages: Message[] = req.body.messages;
+  const messages: Message[] = [
+    {
+      role: ChatCompletionRequestMessageRoleEnum.System,
+      content: 'You are an AI with access to the following platforms: Jira, Slack, Github, OpenAPI.'
+    },
+    {
+      role: ChatCompletionRequestMessageRoleEnum.User,
+      content: 'My name is ' + session.user.name
+    },
+    ...previousMessages?.map(({ role, content }) => ({ role, content }))
+  ];
   let chatId = req.body.chatId;
 
   // TODO: Validate the user is in the chat or is allowed to send messages
@@ -58,24 +62,41 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
             email: session.user.email
           }
         },
-        filters: req.body.filters || {}
-        // prompt: {
-        //   connect: {
-        //     content: req.body.prompt
-        //   }
-        // }
+        filters: req.body.filters,
+        journey: req.body.journeyId ? { connect: { id: req.body.journeyId } } : {},
+        prompt: {
+          connectOrCreate: {
+            create: { content: req.body.prompt },
+            where: { content: req.body.prompt }
+          }
+        }
       }
     });
   } else {
-    chat = await prisma.chat.findUnique({
-      where: { id: chatId }
+    chat = await prisma.chat.update({
+      where: { id: chatId },
+      data: {
+        users: {
+          connect: {
+            email: session.user.email
+          }
+        },
+        filters: req.body.filters,
+        prompt: {
+          connectOrCreate: {
+            create: { content: req.body.prompt },
+            where: { content: req.body.prompt }
+          }
+        },
+        journey: req.body.journeyId ? { connect: { id: req.body.journeyId } } : {}
+      }
     });
   }
 
   if (!chat) throw new Error('Chat not found');
 
   const prompt = req.body.prompt;
-  const filters = req.body.filters || {};
+  const filters = req.body.filters;
 
   await inngest.send({
     v: '1',
@@ -88,21 +109,22 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const {
     prompt: finalPrompt,
     pineconeData,
-    context
+    context,
+    ...otherPrompt
   } = await generatePrompt({ chat, prompt, messages, filters }, session?.user);
 
   try {
     try {
       console.time('OpenAI->createCompletion');
-      completionMessages = [
-        ...messages?.map(({ role, content }) => ({ role, content })),
-        { role: 'user', content: finalPrompt }
-      ];
-      // console.log('OpenAI->createCompletion', { completionMessages });
+
       // TODO: Move this to app settings or feature flag
       const { data } = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
-        messages: completionMessages,
+
+        messages: [
+          ...messages,
+          { role: ChatCompletionRequestMessageRoleEnum.User, content: finalPrompt }
+        ],
         max_tokens: 700,
         temperature: 0,
         top_p: 1,
@@ -113,14 +135,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
       console.timeEnd('OpenAI->createCompletion');
     } catch (error: any) {
-      console.log('OPENAI-ERROR', error?.response?.data);
+      console.log('OPENAI-ERROR', error);
 
       res.status(500).json({
         prompt: prompt,
         error: error?.response?.data,
         context,
-        pineconeData,
-        filters
+        pineconeData
       } as any);
       return;
     }
@@ -137,6 +158,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       });
     }
     res.status(200).json({
+      ...otherPrompt,
       chat,
       prompt: finalPrompt,
       role: 'assistant',

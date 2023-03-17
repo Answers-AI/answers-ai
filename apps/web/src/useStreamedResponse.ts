@@ -1,19 +1,22 @@
 'use client';
 import { useState } from 'react';
+import { Message } from 'types';
 
 export const useStreamedResponse = ({
   chatId,
+  journeyId,
   messages,
   filters,
   apiUrl,
   onChunk,
   onEnd
 }: {
+  journeyId?: string;
   chatId?: string;
   messages?: any[];
   filters?: any;
   apiUrl: string;
-  onChunk: (chunk: { role: string; content: string }) => void;
+  onChunk: (chunk: Message) => void;
   onEnd: () => void;
 }) => {
   const [isStreaming, setIsStreaming] = useState(false);
@@ -28,6 +31,7 @@ export const useStreamedResponse = ({
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        journeyId,
         chatId,
         prompt: aPrompt,
         filters,

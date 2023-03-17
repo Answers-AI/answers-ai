@@ -1,7 +1,7 @@
 import { deepmerge } from '../deepmerge';
 import { getJiraProjects, JiraProject } from '../jira';
 import SlackClient from '../slack/client';
-import { SlackChannelSetting } from 'types';
+import { AppSettings, SlackChannelSetting } from 'types';
 import { User } from 'db/generated/prisma-client';
 
 const slackClient = new SlackClient(process.env.SLACK_TOKEN);
@@ -25,55 +25,63 @@ export async function syncAppSettings(user: User) {
   // TODO: Verify user ownership or permisson scope
   if (user) {
     // Load all possible jiraprojects on every update
-    const jiraProjects = await getJiraProjects().then((projects) =>
-      projects.map((project) => ({ name: project?.name, key: project?.key }))
-    );
-    const projectsSettingsByKey =
-      (user?.appSettings as any)?.jira?.projects?.reduce((acc: any, project: JiraProject) => {
-        acc[project.key] = project;
-        return acc;
-      }, {}) || {};
-
-    // Load all possible slack channels on every update
-    const channels = await slackClient.getChannels();
-    const channelsSettingsById =
-      (user?.appSettings as any)?.slack?.channels?.reduce(
-        (acc: any, channel: SlackChannelSetting) => {
-          acc[channel.id] = channel;
+    let newSettings: Partial<AppSettings> = {};
+    try {
+      const jiraProjects = await getJiraProjects().then((projects) =>
+        projects.map((project) => ({ name: project?.name, key: project?.key }))
+      );
+      const projectsSettingsByKey =
+        (user?.appSettings as any)?.jira?.projects?.reduce((acc: any, project: JiraProject) => {
+          acc[project.key] = project;
           return acc;
-        },
-        {}
-      ) || {};
+        }, {}) || {};
+      newSettings.jira = {
+        ...(user?.appSettings as any)?.jira,
+        projects: jiraProjects.map((project) => ({
+          ...project,
+          ...projectsSettingsByKey[project.key]
+        }))
+      };
+    } catch (error) {
+      console.log('JiraSettingsError', error);
+    }
+    try {
+      // Load all possible slack channels on every update
+      const channels = await slackClient.getChannels();
+      const channelsSettingsById =
+        (user?.appSettings as any)?.slack?.channels?.reduce(
+          (acc: any, channel: SlackChannelSetting) => {
+            acc[channel.id] = channel;
+            return acc;
+          },
+          {}
+        ) || {};
+      newSettings.slack = {
+        ...(user?.appSettings as any)?.slack,
+        channels: channels.map((channel) => ({
+          ...channel,
+          ...channelsSettingsById[channel.id]
+        }))
+      };
+    } catch (error) {
+      console.log('SlackSettingsError', error);
+    }
 
-    const urlSettings =
-      (user?.appSettings as any)?.web?.urls?.reduce((acc: any, url: string) => {
-        acc[url] = { url };
-        return acc;
-      }, {}) || {};
+    try {
+      const urlSettings =
+        (user?.appSettings as any)?.web?.urls?.reduce((acc: any, url: string) => {
+          acc[url] = { url };
+          return acc;
+        }, {}) || {};
+      newSettings.web = {
+        ...(user?.appSettings as any)?.web,
+        urls: urlSettings
+      };
+    } catch (error) {
+      console.log('urlSettingsError', error);
+    }
 
-    const appSettings = deepmerge(
-      { ...DEFAULT_SETTINGS, ...(user?.appSettings as any) },
-      {
-        jira: {
-          ...(user?.appSettings as any)?.jira,
-          projects: jiraProjects.map((project) => ({
-            ...project,
-            ...projectsSettingsByKey[project.key]
-          }))
-        },
-        slack: {
-          ...(user?.appSettings as any)?.slack,
-          channels: channels.map((channel) => ({
-            ...channel,
-            ...channelsSettingsById[channel.id]
-          }))
-        },
-        web: {
-          ...(user?.appSettings as any)?.web,
-          urls: urlSettings
-        }
-      }
-    );
+    const appSettings = deepmerge(DEFAULT_SETTINGS, user?.appSettings, newSettings);
     return JSON.parse(JSON.stringify(appSettings));
   }
   return DEFAULT_SETTINGS;

@@ -108,17 +108,17 @@ export const SlackSettings = ({ appSettings }: SlackSettingsProps) => {
         </FormControl>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 2, py: 2 }}>
-          <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
-            Save
-          </Button>
-          {/* <Button
+          <Button
             type="button"
             color="error"
-            variant="outlined"
+            variant="text"
             onClick={() => setLocalSettings(appSettings)}
             disabled={isLoading}>
             Discard
-          </Button> */}
+          </Button>
+          <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
+            Save
+          </Button>
         </Box>
       </Paper>
     </Box>

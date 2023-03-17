@@ -26,6 +26,8 @@ model User {
   messages Message[]
   
   prompts Prompt[]
+  
+  journeys Journey[]
 
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt @default(now())
@@ -71,10 +73,29 @@ model Chat {
   id   String @id @default(uuid())
   prompt Prompt? @relation(fields: promptId, references: id)
   promptId String?
+
+  journey Journey? @relation(fields: journeyId, references: id)
+  journeyId String?
+
   users User[] 
   messages Message[]
   
   filters Json
+
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
+}
+
+
+model Journey { 
+  id   String @id @default(uuid())
+  title String?
+
+  filters Json
+
+  chats Chat[]
+
+  users User[] 
 
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt @default(now())
@@ -162,7 +183,7 @@ model JiraProjectSetting {
   enabled        Boolean
   JiraSettings   JiraSettings? @relation(fields: [jiraSettingsId], references: [id])
   jiraSettingsId String?
+  
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt @default(now())
-
 }

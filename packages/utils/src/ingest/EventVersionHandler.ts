@@ -41,6 +41,7 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
           await handler({ event, ...other } as any);
           console.timeEnd(`[${ts}] Processing  ${eventName}`);
         } catch (error) {
+          console.timeEnd(`[${ts}] Processing  ${eventName}`);
           console.error(`[${ts}] Error processing ${eventName}`);
           console.log(error);
           throw error;
