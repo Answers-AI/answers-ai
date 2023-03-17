@@ -19,7 +19,7 @@ module.exports = withBundleAnalyzer({
     }
   },
   webpack: (config, { isServer }) => {
-    config.externals = [...config.externals, 'db'];
+    config.externals = [...config.externals, 'db', 'widdershins'];
     // if (isServer) {
     config.plugins = [
       ...config.plugins,

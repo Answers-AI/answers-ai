@@ -2,68 +2,204 @@ import { inngest } from './client';
 import { openApiLoader } from '../openapi';
 import { EventVersionHandler } from './EventVersionHandler';
 import { chunkArray } from '../utilities/utils';
-import { OpenApi } from 'types';
+import { OpenAPIV3_1 } from 'openapi-types';
+import { OpenApiProvider } from 'types';
+// @ts-ignore-next-line
+// import openApi3ToMarkdown from '../utilities/openApi3ToMarkdown';
+// @ts-ignore
+import widdershins from 'widdershins';
+
+import axios from 'axios';
+
+import { URL } from 'url';
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
 
-const summarize = (operation: any) => {
-  return `The ${operation.operationId} operation is ${
-    operation.description ? operation?.description : operation.summary
-  }.
-    The important tags are ${operation?.tags?.join(
-      ', '
-    )} and the parameters are: ${operation?.parameters
-    ?.map((param: { name: any; in: any; type: any; required: any; description: any }) => {
-      return `${param.name} is a property in the ${param.in} of the type ${param.type} and is ${
-        param.required ? 'required' : 'optional'
-      }. The description is ${param?.description || 'not provided'}.`;
-    })
-    .join(', ')}
-    `;
+interface GuruListOptions {
+  domain?: string;
+  format?: string;
+  version?: string;
+}
+
+const isDomainMatch = (url1: string | undefined, url2: string | undefined): boolean => {
+  if (!url1 || !url2) return false;
+
+  let hostname1 = url1.toLowerCase();
+  let hostname2 = url2.toLowerCase();
+
+  // Add a protocol if none exists
+  if (!/^https?:\/\//i.test(hostname1)) {
+    hostname1 = `http://${hostname1}`;
+  }
+
+  if (!/^https?:\/\//i.test(hostname2)) {
+    hostname2 = `http://${hostname2}`;
+  }
+
+  const urlObj1 = new URL(hostname1);
+  const urlObj2 = new URL(hostname2);
+
+  if (urlObj1.hostname === urlObj2.hostname) {
+    console.log({ url1, url2 });
+  }
+
+  return urlObj1.hostname === urlObj2.hostname;
+};
+
+const getXOriginUrls = (json: OpenApiProvider, options: GuruListOptions = {}): string[] => {
+  const { domain = '', version = 0, format = '' } = options || {};
+
+  return Object.entries(json).flatMap(
+    ([_, { versions }]: [
+      string,
+      { versions: Record<string, { info: OpenApiProvider['versions'][string]['info'] }> }
+    ]) =>
+      Object.values(versions).flatMap(
+        ({ info }: { info: OpenApiProvider['versions'][string]['info'] }) =>
+          info &&
+          info['x-origin'] &&
+          (isDomainMatch(info['x-providerName'], domain) ||
+            isDomainMatch(info?.contact?.url, domain))
+            ? info['x-origin']
+                .filter(
+                  ({ format: originFormat, version: originVersion }) =>
+                    (!format || originFormat === format) && parseFloat(originVersion!) >= version
+                )
+                .map(({ url }: { url?: string }) => url!)
+            : []
+      )
+  );
+};
+
+export const processOpenApiGuruList: EventVersionHandler<{ format?: string[]; version?: string }> =
+  {
+    event: 'openapi/guru.sync',
+    v: '1',
+    handler: async ({ event }) => {
+      const { data } = await axios
+        .get('https://api.apis.guru/v2/list.json', {
+          method: 'GET',
+          headers: { Accept: 'application/json' }
+        })
+        .catch((err) => {
+          console.log(`Fetch Guru List Error: ${err}`);
+          throw err;
+        });
+
+      const urls = getXOriginUrls(data);
+
+      await inngest.send({
+        v: event.v,
+        ts: new Date().valueOf(),
+        name: 'openapi/spec.sync',
+        data: {
+          urls
+        },
+        user: event.user
+      });
+    }
+  };
+
+export const processOpenApiDomainList: EventVersionHandler<{
+  format?: string;
+  version?: string;
+  urls: string[];
+}> = {
+  event: 'openapi/domain.sync',
+  v: '1',
+  handler: async ({ event }) => {
+    const { urls, format = 'openapi', version = '3.0' } = event.data;
+
+    const { data } = await axios
+      .get('https://api.apis.guru/v2/list.json', {
+        method: 'GET',
+        headers: { Accept: 'application/json' }
+      })
+      .catch((err) => {
+        console.log(`Fetch Guru List Error: ${err}`);
+        throw err;
+      });
+
+    urls.map(async (domain: string) => {
+      const options: GuruListOptions = {
+        domain,
+        format,
+        version
+      };
+
+      const urls = getXOriginUrls(data, options);
+
+      await inngest.send({
+        v: event.v,
+        ts: new Date().valueOf(),
+        name: 'openapi/spec.sync',
+        data: {
+          urls
+        },
+        user: event.user
+      });
+    });
+  }
 };
 
 export const processOpenApiUrl: EventVersionHandler<{ urls: string[] }> = {
-  event: 'openapi/app.sync',
+  event: 'openapi/spec.sync',
   v: '1',
   handler: async ({ event }) => {
     const data = event.data;
     const { urls } = data;
+    const openApiJsons = (await openApiLoader.loadMany(urls)) as OpenAPIV3_1.Document[];
 
-    const openApiUrls = (await openApiLoader.loadMany(urls)) as OpenApi[];
+    const vectors = openApiJsons.flatMap(async (openApiJson: OpenAPIV3_1.Document) => {
+      const openApiSpec = openApiJson as OpenAPIV3_1.Document;
 
-    const vectors = openApiUrls.flatMap((openApiUrl) => {
-      const service = openApiUrl.info.title;
-      const version = openApiUrl.info.version;
+      // const markdown = openApi3ToMarkdown(openApiSpec);
+      const options = {
+        clipboard: false,
+        externalDocs: false,
+        toc_footers: false,
+        omitHeader: true,
+        html: false,
+        expandBody: true,
+        resolve: false,
+        tocSummary: false,
+        verbose: false,
+        help: false,
+        version: false,
+        discovery: false,
+        httpsnippet: false,
+        codeSamples: false,
+        sample: false,
+        search: false
+        // language_tabs: [{ javascript: 'JavaScript' }, { ruby: 'Ruby' }]
+      };
+      const markdown = await widdershins.convert(openApiJson, options);
+      console.log('================== MARKDOWN ==================');
+      console.log(markdown);
 
-      const paths = Object.keys(openApiUrl.paths);
+      const headingsRegex = /^##\s+(.*)$/gm;
+      const headingsArray = [...markdown.matchAll(headingsRegex)];
 
-      return paths.flatMap((pathKey: any) => {
-        const path: any = openApiUrl.paths[pathKey];
-
-        for (const methodKey of Object.keys(path)) {
-          const operation = path[methodKey];
-          console.log(summarize(operation));
-
-          return {
-            uid: `OpenApi_${service}_${version}_${operation.operationId}`,
-            text: summarize(operation),
-            metadata: {
-              tags: operation.tags,
-              service,
-              version,
-              operationId: operation.operationId
-            }
-          };
-        }
+      return headingsArray.map((heading, i, arr) => {
+        const nextHeadingIndex = arr[i + 1] ? arr[i + 1].index : markdown.length;
+        const content = markdown.slice((heading?.index || 0) + heading[0].length, nextHeadingIndex);
+        return {
+          uid: `OpenApi_${heading[1]
+            .replace(/[^a-zA-Z]+/g, '_')
+            .replace(/_{2,}/g, '_')
+            .toLowerCase()}`,
+          text: `${heading[0]}${content}`,
+          metadata: {
+            title: openApiSpec.info.title,
+            version: openApiSpec.info.version
+          }
+        };
       });
     });
 
     if (vectors?.length) {
-      // console.log('openapi/app.sync', vectors);
       await Promise.all(
         chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
-          //TODO: Save to Redis by page url
-          //TODO: In event only send page urls
           inngest.send({
             v: '1',
             ts: new Date().valueOf(),

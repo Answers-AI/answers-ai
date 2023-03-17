@@ -110,3 +110,52 @@ export type OpenApi = {
 export interface OpenApiSetting extends OpenApi {
   enabled: boolean;
 }
+
+export interface OpenApiProvider {
+  added: string;
+  preferred: string;
+  versions: {
+    [version: string]: {
+      added: string;
+      info: {
+        'contact'?: {
+          'email'?: string;
+          'name'?: string;
+          'url'?: string;
+          'x-twitter'?: string;
+        };
+        'description'?: string;
+        'license'?: {
+          name?: string;
+          url?: string;
+        };
+        'termsOfService'?: string;
+        'title'?: string;
+        'version'?: string;
+        'x-apisguru-categories'?: string[];
+        'x-logo'?: {
+          url?: string;
+          backgroundColor?: string;
+        };
+        'x-origin'?: {
+          format?: string;
+          url?: string;
+          version?: string;
+        }[];
+        'x-providerName'?: string;
+        'x-serviceName'?: string;
+        [key: string]: any;
+      };
+      updated: string;
+      swaggerUrl?: string;
+      swaggerYamlUrl?: string;
+      openapiVer?: string;
+      externalDocs?: {
+        description?: string;
+        url?: string;
+        [key: string]: any;
+      };
+      [key: string]: any;
+    };
+  };
+}

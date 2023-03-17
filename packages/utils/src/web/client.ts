@@ -72,6 +72,51 @@ class WebClient {
 
     return data;
   }
+
+  // Puppeteer - MUCH slower
+  // async fetchWebData(url: string, { cache = true }: { cache?: boolean } = {}) {
+  //   let data;
+  //   // Add cache around this call to Web
+  //   //TODO remove custom implementation when issue is fixed: https://github.com/RasCarlito/axios-cache-adapter/issues/272
+  //   const hashKey = 'v4-get-' + url;
+  //   if (cache) {
+  //     try {
+  //       const cachedData = await this.redis.get(hashKey);
+
+  //       if (cachedData) {
+  //         data = JSON.parse(cachedData);
+  //       }
+  //     } catch (err) {
+  //       console.warn('NO REDIS CONNECTION, SKIPPING CACHE LOOKUP');
+  //       console.log(err);
+  //     }
+  //   }
+
+  //   if (!data) {
+  //     try {
+  //       const browser: Browser = await puppeteer.launch({
+  //         headless: true
+  //       });
+
+  //       const page: Page = await browser.newPage();
+  //       page.setUserAgent(
+  //         'Opera/9.80 (J2ME/MIDP; Opera Mini/5.1.21214/28.2725; U; ru) Presto/2.8.119 Version/11.10'
+  //       );
+  //       await page.goto(url);
+
+  //       data = await page.content();
+  //       if (cache) {
+  //         await this.redis.set(hashKey, JSON.stringify(data));
+  //         await this.redis.expire(hashKey, this.cacheExpireTime);
+  //       }
+  //     } catch (err) {
+  //       console.error(`Error fetching data from ${url}`, err);
+  //       data = false;
+  //     }
+  //   }
+
+  //   return data;
+  // }
 }
 
 export default WebClient;

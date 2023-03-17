@@ -34,8 +34,7 @@ const getUniqueDomains = (urls: string[]) =>
     return `https://${parsedUrl.hostname.replace(/^www\./i, '')}`;
   });
 
-const summarize = (page: any) =>
-  `For webpage URL "${page?.url}" ${getTitleText(page)} the content is:\n${page?.content}`;
+const summarize = (page: any) => page?.content;
 
 export const processWebUrlScrape: EventVersionHandler<{ urls: string[]; byDomain: boolean }> = {
   event: 'web/urls.sync',
@@ -152,7 +151,6 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
       }));
     });
 
-    console.log('Processing web scrape', iUrls, vectors.length);
     if (vectors?.length) {
       await Promise.all(
         chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
@@ -175,3 +173,63 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
     }
   }
 };
+
+// export const processPuppetScrape: EventVersionHandler<{ urls: string[] }> = {
+//   event: 'web/puppet.sync',
+//   v: '1',
+//   handler: async ({ event }) => {
+//     const data = event.data;
+//     const { urls: iUrls } = data;
+
+//     const webPages = (await puppeteerLoader.loadMany(iUrls)) as WebPage[];
+
+//     const headingVectors = webPages.flatMap((page) => {
+//       const headingsRegex = /\n+(?=\s*##\s(?!#))/;
+//       const headingsArray = page.content.split(headingsRegex);
+
+//       return headingsArray.map((heading: any, i: any) => ({
+//         uid: `WebPage_${page.url}_${i}`,
+//         text: summarize({ ...page, content: heading }),
+//         metadata: {
+//           url: page?.url,
+//           cleanedUrl: getCleanedUrl(page?.url)
+//         }
+//       }));
+//     });
+
+//     const vectors = headingVectors.flatMap((page) => {
+//       const headingsRegex = /\n+(?=\s*##\s(?!#))/;
+//       const headingsArray = page.content.split(headingsRegex);
+
+//       return headingsArray.map((heading: any, i: any) => ({
+//         uid: `WebPage_${page.url}_${i}`,
+//         text: summarize({ ...page, content: heading }),
+//         metadata: {
+//           url: page?.url,
+//           cleanedUrl: getCleanedUrl(page?.url)
+//         }
+//       }));
+//     });
+
+//     if (vectors?.length) {
+//       await Promise.all(
+//         chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
+//           //TODO: Save to Redis by page url
+//           //TODO: In event only send page urls
+//           inngest.send({
+//             v: '1',
+//             ts: new Date().valueOf(),
+//             name: 'pinecone/vectors.upserted',
+//             data: {
+//               _page: i,
+//               _total: vectors.length,
+//               _batchSize: PINECONE_VECTORS_BATCH_SIZE,
+//               vectors: batchVectors
+//             },
+//             user: event.user
+//           });
+//         })
+//       );
+//     }
+//   }
+// };

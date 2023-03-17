@@ -4,11 +4,43 @@ import { NodeHtmlMarkdown } from 'node-html-markdown';
 import { Readability } from '@mozilla/readability';
 //@ts-ignore-next-line
 import { JSDOM } from 'jsdom';
+import showdown, { ConverterOptions } from 'showdown';
 
-interface ContentItem {
-  type: 'header' | 'section' | 'paragraph';
-  content: string;
-}
+const showDownOptions: ConverterOptions = {
+  omitExtraWLInCodeBlocks: true,
+  noHeaderId: true,
+  prefixHeaderId: false,
+  rawPrefixHeaderId: false,
+  ghCompatibleHeaderId: false,
+  headerLevelStart: 1,
+  parseImgDimensions: false,
+  simplifiedAutoLink: false,
+  literalMidWordUnderscores: false,
+  strikethrough: true,
+  tables: true,
+  tablesHeaderId: false,
+  ghCodeBlocks: true,
+  tasklists: true,
+  smoothLivePreview: false,
+  smartIndentationFix: false,
+  disableForced4SpacesIndentedSublists: false,
+  simpleLineBreaks: false,
+  requireSpaceBeforeHeadingText: false,
+  ghMentions: false,
+  ghMentionsLink: 'https://github.com/{u}',
+  encodeEmails: true,
+  openLinksInNewWindow: false,
+  backslashEscapesHTMLTags: false,
+  emoji: false,
+  underline: false,
+  completeHTMLDocument: false,
+  metadata: false
+};
+
+const convertMarkdownToHtml = (markdown: string, options?: ConverterOptions): string => {
+  const converter = new showdown.Converter(options);
+  return converter.makeHtml(markdown);
+};
 
 const contentElementSelectors: string[] = [
   'main',
@@ -68,38 +100,69 @@ const excludeSelectors: string[] = [
   'aside',
   'link',
   '[role="tree"]',
+  '[role="navigation"]',
   'svg',
   'video',
   'canvas',
-  'form'
+  'form',
+  '[role="alert"]',
+  '[class*="toc"]',
+  '[class*="table-of-contents"]',
+  'cite',
+  'sup'
 ];
 
 export const getWebPage = async ({ url }: { url: string }): Promise<WebPage> => {
-  console.log('====================================');
-  const cleanURL = url?.includes('http') ? url : `https://${url}`;
   console.log(`===Fetching webpage: ${url}`);
-  console.log(`===Fetching cleanURL: ${cleanURL}`);
   try {
-    const pageHtml = await webClient.fetchWebData(cleanURL, { cache: false });
-    if (!pageHtml) throw new Error(`No valid HTML returned for url: ${cleanURL}`);
+    const pageHtml = await webClient.fetchWebData(url, { cache: false });
+    if (!pageHtml) throw new Error(`No valid HTML returned for url: ${url}`);
 
-    const $ = cheerio.load(pageHtml);
-    //Remove for sure unneeded elements
+    let $ = cheerio.load(pageHtml);
     $(excludeSelectors.join(',')).remove();
 
-    // Re-wrapping content to hack scoring a bit.
-    $(contentElementSelectors.join(',')).each(function () {
-      //@ts-ignore-next-line
-      $(this).replaceWith($(this).html());
+    const initialHtml = $.html();
+
+    const initialMarkdown = NodeHtmlMarkdown.translate(initialHtml, {}, undefined, undefined);
+
+    const html = convertMarkdownToHtml(initialMarkdown, showDownOptions);
+    $ = cheerio.load(html);
+
+    $('h1').each(function () {
+      const $el = $(this);
+      const innerHtml = $el.html();
+      $el.replaceWith(`<h2>${innerHtml}</h2>`);
     });
 
-    // Remove all querystring props
-    $('a').each(function () {
-      const url = $(this).attr('href');
+    $('h2').each((i, elem) => {
+      const section = $('<section></section>');
+      let nextSiblings = $(elem).nextUntil('h2');
+      let nextElem = $(elem).next();
+      if (nextElem.length && nextElem[0].tagName === 'h2') {
+        // If the next element is an h2, remove the current h2 and continue to the next one
+        $(elem).remove();
+        return;
+      }
+      $(elem).html($(elem).text()).add(nextSiblings).wrapAll(section);
+    });
 
-      if (url && url.includes('?')) {
-        const [baseUrl] = url.split('?');
-        $(this).attr('href', baseUrl);
+    $('body')
+      .children()
+      .each((i, elem) => {
+        if (elem.tagName !== 'section') {
+          $(elem).remove();
+        }
+      });
+
+    $('a').each(function () {
+      const $link = $(this);
+      const innerHtml = $link.html() as string;
+      $link.replaceWith(innerHtml);
+    });
+
+    $('*').each(function () {
+      if ($(this).text().trim().length < 2) {
+        $(this).remove();
       }
     });
 
@@ -114,15 +177,15 @@ export const getWebPage = async ({ url }: { url: string }): Promise<WebPage> => 
     });
     const article = reader.parse();
 
-    const rawMarkdown = NodeHtmlMarkdown.translate(
+    const mkdown = NodeHtmlMarkdown.translate(
       /* html */ article?.content || '', //$content.html() || '',
       /* options */ {
-        maxConsecutiveNewlines: 1
+        // maxConsecutiveNewlines: 2
       },
       /* customTranslators (optional) */ undefined,
       /* customCodeBlockTranslators (optional) */ undefined
     );
-    const mkdown = removeDuplicateHeaders(rawMarkdown);
+    // const mkdown = removeDuplicateHeaders(rawMarkdown);
 
     const pageData = {
       url,
@@ -137,3 +200,120 @@ export const getWebPage = async ({ url }: { url: string }): Promise<WebPage> => 
     throw error;
   }
 };
+
+// export const getWebPagePuppeteer = async ({ url }: { url: string }): Promise<WebPage> => {
+//   console.log('====================================');
+//   console.log(`===Fetching webpage: ${url}`);
+//   try {
+//     const pageHtml = await webClient.fetchWebData(url, { cache: false });
+//     if (!pageHtml) throw new Error(`No valid HTML returned for url: ${url}`);
+
+//     let $ = cheerio.load(pageHtml);
+//     //Remove for sure unneeded elements
+//     $(excludeSelectors.join(',')).remove();
+
+//     const initialHtml = $.html();
+
+//     const initialMarkdown = NodeHtmlMarkdown.translate(
+//       initialHtml,
+//       {
+//         // maxConsecutiveNewlines: 1
+//       },
+//       undefined,
+//       undefined
+//     );
+
+//     const html = convertMarkdownToHtml(initialMarkdown, showDownOptions);
+//     $ = cheerio.load(html);
+
+//     $('h1').each(function () {
+//       const $el = $(this);
+//       const innerHtml = $el.html();
+//       $el.replaceWith(`<h2>${innerHtml}</h2>`);
+//     });
+
+//     // $('h2').each((i, elem) => {
+//     //   const section = $('<section></section>');
+//     //   const nextSiblings = $(elem).nextUntil('h2');
+//     //   $(elem).add(nextSiblings).wrapAll(section);
+//     // });
+
+//     // $('h*').each((i, elem) => {
+//     //   const section = $('<section></section>');
+//     //   let nextSiblings = $(elem).nextUntil('h2');
+//     //   let nextElem = $(elem).next();
+//     //   if (nextElem.length && nextElem[0].tagName === 'h2') {
+//     //     // If the next element is an h2, remove the current h2 and continue to the next one
+//     //     $(elem).remove();
+//     //     return;
+//     //   }
+//     //   $(elem).html($(elem).text()).add(nextSiblings).wrapAll(section);
+//     // });
+
+//     $('h2').each((i, elem) => {
+//       const section = $('<section></section>');
+//       let nextSiblings = $(elem).nextUntil('h2');
+//       let nextElem = $(elem).next();
+//       if (nextElem.length && nextElem[0].tagName === 'h2') {
+//         // If the next element is an h2, remove the current h2 and continue to the next one
+//         $(elem).remove();
+//         return;
+//       }
+//       $(elem).html($(elem).text()).add(nextSiblings).wrapAll(section);
+//     });
+
+//     $('body')
+//       .children()
+//       .each((i, elem) => {
+//         if (elem.tagName !== 'section') {
+//           $(elem).remove();
+//         }
+//       });
+
+//     $('a').each(function () {
+//       const $link = $(this);
+//       const innerHtml = $link.html() as string;
+//       $link.replaceWith(innerHtml);
+//     });
+
+//     $('*').each(function () {
+//       if ($(this).text().trim().length < 2) {
+//         $(this).remove();
+//       }
+//     });
+
+//     const dom = new JSDOM(`<article>${$.html()}</article>`, { url });
+
+//     const document = dom.window.document;
+
+//     const reader = new Readability(document, {
+//       debug: false,
+//       keepClasses: false,
+//       disableJSONLD: true
+//     });
+//     const article = reader.parse();
+
+//     const mkdown = NodeHtmlMarkdown.translate(
+//       /* html */ article?.content || '', //$content.html() || '',
+//       /* options */ {
+//         maxConsecutiveNewlines: 1
+//       },
+//       /* customTranslators (optional) */ undefined,
+//       /* customCodeBlockTranslators (optional) */ undefined
+//     );
+
+//     console.log(mkdown);
+
+//     const pageData = {
+//       url,
+//       title: article?.title,
+//       description: article?.excerpt,
+//       content: mkdown
+//     };
+
+//     return pageData;
+//   } catch (error) {
+//     console.error('getWebPage:ERROR', error);
+//     throw error;
+//   }
+// };
