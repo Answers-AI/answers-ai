@@ -162,7 +162,6 @@ const DeveloperTools = ({
               flexDirection: 'column',
               display: 'flex'
             }}>
-            {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
             {!messages?.length ? (
               <Box sx={{ display: 'flex', width: '100%', flexDirection: 'column', gap: 4 }}>
                 {journey || journeys?.length ? (
@@ -209,7 +208,7 @@ const DeveloperTools = ({
                 </Box>
               </>
             ) : null}
-
+            {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
             {messages?.length && !isLoading && !error ? (
               <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                 <Button onClick={regenerateAnswer} variant="outlined" color="primary">
