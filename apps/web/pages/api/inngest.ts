@@ -1,6 +1,6 @@
 import { Inngest } from 'inngest';
 import { serve } from 'inngest/next';
-import { createInngestFunctions } from 'utils/dist/ingest/EventVersionHandler';
+import { createInngestFunctions, EventVersionHandler } from 'utils/dist/ingest/EventVersionHandler';
 import * as jiraFunctions from 'utils/dist/ingest/jira';
 import * as promptFunctions from 'utils/dist/ingest/prompt';
 import * as slackFunctions from 'utils/dist/ingest/slack';
@@ -12,9 +12,7 @@ import * as messageFunctions from 'utils/dist/ingest/message';
 
 // Create a client to send and receive events
 
-export const inngest = new Inngest({ name: 'My App' });
-
-const functions = Object.values({
+const handlers = {
   ...authFunctions,
   ...jiraFunctions,
   ...slackFunctions,
@@ -23,7 +21,11 @@ const functions = Object.values({
   ...webFunctions,
   ...openApiFunctions,
   ...messageFunctions
-});
+};
+
+const functions = Object.values(handlers);
+type Events = {};
+export const inngest = new Inngest<Events>({ name: 'My App' });
 
 const inngestFunctions = createInngestFunctions(functions as any);
 

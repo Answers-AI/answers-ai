@@ -3,7 +3,7 @@ import { syncAppSettings } from '../auth/syncAppSettings';
 
 import { EventVersionHandler } from './EventVersionHandler';
 
-export const USER_EVENTS = ['signIn', 'signOut', 'createUser', 'updateUser', 'linkAccount'];
+// export const USER_EVENTS = ['signIn', 'signOut', 'createUser', 'updateUser', 'linkAccount'];
 
 export const authUserSignIn: EventVersionHandler<{
   chatId: number;

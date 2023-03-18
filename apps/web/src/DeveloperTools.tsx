@@ -138,7 +138,8 @@ const DeveloperTools = ({
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            height: '100%'
+            overflow: 'auto',
+            flex: 1
           }}>
           <Box
             ref={scrollRef}
@@ -146,7 +147,7 @@ const DeveloperTools = ({
               width: '100%',
               height: '100%',
               gap: 2,
-              flexDirection: 'column',
+              // flexDirection: 'column',
               display: 'flex'
             }}>
             {messages.map((message, index) => (

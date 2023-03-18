@@ -10,7 +10,7 @@ import { Message } from 'types';
 import { chatPrompt } from './chatPrompt';
 import { summarizePrompt } from './summarizePrompt';
 
-const chat = new ChatOpenAI({});
+const chat = new ChatOpenAI({ modelName: 'gpt-3.5-turbo-0301', temperature: 0 });
 
 export const createChatChain = ({ messages }: { messages: Message[] }) => {
   // const chatHistoryPrompt = ChatPromptTemplate.fromPromptMessages([

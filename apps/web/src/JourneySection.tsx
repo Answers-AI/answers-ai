@@ -24,9 +24,8 @@ function JourneySection({ journeys }: Props) {
       {journeys?.map(({ id, title, filters, chats }) => (
         <>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, py: 2 }}>
-            <Typography>{title || id}</Typography>
+            <Typography variant="h4">{title || id}</Typography>
             <Filters filters={filters} />
-            <Typography>Continue the conversation</Typography>
             <Box
               sx={{
                 width: '100%',

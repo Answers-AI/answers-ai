@@ -72,7 +72,9 @@ export default function AppLayout({
             {session ? (
               <>
                 <AppDrawer params={params} session={session} />
-                <main style={{ flex: 1, width: 'calc(100% - 65px)' }}>{children}</main>
+                <main style={{ flex: 1, width: 'calc(100% - 65px)', height: '100vh' }}>
+                  {children}
+                </main>
               </>
             ) : (
               <Auth />

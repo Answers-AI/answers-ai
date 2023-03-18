@@ -73,7 +73,7 @@ export const MessageCard = ({
   filters,
   ...other
 }: MessageCardProps) => (
-  <Card sx={{ display: 'flex', padding: 2, width: '100%' }}>
+  <Card sx={{ display: 'flex', padding: 2, width: '100%', overflow: 'none' }}>
     <Avatar sx={{ bgcolor: role == 'user' ? 'primary.main' : 'secondary.main' }}>
       {role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
     </Avatar>

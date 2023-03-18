@@ -16,11 +16,13 @@ export async function upsertChat({
   journeyId?: string;
 }) {
   const journey = await (isNewJourney
-    ? prisma.journey.create({ data: { filters, users: { connect: { email } } } })
-    : prisma.journey.update({
+    ? prisma.journey.create({ data: { title: prompt, filters, users: { connect: { email } } } })
+    : journeyId
+    ? prisma.journey.update({
         where: { id: journeyId },
         data: { filters, users: { connect: { email } } }
-      }));
+      })
+    : null);
 
   const chatProperties = {
     users: {

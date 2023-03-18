@@ -55,7 +55,7 @@ export default function MultiSelect({
 
   return (
     <div>
-      <FormControl sx={{ width: '100%', ...sx }}>
+      <FormControl>
         <InputLabel id="demo-multiple-chip-label">{label}</InputLabel>
         <Select
           labelId="demo-multiple-chip-label"

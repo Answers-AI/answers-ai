@@ -1,6 +1,7 @@
 import { inngest } from './client';
 import { AppSettings } from 'types';
 import { User } from 'db/generated/prisma-client';
+import { EventPayload } from 'inngest';
 
 export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknown>[]) => {
   // Group all functions by event name and version i.e eventHandlerMap['user.created']['1']
