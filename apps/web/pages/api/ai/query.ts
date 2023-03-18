@@ -39,8 +39,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     journeyId
   });
 
-  if (!chat) throw new Error('Chat not found');
-
   await inngest.send({
     v: '1',
     ts: new Date().valueOf(),
@@ -59,20 +57,27 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         chat
       }
     });
-
-  const { pineconeData, context, summary } = await fetchContext({
-    chat,
-    prompt,
-    messages,
-    filters
-  });
+  let pineconeData,
+    context = '',
+    summary = '';
+  try {
+    ({ pineconeData, context, summary } = await fetchContext({
+      chat,
+      prompt,
+      messages,
+      filters
+    }));
+  } catch (pineconeError) {
+    console.log('Pinecone error', pineconeError);
+  }
 
   try {
     console.time('OpenAI->createCompletion');
     const chatChain = createChatChain({ messages });
     const response = await chatChain.call({
       context: summary || context,
-      userName: user.name
+      userName: user.name,
+      input: prompt
     });
     const answer = response.text;
 
