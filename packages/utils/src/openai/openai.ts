@@ -52,13 +52,17 @@ class OpenAI {
   //   }
   // }
 
-  async createEmbedding(
-    input: CreateEmbeddingRequestInput,
+  async createEmbedding({
+    input,
     model = this.defaultModel
-  ): Promise<number[]> {
+  }: {
+    input: CreateEmbeddingRequestInput;
+    model?: string;
+  }): Promise<number[]> {
     try {
       // console.log('CreateEmbedding', input);
-      return this.loader.load(input);
+      const response = await this.loader.load(input);
+      return response.data?.data[0]?.embedding;
     } catch (error) {
       console.error(`Error creating embedding: ${error}`);
       throw error;

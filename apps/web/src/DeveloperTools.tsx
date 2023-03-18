@@ -268,25 +268,26 @@ interface DefaultPromptsProps {
   handlePromptClick: (prompt: string) => void;
 }
 
-const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) => (
-  <>
-    <Typography variant="h6">Recommended prompts</Typography>
-    <Box
-      sx={{
-        width: '100%',
-        display: 'grid',
-        gap: 2,
-        gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
-      }}>
-      {prompts?.map((prompt) => (
-        <PromptCard
-          key={prompt.id}
-          {...prompt}
-          onClick={() => handlePromptClick(prompt?.content)}
-        />
-      ))}
-    </Box>
-  </>
-);
+const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) =>
+  prompts?.length ? (
+    <>
+      <Typography variant="h6">Recommended prompts</Typography>
+      <Box
+        sx={{
+          width: '100%',
+          display: 'grid',
+          gap: 2,
+          gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
+        }}>
+        {prompts?.map((prompt) => (
+          <PromptCard
+            key={prompt.id}
+            {...prompt}
+            onClick={() => handlePromptClick(prompt?.content)}
+          />
+        ))}
+      </Box>
+    </>
+  ) : null;
 
 export default DeveloperTools;

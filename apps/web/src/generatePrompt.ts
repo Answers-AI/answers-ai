@@ -7,7 +7,7 @@ const initializeOpenAI = () => {
   return new OpenAIApi(configuration);
 };
 import { PineconeClient } from '@pinecone-database/pinecone';
-import { pineconeQuery } from 'pineconeQuery';
+import { pineconeQuery } from '@web/pineconeQuery';
 import { inngest } from './ingestClient';
 import { Chat } from 'db/generated/prisma-client';
 import { AnswersFilters, Message } from 'types';
