@@ -5,7 +5,7 @@ import { Message } from 'types';
 import cors from '@web/cors';
 import { inngest } from '@web/ingestClient';
 import { authOptions } from '@web/authOptions';
-import { createChatChain } from '@web/llm/chatChain';
+import { createChatChain } from '@web/llm/chains';
 import { upsertChat } from '@web/chat/upsertChat';
 import { fetchContext } from '@web/fetchContext';
 
@@ -29,12 +29,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
   const messages: Message[] = req.body.messages;
 
-  const { journeyId, chatId, filters, prompt } = req.body;
+  const { journeyId, chatId, filters, content: prompt, isNewJourney } = req.body;
+  console.log('Query', { journeyId, chatId, isNewJourney, filters, prompt, messages });
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({
     id: chatId,
     email: user?.email,
     filters: filters,
+    isNewJourney,
     prompt,
     journeyId
   });
@@ -67,19 +69,22 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       messages,
       filters
     }));
+    console.log({ pineconeData, context, summary });
   } catch (pineconeError) {
     console.log('Pinecone error', pineconeError);
   }
 
   try {
-    console.time('OpenAI->createCompletion');
+    console.time('OpenAI->createCompletion: ' + prompt);
     const chatChain = createChatChain({ messages });
     const response = await chatChain.call({
       context: summary || context,
       userName: user.name,
-      input: prompt
+      input: prompt,
+      agent_scratchpad: ''
     });
     const answer = response.text;
+    console.timeEnd('OpenAI->createCompletion: ' + prompt);
 
     if (prompt && answer) {
       await inngest.send({
@@ -97,15 +102,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       summary,
       filters,
       role: 'assistant',
-      content: answer?.content,
+      content: answer,
       pineconeData,
       completionData
     });
   } catch (error: any) {
-    console.log('Error', error);
+    console.log('QueryError');
+    console.error(error);
     if (error.response) {
       const { data } = error.response;
-      res.status(500).json({ prompt, error: data } as any);
+      res.status(500).json({ prompt, error } as any);
     } else {
       res.status(500).json({ prompt, error });
     }

@@ -60,9 +60,8 @@ class OpenAI {
     model?: string;
   }): Promise<number[]> {
     try {
-      // console.log('CreateEmbedding', input);
       const response = await this.loader.load(input);
-      return response.data?.data[0]?.embedding;
+      return response;
     } catch (error) {
       console.error(`Error creating embedding: ${error}`);
       throw error;

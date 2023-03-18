@@ -36,7 +36,7 @@ export const answersPromptAnswered: EventVersionHandler<{
   messages: Message[];
   chat: Chat;
   prompt: string;
-  answer: Message;
+  answer: string;
 }> = {
   v: '1',
   event: 'answers/prompt.answered',
@@ -48,7 +48,7 @@ export const answersPromptAnswered: EventVersionHandler<{
 
     const answerMessage = await prisma.message.create({
       data: {
-        content: answer.content,
+        content: answer,
         prompt: { connect: { content: prompt } },
         chat: { connect: { id: chat.id } },
         createdAt: new Date(ts)

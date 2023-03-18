@@ -7,7 +7,11 @@ import { authOptions } from '@web/authOptions';
 import { prisma } from 'db/dist';
 import { Chat, Journey } from 'types';
 
-const Chat = async ({ id }: any) => {
+export interface Params {
+  chatId?: string;
+  journeyId?: string;
+}
+const Chat = async ({ chatId, journeyId }: Params) => {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return <a href={'/auth'}>Redirect</a>;
@@ -26,12 +30,12 @@ const Chat = async ({ id }: any) => {
     )
   );
   let chat;
-  if (id) {
+  if (chatId) {
     chat = JSON.parse(
       JSON.stringify(
         await prisma.chat.findUnique({
           where: {
-            id
+            id: chatId
           },
           include: { prompt: true, messages: { include: { user: true } } }
         })
@@ -46,7 +50,7 @@ const Chat = async ({ id }: any) => {
           users: {
             some: { email: session.user.email }
           },
-          journeyId: null
+          journeyId: journeyId
         },
         orderBy: {
           createdAt: 'desc'
@@ -72,8 +76,27 @@ const Chat = async ({ id }: any) => {
     )
   );
 
+  let journey;
+  if (journeyId)
+    journey = JSON.parse(
+      JSON.stringify(
+        await prisma.journey.findUnique({
+          where: {
+            // users: {
+            //   some: { email: session.user.email }
+            // },
+            id: journeyId
+          },
+          // orderBy: {
+          //   createdAt: 'desc'
+          // },
+          include: { chats: { include: { prompt: true, messages: { include: { user: true } } } } }
+        })
+      )
+    );
+
   return (
-    <AnswersProvider chat={chat as Chat}>
+    <AnswersProvider chat={chat as Chat} journey={journey}>
       <DeveloperTools
         user={session?.user}
         appSettings={appSettings}

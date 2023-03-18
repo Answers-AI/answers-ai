@@ -90,6 +90,9 @@ const DeveloperTools = ({
 
   const {
     error,
+    chat,
+    journey,
+    filters,
     messages,
     sendMessage,
     clearMessages,
@@ -101,14 +104,16 @@ const DeveloperTools = ({
   React.useEffect(() => {
     if (messages?.length)
       scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
+    inputRef.current?.focus();
+  }, [chat, journey, filters, messages]);
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
+  const isNewJourney = !!Object.keys(filters)?.length && !journey && !chat;
 
   const handleSubmit = () => {
     if (!inputValue) return;
-    sendMessage(inputValue);
+    sendMessage({ content: inputValue, isNewJourney });
     setShowPrompts(false);
     setInputValue('');
   };
@@ -120,7 +125,6 @@ const DeveloperTools = ({
     inputRef.current?.focus();
   };
 
-  const handleNewJourneyChat = (journey: any) => () => {};
   return (
     <>
       <Box
@@ -147,9 +151,10 @@ const DeveloperTools = ({
             {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
             {!messages?.length ? (
               <>
-                <JourneySection journeys={journeys} />
-
-                {chats?.length ? (
+                {journey || journeys?.length ? (
+                  <JourneySection journeys={journey ? [journey] : journeys} />
+                ) : null}
+                {!journey && chats?.length && !Object.keys(filters)?.length ? (
                   <>
                     <Typography variant="h6">Chats</Typography>
                     <Box
@@ -255,7 +260,7 @@ const DeveloperTools = ({
               onClick={handleSubmit}
               disabled={!inputValue || isLoading}
               sx={{}}>
-              Send
+              {isNewJourney ? 'Start journey' : 'Send'}
             </Button>
           </Box>
         </Box>

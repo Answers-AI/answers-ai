@@ -6,11 +6,13 @@ import {
   CardContent,
   CardActions,
   Button,
-  CardActionArea
+  CardActionArea,
+  Chip
 } from '@mui/material';
 import { Chat, Prompt } from 'types';
 
 interface ChatCardProps extends Chat {
+  filters: any;
   // prompt: Prompt;
   // title?: string;
   // content: string;
@@ -21,7 +23,7 @@ interface ChatCardProps extends Chat {
   // onClick: () => void;
 }
 
-const ChatCard: React.FC<ChatCardProps> = ({ id, prompt }) => {
+const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters }) => {
   const title = prompt?.content;
   return (
     <Card
@@ -35,7 +37,7 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt }) => {
           // backgroundColor: '#000000'
         }
       }}>
-      <CardActionArea href={`/chats/${id}`}>
+      <CardActionArea href={`/chat/${id}`}>
         <Box
           sx={{
             width: '100%',
@@ -55,6 +57,15 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt }) => {
               <Typography variant="subtitle1" color="text.secondary" component="div">
                 {title}
               </Typography>
+            ) : null}
+            {filters ? (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                {Object.keys(filters)?.map((filter) =>
+                  filters[filter]?.length ? (
+                    <Chip key={`${filter}`} label={filters[filter]?.join(', ')} />
+                  ) : null
+                )}
+              </Box>
             ) : null}
           </CardContent>
           <CardActions>

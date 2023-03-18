@@ -7,11 +7,11 @@ import { deepmerge } from 'utils/dist/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
 
 interface AnswersContextType {
-  chat?: Chat;
-  journey?: Journey;
   error?: any;
+  chat?: Chat | null;
+  journey?: Journey | null;
   messages: Array<Message>;
-  sendMessage: (message: string) => void;
+  sendMessage: (args: { content: string; isNewJourney?: boolean }) => void;
   clearMessages: () => void;
   regenerateAnswer: () => void;
   isLoading: boolean;
@@ -90,18 +90,19 @@ export function AnswersProvider({
   });
 
   const sendMessage = useCallback(
-    async (prompt: string) => {
+    async ({ content, isNewJourney }: { content: string; isNewJourney?: boolean }) => {
       setIsLoading(true);
       setError(null);
-      addMessage({ role: 'user', content: prompt } as Message);
+      addMessage({ role: 'user', content: content } as Message);
       try {
         if (useStreaming) {
-          generateResponse(prompt);
+          generateResponse(content);
         } else {
           const { data } = await axios.post(`${apiUrl}/ai/query`, {
+            isNewJourney,
             journeyId,
             chatId,
-            prompt,
+            content,
             messages,
             filters
           });
@@ -126,7 +127,7 @@ export function AnswersProvider({
   const regenerateAnswer = () => {
     const [message] = messages.slice(-2);
     setMessages(messages.slice(0, -2));
-    sendMessage(message.content);
+    sendMessage(message);
   };
 
   const clearMessages = () => {
@@ -139,6 +140,8 @@ export function AnswersProvider({
   };
 
   const contextValue = {
+    chat,
+    journey,
     messages,
     sendMessage,
     clearMessages,
