@@ -1,9 +1,9 @@
-import { AnswersProvider } from 'AnswersContext';
-import DeveloperTools from 'DeveloperTools';
-import { getAppSettings } from 'getAppSettings';
+import { AnswersProvider } from '@web/AnswersContext';
+import DeveloperTools from '@web/DeveloperTools';
+import { getAppSettings } from '@web/getAppSettings';
 import { getServerSession } from 'next-auth';
 import React from 'react';
-import { authOptions } from '../pages/api/auth/[...nextauth]';
+import { authOptions } from '@web/authOptions';
 import { prisma } from 'db/dist';
 import { Chat, Journey } from 'types';
 

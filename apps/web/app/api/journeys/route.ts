@@ -6,7 +6,7 @@ import { deepmerge } from 'utils/dist/deepmerge';
 import { prisma } from 'db/dist';
 
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../pages/api/auth/[...nextauth]';
+import { authOptions } from '@web/authOptions';
 
 export async function GET(req: Request, res: Response) {
   const user = await getServerSession(authOptions);

@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 import { Message } from 'types';
 import cors from '@web/cors';
 import { inngest } from '@web/ingestClient';
-import { authOptions } from 'utils/dist/auth/options';
+import { authOptions } from '@web/authOptions';
 import { createChatChain } from '@web/llm/chatChain';
 import { upsertChat } from '@web/chat/upsertChat';
 import { fetchContext } from '@web/fetchContext';

@@ -1,6 +1,6 @@
-import AppSyncToolbar from '../../src/AppSyncToolbar';
+import AppSyncToolbar from '@web/AppSyncToolbar';
 import React from 'react';
-import { getAppSettings } from '../../src/getAppSettings';
+import { getAppSettings } from '@web/getAppSettings';
 
 const Inngest = async () => {
   const appSettings = await getAppSettings();

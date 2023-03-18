@@ -2,12 +2,12 @@
 import { NextResponse } from 'next/server';
 import { getJiraProjects, JiraProject } from 'utils/dist/jira';
 import { deepmerge } from 'utils/dist/deepmerge';
-// import cors from '../../../src/cors';
+// import cors from '@web/cors';
 import { prisma } from 'db/dist';
 
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../pages/api/auth/[...nextauth]';
-import { getAppSettings } from 'getAppSettings';
+import { authOptions } from '@web/authOptions';
+import { getAppSettings } from '@web/getAppSettings';
 
 export async function GET(req: Request, res: Response) {
   const appSettings = await getAppSettings();

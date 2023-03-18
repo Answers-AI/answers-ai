@@ -1,9 +1,9 @@
-import { getAppSettings } from '../../../src/getAppSettings';
+import { getAppSettings } from '@web/getAppSettings';
 import React from 'react';
 import { AppSettings } from 'types';
 
-import JiraSettings from '../../../src/JiraSettings';
-import SlackSettings from '../../../src/SlackSettings';
+import JiraSettings from '@web/JiraSettings';
+import SlackSettings from '@web/SlackSettings';
 
 const SETTINGS: { [key: string]: any } = {
   jira: JiraSettings,

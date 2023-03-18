@@ -1,6 +1,6 @@
 import { getServerSession, Session } from 'next-auth';
-import { authOptions } from '../pages/api/auth/[...nextauth]';
-import AppLayout from '../src/AppLayout';
+import { authOptions } from '@web/authOptions';
+import AppLayout from '@web/AppLayout';
 import React from 'react';
 
 export default async function RootLayout({

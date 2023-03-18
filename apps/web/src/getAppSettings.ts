@@ -1,6 +1,6 @@
 import { getServerSession } from 'next-auth';
 import { deepmerge } from 'utils/dist/deepmerge';
-import { authOptions } from '../pages/api/auth/[...nextauth]';
+import { authOptions } from '@web/authOptions';
 
 import { prisma } from 'db/dist';
 import { MODELS } from 'utils/dist/MODELS';
