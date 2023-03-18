@@ -94,7 +94,7 @@ export const SettingsLayout = ({
   // return <div>Loading...</div>;
 
   return (
-    <Container maxWidth="xl">
+    <Container >
       <Grid2 container sx={{ flex: 1, position: 'relative', p: 4, gap: 4 }}>
         <Grid2
           sx={{

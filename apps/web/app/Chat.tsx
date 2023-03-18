@@ -6,6 +6,7 @@ import React from 'react';
 import { authOptions } from '@web/authOptions';
 import { prisma } from 'db/dist';
 import { Chat, Journey } from 'types';
+import { redirect } from 'next/navigation';
 
 export interface Params {
   chatId?: string;
@@ -41,6 +42,7 @@ const Chat = async ({ chatId, journeyId }: Params) => {
         })
       )
     );
+    if (!chat) redirect('/');
   }
 
   const chats = JSON.parse(
@@ -77,7 +79,7 @@ const Chat = async ({ chatId, journeyId }: Params) => {
   );
 
   let journey;
-  if (journeyId)
+  if (journeyId) {
     journey = JSON.parse(
       JSON.stringify(
         await prisma.journey.findUnique({
@@ -94,7 +96,8 @@ const Chat = async ({ chatId, journeyId }: Params) => {
         })
       )
     );
-
+    if (!journey) redirect('/');
+  }
   return (
     <AnswersProvider chat={chat as Chat} journey={journey}>
       <DeveloperTools

@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { CssBaseline, PaletteMode } from '@mui/material';
+import { Container, CssBaseline, PaletteMode } from '@mui/material';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import createTheme from '@mui/material/styles/createTheme';
 
@@ -40,7 +40,14 @@ const getDesignTokens = (mode: PaletteMode) => ({
   }
 });
 
-const darkModeTheme = createTheme(getDesignTokens('dark'));
+const darkModeTheme = createTheme({
+  ...getDesignTokens('dark'),
+  components: {
+    MuiContainer: {
+      defaultProps: { maxWidth: 'xl' }
+    }
+  }
+});
 
 export default function AppLayout({
   session,

@@ -1,7 +1,7 @@
 'use client';
 import React, { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
-import { Box, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
+import { Box, Container, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
 import { AppSettings, RecommendedPrompt, Chat, Journey, User } from 'types';
 import PromptCard from './PromptCard';
 
@@ -129,17 +129,22 @@ const DeveloperTools = ({
     <>
       <Box
         sx={{
-          width: '100%',
           display: 'flex',
-          gap: 2,
-          padding: 2,
           flexDirection: 'column',
-          height: '100%'
+          height: '100%',
+          py: 2
         }}>
-        <Box sx={{ width: '100%', flex: 1, overflowX: 'auto' }} ref={scrollRef}>
+        <Container
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%'
+          }}>
           <Box
+            ref={scrollRef}
             sx={{
               width: '100%',
+              height: '100%',
               gap: 2,
               flexDirection: 'column',
               display: 'flex'
@@ -201,67 +206,68 @@ const DeveloperTools = ({
               </Box>
             ) : null}
           </Box>
-        </Box>
-
+        </Container>
         <Box
           sx={{
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
-
+            p: 2,
             gap: 2,
             width: '100%'
           }}>
           <FilterToolbar appSettings={appSettings} />
           <AppSyncToolbar appSettings={appSettings} />
 
-          <TextField
-            inputRef={inputRef}
-            variant="filled"
-            fullWidth
-            placeholder="What is the status of the ticket?"
-            value={inputValue}
-            onKeyPress={(e) => (e.key === 'Enter' ? handleSubmit() : null)}
-            onChange={handleInputChange}
-          />
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              position: 'absolute',
-              gap: 1,
-              right: 8,
-              bottom: 10
-            }}>
-            {/* Toggle component that updates when using query or streaming */}
-
-            <FormControlLabel
-              control={
-                <Switch
-                  {...{ inputProps: { 'aria-label': 'Stream mode' } }}
-                  checked={useStreaming}
-                  onChange={() => setUseStreaming(!useStreaming)}
-                  name="Stream"
-                />
-              }
-              label={'Stream'}
+          <Box display="flex" position="relative">
+            <TextField
+              inputRef={inputRef}
+              variant="filled"
+              fullWidth
+              placeholder="What is the status of the ticket?"
+              value={inputValue}
+              onKeyPress={(e) => (e.key === 'Enter' ? handleSubmit() : null)}
+              onChange={handleInputChange}
             />
-            {messages?.length ? (
-              <Button variant="outlined" color="primary" onClick={clearMessages}>
-                <DeleteIcon />
-              </Button>
-            ) : null}
-            {/* <Button variant="outlined" color="primary" onClick={() => setShowPrompts(true)}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                position: 'absolute',
+                gap: 1,
+                right: 8,
+                bottom: 10
+              }}>
+              {/* Toggle component that updates when using query or streaming */}
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    {...{ inputProps: { 'aria-label': 'Stream mode' } }}
+                    checked={useStreaming}
+                    onChange={() => setUseStreaming(!useStreaming)}
+                    name="Stream"
+                  />
+                }
+                label={'Stream'}
+              />
+              {messages?.length ? (
+                <Button variant="outlined" color="primary" onClick={clearMessages}>
+                  <DeleteIcon />
+                </Button>
+              ) : null}
+              {/* <Button variant="outlined" color="primary" onClick={() => setShowPrompts(true)}>
               <AddIcon />
             </Button> */}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit}
-              disabled={!inputValue || isLoading}
-              sx={{}}>
-              {isNewJourney ? 'Start journey' : 'Send'}
-            </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+                disabled={!inputValue || isLoading}
+                sx={{}}>
+                {isNewJourney ? 'Start journey' : 'Send'}
+              </Button>
+            </Box>
           </Box>
         </Box>
       </Box>
@@ -282,7 +288,7 @@ const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) =>
           width: '100%',
           display: 'grid',
           gap: 2,
-          gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))'
         }}>
         {prompts?.map((prompt) => (
           <PromptCard

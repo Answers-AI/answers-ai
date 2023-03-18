@@ -21,23 +21,26 @@ function JourneySection({ journeys }: Props) {
     <Box>
       <Typography variant="h6">Journey{journeys && journeys?.length > 1 ? 's' : ''}</Typography>
 
-      {journeys?.map(({ title, id, filters }) => (
+      {journeys?.map(({ id, title, filters, chats }) => (
         <>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, py: 2 }}>
             <Typography>{title || id}</Typography>
             <Filters filters={filters} />
+            <Typography>Continue the conversation</Typography>
             <Box
               sx={{
                 width: '100%',
                 display: 'grid',
                 gap: 2,
-                gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
+                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))'
               }}>
-              <Box>
-                <Button variant="outlined" color="primary" href={`/journey/${id}`}>
-                  <MessageIcon />
-                </Button>
-              </Box>
+              {chats?.map((chat) => (
+                <ChatCard {...chat} />
+              ))}
+
+              <Button variant="outlined" color="primary" href={`/journey/${id}`}>
+                <MessageIcon />
+              </Button>
             </Box>
           </Box>
         </>
