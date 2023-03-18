@@ -136,10 +136,22 @@ const DeveloperTools = ({
         }}>
         <Container
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'auto',
-            flex: 1
+            'display': 'flex',
+            'flexDirection': 'column',
+            'overflow': 'auto',
+            'scrollbarWidth': 'thin',
+            'flex': 1,
+            '::-webkit-scrollbar ': {
+              width: '9px'
+            },
+            '::-webkit-scrollbar-track ': {
+              background: 'transparent'
+            },
+            '::-webkit-scrollbar-thumb ': {
+              'background-color': 'rgba(155, 155, 155, 0.5)',
+              'border-radius': '20px,',
+              'border': 'transparent'
+            }
           }}>
           <Box
             ref={scrollRef}
@@ -147,38 +159,37 @@ const DeveloperTools = ({
               width: '100%',
               height: '100%',
               gap: 2,
-              // flexDirection: 'column',
+              flexDirection: 'column',
               display: 'flex'
             }}>
-            {messages.map((message, index) => (
-              <MessageCard {...message} key={`message_${index}`} />
-            ))}
-
             {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
             {!messages?.length ? (
-              <>
+              <Box sx={{ display: 'flex', width: '100%', flexDirection: 'column', gap: 4 }}>
                 {journey || journeys?.length ? (
                   <JourneySection journeys={journey ? [journey] : journeys} />
                 ) : null}
                 {!journey && chats?.length && !Object.keys(filters)?.length ? (
-                  <>
-                    <Typography variant="h6">Chats</Typography>
+                  <Box>
+                    <Typography variant="overline">Chats</Typography>
                     <Box
                       sx={{
                         width: '100%',
                         display: 'grid',
                         gap: 2,
-                        gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
+                        gridTemplateColumns: 'repeat(3, minmax(0px, 1fr))'
                       }}>
                       {chats?.map((chat) => (
                         <ChatCard key={chat.id} {...chat} />
                       ))}
                     </Box>
-                  </>
+                  </Box>
                 ) : null}
                 <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
-              </>
+              </Box>
             ) : null}
+            {messages.map((message, index) => (
+              <MessageCard {...message} key={`message_${index}`} />
+            ))}
             {error ? (
               <>
                 <MessageCard
@@ -282,8 +293,8 @@ interface DefaultPromptsProps {
 
 const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) =>
   prompts?.length ? (
-    <>
-      <Typography variant="h6">Recommended prompts</Typography>
+    <Box>
+      <Typography variant="overline">Recommended prompts</Typography>
       <Box
         sx={{
           width: '100%',
@@ -299,7 +310,7 @@ const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) =>
           />
         ))}
       </Box>
-    </>
+    </Box>
   ) : null;
 
 export default DeveloperTools;

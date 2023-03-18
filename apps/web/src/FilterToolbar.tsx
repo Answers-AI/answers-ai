@@ -100,7 +100,7 @@ const FilterToolbar = ({
             <Box
               sx={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gridTemplateColumns: 'repeat(5, minmax(200px, 1fr))',
                 gap: 2,
                 gridTemplateRows: ''
               }}>

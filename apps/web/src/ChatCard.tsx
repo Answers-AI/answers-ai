@@ -1,4 +1,5 @@
 import React from 'react';
+import NextLink from 'next/link';
 import {
   Box,
   Typography,
@@ -28,7 +29,8 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters }) => {
   return (
     <Card
       sx={{
-        // 'display': 'flex',
+        'display': 'flex',
+
         // 'padding': 2,
         // 'height': '100%',
         'cursor': 'pointer',
@@ -37,12 +39,15 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters }) => {
           // backgroundColor: '#000000'
         }
       }}>
-      <CardActionArea href={`/chat/${id}`}>
+      <CardActionArea component={NextLink} sx={{ minHeight: '100%' }} href={`/chat/${id}`}>
         <Box
           sx={{
             width: '100%',
+            minHeight: '100%',
             flex: '1',
-            display: 'flex'
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
           }}>
           <CardContent
             sx={{

@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Container, CssBaseline, PaletteMode } from '@mui/material';
+import { Container, CssBaseline, GlobalStyles, PaletteMode } from '@mui/material';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import createTheme from '@mui/material/styles/createTheme';
 
@@ -65,7 +65,9 @@ export default function AppLayout({
   return (
     <SessionProvider session={session}>
       <ThemeProvider theme={darkModeTheme}>
-        <CssBaseline />
+        <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
+
+        <CssBaseline enableColorScheme />
 
         <html lang="en" style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
           <body style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
