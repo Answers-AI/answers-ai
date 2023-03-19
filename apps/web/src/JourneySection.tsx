@@ -34,7 +34,7 @@ function JourneySection({ journeys }: Props) {
                 width: '100%',
                 display: 'grid',
                 gap: 2,
-                gridTemplateColumns: 'repeat(3, minmax(320px, 1fr))'
+                gridTemplateColumns: 'repeat(3,  1fr)'
               }}>
               {chats?.map((chat) => (
                 <ChatCard {...chat} />
@@ -55,9 +55,9 @@ function JourneySection({ journeys }: Props) {
   );
 }
 
-const Filters = ({ filters }: { filters: any }) => {
+const Filters = ({ filters, sx }: { filters: any; sx?: any }) => {
   return filters ? (
-    <Box sx={{ display: 'flex', gap: 1 }}>
+    <Box sx={{ display: 'flex', gap: 1, ...sx }}>
       {Object.keys(filters)?.map((filter) =>
         filters[filter]?.length ? (
           <Chip key={`${filter}`} label={filters[filter]?.join(', ')} />

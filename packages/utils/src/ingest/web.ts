@@ -95,6 +95,7 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
         uid: `WebPage_${page.url}_${i}`,
         text: summarize({ ...page, content: heading }),
         metadata: {
+          source: 'web',
           url: page?.url,
           cleanedUrl: getCleanedUrl(page?.url)
         }
@@ -135,7 +136,6 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
     // const sitemapUrl: string = iUrls[0];
 
     // const urls = await getSitemapLinks(sitemapUrl);
-
     const webPages = (await webPageLoader.loadMany(iUrls)) as WebPage[];
 
     const vectors = webPages.flatMap((page) => {

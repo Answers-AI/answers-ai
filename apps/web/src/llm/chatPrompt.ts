@@ -11,10 +11,7 @@ import {
 // });
 
 export const assistantPrompt = SystemMessagePromptTemplate.fromTemplate(
-  `You are a friendly AI assistant. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know.
-<CONTEXT>
-{context}
-<CONTEXT>
+  `You are a friendly AI assistant. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know. {context}
 `
 );
 
@@ -23,6 +20,15 @@ export const intentionPrompt = HumanMessagePromptTemplate.fromTemplate('My name 
 export const chatPrompt = ChatPromptTemplate.fromPromptMessages([
   // new SystemMessagePromptTemplate(toolsPrompt),
   assistantPrompt,
+  intentionPrompt,
+  HumanMessagePromptTemplate.fromTemplate('{input}')
+]);
+
+export const rawPrompt = ChatPromptTemplate.fromPromptMessages([
+  // new SystemMessagePromptTemplate(toolsPrompt),
+  SystemMessagePromptTemplate.fromTemplate(
+    `Use the following context as part of your knowledge. {context}`
+  ),
   intentionPrompt,
   HumanMessagePromptTemplate.fromTemplate('{input}')
 ]);

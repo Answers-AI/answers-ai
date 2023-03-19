@@ -154,6 +154,7 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
                   uid: `JiraIssue_${issue?.key}`,
                   text: summarize(issue),
                   metadata: {
+                    'source': 'jira',
                     'model': event.v,
                     'key': issue?.key?.toLowerCase(),
                     'title': issue?.fields?.summary?.toLowerCase(),

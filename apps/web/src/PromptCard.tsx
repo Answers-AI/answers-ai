@@ -7,7 +7,8 @@ import {
   CardContent,
   CardActions,
   Button,
-  CardActionArea
+  CardActionArea,
+  IconButton
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -81,24 +82,15 @@ const PromptCard: React.FC<PromptCardProps> = ({
       </Box>
       <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Box>
-          <Button
-            color="secondary"
-            sx={{}}
-            size="small"
-            startIcon={<ThumbUpIcon sx={{ fontSize: 12 }} />}
-            onClick={handleLike}>
-            {likes}
-          </Button>
-          <Button
-            size="small"
-            color="secondary"
-            startIcon={<ThumbDownIcon sx={{ fontSize: 12 }} />}
-            onClick={handleLike}>
-            {dislikes}
-          </Button>
+          <IconButton color="secondary" sx={{}} size="small" onClick={handleLike}>
+            <ThumbUpIcon sx={{ fontSize: 16 }} />
+          </IconButton>
+          <IconButton size="small" color="secondary" onClick={handleLike}>
+            <ThumbDownIcon sx={{ fontSize: 16 }} />
+          </IconButton>
         </Box>
         {usages ? (
-          <Button size="small" disabled startIcon={<VisibilityIcon sx={{ fontSize: 12 }} />}>
+          <Button size="small" disabled startIcon={<VisibilityIcon sx={{ fontSize: 16 }} />}>
             {usages}
           </Button>
         ) : null}

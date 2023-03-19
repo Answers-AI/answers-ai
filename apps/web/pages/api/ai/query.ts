@@ -49,6 +49,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     user: user,
     data: { role: 'user', chat, content: prompt, filters, messages }
   });
+
   if (user)
     await inngest.send({
       v: '1',
