@@ -165,7 +165,6 @@ const DeveloperTools = ({
             }
           }}>
           <Box
-            ref={scrollRef}
             sx={{
               width: '100%',
               gap: 2,
@@ -182,6 +181,7 @@ const DeveloperTools = ({
                 overflow: 'hidden'
               }}>
               <Box
+                ref={scrollRef}
                 sx={{
                   overflow: 'hidden',
                   overflowY: 'auto'

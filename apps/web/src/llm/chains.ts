@@ -17,13 +17,12 @@ export const createChatChain = ({ messages }: { messages: Message[] }) => {
   const chatHistoryPrompt = ChatPromptTemplate.fromPromptMessages([
     assistantPrompt,
     intentionPrompt,
-    ...messages?.map(
-      (message) =>
-        message?.role === 'assistant'
-          ? SystemMessagePromptTemplate.fromTemplate(message.content)
-          : HumanMessagePromptTemplate.fromTemplate(message.content),
-      HumanMessagePromptTemplate.fromTemplate('{input}')
-    )
+    ...messages?.map((message) =>
+      message?.role === 'assistant'
+        ? SystemMessagePromptTemplate.fromTemplate(message.content)
+        : HumanMessagePromptTemplate.fromTemplate(message.content)
+    ),
+    HumanMessagePromptTemplate.fromTemplate('{input}')
   ]);
   return new LLMChain({
     prompt: chatHistoryPrompt,
