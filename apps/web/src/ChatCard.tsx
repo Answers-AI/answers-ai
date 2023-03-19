@@ -10,6 +10,7 @@ import {
   CardActionArea,
   Chip
 } from '@mui/material';
+import MessageIcon from '@mui/icons-material/Message';
 import { Chat, Prompt } from 'types';
 
 interface ChatCardProps extends Chat {
@@ -24,7 +25,7 @@ interface ChatCardProps extends Chat {
   // onClick: () => void;
 }
 
-const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters }) => {
+const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) => {
   const title = prompt?.content;
   return (
     <Card
@@ -63,28 +64,29 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters }) => {
                 {title}
               </Typography>
             ) : null}
+
             {filters ? (
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                {Object.keys(filters)?.map((filter) =>
-                  filters[filter]?.length ? (
-                    <Chip key={`${filter}`} label={filters[filter]?.join(', ')} />
-                  ) : null
-                )}
+              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  {Object.keys(filters)?.map((filter) =>
+                    filters[filter]?.length ? (
+                      <Chip key={`${filter}`} label={filters[filter]?.join(', ')} />
+                    ) : null
+                  )}
+                </Box>
+                {messages ? (
+                  <Chip
+                    label={
+                      <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <MessageIcon sx={{ width: 16, height: 16 }} />
+                        {messages?.length}
+                      </Typography>
+                    }
+                  />
+                ) : null}
               </Box>
             ) : null}
           </CardContent>
-          <CardActions>
-            {/* {usages ? (
-            <Button size="small" disabled startIcon={<VisibilityIcon sx={{ fontSize: 12 }} />}>
-              {usages}
-            </Button>
-          ) : null}
-          {likes ? (
-            <Button size="small" color="primary" startIcon={<FavoriteIcon sx={{ fontSize: 12 }} />}>
-              {likes}
-            </Button>
-          ) : null} */}
-          </CardActions>
         </Box>
       </CardActionArea>
     </Card>
