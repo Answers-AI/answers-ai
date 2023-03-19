@@ -1,17 +1,18 @@
 'use client';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
 import { AnswersFilters, Chat, Journey, Message } from 'types';
 import { deepmerge } from 'utils/dist/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
 
 interface AnswersContextType {
-  chat?: Chat;
-  journey?: Journey;
   error?: any;
+  chat?: Chat | null;
+  journey?: Journey | null;
   messages: Array<Message>;
-  sendMessage: (message: string) => void;
+  sendMessage: (args: { content: string; isNewJourney?: boolean }) => void;
   clearMessages: () => void;
   regenerateAnswer: () => void;
   isLoading: boolean;
@@ -19,19 +20,23 @@ interface AnswersContextType {
   updateFilter: (newFilter: AnswersFilters) => void;
   useStreaming: boolean;
   setUseStreaming: (useStreaming: boolean) => void;
+  showFilters?: boolean;
+  setShowFilters: (showFilters: boolean) => void;
 }
 
 const AnswersContext = createContext<AnswersContextType>({
   error: null,
   messages: [],
   filters: {},
-  useStreaming: true,
   updateFilter: () => {},
   sendMessage: () => {},
   regenerateAnswer: () => {},
   clearMessages: () => {},
   isLoading: false,
-  setUseStreaming: () => {}
+  useStreaming: true,
+  setUseStreaming: () => {},
+  showFilters: false,
+  setShowFilters: () => {}
 });
 
 export function useAnswers() {
@@ -60,6 +65,7 @@ export function AnswersProvider({
   const [filters, setFilters] = useState<AnswersFilters>(
     deepmerge({}, journey?.filters, chat?.filters)
   );
+  const [showFilters, setShowFilters] = useState(false);
   const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
   const [chatId, setChatId] = useState<string | undefined>(chat?.id);
   const [journeyId, setJourneyId] = useState<string | undefined>(journey?.id);
@@ -90,18 +96,19 @@ export function AnswersProvider({
   });
 
   const sendMessage = useCallback(
-    async (prompt: string) => {
+    async ({ content, isNewJourney }: { content: string; isNewJourney?: boolean }) => {
       setIsLoading(true);
       setError(null);
-      addMessage({ role: 'user', content: prompt } as Message);
+      addMessage({ role: 'user', content: content } as Message);
       try {
         if (useStreaming) {
-          generateResponse(prompt);
+          generateResponse(content);
         } else {
           const { data } = await axios.post(`${apiUrl}/ai/query`, {
+            isNewJourney,
             journeyId,
             chatId,
-            prompt,
+            content,
             messages,
             filters
           });
@@ -124,9 +131,11 @@ export function AnswersProvider({
   };
 
   const regenerateAnswer = () => {
-    const [message] = messages.slice(-2);
-    setMessages(messages.slice(0, -2));
-    sendMessage(message.content);
+    const [message] = messages.slice(-1);
+    if (message.role === ChatCompletionRequestMessageRoleEnum.User) {
+      setMessages(messages.slice(0, -1));
+    }
+    sendMessage(message);
   };
 
   const clearMessages = () => {
@@ -139,6 +148,8 @@ export function AnswersProvider({
   };
 
   const contextValue = {
+    chat,
+    journey,
     messages,
     sendMessage,
     clearMessages,
@@ -149,7 +160,9 @@ export function AnswersProvider({
     isLoading,
     useStreaming,
     setUseStreaming,
-    error
+    error,
+    showFilters,
+    setShowFilters
   };
   return <AnswersContext.Provider value={contextValue}>{children}</AnswersContext.Provider>;
 }

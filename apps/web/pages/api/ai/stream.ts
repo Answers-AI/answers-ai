@@ -1,5 +1,5 @@
 import { OpenAIStream } from 'utils/dist/OpenAIStream';
-import cors from '../../../src/corsEdge';
+import cors from '@web/corsEdge';
 
 export const config = {
   runtime: 'edge'

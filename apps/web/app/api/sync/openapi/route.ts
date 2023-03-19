@@ -1,7 +1,7 @@
-import { getAppSettings } from 'getAppSettings';
+import { getAppSettings } from '@web/getAppSettings';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../pages/api/auth/[...nextauth]';
-import { inngest } from '../../../../src/ingestClient';
+import { authOptions } from '@web/authOptions';
+import { inngest } from '@web/ingestClient';
 
 export async function POST() {
   const appSettings = await getAppSettings();

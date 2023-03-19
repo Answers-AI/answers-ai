@@ -19,7 +19,7 @@ export const processVectorsUpserted: EventVersionHandler<{ vectors: PineconeVect
 
     const vectorData = await Promise.all(
       vectors?.map((vector) =>
-        openAi.createEmbedding(vector.text).then((embedding) => ({
+        openAi.createEmbedding({ input: vector.text }).then((embedding) => ({
           id: vector.uid,
           metadata: { ...vector.metadata, text: vector.text },
           values: embedding

@@ -73,7 +73,8 @@ export interface User extends Omit<DB.User, 'appSettings'> {
 export interface Prompt extends DB.Prompt {
   content: string;
 }
-export interface Chat extends DB.Chat {
+export interface Chat extends Omit<DB.Chat, 'filters'> {
+  filters: AnswersFilters;
   prompt: Prompt | null;
   messages: Message[] | null;
 }

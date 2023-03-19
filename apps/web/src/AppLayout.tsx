@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { CssBaseline, PaletteMode } from '@mui/material';
+import { Container, CssBaseline, GlobalStyles, PaletteMode } from '@mui/material';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import createTheme from '@mui/material/styles/createTheme';
 
@@ -40,7 +40,14 @@ const getDesignTokens = (mode: PaletteMode) => ({
   }
 });
 
-const darkModeTheme = createTheme(getDesignTokens('dark'));
+const darkModeTheme = createTheme({
+  ...getDesignTokens('dark'),
+  components: {
+    MuiContainer: {
+      defaultProps: { maxWidth: 'xl' }
+    }
+  }
+});
 
 export default function AppLayout({
   session,
@@ -58,14 +65,18 @@ export default function AppLayout({
   return (
     <SessionProvider session={session}>
       <ThemeProvider theme={darkModeTheme}>
-        <CssBaseline />
+        <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
+
+        <CssBaseline enableColorScheme />
 
         <html lang="en" style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
           <body style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
             {session ? (
               <>
                 <AppDrawer params={params} session={session} />
-                <main style={{ flex: 1, width: 'calc(100% - 65px)' }}>{children}</main>
+                <main style={{ flex: 1, width: 'calc(100% - 65px)', height: '100vh' }}>
+                  {children}
+                </main>
               </>
             ) : (
               <Auth />

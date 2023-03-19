@@ -5,6 +5,7 @@ import { useAnswers } from './AnswersContext';
 
 import { AppSettings, AppService } from 'types';
 import MultiSelect from './MultiSelect';
+import AutocompleteSelect from './AutocompleteSelect';
 
 const FilterToolbar = ({
   appSettings
@@ -12,11 +13,12 @@ const FilterToolbar = ({
   appSettings: AppSettings;
   onSync?: (s: AppService) => void;
 }) => {
-  const { filters, updateFilter } = useAnswers();
+  const { filters, updateFilter, showFilters, setShowFilters } = useAnswers();
   return (
     <>
       <Accordion
-        defaultExpanded={!Object.keys(filters)?.length}
+        expanded={showFilters}
+        onChange={() => setShowFilters(!showFilters)}
         sx={{
           'width': '100%',
           'overflow': 'hidden',
@@ -47,7 +49,7 @@ const FilterToolbar = ({
                 gap: 2,
                 gridTemplateRows: ''
               }}>
-              <MultiSelect
+              <AutocompleteSelect
                 label="Project"
                 options={
                   appSettings?.jira?.projects?.filter((s) => s.enabled)?.map((s) => s.key) || []
@@ -55,14 +57,14 @@ const FilterToolbar = ({
                 value={filters?.projectName || []}
                 onChange={(value: string[]) => updateFilter({ projectName: value })}
               />
-              <MultiSelect
+              <AutocompleteSelect
                 label={`Status`}
                 sx={{ textTransform: 'capitalize' }}
                 options={['to do', 'in progress', 'done']}
                 value={filters?.status_category || []}
                 onChange={(value: string[]) => updateFilter({ status_category: value })}
               />
-              <MultiSelect
+              <AutocompleteSelect
                 label={`Assignee`}
                 sx={{ textTransform: 'capitalize' }}
                 options={[
@@ -80,7 +82,7 @@ const FilterToolbar = ({
                 value={filters?.assignee_name || []}
                 onChange={(value: string[]) => updateFilter({ assignee_name: value })}
               />
-              <MultiSelect
+              <AutocompleteSelect
                 label="Channel"
                 options={
                   appSettings?.slack?.channels?.filter((s) => s.enabled)?.map((s) => s.name) || []
@@ -88,11 +90,18 @@ const FilterToolbar = ({
                 value={filters?.channelId || []}
                 onChange={(value: string[]) => updateFilter({ channelId: value })}
               />
+              <AutocompleteSelect
+                label="Web"
+                options={[]}
+                // options={appSettings?.web?.urls?.map((s) => s.url) || []}
+                value={filters?.url || []}
+                onChange={(value: string[]) => updateFilter({ url: value })}
+              />
             </Box>
             <Box
               sx={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gridTemplateColumns: 'repeat(5, minmax(200px, 1fr))',
                 gap: 2,
                 gridTemplateRows: ''
               }}>

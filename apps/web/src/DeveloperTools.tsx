@@ -1,7 +1,7 @@
 'use client';
 import React, { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
-import { Box, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
+import { Box, Container, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
 import { AppSettings, RecommendedPrompt, Chat, Journey, User } from 'types';
 import PromptCard from './PromptCard';
 
@@ -90,25 +90,31 @@ const DeveloperTools = ({
 
   const {
     error,
+    chat,
+    journey,
+    filters,
     messages,
     sendMessage,
     clearMessages,
     isLoading,
     useStreaming,
     setUseStreaming,
+    setShowFilters,
     regenerateAnswer
   } = useAnswers();
   React.useEffect(() => {
     if (messages?.length)
       scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
+    inputRef.current?.focus();
+  }, [chat, journey, filters, messages, error]);
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
+  const isNewJourney = !!Object.keys(filters)?.length && !journey && !chat;
 
   const handleSubmit = () => {
     if (!inputValue) return;
-    sendMessage(inputValue);
+    sendMessage({ content: inputValue, isNewJourney });
     setShowPrompts(false);
     setInputValue('');
   };
@@ -119,55 +125,75 @@ const DeveloperTools = ({
     setShowPrompts(false);
     inputRef.current?.focus();
   };
-
-  const handleNewJourneyChat = (journey: any) => () => {};
+  const handleInputFocus = () => {
+    setShowFilters(true);
+  };
+  const handleInputBlur = () => {
+    setShowFilters(false);
+  };
   return (
     <>
       <Box
         sx={{
-          width: '100%',
           display: 'flex',
-          gap: 2,
-          padding: 2,
           flexDirection: 'column',
-          height: '100%'
+          height: '100%',
+          py: 2
         }}>
-        <Box sx={{ width: '100%', flex: 1, overflowX: 'auto' }} ref={scrollRef}>
+        <Container
+          sx={{
+            'display': 'flex',
+            'flexDirection': 'column',
+            'overflow': 'auto',
+            'scrollbarWidth': 'thin',
+            'flex': 1,
+            '::-webkit-scrollbar ': {
+              width: '9px'
+            },
+            '::-webkit-scrollbar-track ': {
+              background: 'transparent'
+            },
+            '::-webkit-scrollbar-thumb ': {
+              'background-color': 'rgba(155, 155, 155, 0.5)',
+              'border-radius': '20px,',
+              'border': 'transparent'
+            }
+          }}>
           <Box
+            ref={scrollRef}
             sx={{
               width: '100%',
               gap: 2,
               flexDirection: 'column',
               display: 'flex'
             }}>
-            {messages.map((message, index) => (
-              <MessageCard {...message} key={`message_${index}`} />
-            ))}
-
-            {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
             {!messages?.length ? (
-              <>
-                <JourneySection journeys={journeys} />
-
-                {chats?.length ? (
-                  <>
-                    <Typography variant="h6">Chats</Typography>
+              <Box sx={{ display: 'flex', width: '100%', flexDirection: 'column', gap: 4 }}>
+                {journey || journeys?.length ? (
+                  <JourneySection journeys={journey ? [journey] : journeys} />
+                ) : null}
+                {!journey && chats?.length && !Object.keys(filters)?.length ? (
+                  <Box>
+                    <Typography variant="overline">Chats</Typography>
                     <Box
                       sx={{
                         width: '100%',
                         display: 'grid',
                         gap: 2,
-                        gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
+                        gridTemplateColumns: 'repeat(3, minmax(0px, 1fr))'
                       }}>
                       {chats?.map((chat) => (
                         <ChatCard key={chat.id} {...chat} />
                       ))}
                     </Box>
-                  </>
+                  </Box>
                 ) : null}
                 <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
-              </>
+              </Box>
             ) : null}
+            {messages.map((message, index) => (
+              <MessageCard {...message} key={`message_${index}`} />
+            ))}
             {error ? (
               <>
                 <MessageCard
@@ -187,7 +213,7 @@ const DeveloperTools = ({
                 </Box>
               </>
             ) : null}
-
+            {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
             {messages?.length && !isLoading && !error ? (
               <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                 <Button onClick={regenerateAnswer} variant="outlined" color="primary">
@@ -196,67 +222,70 @@ const DeveloperTools = ({
               </Box>
             ) : null}
           </Box>
-        </Box>
-
+        </Container>
         <Box
           sx={{
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
-
+            p: 2,
             gap: 2,
             width: '100%'
           }}>
           <FilterToolbar appSettings={appSettings} />
           <AppSyncToolbar appSettings={appSettings} />
 
-          <TextField
-            inputRef={inputRef}
-            variant="filled"
-            fullWidth
-            placeholder="What is the status of the ticket?"
-            value={inputValue}
-            onKeyPress={(e) => (e.key === 'Enter' ? handleSubmit() : null)}
-            onChange={handleInputChange}
-          />
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              position: 'absolute',
-              gap: 1,
-              right: 8,
-              bottom: 10
-            }}>
-            {/* Toggle component that updates when using query or streaming */}
-
-            <FormControlLabel
-              control={
-                <Switch
-                  {...{ inputProps: { 'aria-label': 'Stream mode' } }}
-                  checked={useStreaming}
-                  onChange={() => setUseStreaming(!useStreaming)}
-                  name="Stream"
-                />
-              }
-              label={'Stream'}
+          <Box display="flex" position="relative">
+            <TextField
+              inputRef={inputRef}
+              variant="filled"
+              fullWidth
+              placeholder="What is the status of the ticket?"
+              value={inputValue}
+              // onBlur={handleInputBlur}
+              onFocus={handleInputFocus}
+              onKeyPress={(e) => (e.key === 'Enter' ? handleSubmit() : null)}
+              onChange={handleInputChange}
             />
-            {messages?.length ? (
-              <Button variant="outlined" color="primary" onClick={clearMessages}>
-                <DeleteIcon />
-              </Button>
-            ) : null}
-            {/* <Button variant="outlined" color="primary" onClick={() => setShowPrompts(true)}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                position: 'absolute',
+                gap: 1,
+                right: 8,
+                bottom: 10
+              }}>
+              {/* Toggle component that updates when using query or streaming */}
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    {...{ inputProps: { 'aria-label': 'Stream mode' } }}
+                    checked={useStreaming}
+                    onChange={() => setUseStreaming(!useStreaming)}
+                    name="Stream"
+                  />
+                }
+                label={'Stream'}
+              />
+              {messages?.length ? (
+                <Button variant="outlined" color="primary" onClick={clearMessages}>
+                  <DeleteIcon />
+                </Button>
+              ) : null}
+              {/* <Button variant="outlined" color="primary" onClick={() => setShowPrompts(true)}>
               <AddIcon />
             </Button> */}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit}
-              disabled={!inputValue || isLoading}
-              sx={{}}>
-              Send
-            </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+                disabled={!inputValue || isLoading}
+                sx={{}}>
+                {isNewJourney ? 'Start journey' : 'Send'}
+              </Button>
+            </Box>
           </Box>
         </Box>
       </Box>
@@ -268,25 +297,26 @@ interface DefaultPromptsProps {
   handlePromptClick: (prompt: string) => void;
 }
 
-const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) => (
-  <>
-    <Typography variant="h6">Recommended prompts</Typography>
-    <Box
-      sx={{
-        width: '100%',
-        display: 'grid',
-        gap: 2,
-        gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))'
-      }}>
-      {prompts?.map((prompt) => (
-        <PromptCard
-          key={prompt.id}
-          {...prompt}
-          onClick={() => handlePromptClick(prompt?.content)}
-        />
-      ))}
+const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) =>
+  prompts?.length ? (
+    <Box>
+      <Typography variant="overline">Recommended prompts</Typography>
+      <Box
+        sx={{
+          width: '100%',
+          display: 'grid',
+          gap: 2,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))'
+        }}>
+        {prompts?.map((prompt) => (
+          <PromptCard
+            key={prompt.id}
+            {...prompt}
+            onClick={() => handlePromptClick(prompt?.content)}
+          />
+        ))}
+      </Box>
     </Box>
-  </>
-);
+  ) : null;
 
 export default DeveloperTools;

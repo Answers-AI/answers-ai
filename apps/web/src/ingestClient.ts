@@ -1,3 +1,3 @@
 import { Inngest } from 'inngest';
-
-export const inngest = new Inngest({ name: 'My App' });
+type Events = { [key: string]: any };
+export const inngest = new Inngest<Events>({ name: 'My App' });

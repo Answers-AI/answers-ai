@@ -1,4 +1,5 @@
 import React from 'react';
+import NextLink from 'next/link';
 import {
   Box,
   Typography,
@@ -6,11 +7,13 @@ import {
   CardContent,
   CardActions,
   Button,
-  CardActionArea
+  CardActionArea,
+  Chip
 } from '@mui/material';
 import { Chat, Prompt } from 'types';
 
 interface ChatCardProps extends Chat {
+  filters: any;
   // prompt: Prompt;
   // title?: string;
   // content: string;
@@ -21,12 +24,13 @@ interface ChatCardProps extends Chat {
   // onClick: () => void;
 }
 
-const ChatCard: React.FC<ChatCardProps> = ({ id, prompt }) => {
+const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters }) => {
   const title = prompt?.content;
   return (
     <Card
       sx={{
-        // 'display': 'flex',
+        'display': 'flex',
+
         // 'padding': 2,
         // 'height': '100%',
         'cursor': 'pointer',
@@ -35,12 +39,15 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt }) => {
           // backgroundColor: '#000000'
         }
       }}>
-      <CardActionArea href={`/chats/${id}`}>
+      <CardActionArea component={NextLink} sx={{ minHeight: '100%' }} href={`/chat/${id}`}>
         <Box
           sx={{
             width: '100%',
+            minHeight: '100%',
             flex: '1',
-            display: 'flex'
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
           }}>
           <CardContent
             sx={{
@@ -55,6 +62,15 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt }) => {
               <Typography variant="subtitle1" color="text.secondary" component="div">
                 {title}
               </Typography>
+            ) : null}
+            {filters ? (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                {Object.keys(filters)?.map((filter) =>
+                  filters[filter]?.length ? (
+                    <Chip key={`${filter}`} label={filters[filter]?.join(', ')} />
+                  ) : null
+                )}
+              </Box>
             ) : null}
           </CardContent>
           <CardActions>

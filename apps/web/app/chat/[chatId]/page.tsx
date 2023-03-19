@@ -11,7 +11,7 @@ export const metadata = {
 
 const Homepage = async ({ params }: any) => {
   // @ts-expect-error
-  return <Chat id={params?.chatId} />;
+  return <Chat {...params} />;
 };
 
 export default Homepage;

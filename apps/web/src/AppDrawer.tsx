@@ -1,5 +1,6 @@
 'use client';
 import { Avatar } from '@mui/material';
+import NextLink from 'next/link';
 import { signOut } from 'next-auth/react';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
@@ -12,6 +13,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import StorageIcon from '@mui/icons-material/Storage';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import AIIcon from '@mui/icons-material/SmartButton';
 import React from 'react';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
@@ -40,42 +42,45 @@ export const AppDrawer = ({ params }: any) => {
             ? [
                 { component: <Divider key="divider" /> },
                 { text: 'Inngest', link: '/events', icon: <MessageIcon /> },
-                { text: 'Store', link: '/store', icon: <StorageIcon /> }
+                { text: 'Store', link: '/store', icon: <StorageIcon /> },
+                { text: 'Tracing', link: '/tracing', icon: <AIIcon /> }
               ]
             : [])
         ].map((item, idx) =>
           item?.component ? (
             item?.component
           ) : (
-            // <NextLink key={text} href={link} passHref>
-            <ListItem
-              key={item.text}
-              disablePadding
-              sx={{
-                display: 'block',
-                transition: 'all 0.3s ease-in-out',
-                ...(pathname === item.link
-                  ? { boxShadow: (theme) => `inset 4px 0px 0px 0px ${theme.palette.primary.dark}` }
-                  : {})
-              }}>
-              <ListItemButton
-                aria-label={item.text}
-                href={item.link}
+            <NextLink key={item.text} href={item.link} passHref>
+              <ListItem
+                key={item.text}
+                disablePadding
                 sx={{
-                  minHeight: 48,
-                  px: 2.5
+                  display: 'block',
+                  transition: 'all 0.3s ease-in-out',
+                  ...(pathname === item.link
+                    ? {
+                        boxShadow: (theme) => `inset 4px 0px 0px 0px ${theme.palette.primary.dark}`
+                      }
+                    : {})
                 }}>
-                <ListItemIcon
+                <ListItemButton
+                  aria-label={item.text}
+                  href={item.link}
                   sx={{
-                    minWidth: 0,
-                    justifyContent: 'center'
+                    minHeight: 48,
+                    px: 2.5
                   }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.text} sx={{ opacity: 0 }} />
-              </ListItemButton>
-            </ListItem>
-            // </NextLink>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      justifyContent: 'center'
+                    }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={item.text} sx={{ opacity: 0 }} />
+                </ListItemButton>
+              </ListItem>
+            </NextLink>
           )
         )}
       </List>

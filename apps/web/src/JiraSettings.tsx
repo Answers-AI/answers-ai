@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 import { AppSettings } from 'types';
-import useAppSettings from 'useAppSettings';
+import useAppSettings from '@web/useAppSettings';
 export interface JiraSettingsProps {
   appSettings: AppSettings;
 }

@@ -1,7 +1,7 @@
-import { generatePrompt } from '../../../src/generatePrompt';
+import { generatePrompt } from '@web/generatePrompt';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import cors from '../../../src/cors';
+import cors from '@web/cors';
 
 type Data = {
   prompt: string;

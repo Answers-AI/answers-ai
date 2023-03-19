@@ -27,7 +27,7 @@ import { AppSettings } from 'types';
 import useAppSettings from './useAppSettings';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import NextLink from 'next/link';
-import SelectedListItem from 'SelectedListItem';
+import SelectedListItem from '@web/SelectedListItem';
 
 export const SettingsLayout = ({
   appSettings,
@@ -94,7 +94,7 @@ export const SettingsLayout = ({
   // return <div>Loading...</div>;
 
   return (
-    <Container maxWidth="xl">
+    <Container>
       <Grid2 container sx={{ flex: 1, position: 'relative', p: 4, gap: 4 }}>
         <Grid2
           sx={{
@@ -151,15 +151,16 @@ const AppsDrawer = ({
         })) || [])
       ]}
       renderItem={(item) => (
-        <ListItemButton
-          key={item?.link}
-          href={item?.link}
-          sx={{ display: 'flex', gap: 2 }}
-          selected={activeApp == item?.text}
-          disabled={!item?.enabled}>
-          <ListItemIcon sx={{ minWidth: 0 }}>{item?.icon}</ListItemIcon>
-          <ListItemText primary={item.text} />
-        </ListItemButton>
+        <NextLink href={item?.link}>
+          <ListItemButton
+            key={item?.link}
+            sx={{ display: 'flex', gap: 2 }}
+            selected={activeApp == item?.text}
+            disabled={!item?.enabled}>
+            <ListItemIcon sx={{ minWidth: 0 }}>{item?.icon}</ListItemIcon>
+            <ListItemText primary={item.text} />
+          </ListItemButton>
+        </NextLink>
       )}
     />
     // <Drawer
