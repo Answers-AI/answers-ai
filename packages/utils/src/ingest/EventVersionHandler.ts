@@ -2,6 +2,8 @@ import { inngest } from './client';
 import { AppSettings } from 'types';
 import { User } from 'db/generated/prisma-client';
 import { EventPayload } from 'inngest';
+import { FunctionOptions } from 'inngest';
+import { createStepTools } from 'inngest/components/InngestStepTools';
 
 export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknown>[]) => {
   // Group all functions by event name and version i.e eventHandlerMap['user.created']['1']
@@ -20,31 +22,34 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
     );
 
   const inngestFunctions = Object.keys(eventHandlerMap).map((eventName) => {
+    const versions = Object.keys(eventHandlerMap[eventName]);
     return inngest.createFunction(
       { name: `Process ${eventName} event` },
       { event: eventName },
       async ({ event, ...other }) => {
-        const { ts, v } = event;
+        const { v } = event;
+        const ts = event.ts!;
+        let handler;
         try {
-          console.time(`[${ts}] Processing  ${eventName}`);
-          const versions = Object.keys(eventHandlerMap[eventName]);
-          let handler;
+          console.time(`[${new Date(ts)}] Processing  ${eventName}`);
           if (!v) {
             console.warn(`No version for ${eventName} using v=1`);
             handler = eventHandlerMap[eventName][1];
           } else {
             if (versions.includes(v)) {
               handler = eventHandlerMap[eventName][v];
-            } else {
-              throw new Error(`No handler for ${eventName}:${v}`);
             }
           }
-          await handler({ event, ...other } as any);
-          console.timeEnd(`[${ts}] Processing  ${eventName}`);
+          if (!handler) {
+            throw new Error(`No handler for ${eventName}:${v}`);
+          }
+          const result = await handler({ event, ...other } as any);
+          console.timeEnd(`[${new Date(ts)}] Processing  ${eventName}`);
+          return result;
         } catch (error) {
-          console.timeEnd(`[${ts}] Processing  ${eventName}`);
-          console.error(`[${ts}] Error processing ${eventName}`);
-          console.log(error);
+          console.timeEnd(`[${new Date(ts)}] Processing  ${eventName}`);
+          console.error(`[${new Date(ts)}] Error processing ${eventName}`);
+          console.log({ eventHandlerMap, handler, error });
           throw error;
         }
       }
@@ -56,7 +61,8 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
 
 export type EventHandler<T> = (args: {
   event: { v: string; data: T; user?: User; ts: number };
-  step: any;
+  // step: { run: (step: string, callback: () => unknown) => Promise<unknown> };
+  step: ReturnType<typeof createStepTools<any, any>>[0];
 }) => Promise<unknown>;
 
 export type EventVersionHandler<T> = {

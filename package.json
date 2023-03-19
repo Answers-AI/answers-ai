@@ -9,9 +9,9 @@
   "scripts": {
     "dev": "dotenv -- turbo run dev dev-inngest dev-langchain dev-docker",
     "dev-docker": "docker-compose up -d",
-    "docker-healthcheck": "wait-on -c wait-on-config.js",
     "build": "dotenv -- turbo run build",
     "db": "dotenv -- pnpm  --filter db prisma",
+    "db:healthcheck": "wait-on tcp:5432",
     "db:migrate": "dotenv -- pnpm db migrate dev",
     "db:deploy": "dotenv -- pnpm db migrate deploy",
     "db:reset": "dotenv -- pnpm db migrate reset",
@@ -19,7 +19,6 @@
     "start": "dotenv -- turbo run start",
     "logs": "docker-compose logs -f",
     "dev-inngest": "npx inngest-cli@latest dev -u http://localhost:3000/api/inngest > /dev/null 2>&1 &",
-    "dev-langchain": "langchain-server -d",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },

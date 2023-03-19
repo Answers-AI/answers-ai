@@ -16,19 +16,19 @@ export const jiraAdfToMarkdown = (node) => {
   } else if (node.type === 'mediaGroup') {
     return node.content.map(jiraAdfToMarkdown).join('');
   } else if (node.type === 'paragraph') {
-    return `${node.content.map(jiraAdfToMarkdown).join('')}`;
+    return `${node.content.map(jiraAdfToMarkdown).join(' ')} `;
   } else if (node.type === 'bulletList') {
-    return node.content.map((item) => `${jiraAdfToMarkdown(item)}`).join(',');
+    return node.content.map((item) => `${jiraAdfToMarkdown(item)}`).join(', ');
   } else if (node.type === 'listItem') {
-    return node.content.map((item) => `- ${jiraAdfToMarkdown(item)}`).join(',');
+    return node.content.map((item) => `- ${jiraAdfToMarkdown(item)}`).join(', ');
   } else if (node.type === 'orderedList') {
-    return node.content.map((item, index) => `${index + 1}. ${jiraAdfToMarkdown(item)}`).join('');
+    return node.content.map((item, index) => `${index + 1}. ${jiraAdfToMarkdown(item)}`).join(' ');
   } else if (node.type === 'heading') {
-    return `\n${'#'.repeat(node.attrs.level)} ${node.content.map(jiraAdfToMarkdown).join('')}\n`;
+    return `${'#'.repeat(node.attrs.level)} ${node.content.map(jiraAdfToMarkdown).join(' ')}`;
   } else if (node.type === 'codeBlock') {
-    return `\`\`\`\n${node.text}\n\`\`\`\n`;
+    return `\`\`\`${node.text}\`\`\``;
   } else if (node.type === 'blockquote') {
-    return `> ${node.content.map(jiraAdfToMarkdown).join('')}\n`;
+    return `> ${node.content.map(jiraAdfToMarkdown).join('')}`;
   } else {
     return '';
   }

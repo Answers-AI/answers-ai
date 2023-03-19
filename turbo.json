@@ -42,7 +42,7 @@
     "db#build": {
       "cache": false,
       "dependsOn": [],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", "db:healthcheck"]
     },
     "db#dev": {
       "dependsOn": ["build"],
