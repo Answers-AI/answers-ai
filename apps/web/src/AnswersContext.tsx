@@ -131,10 +131,12 @@ export function AnswersProvider({
   };
 
   const regenerateAnswer = () => {
-    const [message] = messages.slice(-1);
-    if (message.role === ChatCompletionRequestMessageRoleEnum.User) {
-      setMessages(messages.slice(0, -1));
-    }
+    const [message] = messages
+      .filter((m) => m.role === ChatCompletionRequestMessageRoleEnum.User)
+      .slice(-1);
+    // if (messages[messages.length - 1].role === ChatCompletionRequestMessageRoleEnum.Assistant) {
+    //   setMessages(messages.slice(0, -1));
+    // }
     sendMessage(message);
   };
 

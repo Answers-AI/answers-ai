@@ -16,6 +16,7 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
 import OpenAIClient from 'utils/dist/openai/openai';
 import { summarizeChain } from './llm/chains';
+
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
 
@@ -61,7 +62,7 @@ export const fetchContext = async ({
     Object.keys(filters).length
       ? pineconeQuery(promptEmbedding, { filters, topK: 5 })
       : { matches: [] },
-    !hasDefaultFilter ? pineconeQuery(promptEmbedding, { topK: 5 }) : { matches: [] } // TODO: Use topK from config
+    // !hasDefaultFilter ? pineconeQuery(promptEmbedding, { topK: 5 }) : { matches: [] } // TODO: Use topK from config
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
 
   // TODO: Filter pinecone data by threshold
@@ -73,29 +74,29 @@ export const fetchContext = async ({
 
   let summary = context;
 
-  // if (context) {
-  //   const contextDocs = await textSplitter.createDocuments([context]);
-  //   console.log('contextDocs', contextDocs?.length);
-  //   if (contextDocs.length > 1) {
-  //     console.time('Summarization Chain');
-  //     const summaries = await Promise.all(
-  //       contextDocs?.map((doc) =>
-  //         summarizeChain.call({
-  //           agent_scratchpad: '',
-  //           input: doc.pageContent,
-  //           prompt: prompt
-  //         })
-  //       )
-  //     );
-  //     const response = await summarizeChain.call({
-  //       agent_scratchpad: '',
-  //       input: summaries?.map((sum) => sum.text)?.join(' <SEP> '),
-  //       prompt
-  //     });
-  //     summary = response.text;
-  //     console.timeEnd('Summarization Chain');
-  //   }
-  // }
+  if (context) {
+    const contextDocs = await textSplitter.createDocuments([context]);
+    console.log('contextDocs', contextDocs?.length);
+    if (contextDocs.length > 1) {
+      console.time('Summarization Chain');
+      const summaries = await Promise.all(
+        contextDocs?.map((doc) =>
+          summarizeChain.call({
+            agent_scratchpad: '',
+            input: doc.pageContent,
+            prompt: prompt
+          })
+        )
+      );
+      const response = await summarizeChain.call({
+        agent_scratchpad: '',
+        input: summaries?.map((sum) => sum.text)?.join(' <SEP> '),
+        prompt
+      });
+      summary = response.text;
+      console.timeEnd('Summarization Chain');
+    }
+  }
   return {
     pineconeData,
     context,

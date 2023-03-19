@@ -10,11 +10,13 @@ interface Props {
   onChange: any;
 }
 export default function AutocompleteSelect({ sx, label, options, value, onChange }: Props) {
-  const handleChange = (event: any) => {
+  const handleChange = (event: any, newValue: any) => {
     const { target } = event;
+    console.log('Values', target.value, newValue);
     onChange(
       // On autofill we get a stringified value.
-      typeof target?.value === 'string' ? target?.value.split(',') : target?.value
+
+      newValue
     );
   };
   return (
@@ -26,7 +28,7 @@ export default function AutocompleteSelect({ sx, label, options, value, onChange
       id={`${label}`}
       options={options}
       getOptionLabel={(option) => option}
-      defaultValue={value}
+      value={value}
       onChange={handleChange}
       renderInput={(params) => (
         <TextField {...params} label={label} placeholder={`Enter ${label}`} />

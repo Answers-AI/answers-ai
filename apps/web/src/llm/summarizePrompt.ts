@@ -10,8 +10,8 @@ export const summarizePrompt = ChatPromptTemplate.fromPromptMessages([
   ),
 
   HumanMessagePromptTemplate.fromTemplate(`
-Write a summary of what we learn about the story from the following chat log.
-Focus on what's important to reply the question "{prompt}".
+Write a executive summary for the following content.
+Infer what type of input it is and focus on what's important to reply the question "{prompt}".
 
 {input}
 

@@ -14,13 +14,13 @@ import * as messageFunctions from 'utils/dist/ingest/message';
 
 const handlers = {
   ...authFunctions,
+  ...embeddingsFunctions,
+  ...messageFunctions,
+  ...webFunctions,
+  ...promptFunctions,
   ...jiraFunctions,
   ...slackFunctions,
-  ...embeddingsFunctions,
-  ...promptFunctions,
-  ...webFunctions,
-  ...openApiFunctions,
-  ...messageFunctions
+  ...openApiFunctions
 };
 
 const functions = Object.values(handlers);

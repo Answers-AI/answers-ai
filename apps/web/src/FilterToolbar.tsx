@@ -1,6 +1,6 @@
 'use client';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useAnswers } from './AnswersContext';
 
 import { AppSettings, AppService } from 'types';
@@ -45,7 +45,7 @@ const FilterToolbar = ({
             <Box
               sx={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
                 gap: 2,
                 gridTemplateRows: ''
               }}>
@@ -98,25 +98,18 @@ const FilterToolbar = ({
                 onChange={(value: string[]) => updateFilter({ url: value })}
               />
             </Box>
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(5, minmax(200px, 1fr))',
-                gap: 2,
-                gridTemplateRows: ''
-              }}>
-              {appSettings?.models
-                ? Object.keys(appSettings?.models).map((model: string) => (
-                    <MultiSelect
-                      label={`${model} Model`}
-                      sx={{ textTransform: 'capitalize' }}
-                      options={appSettings?.models?.[model] as string[]}
-                      value={filters?.models?.[model] || []}
-                      onChange={(value: string[]) => updateFilter({ models: { [model]: value } })}
-                    />
-                  ))
-                : null}
-            </Box>
+
+            {appSettings?.models
+              ? Object.keys(appSettings?.models).map((model: string) => (
+                  <MultiSelect
+                    label={`${model} Model`}
+                    sx={{ textTransform: 'capitalize' }}
+                    options={appSettings?.models?.[model] as string[]}
+                    value={filters?.models?.[model] || []}
+                    onChange={(value: string[]) => updateFilter({ models: { [model]: value } })}
+                  />
+                ))
+              : null}
           </Box>
         </AccordionDetails>
       </Accordion>

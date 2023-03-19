@@ -106,7 +106,7 @@ const DeveloperTools = ({
     if (messages?.length)
       scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
     inputRef.current?.focus();
-  }, [chat, journey, filters, messages, error]);
+  }, [chat, journey, messages, error]);
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
@@ -147,17 +147,17 @@ const DeveloperTools = ({
             'flexDirection': 'column',
             'overflow': 'hidden',
             'height': '100%',
-
             'scrollbarWidth': 'thin',
             'flex': 1,
             '*': {
               '::-webkit-scrollbar ': {
-                width: '9px'
+                width: '2px'
               },
               '::-webkit-scrollbar-track ': {
                 background: 'transparent'
               },
               '::-webkit-scrollbar-thumb ': {
+                'width': '1px',
                 'background-color': 'rgba(155, 155, 155, 0.5)',
                 'border-radius': '20px,',
                 'border': 'transparent'
@@ -192,9 +192,7 @@ const DeveloperTools = ({
                       display: 'flex',
                       width: '100%',
                       flexDirection: 'column',
-                      gap: 4,
-                      height: '100%',
-                      overflow: 'hidden'
+                      gap: 4
                     }}>
                     {journey || journeys?.length ? (
                       <JourneySection journeys={journey ? [journey] : journeys} />
@@ -250,7 +248,10 @@ const DeveloperTools = ({
                   ) : null}
                 </Box>
               </Box>
-              <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
+              <Box sx={{ overflow: 'hidden', overflowY: 'auto', height: '100%' }}>
+                <FilterToolbar appSettings={appSettings} />
+                <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
+              </Box>
             </Box>
           </Box>
         </Container>
@@ -263,7 +264,6 @@ const DeveloperTools = ({
             gap: 2,
             width: '100%'
           }}>
-          <FilterToolbar appSettings={appSettings} />
           <AppSyncToolbar appSettings={appSettings} />
 
           <Box display="flex" position="relative">
@@ -271,13 +271,15 @@ const DeveloperTools = ({
               inputRef={inputRef}
               variant="filled"
               fullWidth
-              placeholder="What is the status of the ticket?"
+              placeholder="How can you help me accomplish my goal?"
               value={inputValue}
               // onBlur={handleInputBlur}
+              multiline
               onFocus={handleInputFocus}
-              onKeyPress={(e) => (e.key === 'Enter' ? handleSubmit() : null)}
+              onKeyPress={(e) => (e.key === 'Enter' && !e.shiftKey ? handleSubmit() : null)}
               onChange={handleInputChange}
             />
+
             <Box
               sx={{
                 display: 'flex',
@@ -330,7 +332,7 @@ interface DefaultPromptsProps {
 
 const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) =>
   prompts?.length ? (
-    <Box sx={{ overflow: 'hidden', overflowY: 'auto', height: '100%' }}>
+    <Box sx={{}}>
       <Typography variant="overline">Recommended prompts</Typography>
       <Box
         sx={{

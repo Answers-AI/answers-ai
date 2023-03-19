@@ -76,10 +76,12 @@ const excludeSelectors: string[] = [
 
 export const getWebPage = async ({ url }: { url: string }): Promise<WebPage> => {
   console.log('====================================');
+  const cleanURL = url?.includes('http') ? url : `https://${url}`;
   console.log(`===Fetching webpage: ${url}`);
+  console.log(`===Fetching cleanURL: ${cleanURL}`);
   try {
-    const pageHtml = await webClient.fetchWebData(url, { cache: false });
-    if (!pageHtml) throw new Error(`No valid HTML returned for url: ${url}`);
+    const pageHtml = await webClient.fetchWebData(cleanURL, { cache: false });
+    if (!pageHtml) throw new Error(`No valid HTML returned for url: ${cleanURL}`);
 
     const $ = cheerio.load(pageHtml);
     //Remove for sure unneeded elements

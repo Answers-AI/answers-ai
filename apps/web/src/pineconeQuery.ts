@@ -45,6 +45,9 @@ export const pineconeQuery = async (
   if (filters?.cleanedUrl?.length) {
     filter.cleanedUrl = { $in: [filters?.cleanedUrl] };
   }
+  if (filters?.url) {
+    filter.url = { $in: filters?.url?.map((url) => url.toLowerCase()) ?? [] };
+  }
 
   try {
     console.time('PineconeQuery:' + JSON.stringify({ filter, topK, namespace }));
