@@ -22,6 +22,20 @@ const Chat = async ({ chatId, journeyId }: Params) => {
   const prompts = JSON.parse(
     JSON.stringify(
       await prisma.prompt.findMany({
+        where: {
+          OR: [
+            {
+              usages: {
+                gt: 0
+              }
+            },
+            {
+              likes: {
+                gt: 0
+              }
+            }
+          ]
+        },
         orderBy: [
           {
             usages: 'desc'
@@ -52,7 +66,7 @@ const Chat = async ({ chatId, journeyId }: Params) => {
           users: {
             some: { email: session.user.email }
           },
-          journeyId: null
+          journeyId: journeyId
         },
         orderBy: {
           createdAt: 'desc'
