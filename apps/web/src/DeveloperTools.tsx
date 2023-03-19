@@ -124,74 +124,78 @@ const DeveloperTools = ({
                 height: '100%',
                 overflow: 'hidden'
               }}>
-              <Box
-                ref={scrollRef}
-                sx={{
-                  overflow: 'hidden',
-                  overflowY: 'auto'
-                }}>
-                {!messages?.length ? (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      width: '100%',
-                      flexDirection: 'column',
-                      gap: 4
-                    }}>
-                    {journey || journeys?.length ? (
-                      <JourneySection journeys={journey ? [journey] : journeys} />
-                    ) : null}
-                    {!journey && chats?.length && !Object.keys(filters)?.length ? (
-                      <Box>
-                        <Typography variant="overline">Chats</Typography>
-                        <Box
-                          sx={{
-                            width: '100%',
-                            display: 'grid',
-                            gap: 2,
-                            gridTemplateColumns: 'repeat(3, minmax(0px, 1fr))'
-                          }}>
-                          {chats?.map((chat) => (
-                            <ChatCard key={chat.id} {...chat} />
-                          ))}
+              {messages?.length || error || isLoading ? (
+                <Box
+                  ref={scrollRef}
+                  sx={{
+                    overflow: 'hidden',
+                    overflowY: 'auto'
+                  }}>
+                  {!messages?.length ? (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        width: '100%',
+                        flexDirection: 'column',
+                        gap: 4
+                      }}>
+                      {journey || journeys?.length ? (
+                        <JourneySection journeys={journey ? [journey] : journeys} />
+                      ) : null}
+                      {!journey && chats?.length && !Object.keys(filters)?.length ? (
+                        <Box>
+                          <Typography variant="overline">Chats</Typography>
+                          <Box
+                            sx={{
+                              width: '100%',
+                              display: 'grid',
+                              gap: 2,
+                              gridTemplateColumns: 'repeat(3, minmax(0px, 1fr))'
+                            }}>
+                            {chats?.map((chat) => (
+                              <ChatCard key={chat.id} {...chat} />
+                            ))}
+                          </Box>
                         </Box>
+                      ) : null}
+                    </Box>
+                  ) : null}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {messages.map((message, index) => (
+                      <MessageCard {...message} key={`message_${index}`} />
+                    ))}
+                    {error ? (
+                      <>
+                        <MessageCard
+                          user={user}
+                          role="assistant"
+                          content={`There was an error completing your request, please try again`}
+                          error={error}
+                        />
+                        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                          <Button
+                            onClick={regenerateAnswer}
+                            variant="contained"
+                            color="primary"
+                            sx={{ margin: 'auto' }}>
+                            Retry
+                          </Button>
+                        </Box>
+                      </>
+                    ) : null}
+                    {isLoading ? (
+                      <MessageCard user={user} role="assistant" content={'...'} />
+                    ) : null}
+                    {messages?.length && !isLoading && !error ? (
+                      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                        <Button onClick={regenerateAnswer} variant="outlined" color="primary">
+                          Regenerate answer
+                        </Button>
                       </Box>
                     ) : null}
                   </Box>
-                ) : null}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {messages.map((message, index) => (
-                    <MessageCard {...message} key={`message_${index}`} />
-                  ))}
-                  {error ? (
-                    <>
-                      <MessageCard
-                        user={user}
-                        role="assistant"
-                        content={`There was an error completing your request, please try again`}
-                        error={error}
-                      />
-                      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                        <Button
-                          onClick={regenerateAnswer}
-                          variant="contained"
-                          color="primary"
-                          sx={{ margin: 'auto' }}>
-                          Retry
-                        </Button>
-                      </Box>
-                    </>
-                  ) : null}
-                  {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
-                  {messages?.length && !isLoading && !error ? (
-                    <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                      <Button onClick={regenerateAnswer} variant="outlined" color="primary">
-                        Regenerate answer
-                      </Button>
-                    </Box>
-                  ) : null}
                 </Box>
-              </Box>
+              ) : null}
               <Box sx={{ overflow: 'hidden', overflowY: 'auto', height: '100%' }}>
                 <FilterToolbar appSettings={appSettings} />
                 <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />

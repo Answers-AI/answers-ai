@@ -138,7 +138,7 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
           ?.filter((issue) => !!issue)
           ?.map(async (issue) => {
             const commentsSummary = await summarizeAI({
-              chunkSize: 1000,
+              chunkSize: 4000,
               input: issue?.comments
                 ?.map(
                   ({ author, body, updated, self }: any) =>
@@ -249,6 +249,7 @@ const summarizeAI = async ({
     const summariesPromises = inputDocs?.map(async (doc, idx) => {
       let summary = doc.pageContent ?? '';
       console.log('[summarizeAI] Chunk', { idx });
+      await sleep(100 * idx);
       const res = await openai.createCompletion({
         max_tokens: 2000,
         prompt: `${prompt} <INPUT>${doc.pageContent}<INPUT> Summary:`,

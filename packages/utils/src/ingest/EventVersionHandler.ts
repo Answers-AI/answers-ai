@@ -28,7 +28,8 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
       { event: eventName },
       async ({ event, ...other }) => {
         const { v } = event;
-        const ts = event.ts!;
+        const ts = new Date(event.ts!).toDateString();
+        console.log(`[${new Date(ts)}] Received ${eventName}`);
         let handler;
         try {
           console.time(`[${new Date(ts)}] Processing  ${eventName}`);

@@ -15,20 +15,20 @@ import { loadQAMapReduceChain } from 'langchain/chains';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
 import OpenAIClient from 'utils/dist/openai/openai';
-import { summarizeChain } from './llm/chains';
+import { summarizeAI, summarizeChain } from 'utils/dist/llm/chains';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
 
-const model = process.env.PROMPT_LAYER_API_KEY
-  ? new PromptLayerOpenAI({
-      temperature: 0,
-      promptLayerApiKey: process.env.PROMPT_LAYER_API_KEY
-    })
-  : new OpenAI({ temperature: 0 });
+// const model = process.env.PROMPT_LAYER_API_KEY
+//   ? new PromptLayerOpenAI({
+//       temperature: 0,
+//       promptLayerApiKey: process.env.PROMPT_LAYER_API_KEY
+//     })
+//   : new OpenAI({ temperature: 0 });
 
-const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
-const qaChain = loadQAMapReduceChain(model);
+// const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
+// const qaChain = loadQAMapReduceChain(model);
 
 export const fetchContext = async ({
   chat,
@@ -61,7 +61,7 @@ export const fetchContext = async ({
   const pineconeData = await Promise.all([
     Object.keys(filters).length
       ? pineconeQuery(promptEmbedding, { filters, topK: 5 })
-      : { matches: [] },
+      : { matches: [] }
     // !hasDefaultFilter ? pineconeQuery(promptEmbedding, { topK: 5 }) : { matches: [] } // TODO: Use topK from config
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
 
@@ -72,31 +72,36 @@ export const fetchContext = async ({
     ...(!pineconeData ? [] : pineconeData?.map((item: any) => item?.metadata?.text))
   ].join(' <SEP> ');
 
-  let summary = context;
+  console.log('FetchContext', context);
+  let summary = await summarizeAI({
+    input: context,
+    prompt,
+    chunkSize: 3000
+  });
 
-  if (context) {
-    const contextDocs = await textSplitter.createDocuments([context]);
-    console.log('contextDocs', contextDocs?.length);
-    if (contextDocs.length > 1) {
-      console.time('Summarization Chain');
-      const summaries = await Promise.all(
-        contextDocs?.map((doc) =>
-          summarizeChain.call({
-            agent_scratchpad: '',
-            input: doc.pageContent,
-            prompt: prompt
-          })
-        )
-      );
-      const response = await summarizeChain.call({
-        agent_scratchpad: '',
-        input: summaries?.map((sum) => sum.text)?.join(' <SEP> '),
-        prompt
-      });
-      summary = response.text;
-      console.timeEnd('Summarization Chain');
-    }
-  }
+  // if (context) {
+  //   const contextDocs = await textSplitter.createDocuments([context]);
+  //   console.log('contextDocs', contextDocs?.length);
+  //   if (contextDocs.length > 1) {
+  //     console.time('Summarization Chain');
+  //     const summaries = await Promise.all(
+  //       contextDocs?.map((doc) =>
+  //         summarizeChain.call({
+  //           agent_scratchpad: '',
+  //           input: doc.pageContent,
+  //           prompt: prompt
+  //         })
+  //       )
+  //     );
+  //     const response = await summarizeChain.call({
+  //       agent_scratchpad: '',
+  //       input: summaries?.map((sum) => sum.text)?.join(' <SEP> '),
+  //       prompt
+  //     });
+  //     summary = response.text;
+  //     console.timeEnd('Summarization Chain');
+  //   }
+  // }
   return {
     pineconeData,
     context,

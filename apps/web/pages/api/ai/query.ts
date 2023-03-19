@@ -83,6 +83,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       context: summary || context,
       userName: user.name,
       input: prompt,
+      history: messages,
       agent_scratchpad: ''
     });
     const answer = response.text;

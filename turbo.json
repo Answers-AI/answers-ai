@@ -18,7 +18,7 @@
     "//#dev-docker": { "cache": false },
     "//#dev-inngest": { "cache": false, "persistent": true },
     "//#dev-langchain": { "cache": false, "persistent": true },
-    "//#db:healthcheck": { "cache": false, "persistent": true },
+    "//#db:healthcheck": { "cache": false },
     "build": {
       "outputMode": "new-only",
       "dependsOn": ["^build"],
@@ -41,8 +41,8 @@
     },
     "db#build": {
       "cache": false,
-      "dependsOn": [],
-      "outputs": ["dist/**", "db:healthcheck"]
+      "dependsOn": ["//#db:healthcheck"],
+      "outputs": ["dist/**"]
     },
     "db#dev": {
       "dependsOn": ["build"],

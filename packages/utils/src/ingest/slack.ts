@@ -4,6 +4,7 @@ import PineconeClient from '../pinecone/client';
 
 import { chunkArray } from '../utilities/utils';
 import { inngest } from './client';
+
 import { EventVersionHandler } from './EventVersionHandler';
 import { AppSettings, SlackChannel, SlackMessage } from 'types';
 
