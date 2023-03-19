@@ -82,15 +82,16 @@ const PromptCard: React.FC<PromptCardProps> = ({
       <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Box>
           <Button
+            color="secondary"
+            sx={{}}
             size="small"
-            color="primary"
             startIcon={<ThumbUpIcon sx={{ fontSize: 12 }} />}
             onClick={handleLike}>
             {likes}
           </Button>
           <Button
             size="small"
-            color="primary"
+            color="secondary"
             startIcon={<ThumbDownIcon sx={{ fontSize: 12 }} />}
             onClick={handleLike}>
             {dislikes}

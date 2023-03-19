@@ -99,13 +99,14 @@ const DeveloperTools = ({
     isLoading,
     useStreaming,
     setUseStreaming,
+    setShowFilters,
     regenerateAnswer
   } = useAnswers();
   React.useEffect(() => {
     if (messages?.length)
       scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
     inputRef.current?.focus();
-  }, [chat, journey, filters, messages]);
+  }, [chat, journey, filters, messages, error]);
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
@@ -124,7 +125,12 @@ const DeveloperTools = ({
     setShowPrompts(false);
     inputRef.current?.focus();
   };
-
+  const handleInputFocus = () => {
+    setShowFilters(true);
+  };
+  const handleInputBlur = () => {
+    setShowFilters(false);
+  };
   return (
     <>
       <Box
@@ -157,7 +163,6 @@ const DeveloperTools = ({
             ref={scrollRef}
             sx={{
               width: '100%',
-              height: '100%',
               gap: 2,
               flexDirection: 'column',
               display: 'flex'
@@ -237,6 +242,8 @@ const DeveloperTools = ({
               fullWidth
               placeholder="What is the status of the ticket?"
               value={inputValue}
+              // onBlur={handleInputBlur}
+              onFocus={handleInputFocus}
               onKeyPress={(e) => (e.key === 'Enter' ? handleSubmit() : null)}
               onChange={handleInputChange}
             />

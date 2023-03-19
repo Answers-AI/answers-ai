@@ -15,6 +15,7 @@ type Data = {
   error?: any;
   [key: string]: any;
 };
+
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await cors(req, res);
   const session = await getServerSession(req, res, authOptions);

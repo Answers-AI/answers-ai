@@ -10,7 +10,13 @@ services:
       - '5555:5555'
     command: npx prisma studio
     environment:
-      - DATABASE_URL=postgresql://example_user:example_password@postgres:5432/example_db?schema=public
+      - DATABASE_URL=postgresql://example_user:example_password@postgres:5433/example_db?schema=public
+  # langchain-tracing:
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/python.Dockerfile
+  #   working_dir: /app
+  #   command: langchain-server
   redis:
     image: redis:latest
     ports:
@@ -20,10 +26,11 @@ services:
   postgres:
     image: postgres:latest
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
+      POSTGRES_PORT: 5433
       POSTGRES_USER: example_user
       POSTGRES_PASSWORD: example_password
       POSTGRES_DB: example_db

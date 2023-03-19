@@ -2,6 +2,9 @@ import AppSyncToolbar from '@web/AppSyncToolbar';
 import React from 'react';
 import { getAppSettings } from '@web/getAppSettings';
 
+export const metadata = {
+  title: 'Events | Answers AI'
+};
 const Inngest = async () => {
   const appSettings = await getAppSettings();
   return (

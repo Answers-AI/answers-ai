@@ -13,6 +13,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import StorageIcon from '@mui/icons-material/Storage';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import AIIcon from '@mui/icons-material/SmartButton';
 import React from 'react';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
@@ -41,7 +42,8 @@ export const AppDrawer = ({ params }: any) => {
             ? [
                 { component: <Divider key="divider" /> },
                 { text: 'Inngest', link: '/events', icon: <MessageIcon /> },
-                { text: 'Store', link: '/store', icon: <StorageIcon /> }
+                { text: 'Store', link: '/store', icon: <StorageIcon /> },
+                { text: 'Tracing', link: '/tracing', icon: <AIIcon /> }
               ]
             : [])
         ].map((item, idx) =>

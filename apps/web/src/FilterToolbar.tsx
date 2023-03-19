@@ -13,11 +13,12 @@ const FilterToolbar = ({
   appSettings: AppSettings;
   onSync?: (s: AppService) => void;
 }) => {
-  const { filters, updateFilter } = useAnswers();
+  const { filters, updateFilter, showFilters, setShowFilters } = useAnswers();
   return (
     <>
       <Accordion
-        defaultExpanded={!Object.keys(filters)?.length}
+        expanded={showFilters}
+        onChange={() => setShowFilters(!showFilters)}
         sx={{
           'width': '100%',
           'overflow': 'hidden',

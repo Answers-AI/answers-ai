@@ -17,6 +17,7 @@
   "pipeline": {
     "//#dev-docker": { "cache": false },
     "//#dev-inngest": { "cache": false, "persistent": true },
+    "//#dev-langchain": { "cache": false, "persistent": true },
     "//#db:healthcheck": { "cache": false, "persistent": true },
     "build": {
       "outputMode": "new-only",
