@@ -3,12 +3,25 @@ import { getJiraTickets } from '../jira/getJiraTickets';
 import { jiraIssueLoader } from '../jira';
 
 import { chunkArray } from '../utilities/utils';
-import { inngest } from './client';
+
 import { EventVersionHandler } from './EventVersionHandler';
 import { AnswersFilters, AppSettings } from 'types';
 import { jiraAdfToMarkdown } from '../utilities/jiraAdfToMarkdown';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { summarizeChain } from '../llm/chains';
+import OpenAI from '../openai/openai';
+import { openApiClient } from '../openapi';
+import { Configuration, OpenAIApi } from 'openai';
+const initializeOpenAI = () => {
+  const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY
+  });
+  return new OpenAIApi(configuration);
+};
 
-const JIRA_ISSUE_BATCH_SIZE = 1000;
+export const openai = initializeOpenAI();
+
+const JIRA_ISSUE_BATCH_SIZE = 1;
 const JIRA_PROJECT_BATCH_SIZE = 5;
 const PINECONE_VECTORS_BATCH_SIZE = 100;
 
@@ -18,7 +31,7 @@ export const processJiraUpdated: EventVersionHandler<{
 }> = {
   event: 'jira/app.sync',
   v: '1',
-  handler: async ({ event }) => {
+  handler: async ({ event, step }) => {
     const { filters, appSettings } = event.data;
     const { projectName } = filters;
     const projectKeysFilter = appSettings?.jira?.projects
@@ -44,7 +57,7 @@ export const processJiraUpdated: EventVersionHandler<{
             projectKeys: batchProjects?.map((project) => project.key)
           };
 
-          inngest.send({
+          step.sendEvent({
             ts: new Date().valueOf(),
             name: 'jira/project.sync',
             data: eventData,
@@ -59,7 +72,7 @@ export const processJiraUpdated: EventVersionHandler<{
 export const procesProjectUpdated: EventVersionHandler<{ projectKeys: string[]; model: string }> = {
   event: 'jira/project.sync',
   v: '1',
-  handler: async ({ event }) => {
+  handler: async ({ event, step }) => {
     const { projectKeys, model } = event.data;
 
     // Chunk projects into batches of 10
@@ -86,7 +99,7 @@ export const procesProjectUpdated: EventVersionHandler<{ projectKeys: string[]; 
         };
         //TODO: Save to Redis by issue key
         //TODO: In event only send issue keys
-        inngest.send({
+        step.sendEvent({
           v: model,
           ts: new Date().valueOf(),
           name: 'jira/issues.upserted',
@@ -100,105 +113,168 @@ export const procesProjectUpdated: EventVersionHandler<{ projectKeys: string[]; 
 
 export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; key: string }> = {
   event: 'jira/issues.upserted',
-  v: 'jira-text-001',
+  v: '1',
   handler: async ({ event, step }) => {
     try {
       const { issuesKeys } = event.data;
-      await step.run('Fetch comments page', async () => {
-        const issues = (await jiraIssueLoader.loadMany(issuesKeys)) as JiraIssue[];
 
-        // TODO: Create a JiraIssueCommentsLoader
-        // or TODO: Pull issue and comments from Prisma
-        const jiraIssueComments = await Promise.all(
-          issues?.map(async (issue) =>
-            getJiraComments(issue?.id)
-              .then((comments) => ({ ...issue, comments }))
-              .catch((err) => null)
-          )
-        );
+      const issues = (await jiraIssueLoader.loadMany(issuesKeys)) as JiraIssue[];
 
-        // TODO: Fix embeddings getting way too big for Pinecone
-        // Possible solution is to chunk the comments into multiple embeddings
-        const summarize = (issue: any) =>
-          `[ticket] [id][id] ${issue?.key?.toLowerCase()} | ${Object.entries({
-            'project': issue?.fields.project?.key,
-            'account': issue?.fields.customfield_10037?.value,
-            'title': issue?.fields?.summary,
-            'status category': issue?.fields.status?.statusCategory?.name,
-            'status': issue?.fields.status?.name,
-            'assignee': issue?.fields.assignee?.displayName || 'Unassigned',
-            'priority': issue?.fields.priority?.name,
-            'reporter': issue?.fields.reporter?.displayName,
-            'assignee email': issue?.fields.assignee?.email,
-            'parent key': issue?.fields.parent?.key,
-            'link': `https://lastrev.atlassian.net/browse/${issue?.key}`,
-            'description': issue?.fields.description
-              ? jiraAdfToMarkdown(issue?.fields.description)?.replaceAll('\n', ' ')
-              : '',
-            'comments': issue?.comments
-              ?.map(
-                ({ author, body, updated, self }: any) =>
-                  `[${updated}][${author?.displayName}] ${jiraAdfToMarkdown(body)}`
-              )
-              ?.join(' | ')
-          })
-            .filter(([_, value]) => !!value)
-            .map(([key, value]) => `[${key}] ${value?.toLowerCase()?.replaceAll('\n', ' ')}`)
-            ?.join(' | ')}`;
+      // TODO: Create a JiraIssueCommentsLoader
+      // or TODO: Pull issue and comments from Prisma
+      const jiraIssueComments = await Promise.all(
+        issues?.map(async (issue) =>
+          getJiraComments(issue?.id)
+            .then((comments) => ({ ...issue, comments }))
+            .catch((err) => null)
+        )
+      );
 
-        const vectors = jiraIssueComments
+      // TODO: Fix embeddings getting way too big for Pinecone
+      // Possible solution is to chunk the comments into multiple embeddings
+
+      const vectors = await Promise.all(
+        jiraIssueComments
           ?.filter((issue) => !!issue)
-          ?.map((issue) =>
-            !!issue
-              ? {
-                  uid: `JiraIssue_${issue?.key}`,
-                  text: summarize(issue),
-                  metadata: {
-                    'source': 'jira',
-                    'model': event.v,
-                    'key': issue?.key?.toLowerCase(),
-                    'title': issue?.fields?.summary?.toLowerCase(),
-                    'account': issue?.fields.customfield_10037?.value?.toLowerCase(),
-                    'project': issue?.fields.project?.key?.toLowerCase(),
-                    'status_category': issue?.fields.status?.statusCategory?.name?.toLowerCase(),
-                    'assignee_name':
-                      issue?.fields.assignee?.displayName?.toLowerCase() || 'unassigned',
-                    'reporter': issue?.fields.reporter?.displayName?.toLowerCase(),
-                    'assignee_email': issue?.fields.assignee?.email?.toLowerCase(),
-                    'priority': issue?.fields.priority?.name?.toLowerCase(),
-                    'status': issue?.fields.status?.name?.toLowerCase(),
-                    'parent key': issue?.fields.parent?.key?.toLowerCase()
-                    // 'description': issue?.fields.description
-                    //   ? jiraAdfToMarkdown(issue?.fields.description)?.toLowerCase()
-                    //   : ''
-                  }
-                }
-              : ''
-          );
-
-        if (vectors?.length)
-          await Promise.all(
-            chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
-              //TODO: Save to Redis by issue key
-              //TODO: In event only send issue keys
-              inngest.send({
-                v: '1',
-                ts: new Date().valueOf(),
-                name: 'pinecone/vectors.upserted',
-                data: {
-                  _page: i,
-                  _total: vectors.length,
-                  _batchSize: PINECONE_VECTORS_BATCH_SIZE,
-                  vectors: batchVectors
-                },
-                user: event.user
-              });
+          ?.map(async (issue) => {
+            const commentsSummary = await summarizeAI({
+              chunkSize: 4000,
+              input: issue?.comments
+                ?.map(
+                  ({ author, body, updated, self }: any) =>
+                    `${author?.displayName} commented on ${new Date(
+                      updated
+                    ).toDateString()}: ${jiraAdfToMarkdown(body)}`
+                )
+                ?.join('<sep>'),
+              prompt:
+                'Summarize each comment consicesly (always include dates, action items, and open questions, provide each comment as a list item by the most recent).'
+            });
+            const text = `[ticket] [id][id] ${issue?.key?.toLowerCase()} | ${Object.entries({
+              'project': issue?.fields.project?.key,
+              'account': issue?.fields.customfield_10037?.value,
+              'title': issue?.fields?.summary,
+              'status category': issue?.fields.status?.statusCategory?.name,
+              'status': issue?.fields.status?.name,
+              'assignee': issue?.fields.assignee?.displayName || 'Unassigned',
+              'priority': issue?.fields.priority?.name,
+              'reporter': issue?.fields.reporter?.displayName,
+              'assignee email': issue?.fields.assignee?.email,
+              'parent key': issue?.fields.parent?.key,
+              'link': `https://lastrev.atlassian.net/browse/${issue?.key}`,
+              'description': issue?.fields.description
+                ? jiraAdfToMarkdown(issue?.fields.description)?.replaceAll('\n', ' ')
+                : '',
+              'comments_summary': commentsSummary
             })
-          );
-      });
+              .filter(([_, value]) => !!value)
+              .map(([key, value]) => `[${key}] ${value?.toLowerCase()?.replaceAll('\n', ' ')}`)
+              ?.join(' | ')}`;
+
+            return !!issue
+              ? [
+                  {
+                    uid: `JiraIssue_${issue?.key}`,
+                    text,
+                    metadata: {
+                      'source': 'jira',
+                      'model': event.v,
+                      'key': issue?.key?.toLowerCase(),
+                      'title': issue?.fields?.summary?.toLowerCase(),
+                      'account': issue?.fields.customfield_10037?.value?.toLowerCase(),
+                      'project': issue?.fields.project?.key?.toLowerCase(),
+                      'status_category': issue?.fields.status?.statusCategory?.name?.toLowerCase(),
+                      'assignee_name':
+                        issue?.fields.assignee?.displayName?.toLowerCase() || 'unassigned',
+                      'reporter': issue?.fields.reporter?.displayName?.toLowerCase(),
+                      'assignee_email': issue?.fields.assignee?.email?.toLowerCase(),
+                      'priority': issue?.fields.priority?.name?.toLowerCase(),
+                      'status': issue?.fields.status?.name?.toLowerCase(),
+                      'parent key': issue?.fields.parent?.key?.toLowerCase(),
+                      commentsSummary
+                      // 'description': issue?.fields.description
+                      //   ? jiraAdfToMarkdown(issue?.fields.description)?.toLowerCase()
+                      //   : ''
+                    }
+                  }
+                ]
+              : '';
+          })
+      ).then((vectors) => vectors.flat());
+
+      if (vectors?.length && vectors?.every((x) => !!x))
+        await Promise.all(
+          chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
+            //TODO: Save to Redis by issue key
+            //TODO: In event only send issue keys
+            step.sendEvent({
+              v: '1',
+              ts: new Date().valueOf(),
+              name: 'pinecone/vectors.upserted',
+              data: {
+                _page: i,
+                _total: vectors.length,
+                _batchSize: PINECONE_VECTORS_BATCH_SIZE,
+                vectors: batchVectors
+              },
+              user: event.user
+            });
+          })
+        );
     } catch (e) {
       console.log(e);
       throw e;
     }
   }
+};
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const timeout = (ms: number) =>
+  new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms));
+const summarizeAI = async ({
+  input,
+  prompt,
+  chunkSize = 1000
+}: {
+  input: string;
+  prompt?: string;
+  chunkSize?: number;
+}): Promise<string> => {
+  console.log('[summarizeAI]', { prompt, chunkSize });
+  if (!input) return input;
+  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize });
+  const inputDocs = await textSplitter.createDocuments([input]);
+
+  if (inputDocs.length > 1) {
+    const summariesPromises = inputDocs?.map(async (doc, idx) => {
+      let summary = doc.pageContent ?? '';
+      console.log('[summarizeAI] Chunk', { idx });
+      await sleep(100 * idx);
+      const res = await openai.createCompletion({
+        max_tokens: 2000,
+        prompt: `${prompt} <INPUT>${doc.pageContent}<INPUT> Summary:`,
+        temperature: 0.1,
+        model: 'text-davinci-003'
+      });
+      if (!res?.data?.choices?.[0]?.text) {
+        summary = res?.data?.choices?.[0]?.text!;
+      }
+      // return summarizeChain.call({
+      //   input: doc.pageContent,
+      //   prompt: prompt
+      // }).then((s) => s.text);
+      return summary;
+    });
+    const summaries = (await Promise.race([
+      Promise.all(summariesPromises)
+      // timeout(15000)
+    ])) as string[];
+    return summarizeAI({
+      input: summaries?.join('\n'),
+      prompt,
+      chunkSize
+    });
+  }
+  console.log('[summarizeAI] Final');
+  return input;
 };

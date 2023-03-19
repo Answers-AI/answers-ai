@@ -5,7 +5,7 @@ import { Message } from 'types';
 import cors from '@web/cors';
 import { inngest } from '@web/ingestClient';
 import { authOptions } from '@web/authOptions';
-import { createChatChain } from '@web/llm/chains';
+import { createChatChain } from 'utils/dist/llm/chains';
 import { upsertChat } from '@web/chat/upsertChat';
 import { fetchContext } from '@web/fetchContext';
 
@@ -83,6 +83,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       context: summary || context,
       userName: user.name,
       input: prompt,
+      history: messages,
       agent_scratchpad: ''
     });
     const answer = response.text;

@@ -14,62 +14,6 @@ import FilterToolbar from './FilterToolbar';
 import ChatCard from './ChatCard';
 import JourneySection from './JourneySection';
 
-const DEFAULT_PROMPTS = [
-  {
-    title: 'Unassinged tickets',
-    prompt:
-      'What open tickets not unassigned? Provide a overview including at least title, description, priority for each ticket.'
-  },
-  {
-    title: 'Ongoing tickets',
-    prompt:
-      'What tickets have the highest priority and are assigned to Max Techera and status is: scheduled, open, in progress, discovery, new ticket? Provide a overview of the current status for each one. Do not include items that are resolved.'
-  },
-  {
-    title: 'Customer action items',
-    prompt:
-      'What tickets are waiting for customer action? Provide a overview of the current status for each one.'
-  },
-
-  {
-    title: 'Drata tickets',
-    prompt:
-      'What are the Drata tickets? Include ticket number, status, assignee, description and next steps.'
-  },
-  {
-    prompt:
-      'Have there been any roadblocks or issues that are preventing the ticket from being completed?'
-  },
-  {
-    prompt:
-      'Has the ticket been tested and validated, and are there any issues or defects that need to be addressed?'
-  },
-  {
-    prompt:
-      'When answering with code examples wrap it between code tags like <code>{examples}</code> and explain it below.'
-  },
-
-  {
-    title: 'Ticket status',
-    prompt: 'What is the status?'
-  },
-  {
-    title: 'Ticket details',
-    prompt:
-      'What is the details for this ticket? Provide a overview including at least title, description, priority and a summar of the thread comments for each ticket. List all items that have this ticket as parent key.'
-  },
-  { title: 'Ticket comments', prompt: 'What are the comments for DRATA-286? ' },
-  {
-    title: 'Next steps',
-    prompt:
-      'What is the summary of the description? Provide information for each ticket. If the ticket is parent ticket, provide information for each child ticket.'
-  },
-  {
-    title: 'Priority of ticket',
-    prompt: 'What is the priority for each ticket?'
-  }
-];
-
 const DeveloperTools = ({
   appSettings,
   user,
@@ -180,74 +124,78 @@ const DeveloperTools = ({
                 height: '100%',
                 overflow: 'hidden'
               }}>
-              <Box
-                ref={scrollRef}
-                sx={{
-                  overflow: 'hidden',
-                  overflowY: 'auto'
-                }}>
-                {!messages?.length ? (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      width: '100%',
-                      flexDirection: 'column',
-                      gap: 4
-                    }}>
-                    {journey || journeys?.length ? (
-                      <JourneySection journeys={journey ? [journey] : journeys} />
-                    ) : null}
-                    {!journey && chats?.length && !Object.keys(filters)?.length ? (
-                      <Box>
-                        <Typography variant="overline">Chats</Typography>
-                        <Box
-                          sx={{
-                            width: '100%',
-                            display: 'grid',
-                            gap: 2,
-                            gridTemplateColumns: 'repeat(3, minmax(0px, 1fr))'
-                          }}>
-                          {chats?.map((chat) => (
-                            <ChatCard key={chat.id} {...chat} />
-                          ))}
+              {messages?.length || error || isLoading ? (
+                <Box
+                  ref={scrollRef}
+                  sx={{
+                    overflow: 'hidden',
+                    overflowY: 'auto'
+                  }}>
+                  {!messages?.length ? (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        width: '100%',
+                        flexDirection: 'column',
+                        gap: 4
+                      }}>
+                      {journey || journeys?.length ? (
+                        <JourneySection journeys={journey ? [journey] : journeys} />
+                      ) : null}
+                      {!journey && chats?.length && !Object.keys(filters)?.length ? (
+                        <Box>
+                          <Typography variant="overline">Chats</Typography>
+                          <Box
+                            sx={{
+                              width: '100%',
+                              display: 'grid',
+                              gap: 2,
+                              gridTemplateColumns: 'repeat(3, minmax(0px, 1fr))'
+                            }}>
+                            {chats?.map((chat) => (
+                              <ChatCard key={chat.id} {...chat} />
+                            ))}
+                          </Box>
                         </Box>
+                      ) : null}
+                    </Box>
+                  ) : null}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {messages.map((message, index) => (
+                      <MessageCard {...message} key={`message_${index}`} />
+                    ))}
+                    {error ? (
+                      <>
+                        <MessageCard
+                          user={user}
+                          role="assistant"
+                          content={`There was an error completing your request, please try again`}
+                          error={error}
+                        />
+                        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                          <Button
+                            onClick={regenerateAnswer}
+                            variant="contained"
+                            color="primary"
+                            sx={{ margin: 'auto' }}>
+                            Retry
+                          </Button>
+                        </Box>
+                      </>
+                    ) : null}
+                    {isLoading ? (
+                      <MessageCard user={user} role="assistant" content={'...'} />
+                    ) : null}
+                    {messages?.length && !isLoading && !error ? (
+                      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                        <Button onClick={regenerateAnswer} variant="outlined" color="primary">
+                          Regenerate answer
+                        </Button>
                       </Box>
                     ) : null}
                   </Box>
-                ) : null}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {messages.map((message, index) => (
-                    <MessageCard {...message} key={`message_${index}`} />
-                  ))}
-                  {error ? (
-                    <>
-                      <MessageCard
-                        user={user}
-                        role="assistant"
-                        content={`There was an error completing your request, please try again`}
-                        error={error}
-                      />
-                      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                        <Button
-                          onClick={regenerateAnswer}
-                          variant="contained"
-                          color="primary"
-                          sx={{ margin: 'auto' }}>
-                          Retry
-                        </Button>
-                      </Box>
-                    </>
-                  ) : null}
-                  {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
-                  {messages?.length && !isLoading && !error ? (
-                    <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                      <Button onClick={regenerateAnswer} variant="outlined" color="primary">
-                        Regenerate answer
-                      </Button>
-                    </Box>
-                  ) : null}
                 </Box>
-              </Box>
+              ) : null}
               <Box sx={{ overflow: 'hidden', overflowY: 'auto', height: '100%' }}>
                 <FilterToolbar appSettings={appSettings} />
                 <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />

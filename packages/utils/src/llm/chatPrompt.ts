@@ -10,9 +10,8 @@ import {
 //   suffix: `Begin! Remember to speak as a pirate when giving your final answer. Use lots of "Args"`
 // });
 
-export const assistantPrompt = SystemMessagePromptTemplate.fromTemplate(
-  `You are a friendly AI assistant. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know. {context}
-`
+export const assistantPrompt = HumanMessagePromptTemplate.fromTemplate(
+  `You are a friendly AI assistant. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know. CONTEXT: {context}`
 );
 
 export const intentionPrompt = HumanMessagePromptTemplate.fromTemplate('My name is {userName}.');
