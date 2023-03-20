@@ -41,11 +41,11 @@
     },
     "db#build": {
       "cache": false,
-      "dependsOn": ["//#db:healthcheck"],
+      "dependsOn": [],
       "outputs": ["dist/**"]
     },
     "db#dev": {
-      "dependsOn": ["build"],
+      "dependsOn": ["//#db:healthcheck", "build"],
       "cache": false,
       "outputs": ["dist/**"]
     },

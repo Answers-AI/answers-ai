@@ -119,7 +119,7 @@ const DeveloperTools = ({
             <Box
               sx={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 320px',
+                gridTemplateColumns: 'repeat(2, minmax(320px, 1fr))',
                 gap: 4,
                 height: '100%',
                 overflow: 'hidden'
