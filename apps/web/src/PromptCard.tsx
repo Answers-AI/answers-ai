@@ -8,34 +8,31 @@ import {
   CardActions,
   Button,
   CardActionArea,
-  IconButton
+  IconButton,
+  CardHeader
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-
-interface PromptCardProps {
-  title?: string;
-  content: string;
-  actor?: string;
-  likes?: number;
-  dislikes?: number;
-  views?: number;
-  usages?: number;
+import MoreVert from '@mui/icons-material/MoreVert';
+import MenuButton from './MenuButton';
+import { useAnswers } from './AnswersContext';
+import { Delete } from '@mui/icons-material';
+import { Prompt } from 'types';
+interface PromptCardProps extends Prompt {
   onClick: () => void;
 }
 
 const PromptCard: React.FC<PromptCardProps> = ({
+  id,
   title,
-
   content,
-  actor,
   likes,
   dislikes,
-  views,
   usages,
   onClick
 }) => {
+  const { deletePrompt } = useAnswers();
   const handleLike = (evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.stopPropagation();
     evt.preventDefault();
@@ -45,10 +42,23 @@ const PromptCard: React.FC<PromptCardProps> = ({
       sx={{
         display: 'flex',
 
+        position: 'relative',
         alignItems: 'space-between',
         justifyContent: 'space-between',
         flexDirection: 'column'
       }}>
+      <CardHeader
+        sx={{ position: 'absolute', top: 0, right: 0, zIndex: 999999 }}
+        action={
+          <MenuButton
+            aria-label="menu"
+            actions={[{ text: 'Delete', onClick: () => deletePrompt(id), icon: <Delete /> }]}>
+            <IconButton>
+              <MoreVert />
+            </IconButton>
+          </MenuButton>
+        }
+      />
       <Box
         sx={{
           width: '100%',

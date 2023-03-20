@@ -30,12 +30,17 @@ const FilterToolbar = ({
               margin: 0
             },
             '.MuiAccordionSummary-root': {
-              p: 0,
-              minHeight: '0',
-              justifyContent: 'flex-start',
-              gap: 2
+              'px': 0,
+              'minHeight': 0,
+              '&.Mui-expanded': { minHeight: 0 },
+              'justifyContent': 'flex-start',
+              'gap': 2
             },
-            '.MuiAccordionSummary-content': { m: 0, flex: 0 },
+            '.MuiAccordionSummary-content': {
+              'm': 0,
+              'flexGrow': 'initial',
+              '&.Mui-expanded': { m: 0 }
+            },
             '.MuiAccordionDetails-root': { p: 0 }
           }
         }}>

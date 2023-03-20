@@ -82,6 +82,7 @@ model Chat {
   
   filters Json
 
+  deleted Boolean @default(false)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt @default(now())
 }
@@ -96,7 +97,7 @@ model Journey {
   chats Chat[]
 
   users User[] 
-
+  deleted Boolean @default(false)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt @default(now())
 }
@@ -114,6 +115,7 @@ model Prompt {
   likes Int @default(0)
   dislikes Int @default(0)
 
+  deleted Boolean @default(false)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt @default(now())
 
@@ -140,6 +142,7 @@ model Message {
   likes Int @default(0)
   dislikes Int @default(0)
 
+  deleted Boolean @default(false)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt @default(now())
 }
