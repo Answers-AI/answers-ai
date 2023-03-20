@@ -96,7 +96,7 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
         text: summarize({ ...page, content: heading }),
         metadata: {
           source: 'web',
-          url: page?.url,
+          url: page?.url?.toLowerCase(),
           cleanedUrl: getCleanedUrl(page?.url)
         }
       }));
@@ -146,7 +146,8 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
         uid: `WebPage_${page.url}_${i}`,
         text: summarize({ ...page, content: heading }),
         metadata: {
-          url: page?.url,
+          source: 'web',
+          url: page?.url?.toLowerCase(),
           cleanedUrl: getCleanedUrl(page?.url)
         }
       }));

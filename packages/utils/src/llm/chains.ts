@@ -77,7 +77,6 @@ export const createChatChain = ({ messages }: { messages: Message[] }) => {
         temperature: 0.1,
         model: 'gpt-3.5-turbo'
       });
-      console.log('============================================response', response);
       const text = response.data.choices[0].message?.content;
       return { text };
     }
