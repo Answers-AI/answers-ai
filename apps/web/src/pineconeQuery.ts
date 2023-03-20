@@ -33,16 +33,21 @@ export const pineconeQuery = async (
         .flat()
     };
   }
+  // TODO - Multiple queries per data source
+  if (filters?.projectName?.length)
+    filter.project = { $in: filters?.projectName?.map((name) => name.toLowerCase()) };
+  if (filters?.status_category?.length)
+    filter.status_category = { $in: filters?.status_category?.map((name) => name.toLowerCase()) };
 
-  filter.project = { $in: filters?.projectName?.map((name) => name.toLowerCase()) };
+  if (filters?.assignee_name?.length)
+    filter.assignee_name = { $in: filters?.assignee_name?.map((name) => name.toLowerCase()) };
 
-  filter.status_category = { $in: filters?.status_category?.map((name) => name.toLowerCase()) };
-
-  filter.assignee_name = { $in: filters?.assignee_name?.map((name) => name.toLowerCase()) };
-
-  filter.cleanedUrl = { $in: [filters?.cleanedUrl] };
-
-  filter.url = { $in: filters?.url?.map((url) => url.toLowerCase()) ?? [] };
+  if (filters?.cleanedUrl?.length) filter.cleanedUrl = { $in: filters?.cleanedUrl };
+  if (filters?.url) {
+    filter.url = { $in: filters?.url?.map((url) => url.toLowerCase()) ?? [] };
+  } else {
+    filter.source = { source: { $ne: 'web' } };
+  }
 
   try {
     console.time('PineconeQuery:' + JSON.stringify({ filter, topK, namespace }));

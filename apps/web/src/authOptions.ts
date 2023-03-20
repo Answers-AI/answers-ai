@@ -14,7 +14,11 @@ declare module 'next-auth' {
     user?: AnswersUser;
   }
 }
-
+declare module 'next-auth/jwt' {
+  interface JWT {
+    id: string;
+  }
+}
 export const authOptions: AuthOptions = {
   session: {
     strategy: 'jwt'
@@ -33,12 +37,18 @@ export const authOptions: AuthOptions = {
     //   async redirect({ url, baseUrl }) {
     //     return baseUrl
     //   },
-    async session({ session, user, token }) {
+    async jwt({ token, user, account, profile, isNewUser }) {
+      if (user) {
+        token.id = user?.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id!;
+      }
       return session;
     }
-    // async jwt({ token, user, account, profile, isNewUser }) {
-    //   return token
-    // }
   },
   events: USER_EVENTS.reduce(
     (acc, event) => ({

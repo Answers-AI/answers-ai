@@ -24,6 +24,7 @@ import { useAnswers } from './AnswersContext';
 import FilterToolbar from './FilterToolbar';
 import ChatCard from './ChatCard';
 import JourneySection from './JourneySection';
+import { useFlags } from 'flagsmith/react';
 
 const DeveloperTools = ({
   appSettings,
@@ -38,6 +39,8 @@ const DeveloperTools = ({
   user: User;
   prompts?: any;
 }) => {
+  const flags = useFlags(['recommended_prompts', 'recommended_prompts_chat', 'filters_dashboard']); // only causes re-render value==='messages' specified flag values / traits change
+
   const [inputValue, setInputValue] = useState('');
   const [showPrompts, setShowPrompts] = useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -112,10 +115,10 @@ const DeveloperTools = ({
                 background: 'transparent'
               },
               '::-webkit-scrollbar-thumb ': {
-                'width': '1px',
-                'background-color': 'rgba(155, 155, 155, 0.5)',
-                'border-radius': '20px,',
-                'border': 'transparent'
+                width: '1px',
+                backgroundColor: 'rgba(155, 155, 155, 0.5)',
+                borderRadius: '20px,',
+                border: 'transparent'
               }
             }
           }}>
@@ -155,7 +158,8 @@ const DeveloperTools = ({
                         flexDirection: 'column',
                         gap: 4
                       }}>
-                      {journey || journeys?.length ? (
+                      {/* TODO: Filter journeys by selected filter */}
+                      {journey || (journeys?.length && !Object.keys(filters)?.length) ? (
                         <JourneySection journeys={journey ? [journey] : journeys} />
                       ) : null}
                       {!journey && chats?.length && !Object.keys(filters)?.length ? (
@@ -176,41 +180,45 @@ const DeveloperTools = ({
                       ) : null}
                     </Box>
                   ) : null}
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {messages.map((message, index) => (
-                      <MessageCard {...message} key={`message_${index}`} />
-                    ))}
-                    {error ? (
-                      <>
-                        <MessageCard
-                          user={user}
-                          role="assistant"
-                          content={`There was an error completing your request, please try again`}
-                          error={error}
-                        />
-                        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                          <Button
-                            onClick={regenerateAnswer}
-                            variant="contained"
-                            color="primary"
-                            sx={{ margin: 'auto' }}>
-                            Retry
-                          </Button>
-                        </Box>
-                      </>
-                    ) : null}
-                    {isLoading ? (
-                      <MessageCard user={user} role="assistant" content={'...'} />
-                    ) : null}
-                    {messages?.length && !isLoading && !error ? (
+
+                  {messages.map((message, index) => (
+                    <MessageCard {...message} key={`message_${index}`} />
+                  ))}
+                  {error ? (
+                    <>
+                      <MessageCard
+                        user={user}
+                        role="assistant"
+                        content={`There was an error completing your request, please try again`}
+                        error={error}
+                      />
                       <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                        <Button onClick={regenerateAnswer} variant="outlined" color="primary">
-                          Regenerate answer
+                        <Button
+                          onClick={regenerateAnswer}
+                          variant="contained"
+                          color="primary"
+                          sx={{ margin: 'auto' }}>
+                          Retry
                         </Button>
                       </Box>
-                    ) : null}
-                  </Box>
-                  {!messages?.length ? (
+                    </>
+                  ) : null}
+                  {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
+                  {messages?.length && !isLoading && !error ? (
+                    <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                      <Button onClick={regenerateAnswer} variant="outlined" color="primary">
+                        Regenerate answer
+                      </Button>
+                    </Box>
+                  ) : null}
+
+                  {flags.recommended_prompts.enabled && !messages?.length ? (
+                    <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
+                  ) : null}
+
+                  {flags.recommended_prompts_chat.value === 'messages' &&
+                  messages?.length &&
+                  !isLoading ? (
                     <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
                   ) : null}
                 </Box>
@@ -220,7 +228,7 @@ const DeveloperTools = ({
                   overflow: 'auto'
                 }}>
                 <FilterToolbar appSettings={appSettings} />
-                {messages?.length ? (
+                {flags.recommended_prompts_chat.value === 'sidebar' && messages?.length ? (
                   <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
                 ) : null}
               </Box>

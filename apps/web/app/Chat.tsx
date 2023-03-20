@@ -66,12 +66,15 @@ const Chat = async ({ chatId, journeyId }: Params) => {
           users: {
             some: { email: session.user.email }
           },
-          journeyId: journeyId
+          journeyId: journeyId ?? null
         },
         orderBy: {
           createdAt: 'desc'
         },
-        include: { prompt: true, messages: { include: { user: true } } }
+        include: {
+          prompt: true,
+          messages: { orderBy: { createdAt: 'asc' }, include: { user: true } }
+        }
       })
     )
   );
