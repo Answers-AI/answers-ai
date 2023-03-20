@@ -10,7 +10,7 @@ import { authOptions } from '@web/authOptions';
 
 export async function GET(req: Request, res: Response) {
   const user = await getServerSession(authOptions);
-  const records = await prisma.journey.findMany({
+  const records = await prisma.chat.findMany({
     where: {
       users: {
         some: {
@@ -29,7 +29,7 @@ export async function DELETE(req: Request, res: Response) {
   const user = await getServerSession(authOptions);
   if (!user?.user?.email) return NextResponse.redirect('/auth');
   if (id) {
-    const userRecord = await prisma.journey.findFirst({
+    const userRecord = await prisma.chat.findFirst({
       where: {
         id,
         users: { some: { email: user?.user?.email } }
@@ -37,7 +37,7 @@ export async function DELETE(req: Request, res: Response) {
     });
 
     if (!userRecord) return NextResponse.redirect('/auth');
-    await prisma.journey.delete({
+    await prisma.chat.delete({
       where: {
         id
       }

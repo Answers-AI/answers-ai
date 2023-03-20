@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
-import { AnswersFilters, Chat, Journey, Message } from 'types';
+import { AnswersFilters, Chat, Journey, Message, Prompt } from 'types';
 import { deepmerge } from 'utils/dist/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
 
@@ -22,6 +22,12 @@ interface AnswersContextType {
   setUseStreaming: (useStreaming: boolean) => void;
   showFilters?: boolean;
   setShowFilters: (showFilters: boolean) => void;
+  deleteChat: (id: string) => Promise<void>;
+  deletePrompt: (id: string) => Promise<void>;
+  deleteJourney: (id: string) => Promise<void>;
+  updateChat: (chat: Chat) => Promise<void>;
+  updatePrompt: (prompt: Prompt) => Promise<void>;
+  updateJourney: (journey: Journey) => Promise<void>;
 }
 
 const AnswersContext = createContext<AnswersContextType>({
@@ -36,7 +42,13 @@ const AnswersContext = createContext<AnswersContextType>({
   useStreaming: true,
   setUseStreaming: () => {},
   showFilters: false,
-  setShowFilters: () => {}
+  setShowFilters: () => {},
+  deleteChat: async () => {},
+  deletePrompt: async () => {},
+  deleteJourney: async () => {},
+  updateChat: async () => {},
+  updatePrompt: async () => {},
+  updateJourney: async () => {}
 });
 
 export function useAnswers() {
@@ -148,6 +160,19 @@ export function AnswersProvider({
     setError(null);
     router.push('/');
   };
+  const refresh = () => router.refresh();
+  const deleteChat = async (id: string) =>
+    axios.delete(`${apiUrl}/chats?id=${id}`).then(() => refresh());
+  const deletePrompt = async (id: string) =>
+    axios.delete(`${apiUrl}/prompts?id=${id}`).then(() => refresh());
+  const deleteJourney = async (id: string) =>
+    axios.delete(`${apiUrl}/journeys?id=${id}`).then(() => refresh());
+  const updateChat = async (chat: Chat) =>
+    axios.patch(`${apiUrl}/journeys`, chat).then(() => refresh());
+  const updatePrompt = async (prompt: Prompt) =>
+    axios.patch(`${apiUrl}/journeys`, prompt).then(() => refresh());
+  const updateJourney = async (journey: Journey) =>
+    axios.patch(`${apiUrl}/journeys`, journey).then(() => refresh());
 
   const contextValue = {
     chat,
@@ -164,7 +189,13 @@ export function AnswersProvider({
     setUseStreaming,
     error,
     showFilters,
-    setShowFilters
+    setShowFilters,
+    deleteChat,
+    deletePrompt,
+    deleteJourney,
+    updateChat,
+    updatePrompt,
+    updateJourney
   };
   return <AnswersContext.Provider value={contextValue}>{children}</AnswersContext.Provider>;
 }

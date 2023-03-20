@@ -1,8 +1,19 @@
 'use client';
 import React, { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
-import { Box, Container, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
-import { AppSettings, RecommendedPrompt, Chat, Journey, User } from 'types';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Container,
+  FormControlLabel,
+  Switch,
+  TextField,
+  Typography
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { AppSettings, RecommendedPrompt, Chat, Journey, User, Message } from 'types';
 import PromptCard from './PromptCard';
 
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -119,17 +130,22 @@ const DeveloperTools = ({
             <Box
               sx={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(2, minmax(320px, 1fr))',
+                gridTemplateColumns: { md: '1fr 320px', sm: '1fr' },
                 gap: 4,
                 height: '100%',
                 overflow: 'hidden'
               }}>
-              {messages?.length || error || isLoading ? (
+              <Box
+                ref={scrollRef}
+                sx={{
+                  overflow: 'hidden',
+                  overflowY: 'auto'
+                }}>
                 <Box
-                  ref={scrollRef}
                   sx={{
-                    overflow: 'hidden',
-                    overflowY: 'auto'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2
                   }}>
                   {!messages?.length ? (
                     <Box
@@ -194,11 +210,19 @@ const DeveloperTools = ({
                       </Box>
                     ) : null}
                   </Box>
+                  {!messages?.length ? (
+                    <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
+                  ) : null}
                 </Box>
-              ) : null}
-              <Box sx={{ overflow: 'hidden', overflowY: 'auto', height: '100%' }}>
+              </Box>
+              <Box
+                sx={{
+                  overflow: 'auto'
+                }}>
                 <FilterToolbar appSettings={appSettings} />
-                <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
+                {messages?.length ? (
+                  <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
+                ) : null}
               </Box>
             </Box>
           </Box>
@@ -280,24 +304,59 @@ interface DefaultPromptsProps {
 
 const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) =>
   prompts?.length ? (
-    <Box sx={{}}>
-      <Typography variant="overline">Recommended prompts</Typography>
-      <Box
-        sx={{
-          width: '100%',
-          display: 'grid',
-          gap: 2,
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))'
-        }}>
-        {prompts?.map((prompt) => (
-          <PromptCard
-            key={prompt.id}
-            {...prompt}
-            onClick={() => handlePromptClick(prompt?.content)}
-          />
-        ))}
-      </Box>
-    </Box>
+    <Accordion
+      defaultExpanded
+      sx={{
+        '&, .MuiAccordion-root ': {
+          'width': '100%',
+          'overflow': 'hidden',
+          'm': 0,
+          'background': 'none',
+          'boxShadow': 'none',
+          '&.Mui-expanded': {
+            margin: 0
+          },
+          '.MuiAccordionSummary-root': {
+            'px': 0,
+            'minHeight': 0,
+            '&.Mui-expanded': { minHeight: 0 },
+            'justifyContent': 'flex-start',
+            'gap': 2
+          },
+          '.MuiAccordionSummary-content': {
+            'm': 0,
+            'flexGrow': 'initial',
+            '&.Mui-expanded': { m: 0 }
+          },
+          '.MuiAccordionDetails-root': { p: 0 }
+        }
+      }}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="filters-content"
+        id="filters-header">
+        <Typography variant="overline">Recommended prompts</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Box sx={{}}>
+          <Box
+            sx={{
+              width: '100%',
+              display: 'grid',
+              gap: 2,
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))'
+            }}>
+            {prompts?.map((prompt) => (
+              <PromptCard
+                key={prompt.id}
+                {...prompt}
+                onClick={() => handlePromptClick(prompt?.content)}
+              />
+            ))}
+          </Box>
+        </Box>
+      </AccordionDetails>
+    </Accordion>
   ) : null;
 
 export default DeveloperTools;
