@@ -10,6 +10,7 @@ import { authOptions } from '@web/authOptions';
 
 export async function GET(req: Request, res: Response) {
   const user = await getServerSession(authOptions);
+  if (!user?.user?.email) return NextResponse.redirect('/auth');
   const records = await prisma.journey.findMany({
     where: {
       users: {

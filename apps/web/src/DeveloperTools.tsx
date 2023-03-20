@@ -13,7 +13,7 @@ import {
   Typography
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { AppSettings, RecommendedPrompt, Chat, Journey, User, Message } from 'types';
+import { AppSettings, Chat, Journey, User, Message, Prompt } from 'types';
 import PromptCard from './PromptCard';
 
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -298,7 +298,7 @@ const DeveloperTools = ({
   );
 };
 interface DefaultPromptsProps {
-  prompts: RecommendedPrompt[];
+  prompts: Prompt[];
   handlePromptClick: (prompt: string) => void;
 }
 
