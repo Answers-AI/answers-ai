@@ -35,14 +35,14 @@ export const processJiraUpdated: EventVersionHandler<{
   v: '1',
   handler: async ({ event, step }) => {
     const { filters, appSettings } = event.data;
-    const { projectName } = filters;
+    const { datasources: { jira: { project } = { project: [] } } = {} } = filters;
     const projectKeysFilter = appSettings?.jira?.projects
-      ?.filter((p) => (projectName?.length ? projectName?.includes(p.key) : p.enabled))
+      ?.filter((p) => (project?.length ? project?.includes(p.key) : p.enabled))
       ?.map((p) => p.key);
     const projects = await getJiraProjects();
 
     // Fetch all Jira issues in the configured projects
-    console.log({ projectName, projectKeysFilter });
+    console.log({ project, projectKeysFilter });
     await Promise.all(
       chunkArray(
         projects?.filter((project) => projectKeysFilter?.includes(project.key)),
@@ -153,27 +153,28 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
             });
             const ticketFields = {
               source: 'jira',
-              project: issue?.fields.project?.key,
-              account: issue?.fields.customfield_10037?.value,
-              title: issue?.fields?.summary,
-              status_category: issue?.fields.status?.statusCategory?.name,
-              status: issue?.fields.status?.name,
-              assignee: issue?.fields.assignee?.displayName || 'Unassigned',
-              priority: issue?.fields.priority?.name,
-              reporter: issue?.fields.reporter?.displayName,
-              assignee_email: issue?.fields.assignee?.email,
-              parent_key: issue?.fields.parent?.key,
-              link: `https://lastrev.atlassian.net/browse/${issue?.key}`,
-              description: issue?.fields.description
+              project: issue?.fields.project?.key?.toLowerCase(),
+              account: issue?.fields.customfield_10037?.value?.toLowerCase(),
+              title: issue?.fields?.summary?.toLowerCase(),
+              status_category: issue?.fields.status?.statusCategory?.name?.toLowerCase(),
+              status: issue?.fields.status?.name?.toLowerCase(),
+              assignee: issue?.fields.assignee?.displayName || 'Unassigned'?.toLowerCase(),
+              priority: issue?.fields.priority?.name?.toLowerCase(),
+              reporter: issue?.fields.reporter?.displayName?.toLowerCase(),
+              assignee_email: issue?.fields.assignee?.email?.toLowerCase(),
+              parent_key: issue?.fields.parent?.key?.toLowerCase(),
+              link: `https://lastrev.atlassian.net/browse/${issue?.key}`?.toLowerCase(),
+              description: (issue?.fields.description
                 ? jiraAdfToMarkdown(issue?.fields.description)?.replaceAll('\n', ' ')
-                : '',
-              comments_summary: commentsSummary
+                : ''
+              )?.toLowerCase(),
+              comments_summary: commentsSummary?.toLowerCase()
             };
             const text = `[ticket] [id][id] ${issue?.key?.toLowerCase()} | ${Object.entries(
               ticketFields
             )
               .filter(([_, value]) => !!value)
-              .map(([key, value]) => `[${key}] ${value?.toLowerCase()?.replaceAll('\n', ' ')}`)
+              .map(([key, value]) => `[${key}] ${value?.replaceAll('\n', ' ')}`)
               ?.join(' | ')}`;
 
             return !!issue

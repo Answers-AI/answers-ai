@@ -1,6 +1,6 @@
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { randomUUID } from 'crypto';
-import { openai } from './jira';
+import { openai } from '../openai/client';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const timeout = (ms: number) =>
