@@ -34,7 +34,7 @@ function JourneySection({ journeys }: Props) {
                 width: '100%',
                 display: 'grid',
                 gap: 2,
-                gridTemplateColumns: 'repeat(3,  1fr)'
+                gridTemplateColumns: { md: 'repeat(3, minmax(0px, 1fr))', sm: '1fr' }
               }}>
               {chats?.map((chat) => (
                 <ChatCard {...chat} />

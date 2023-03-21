@@ -41,6 +41,11 @@ const getDesignTokens = (mode: PaletteMode) => ({
     }
   }
 });
+declare module '@mui/material/styles' {
+  interface BreakpointOverrides {
+    xxl: true;
+  }
+}
 export const darkModeTheme = createTheme({
   ...getDesignTokens('dark'),
   components: {
