@@ -26,25 +26,20 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('handleResponse', response);
   };
   try {
-    // const { pineconeData, context } = await fetch(
-    //   `${
-    //     process.env.VERCEL_URL?.includes('localhost')
-    //       ? `http://${process.env.VERCEL_URL}`
-    //       : `https://${process.env.VERCEL_URL}`
-    //   }/api/ai/prompt`,
-    //   {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify(args)
-    //   }
-    // ).then((res) => res.json());
-    const { pineconeData, context } = await fetchContext({
-      filters,
-      messages,
-      prompt
-    });
+    const { pineconeData, context } = await fetch(
+      `${
+        process.env.VERCEL_URL?.includes('localhost')
+          ? `http://${process.env.VERCEL_URL}`
+          : `https://${process.env.VERCEL_URL}`
+      }/api/ai/prompt`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filters, messages, prompt })
+      }
+    ).then((res) => res.json());
 
     const payload = {
       model: 'gpt-3.5-turbo',
