@@ -257,8 +257,8 @@ const DeveloperTools = ({
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
-            px: 2,
-            gap: 2,
+            px: [2, 3],
+            gap: 0,
             width: '100%'
           }}>
           <AppSyncToolbar appSettings={appSettings} />
