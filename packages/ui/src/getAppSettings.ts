@@ -1,9 +1,9 @@
 import { getServerSession } from 'next-auth';
-import { deepmerge } from 'utils/dist/deepmerge';
-import { authOptions } from '@web/authOptions';
+import { deepmerge } from '@utils/deepmerge';
+import { authOptions } from './authOptions';
 
 import { prisma } from 'db/dist';
-import { MODELS } from 'utils/dist/MODELS';
+import { MODELS } from '@utils/MODELS';
 
 const DEFAULT_SETTINGS = {
   services: [

@@ -1,6 +1,6 @@
 import { getServerSession, Session } from 'next-auth';
-import { authOptions } from '@web/authOptions';
-import AppLayout from '@web/AppLayout';
+import { authOptions } from '@ui/authOptions';
+import AppLayout from '@ui/AppLayout';
 import React from 'react';
 import flagsmith from 'flagsmith/isomorphic';
 

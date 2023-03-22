@@ -1,10 +1,10 @@
 'use client';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { ChatCompletionRequestMessageRoleEnum } from 'openai';
+
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
 import { AnswersFilters, Chat, Journey, Message, Prompt } from 'types';
-import { deepmerge } from 'utils/dist/deepmerge';
+import { deepmerge } from '@utils/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
 
 interface AnswersContextType {
@@ -143,9 +143,7 @@ export function AnswersProvider({
   };
 
   const regenerateAnswer = () => {
-    const [message] = messages
-      .filter((m) => m.role === ChatCompletionRequestMessageRoleEnum.User)
-      .slice(-1);
+    const [message] = messages.filter((m) => m.role === 'user').slice(-1);
     // if (messages[messages.length - 1].role === ChatCompletionRequestMessageRoleEnum.Assistant) {
     //   setMessages(messages.slice(0, -1));
     // }

@@ -2,12 +2,12 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth';
 
 import { Message } from 'types';
-import cors from '@web/cors';
-import { inngest } from '@web/ingestClient';
-import { authOptions } from '@web/authOptions';
-import { createChatChain } from 'utils/dist/llm/chains';
-import { upsertChat } from '@web/chat/upsertChat';
-import { fetchContext } from '@web/fetchContext';
+import cors from '@ui/cors';
+import { inngest } from '@utils/ingest/client';
+import { authOptions } from '@ui/authOptions';
+import { createChatChain } from '@utils/llm/chains';
+import { upsertChat } from '@ui/chat/upsertChat';
+import { fetchContext } from '@utils/pinecone/fetchContext';
 
 type Data = {
   prompt: string;

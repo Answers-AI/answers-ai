@@ -60,7 +60,7 @@ const AppSyncToolbar = ({
             'flexGrow': 'initial',
             '&.Mui-expanded': { m: 0 }
           },
-          '.MuiAccordionDetails-root': { p: 0 }
+          '.MuiAccordionDetails-root': { p: 0, pb: 1 }
         }
       }}>
       <AccordionSummary

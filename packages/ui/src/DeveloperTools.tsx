@@ -39,7 +39,12 @@ const DeveloperTools = ({
   user: User;
   prompts?: any;
 }) => {
-  const flags = useFlags(['recommended_prompts', 'recommended_prompts_chat', 'filters_dashboard']); // only causes re-render value==='messages' specified flag values / traits change
+  const flags = useFlags([
+    'recommended_prompts',
+    'recommended_prompts_expanded',
+    'recommended_prompts_chat',
+    'filters_dashboard'
+  ]); // only causes re-render value==='messages' specified flag values / traits change
 
   const [inputValue, setInputValue] = useState('');
   const [showPrompts, setShowPrompts] = useState(false);
@@ -134,7 +139,7 @@ const DeveloperTools = ({
               sx={{
                 display: 'grid',
                 gridTemplateColumns: { md: '1fr 320px', sm: '1fr' },
-                gap: 4,
+                gap: { md: 4, sm: 1 },
                 height: '100%',
                 overflow: 'hidden'
               }}>
@@ -213,13 +218,21 @@ const DeveloperTools = ({
                   ) : null}
 
                   {flags.recommended_prompts.enabled && !messages?.length ? (
-                    <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
+                    <DefaultPrompts
+                      prompts={prompts}
+                      handlePromptClick={handlePromptClick}
+                      expanded={flags.recommended_prompts?.value === 'expanded'}
+                    />
                   ) : null}
 
                   {flags.recommended_prompts_chat.value === 'messages' &&
                   messages?.length &&
                   !isLoading ? (
-                    <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
+                    <DefaultPrompts
+                      expanded={flags.recommended_prompts?.value === 'expanded'}
+                      prompts={prompts}
+                      handlePromptClick={handlePromptClick}
+                    />
                   ) : null}
                 </Box>
               </Box>
@@ -229,7 +242,11 @@ const DeveloperTools = ({
                 }}>
                 <FilterToolbar appSettings={appSettings} />
                 {flags.recommended_prompts_chat.value === 'sidebar' && messages?.length ? (
-                  <DefaultPrompts prompts={prompts} handlePromptClick={handlePromptClick} />
+                  <DefaultPrompts
+                    expanded={flags.recommended_prompts?.value === 'expanded'}
+                    prompts={prompts}
+                    handlePromptClick={handlePromptClick}
+                  />
                 ) : null}
               </Box>
             </Box>
@@ -240,15 +257,15 @@ const DeveloperTools = ({
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
-            p: 2,
-            gap: 2,
+            px: [2, 3],
+            gap: 0,
             width: '100%'
           }}>
           <AppSyncToolbar appSettings={appSettings} />
 
           <Box display="flex" position="relative">
             <TextField
-              sx={{ textarea: { paddingRight: 4 } }}
+              sx={{ textarea: { paddingRight: 4, paddingBottom: 5 } }}
               inputRef={inputRef}
               variant="filled"
               fullWidth
@@ -267,8 +284,8 @@ const DeveloperTools = ({
                 justifyContent: 'flex-end',
                 position: 'absolute',
                 gap: 1,
-                right: 8,
-                bottom: 10
+                right: 16,
+                bottom: 16
               }}>
               {/* Toggle component that updates when using query or streaming */}
 
@@ -309,12 +326,13 @@ const DeveloperTools = ({
 interface DefaultPromptsProps {
   prompts: Prompt[];
   handlePromptClick: (prompt: string) => void;
+  expanded: boolean;
 }
 
-const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) =>
+const DefaultPrompts = ({ prompts, handlePromptClick, expanded }: DefaultPromptsProps) =>
   prompts?.length ? (
     <Accordion
-      defaultExpanded
+      defaultExpanded={expanded}
       sx={{
         '&, .MuiAccordion-root ': {
           'width': '100%',
