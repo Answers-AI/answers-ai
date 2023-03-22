@@ -1,16 +1,13 @@
-import { generatePrompt } from '@web/generatePrompt';
 import type { NextApiRequest, NextApiResponse } from 'next';
-
+import { Configuration, OpenAIApi } from 'openai';
 import cors from '@web/cors';
+import { fetchContext } from '@web/fetchContext';
 
 type Data = {
-  prompt: string;
   pineconeData?: any;
   context?: any;
   error?: any;
 };
-
-import { Configuration, OpenAIApi } from 'openai';
 
 const initializeOpenAI = () => {
   const configuration = new Configuration({
@@ -24,8 +21,8 @@ export const openai = initializeOpenAI();
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await cors(req, res);
 
-  const { prompt, pineconeData, context } = await generatePrompt(req.body);
-  res.status(200).json({ prompt, pineconeData, context });
+  const { pineconeData, context } = await fetchContext(req.body);
+  res.status(200).json({ pineconeData, context });
 };
 
 export default handler;

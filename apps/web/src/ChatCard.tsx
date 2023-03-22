@@ -36,15 +36,8 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
   return (
     <Card
       sx={{
-        'display': 'flex',
-        'position': 'relative',
-        // 'padding': 2,
-        // 'height': '100%',
-        'cursor': 'pointer',
-        'transition': 'all 0.2s ease-in-out',
-        '&:hover': {
-          // backgroundColor: '#000000'
-        }
+        display: 'flex',
+        position: 'relative'
       }}>
       <CardHeader
         sx={{ position: 'absolute', top: 0, right: 0, zIndex: 999999 }}
@@ -59,7 +52,10 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
         }
       />
 
-      <CardActionArea component={NextLink} sx={{ minHeight: '100%' }} href={`/chat/${id}`}>
+      <CardActionArea
+        component={NextLink}
+        sx={{ minHeight: '100%', paddingRight: 4, paddingBottom: 4 }}
+        href={`/chat/${id}`}>
         <Box
           sx={{
             width: '100%',
@@ -76,19 +72,20 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
+
               gap: 1
             }}>
             {title ? (
               <Typography
-                variant="subtitle1"
+                variant="body2"
                 color="text.secondary"
                 component="div"
                 sx={{
-                  'overflow': 'hidden',
-                  'text-overflow': 'elipsis',
-                  'display': '-webkit-box',
-                  '-webkit-line-clamp': '3',
-                  '-webkit-box-orient': 'vertical'
+                  overflow: 'hidden',
+                  textOverflow: 'elipsis',
+                  display: '-webkit-box',
+                  WebkitLineClamp: '3',
+                  WebkitBoxOrient: 'vertical'
                 }}>
                 {title}
               </Typography>
@@ -102,7 +99,14 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
             </Box>
           </CardContent>
           {filters ? (
-            <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <CardActions
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                position: 'absolute',
+                left: 0,
+                bottom: 0
+              }}>
               {messages ? (
                 <Button size="small" disabled startIcon={<MessageIcon sx={{ fontSize: 16 }} />}>
                   {messages?.length}

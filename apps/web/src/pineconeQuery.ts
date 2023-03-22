@@ -14,41 +14,12 @@ export const openai = initializeOpenAI();
 export const pineconeQuery = async (
   embeddings: number[],
   {
-    filters,
+    filter,
     topK = 20,
     namespace = process.env.PINECONE_INDEX_NAMESPACE
-  }: { filters?: AnswersFilters; topK?: number; namespace?: string }
+  }: { filter: any; topK?: number; namespace?: string }
 ) => {
   // TODO: Use metadata inferred from the question
-  // TODO: Use topK
-  // TODO: Parse filters into pinecone filter
-  // TODO: Generate the model filters by combining all inputs
-  const filter: any = {};
-  if (filters?.models) {
-    filter.model = {
-      $in: Object.keys(filters?.models)
-        ?.map((model) => {
-          return filters?.models?.[model];
-        })
-        .flat()
-    };
-  }
-  // TODO - Multiple queries per data source
-  if (filters?.projectName?.length)
-    filter.project = { $in: filters?.projectName?.map((name) => name.toLowerCase()) };
-  if (filters?.status_category?.length)
-    filter.status_category = { $in: filters?.status_category?.map((name) => name.toLowerCase()) };
-
-  if (filters?.assignee_name?.length)
-    filter.assignee_name = { $in: filters?.assignee_name?.map((name) => name.toLowerCase()) };
-
-  if (filters?.cleanedUrl?.length) filter.cleanedUrl = { $in: filters?.cleanedUrl };
-  if (filters?.url) {
-    filter.url = { $in: filters?.url?.map((url) => url.toLowerCase()) ?? [] };
-  } else {
-    filter.source = { source: { $ne: 'web' } };
-  }
-
   try {
     console.time('PineconeQuery:' + JSON.stringify({ filter, topK, namespace }));
     await pinecone.init({
