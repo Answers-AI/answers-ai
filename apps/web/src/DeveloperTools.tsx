@@ -170,7 +170,7 @@ const DeveloperTools = ({
                               width: '100%',
                               display: 'grid',
                               gap: 2,
-                              gridTemplateColumns: 'repeat(3, minmax(0px, 1fr))'
+                              gridTemplateColumns: { md: 'repeat(3, minmax(0px, 1fr))', sm: '1fr' }
                             }}>
                             {chats?.map((chat) => (
                               <ChatCard key={chat.id} {...chat} />
@@ -248,6 +248,7 @@ const DeveloperTools = ({
 
           <Box display="flex" position="relative">
             <TextField
+              sx={{ textarea: { paddingRight: 4 } }}
               inputRef={inputRef}
               variant="filled"
               fullWidth
@@ -352,7 +353,7 @@ const DefaultPrompts = ({ prompts, handlePromptClick }: DefaultPromptsProps) =>
               width: '100%',
               display: 'grid',
               gap: 2,
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))'
+              gridTemplateColumns: { md: 'repeat(3, minmax(0px, 1fr))', sm: '1fr' }
             }}>
             {prompts?.map((prompt) => (
               <PromptCard

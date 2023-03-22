@@ -163,23 +163,6 @@ export const MessageCard = ({
       </Box>
       {developer_mode?.enabled ? (
         <Box>
-          {prompt ? (
-            <Accordion TransitionProps={{ unmountOnExit: true }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header">
-                <Typography variant="overline">Prompt</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                {prompt && !error ? (
-                  <Typography variant="subtitle1" color="text.secondary" component="div">
-                    {prompt}
-                  </Typography>
-                ) : null}
-              </AccordionDetails>
-            </Accordion>
-          ) : null}
           {context ? (
             // Use the @mui accordion component to wrap the context and response
             <Accordion TransitionProps={{ unmountOnExit: true }}>
