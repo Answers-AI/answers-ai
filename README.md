@@ -131,3 +131,17 @@ Learn more about the power of Turborepo:
 ```
 
 ```
+
+## Setting up a new service data source
+
+Go to apps/web/app/api/sync
+Create a new folder for the service you are adding.
+Create a route.ts file
+Review other route.ts files for direction if needed.
+Make sure the inngest event "name" property has a unique root name. e.g. "jira/app.sync"
+
+Go to packages/types/src/index.ts
+Add your service to the AppSettings object
+
+Go to packages/utils/src/ingest
+Create a new file for your service (e.g. jira.ts)
