@@ -66,19 +66,15 @@ const FilterToolbar = ({
                 options={
                   appSettings?.jira?.projects?.filter((s) => s.enabled)?.map((s) => s.key) || []
                 }
-                value={filters?.datasources?.jira?.project || []}
-                onChange={(value: string[]) =>
-                  updateFilter({ datasources: { jira: { project: value } } })
-                }
+                value={filters?.projectName || []}
+                onChange={(value: string[]) => updateFilter({ projectName: value })}
               />
               <AutocompleteSelect
                 label={`Status`}
                 sx={{ textTransform: 'capitalize' }}
                 options={['to do', 'in progress', 'done']}
-                value={filters?.datasources?.jira?.status_category || []}
-                onChange={(value: string[]) =>
-                  updateFilter({ datasources: { jira: { status_category: value } } })
-                }
+                value={filters?.status_category || []}
+                onChange={(value: string[]) => updateFilter({ status_category: value })}
               />
               <AutocompleteSelect
                 label={`Assignee`}
@@ -95,29 +91,23 @@ const FilterToolbar = ({
                   'tony leung',
                   'unassigned'
                 ]}
-                value={filters?.datasources?.jira?.assignee || []}
-                onChange={(value: string[]) =>
-                  updateFilter({ datasources: { jira: { assignee: value } } })
-                }
+                value={filters?.assignee_name || []}
+                onChange={(value: string[]) => updateFilter({ assignee_name: value })}
               />
               <AutocompleteSelect
                 label="Channel"
                 options={
                   appSettings?.slack?.channels?.filter((s) => s.enabled)?.map((s) => s.name) || []
                 }
-                value={filters?.datasources?.slack?.channelId || []}
-                onChange={(value: string[]) =>
-                  updateFilter({ datasources: { slack: { channelId: value } } })
-                }
+                value={filters?.channelId || []}
+                onChange={(value: string[]) => updateFilter({ channelId: value })}
               />
               <AutocompleteSelect
                 label="Web"
                 options={[]}
                 // options={appSettings?.web?.urls?.map((s) => s.url) || []}
-                value={filters?.datasources?.web?.url || []}
-                onChange={(value: string[]) =>
-                  updateFilter({ datasources: { web: { url: value } } })
-                }
+                value={filters?.url || []}
+                onChange={(value: string[]) => updateFilter({ url: value })}
               />
             </Box>
 

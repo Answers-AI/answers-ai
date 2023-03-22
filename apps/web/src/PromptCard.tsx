@@ -64,17 +64,18 @@ const PromptCard: React.FC<PromptCardProps> = ({
       <Box
         sx={{
           width: '100%',
+          // height: '100%',
           flex: '1',
           display: 'flex'
+          // justifyContent: 'space-between',
+          // flexDirection: 'column'
         }}>
         <CardActionArea
           sx={{
             minHeight: '100%',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between',
-            paddingRight: 4,
-            paddingBottom: 4
+            justifyContent: 'space-between'
           }}
           onClick={onClick}>
           <CardContent
@@ -85,15 +86,15 @@ const PromptCard: React.FC<PromptCardProps> = ({
             }}>
             {title || content ? (
               <Typography
-                variant="body2"
+                variant="subtitle1"
                 color="text.secondary"
                 component="div"
                 sx={{
-                  overflow: 'hidden',
-                  textOverflow: 'elipsis',
-                  display: '-webkit-box',
-                  WebkitLineClamp: '3',
-                  WebkitBoxOrient: 'vertical'
+                  'overflow': 'hidden',
+                  'text-overflow': 'elipsis',
+                  'display': '-webkit-box',
+                  '-webkit-line-clamp': '3',
+                  '-webkit-box-orient': 'vertical'
                 }}>
                 {title || content}
               </Typography>
@@ -101,15 +102,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
           </CardContent>
         </CardActionArea>
       </Box>
-      <CardActions
-        sx={{
-          display: 'flex',
-          width: '100%',
-          justifyContent: 'space-between',
-          position: 'absolute',
-          left: 0,
-          bottom: 0
-        }}>
+      <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
         {usages ? (
           <Button size="small" disabled startIcon={<VisibilityIcon sx={{ fontSize: 16 }} />}>
             {usages}
