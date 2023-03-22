@@ -16,8 +16,8 @@
   ],
   "pipeline": {
     "//#dev-docker": { "cache": false },
-    "//#dev-inngest": { "cache": false, "persistent": true },
-    "//#dev-langchain": { "cache": false, "persistent": true },
+    "//#dev-inngest": { "cache": false },
+    "//#dev-langchain": { "cache": false },
     "//#db:healthcheck": { "cache": false },
     "build": {
       "outputMode": "new-only",
@@ -60,8 +60,7 @@
     "start": {
       "dependsOn": ["^build", "build"],
       "outputs": ["dist/**", ".next/**"],
-      "cache": false,
-      "persistent": true
+      "cache": false
     },
     "dev": {
       "dependsOn": ["^build"],
