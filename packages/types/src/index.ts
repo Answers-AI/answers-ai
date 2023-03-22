@@ -43,36 +43,19 @@ export interface AppSettings {
   models?: Models;
 }
 
-export interface JiraFilters {
-  project?: string[];
-  account?: string[];
-  assignee?: string[];
-  priority?: string[];
-  status_category?: string[];
-}
-export interface SlackFilters {
+export interface AnswersFilters {
+  userName?: string[];
+  projectName?: string[];
+  issueKey?: string[];
   channelId?: string[];
-}
-export interface WebFilters {
   cleanedUrl?: string[];
   url?: string[];
   domain?: string[];
-}
-export interface OpenApiFilters {}
-export interface UserFilters {}
-export type SourceFilters = JiraFilters | SlackFilters | WebFilters | OpenApiFilters;
-export interface DataSourcesFilters {
-  user?: UserFilters;
-  jira?: JiraFilters;
-  slack?: SlackFilters;
-  web?: WebFilters;
-  openapi?: OpenApiFilters;
-}
-export interface AnswersFilters {
+  status_category?: string[];
+  assignee_name?: string[];
   models?: {
     [key: string]: string[];
   };
-  datasources?: DataSourcesFilters;
 }
 
 type Models = {

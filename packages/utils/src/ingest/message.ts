@@ -16,13 +16,13 @@ export const answersMessageSent: EventVersionHandler<{
   handler: async ({ event }) => {
     const { data, user } = event;
     const { role, content, chat, filters } = data;
-    if (filters?.datasources?.web?.url?.length)
+    if (filters?.url?.length)
       await inngest.send({
         v: '1',
         ts: new Date().valueOf(),
         name: 'web/page.sync',
         user,
-        data: { appSettings: user?.appSettings, urls: filters.datasources.web.url }
+        data: { appSettings: user?.appSettings, urls: filters?.url }
       });
 
     return prisma.message.create({

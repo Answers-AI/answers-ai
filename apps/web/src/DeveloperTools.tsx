@@ -248,7 +248,7 @@ const DeveloperTools = ({
 
           <Box display="flex" position="relative">
             <TextField
-              sx={{ textarea: { paddingRight: 4, paddingBottom: 5 } }}
+              sx={{ textarea: { paddingRight: 4 } }}
               inputRef={inputRef}
               variant="filled"
               fullWidth
@@ -267,8 +267,8 @@ const DeveloperTools = ({
                 justifyContent: 'flex-end',
                 position: 'absolute',
                 gap: 1,
-                right: 16,
-                bottom: 16
+                right: 8,
+                bottom: 10
               }}>
               {/* Toggle component that updates when using query or streaming */}
 
