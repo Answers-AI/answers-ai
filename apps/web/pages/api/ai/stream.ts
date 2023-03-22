@@ -1,6 +1,5 @@
-import { OpenAIStream } from 'utils/dist/OpenAIStream';
-import cors from '@web/corsEdge';
-import { fetchContext } from '@web/fetchContext';
+import { OpenAIStream } from '@utils/OpenAIStream';
+import cors from '@ui/corsEdge';
 import { AnswersFilters, Message } from 'types';
 
 export const config = {

@@ -7,15 +7,15 @@ const initializeOpenAI = () => {
   return new OpenAIApi(configuration);
 };
 import { PineconeClient } from '@pinecone-database/pinecone';
-import { pineconeQuery } from '@web/pineconeQuery';
+import { pineconeQuery } from './pineconeQuery';
 import { Chat } from 'db/generated/prisma-client';
 import { AnswersFilters, DataSourcesFilters, Message, SourceFilters } from 'types';
 import { PromptLayerOpenAI, OpenAI } from 'langchain/llms';
 import { loadQAMapReduceChain } from 'langchain/chains';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
-import OpenAIClient from 'utils/dist/openai/openai';
-import { summarizeAI, summarizeChain } from 'utils/dist/llm/chains';
+import OpenAIClient from '../openai/openai';
+import { summarizeAI, summarizeChain } from '../llm/chains';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();

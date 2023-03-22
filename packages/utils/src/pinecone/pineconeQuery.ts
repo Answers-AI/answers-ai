@@ -23,10 +23,10 @@ export const pineconeQuery = async (
   try {
     console.time('PineconeQuery:' + JSON.stringify({ filter, topK, namespace }));
     await pinecone.init({
-      environment: process.env.PINECONE_ENVIRONMENT,
-      apiKey: process.env.PINECONE_API_KEY
+      environment: process.env.PINECONE_ENVIRONMENT!,
+      apiKey: process.env.PINECONE_API_KEY!
     });
-    const result = await pinecone.Index(process.env.PINECONE_INDEX).query({
+    const result = await pinecone.Index(process.env.PINECONE_INDEX!).query({
       vector: embeddings,
       topK,
       filter,

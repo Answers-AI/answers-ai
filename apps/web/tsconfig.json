@@ -6,8 +6,9 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@utils/*": ["utils/dist/*"],
-      "@web/*": ["src/*"]
+      "@utils/*": ["../../packages/utils/src/*"],
+      "@ui": ["../../packages/ui/src"],
+      "@ui/*": ["../../packages/ui/src/*"]
     },
     "plugins": [
       {

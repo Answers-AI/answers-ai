@@ -27,7 +27,7 @@ import { AppSettings } from 'types';
 import useAppSettings from './useAppSettings';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import NextLink from 'next/link';
-import SelectedListItem from '@web/SelectedListItem';
+import SelectedListItem from './SelectedListItem';
 
 export const SettingsLayout = ({
   appSettings,

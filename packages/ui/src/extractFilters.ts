@@ -1,5 +1,5 @@
 import { AnswersFilters } from 'types';
-import { openai } from 'utils/dist/openai/client';
+import { openai } from '@utils/openai/client';
 async function extractFilters(prompt: string, filters: AnswersFilters) {
   const { data } = await openai.createCompletion({
     model: 'text-davinci-003',

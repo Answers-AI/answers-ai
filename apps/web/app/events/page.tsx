@@ -1,6 +1,6 @@
-import AppSyncToolbar from '@web/AppSyncToolbar';
+import AppSyncToolbar from '@ui/AppSyncToolbar';
 import React from 'react';
-import { getAppSettings } from '@web/getAppSettings';
+import { getAppSettings } from '@ui/getAppSettings';
 
 export const metadata = {
   title: 'Events | Answers AI'

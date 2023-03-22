@@ -1,7 +1,7 @@
-import { getAppSettings } from '@web/getAppSettings';
+import { getAppSettings } from '@ui/getAppSettings';
 import React from 'react';
 
-import { SettingsLayout } from '@web/SettingsLayout';
+import { SettingsLayout } from '@ui/SettingsLayout';
 const Settings = async ({ children, params }: any) => {
   const appSettings = await getAppSettings();
   return (
