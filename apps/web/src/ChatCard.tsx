@@ -51,7 +51,7 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
         action={
           <MenuButton
             aria-label="menu"
-            actions={[{ text: 'Delete', onClick: () => deleteChat(id), icon: <Delete /> }]}>
+            actions={[{ text: 'Delete Chat', onClick: () => deleteChat(id), icon: <Delete /> }]}>
             <IconButton>
               <MoreVertIcon />
             </IconButton>
@@ -79,33 +79,37 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
               gap: 1
             }}>
             {title ? (
-              <Typography variant="subtitle1" color="text.secondary" component="div">
+              <Typography
+                variant="subtitle1"
+                color="text.secondary"
+                component="div"
+                sx={{
+                  'overflow': 'hidden',
+                  'text-overflow': 'elipsis',
+                  'display': '-webkit-box',
+                  '-webkit-line-clamp': '3',
+                  '-webkit-box-orient': 'vertical'
+                }}>
                 {title}
               </Typography>
             ) : null}
-
-            {filters ? (
-              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'space-between' }}>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  {Object.keys(filters)?.map((filter) =>
-                    filters[filter]?.length ? (
-                      <Chip key={`${filter}`} label={filters[filter]?.join(', ')} />
-                    ) : null
-                  )}
-                </Box>
-                {messages ? (
-                  <Chip
-                    label={
-                      <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <MessageIcon sx={{ width: 16, height: 16 }} />
-                        {messages?.length}
-                      </Typography>
-                    }
-                  />
-                ) : null}
-              </Box>
-            ) : null}
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              {Object.keys(filters)?.map((filter) =>
+                filters[filter]?.length ? (
+                  <Chip key={`${id}_${filter}`} label={filters[filter]?.join(', ')} size="small" />
+                ) : null
+              )}
+            </Box>
           </CardContent>
+          {filters ? (
+            <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              {messages ? (
+                <Button size="small" disabled startIcon={<MessageIcon sx={{ fontSize: 16 }} />}>
+                  {messages?.length}
+                </Button>
+              ) : null}
+            </CardActions>
+          ) : null}
         </Box>
       </CardActionArea>
     </Card>

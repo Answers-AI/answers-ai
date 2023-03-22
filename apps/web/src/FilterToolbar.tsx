@@ -6,6 +6,7 @@ import { useAnswers } from './AnswersContext';
 import { AppSettings, AppService } from 'types';
 import MultiSelect from './MultiSelect';
 import AutocompleteSelect from './AutocompleteSelect';
+import { useFlags } from 'flagsmith/react';
 
 const FilterToolbar = ({
   appSettings
@@ -13,6 +14,7 @@ const FilterToolbar = ({
   appSettings: AppSettings;
   onSync?: (s: AppService) => void;
 }) => {
+  const flags = useFlags(['filters_model']);
   const { filters, updateFilter, showFilters, setShowFilters } = useAnswers();
   return (
     <>
@@ -108,37 +110,40 @@ const FilterToolbar = ({
                 onChange={(value: string[]) => updateFilter({ url: value })}
               />
             </Box>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="filters-content"
-                id="filters-header">
-                <Typography variant="overline">Models</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Box
-                  sx={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                    gap: 2,
-                    gridTemplateRows: ''
-                  }}>
-                  {appSettings?.models
-                    ? Object.keys(appSettings?.models).map((model: string) => (
-                        <MultiSelect
-                          label={`${model} Model`}
-                          sx={{ textTransform: 'capitalize' }}
-                          options={appSettings?.models?.[model] as string[]}
-                          value={filters?.models?.[model] || []}
-                          onChange={(value: string[]) =>
-                            updateFilter({ models: { [model]: value } })
-                          }
-                        />
-                      ))
-                    : null}
-                </Box>
-              </AccordionDetails>
-            </Accordion>
+
+            {flags.filters_model.enabled ? (
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="filters-content"
+                  id="filters-header">
+                  <Typography variant="overline">Models</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                      gap: 2,
+                      gridTemplateRows: ''
+                    }}>
+                    {appSettings?.models
+                      ? Object.keys(appSettings?.models).map((model: string) => (
+                          <MultiSelect
+                            label={`${model} Model`}
+                            sx={{ textTransform: 'capitalize' }}
+                            options={appSettings?.models?.[model] as string[]}
+                            value={filters?.models?.[model] || []}
+                            onChange={(value: string[]) =>
+                              updateFilter({ models: { [model]: value } })
+                            }
+                          />
+                        ))
+                      : null}
+                  </Box>
+                </AccordionDetails>
+              </Accordion>
+            ) : null}
           </Box>
         </AccordionDetails>
       </Accordion>
