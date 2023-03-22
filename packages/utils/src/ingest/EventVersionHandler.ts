@@ -1,8 +1,6 @@
 import { inngest } from './client';
 import { AppSettings } from 'types';
 import { User } from 'db/generated/prisma-client';
-import { EventPayload } from 'inngest';
-import { FunctionOptions } from 'inngest';
 import { createStepTools } from 'inngest/components/InngestStepTools';
 
 export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknown>[]) => {
@@ -71,6 +69,7 @@ export type EventVersionHandler<T> = {
   v: string;
   handler: EventHandler<T>;
 };
+
 export type JiraUpdatedInput = {
   appSettings: AppSettings;
 };

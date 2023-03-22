@@ -26,7 +26,7 @@ export const AppDrawer = ({ params }: any) => {
     setPathname(typeof window === 'undefined' ? '' : window.location.pathname);
   }, []);
   return (
-    <Drawer variant="permanent">
+    <Drawer variant="permanent" sx={{ sm: { width: 0 } }}>
       <DrawerHeader sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         {/* <IconButton onClick={handleDrawerClose}>
               {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
@@ -162,10 +162,10 @@ const AppBar = styled(MuiAppBar, {
 }));
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
+    'width': drawerWidth,
+    'flexShrink': 0,
+    'whiteSpace': 'nowrap',
+    'boxSizing': 'border-box',
     ...(open && {
       ...openedMixin(theme),
       '& .MuiDrawer-paper': openedMixin(theme)
@@ -173,7 +173,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     ...(!open && {
       ...closedMixin(theme),
       '& .MuiDrawer-paper': closedMixin(theme)
-    })
+    }),
+    '@media (max-width: 600px)': {
+      'width': 0,
+      '& .MuiDrawer-paper': { width: 0 }
+    }
   })
 );
 

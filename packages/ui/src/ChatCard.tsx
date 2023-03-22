@@ -36,22 +36,15 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
   return (
     <Card
       sx={{
-        'display': 'flex',
-        'position': 'relative',
-        // 'padding': 2,
-        // 'height': '100%',
-        'cursor': 'pointer',
-        'transition': 'all 0.2s ease-in-out',
-        '&:hover': {
-          // backgroundColor: '#000000'
-        }
+        display: 'flex',
+        position: 'relative'
       }}>
       <CardHeader
         sx={{ position: 'absolute', top: 0, right: 0, zIndex: 999999 }}
         action={
           <MenuButton
             aria-label="menu"
-            actions={[{ text: 'Delete', onClick: () => deleteChat(id), icon: <Delete /> }]}>
+            actions={[{ text: 'Delete Chat', onClick: () => deleteChat(id), icon: <Delete /> }]}>
             <IconButton>
               <MoreVertIcon />
             </IconButton>
@@ -59,7 +52,10 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
         }
       />
 
-      <CardActionArea component={NextLink} sx={{ minHeight: '100%' }} href={`/chat/${id}`}>
+      <CardActionArea
+        component={NextLink}
+        sx={{ minHeight: '100%', paddingRight: 4, paddingBottom: 4 }}
+        href={`/chat/${id}`}>
         <Box
           sx={{
             width: '100%',
@@ -76,36 +72,48 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
+
               gap: 1
             }}>
             {title ? (
-              <Typography variant="subtitle1" color="text.secondary" component="div">
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                component="div"
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'elipsis',
+                  display: '-webkit-box',
+                  WebkitLineClamp: '3',
+                  WebkitBoxOrient: 'vertical'
+                }}>
                 {title}
               </Typography>
             ) : null}
-
-            {filters ? (
-              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'space-between' }}>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  {Object.keys(filters)?.map((filter) =>
-                    filters[filter]?.length ? (
-                      <Chip key={`${filter}`} label={filters[filter]?.join(', ')} />
-                    ) : null
-                  )}
-                </Box>
-                {messages ? (
-                  <Chip
-                    label={
-                      <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <MessageIcon sx={{ width: 16, height: 16 }} />
-                        {messages?.length}
-                      </Typography>
-                    }
-                  />
-                ) : null}
-              </Box>
-            ) : null}
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              {Object.keys(filters)?.map((filter) =>
+                filters[filter]?.length ? (
+                  <Chip key={`${id}_${filter}`} label={filters[filter]?.join(', ')} size="small" />
+                ) : null
+              )}
+            </Box>
           </CardContent>
+          {filters ? (
+            <CardActions
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                position: 'absolute',
+                left: 0,
+                bottom: 0
+              }}>
+              {messages ? (
+                <Button size="small" disabled startIcon={<MessageIcon sx={{ fontSize: 16 }} />}>
+                  {messages?.length}
+                </Button>
+              ) : null}
+            </CardActions>
+          ) : null}
         </Box>
       </CardActionArea>
     </Card>

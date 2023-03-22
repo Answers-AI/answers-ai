@@ -1,7 +1,7 @@
-import { getAppSettings } from '@web/getAppSettings';
+import { getAppSettings } from '@ui/getAppSettings';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@web/authOptions';
-import { inngest } from '@web/ingestClient';
+import { authOptions } from '@ui/authOptions';
+import { inngest } from '@utils/ingest/client';
 
 interface RequestBody {
   url: string;

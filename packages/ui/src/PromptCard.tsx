@@ -52,7 +52,9 @@ const PromptCard: React.FC<PromptCardProps> = ({
         action={
           <MenuButton
             aria-label="menu"
-            actions={[{ text: 'Delete', onClick: () => deletePrompt(id), icon: <Delete /> }]}>
+            actions={[
+              { text: 'Delete Prompt', onClick: () => deletePrompt(id), icon: <Delete /> }
+            ]}>
             <IconButton>
               <MoreVert />
             </IconButton>
@@ -62,18 +64,17 @@ const PromptCard: React.FC<PromptCardProps> = ({
       <Box
         sx={{
           width: '100%',
-          // height: '100%',
           flex: '1',
           display: 'flex'
-          // justifyContent: 'space-between',
-          // flexDirection: 'column'
         }}>
         <CardActionArea
           sx={{
             minHeight: '100%',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            paddingRight: 4,
+            paddingBottom: 4
           }}
           onClick={onClick}>
           <CardContent
@@ -83,14 +84,37 @@ const PromptCard: React.FC<PromptCardProps> = ({
               gap: 1
             }}>
             {title || content ? (
-              <Typography variant="subtitle1" color="text.secondary" component="div">
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                component="div"
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'elipsis',
+                  display: '-webkit-box',
+                  WebkitLineClamp: '3',
+                  WebkitBoxOrient: 'vertical'
+                }}>
                 {title || content}
               </Typography>
             ) : null}
           </CardContent>
         </CardActionArea>
       </Box>
-      <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
+      <CardActions
+        sx={{
+          display: 'flex',
+          width: '100%',
+          justifyContent: 'space-between',
+          position: 'absolute',
+          left: 0,
+          bottom: 0
+        }}>
+        {usages ? (
+          <Button size="small" disabled startIcon={<VisibilityIcon sx={{ fontSize: 16 }} />}>
+            {usages}
+          </Button>
+        ) : null}
         <Box>
           <IconButton color="secondary" sx={{}} size="small" onClick={handleLike}>
             <ThumbUpIcon sx={{ fontSize: 16 }} />
@@ -99,11 +123,6 @@ const PromptCard: React.FC<PromptCardProps> = ({
             <ThumbDownIcon sx={{ fontSize: 16 }} />
           </IconButton>
         </Box>
-        {usages ? (
-          <Button size="small" disabled startIcon={<VisibilityIcon sx={{ fontSize: 16 }} />}>
-            {usages}
-          </Button>
-        ) : null}
       </CardActions>
     </Card>
   );

@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@dqbd/tiktoken": "^0.4.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@huggingface/inference": "^1.6.0",
@@ -21,11 +20,12 @@
     "@textea/json-viewer": "^2.14.1",
     "axios": "^1.3.2",
     "chromadb": "^1.3.1",
-    "cohere-ai": "^6.0.0",
+    "cohere-ai": "^6.1.0",
     "cors": "^2.8.5",
     "db": "workspace:*",
     "encoding": "^0.1.13",
     "experimental-prisma-webpack-plugin": "workspace:*",
+    "flagsmith": "^3.18.2",
     "hnswlib-node": "^1.4.2",
     "inngest": "^1.4.0",
     "ioredis": "^5.3.1",
@@ -37,6 +37,7 @@
     "react-dom": "18.2.0",
     "serpapi": "^1.1.1",
     "typeorm": "^0.3.12",
+    "ui": "workspace:*",
     "utils": "workspace:*"
   },
   "devDependencies": {

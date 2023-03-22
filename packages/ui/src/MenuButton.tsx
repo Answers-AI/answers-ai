@@ -65,6 +65,7 @@ export default function IconMenu({
         anchorEl={anchorRef.current}
         role={undefined}
         placement="bottom-start"
+disablePortal
         transition>
         {({ TransitionProps, placement }) => (
           <Grow

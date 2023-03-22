@@ -2,9 +2,9 @@ import { AuthOptions, DefaultSession } from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from 'db/dist';
-import { inngest } from 'utils/dist/ingest/client';
+import { inngest } from '@utils/ingest/client';
 import { User as AnswersUser } from 'types';
-// import { USER_EVENTS } from 'utils/dist/ingest/auth';
+// import { USER_EVENTS } from '@utils/ingest/auth';
 export const USER_EVENTS = ['signIn', 'signOut', 'createUser', 'updateUser', 'linkAccount'];
 
 declare module 'next-auth' {
@@ -14,7 +14,11 @@ declare module 'next-auth' {
     user?: AnswersUser;
   }
 }
-
+declare module 'next-auth/jwt' {
+  interface JWT {
+    id: string;
+  }
+}
 export const authOptions: AuthOptions = {
   session: {
     strategy: 'jwt'
@@ -33,12 +37,18 @@ export const authOptions: AuthOptions = {
     //   async redirect({ url, baseUrl }) {
     //     return baseUrl
     //   },
-    async session({ session, user, token }) {
+    async jwt({ token, user, account, profile, isNewUser }) {
+      if (user) {
+        token.id = user?.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id!;
+      }
       return session;
     }
-    // async jwt({ token, user, account, profile, isNewUser }) {
-    //   return token
-    // }
   },
   events: USER_EVENTS.reduce(
     (acc, event) => ({

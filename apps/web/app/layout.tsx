@@ -1,7 +1,8 @@
 import { getServerSession, Session } from 'next-auth';
-import { authOptions } from '@web/authOptions';
-import AppLayout from '@web/AppLayout';
+import { authOptions } from '@ui/authOptions';
+import AppLayout from '@ui/AppLayout';
 import React from 'react';
+import flagsmith from 'flagsmith/isomorphic';
 
 export default async function RootLayout({
   // Layouts must accept a children prop.
@@ -15,9 +16,22 @@ export default async function RootLayout({
   };
 }) {
   const session = await getServerSession(authOptions);
+  await flagsmith.init({
+    // fetches flags on the server and passes them to the App
+    environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
+    preventFetch: true
+  });
+
+  if (session?.user?.email)
+    await flagsmith.identify(`user_${session.user.id}`, {
+      env: process.env.NODE_ENV,
+      domain: session.user.email.split('@')[1]
+    });
+
+  const flagsmithState = flagsmith.getState();
 
   return (
-    <AppLayout session={session as Session} params={params}>
+    <AppLayout session={session as Session} params={params} flagsmithState={flagsmithState}>
       {children}
     </AppLayout>
   );

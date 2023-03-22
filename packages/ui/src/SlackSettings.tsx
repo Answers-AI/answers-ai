@@ -11,12 +11,12 @@ import {
   Paper
 } from '@mui/material';
 import React, { useState } from 'react';
-import { AppSettings } from 'types';
-import useAppSettings from '@web/useAppSettings';
-export interface JiraSettingsProps {
+import { AppSettings, SlackChannelSetting } from 'types';
+import useAppSettings from './useAppSettings';
+export interface SlackSettingsProps {
   appSettings: AppSettings;
 }
-export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
+export const SlackSettings = ({ appSettings }: SlackSettingsProps) => {
   const { isLoading, updateAppSettings } = useAppSettings();
   const [localSettings, setLocalSettings] = useState<AppSettings>(appSettings);
   React.useEffect(() => {
@@ -26,41 +26,38 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
     updateAppSettings(localSettings);
   };
 
-  const handleJiraProjectsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalSettings((prevSettings) => ({
-      ...prevSettings,
-      jiraProjects: event.target.value.split(',')
-    }));
-  };
+  // const handleSlackProjectsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setLocalSettings((prevSettings) => ({
+  //     ...prevSettings,
+  //     slackChannels: event.target.value.split(',')
+  //   }));
+  // };
 
-  const handleEnableProject = (project: { key: string; enabled: boolean }) => {
+  const handleEnableChannel = (channel: SlackChannelSetting) => {
     setLocalSettings((prevSettings) => ({
       ...prevSettings,
-      jira: {
-        ...prevSettings?.jira,
-        projects: prevSettings?.jira?.projects?.map((p) => {
-          if (p.key === project.key) {
+      slack: {
+        ...prevSettings?.slack,
+        channels: prevSettings?.slack?.channels?.map((c) => {
+          if (c.id === channel.id) {
             return {
-              ...p,
-              enabled: !p.enabled
+              ...c,
+              enabled: !c.enabled
             };
           }
-          return p;
+          return c;
         })
       }
     }));
   };
-
-  // return <div>Loading...</div>;
-
-  const allToggled = localSettings?.jira?.projects?.every((p) => p.enabled);
+  const allToggled = localSettings?.slack?.channels?.every((p) => p.enabled);
 
   const handleToggleAll = () => {
     setLocalSettings((prevSettings) => ({
       ...prevSettings,
-      jira: {
+      slack: {
         ...prevSettings?.jira,
-        projects: prevSettings?.jira?.projects?.map((p) => ({
+        channels: prevSettings?.slack?.channels?.map((p) => ({
           ...p,
           enabled: !allToggled
         }))
@@ -76,15 +73,15 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
 
         gap: 2
       }}>
-      <Typography variant="h5">Jira</Typography>
+      <Typography variant="h5">Slack</Typography>
       <Paper sx={{ p: 2 }}>
         <FormControl sx={{}} component="fieldset" variant="standard">
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <FormLabel color="primary" component="legend">
-              <strong>Enabled Projects</strong>
-            </FormLabel>
+            <FormLabel component="legend">
+              <strong>Enabled Channels</strong>
+            </FormLabel>{' '}
             <Button onClick={handleToggleAll}>
-              {allToggled ? 'Deselect' : 'Select'} All {localSettings?.jira?.projects?.length}
+              {allToggled ? 'Select' : 'Select'} All {localSettings?.slack?.channels?.length}
             </Button>
           </Box>
           <FormGroup
@@ -93,24 +90,24 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
               flexDirection: 'row'
             }}>
             {localSettings &&
-              localSettings?.jira?.projects?.map((project) => (
+              localSettings?.slack?.channels?.map((channel) => (
                 <FormControlLabel
-                  key={project.key}
+                  key={channel.id}
                   control={
                     <Checkbox
-                      name={project.key}
-                      checked={!!project.enabled}
-                      onChange={() => handleEnableProject(project)}
+                      name={channel.name}
+                      checked={!!channel.enabled}
+                      onChange={() => handleEnableChannel(channel)}
                     />
                   }
-                  label={project.key}
+                  label={channel.name}
                 />
               ))}
           </FormGroup>
           {/* <FormHelperText>Be careful</FormHelperText> */}
         </FormControl>
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, py: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 2, py: 2 }}>
           <Button
             type="button"
             color="error"
@@ -127,4 +124,4 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
     </Box>
   );
 };
-export default JiraSettings;
+export default SlackSettings;

@@ -1,9 +1,9 @@
-import { AnswersProvider } from '@web/AnswersContext';
-import DeveloperTools from '@web/DeveloperTools';
-import { getAppSettings } from '@web/getAppSettings';
+import { AnswersProvider } from '@ui/AnswersContext';
+import DeveloperTools from '@ui/DeveloperTools';
+import { getAppSettings } from '@ui/getAppSettings';
 import { getServerSession } from 'next-auth';
 import React from 'react';
-import { authOptions } from '@web/authOptions';
+import { authOptions } from '@ui/authOptions';
 import { prisma } from 'db/dist';
 import { Chat, Journey } from 'types';
 import { redirect } from 'next/navigation';
@@ -66,12 +66,15 @@ const Chat = async ({ chatId, journeyId }: Params) => {
           users: {
             some: { email: session.user.email }
           },
-          journeyId: journeyId
+          journeyId: journeyId ?? null
         },
         orderBy: {
           createdAt: 'desc'
         },
-        include: { prompt: true, messages: { include: { user: true } } }
+        include: {
+          prompt: true,
+          messages: { orderBy: { createdAt: 'asc' }, include: { user: true } }
+        }
       })
     )
   );

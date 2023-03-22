@@ -7,15 +7,15 @@ const initializeOpenAI = () => {
   return new OpenAIApi(configuration);
 };
 import { PineconeClient } from '@pinecone-database/pinecone';
-import { pineconeQuery } from '@web/pineconeQuery';
+import { pineconeQuery } from './pineconeQuery';
 import { Chat } from 'db/generated/prisma-client';
-import { AnswersFilters, Message } from 'types';
+import { AnswersFilters, DataSourcesFilters, Message, SourceFilters } from 'types';
 import { PromptLayerOpenAI, OpenAI } from 'langchain/llms';
 import { loadQAMapReduceChain } from 'langchain/chains';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
-import OpenAIClient from 'utils/dist/openai/openai';
-import { summarizeAI, summarizeChain } from 'utils/dist/llm/chains';
+import OpenAIClient from '../openai/openai';
+import { summarizeAI, summarizeChain } from '../llm/chains';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
@@ -36,12 +36,12 @@ export const fetchContext = async ({
   messages = [],
   filters = {}
 }: {
-  chat: Chat;
+  chat?: Chat;
   prompt: string;
   messages: Message[];
   filters: AnswersFilters;
 }) => {
-  const hasDefaultFilter = Object.keys(filters).length;
+  // const hasDefaultFilter = Object.keys(filters).length;
   // const history = messages
   //   ?.filter((item: any) => item?.content)
   //   ?.map((item: any) => `${item?.content}`)
@@ -57,13 +57,48 @@ export const fetchContext = async ({
   //   filters = await extractFilters(prompt, filters);
   // }
 
-  // TODO: Do multiple parallel queries for each different data source by filters
-  const pineconeData = await Promise.all([
-    Object.keys(filters).length
-      ? pineconeQuery(promptEmbedding, { filters, topK: 5 })
-      : { matches: [] }
-    // !hasDefaultFilter ? pineconeQuery(promptEmbedding, { topK: 5 }) : { matches: [] } // TODO: Use topK from config
-  ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
+  const filter: { [source: string]: { [field: string]: string[] } } = {};
+  const { models, datasources = {} } = filters;
+
+  if (models) {
+    filter.model = {
+      $in: Object.keys(models)
+        ?.map((model) => {
+          return models?.[model];
+        })
+        .flat()
+    };
+  }
+  if (datasources) {
+    Object.entries(datasources).forEach(([source, sourceFilter]) => {
+      if (sourceFilter) {
+        filter[source] = {
+          ...(filter[source] ?? {}),
+          ...Object.keys(sourceFilter).reduce(
+            (acc, field) => ({
+              ...acc,
+              [field]: {
+                $in: sourceFilter[field]?.map((value: string) => value?.toLowerCase())
+              }
+            }),
+            {}
+          )
+        };
+      }
+    });
+  }
+
+  console.log('[FetchContext]', { datasources, filters, filter });
+  const pineconeData = await Promise.all(
+    Object.entries(datasources)?.map(([source]) => {
+      return pineconeQuery(promptEmbedding, {
+        filter: {
+          ...filter[source]
+        },
+        topK: 5
+      });
+    })
+  )?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
 
   // TODO: Filter pinecone data by threshold
 
@@ -72,36 +107,12 @@ export const fetchContext = async ({
     ...(!pineconeData ? [] : pineconeData?.map((item: any) => item?.metadata?.text))
   ].join(' <SEP> ');
 
-  console.log('FetchContext', context);
   let summary = await summarizeAI({
     input: context,
     prompt,
     chunkSize: 3000
   });
 
-  // if (context) {
-  //   const contextDocs = await textSplitter.createDocuments([context]);
-  //   console.log('contextDocs', contextDocs?.length);
-  //   if (contextDocs.length > 1) {
-  //     console.time('Summarization Chain');
-  //     const summaries = await Promise.all(
-  //       contextDocs?.map((doc) =>
-  //         summarizeChain.call({
-  //           agent_scratchpad: '',
-  //           input: doc.pageContent,
-  //           prompt: prompt
-  //         })
-  //       )
-  //     );
-  //     const response = await summarizeChain.call({
-  //       agent_scratchpad: '',
-  //       input: summaries?.map((sum) => sum.text)?.join(' <SEP> '),
-  //       prompt
-  //     });
-  //     summary = response.text;
-  //     console.timeEnd('Summarization Chain');
-  //   }
-  // }
   return {
     pineconeData,
     context,

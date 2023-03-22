@@ -1,0 +1,92 @@
+'use client';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  Typography
+} from '@mui/material';
+import { useAnswers } from './AnswersContext';
+import axios from 'axios';
+import { AppSettings, AppService } from 'types';
+import { useFlags } from 'flagsmith/react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandLess';
+const useSync = ({ onSync }: { onSync?: (a: AppService) => void }) => {
+  const { filters } = useAnswers();
+  const handleSync = async (service: AppService) => {
+    try {
+      await axios.post(`/api/sync/${service?.name}`, { filters });
+      if (onSync) onSync(service);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  return { handleSync };
+};
+
+const AppSyncToolbar = ({
+  appSettings,
+  onSync
+}: {
+  appSettings: AppSettings;
+  onSync?: (s: AppService) => void;
+}) => {
+  const flags = useFlags(['sync']);
+  const { handleSync } = useSync({ onSync });
+  if (!flags.sync.enabled) return null;
+  return (
+    <Accordion
+      defaultExpanded={false}
+      sx={{
+        '&, .MuiAccordion-root ': {
+          'width': '100%',
+          'overflow': 'hidden',
+          'm': 0,
+          'background': 'none',
+          'boxShadow': 'none',
+          '&.Mui-expanded': {
+            margin: 0
+          },
+          '.MuiAccordionSummary-root': {
+            'px': 0,
+            'minHeight': 0,
+            '&.Mui-expanded': { minHeight: 0 },
+            'justifyContent': 'flex-start',
+            'gap': 2
+          },
+          '.MuiAccordionSummary-content': {
+            'm': 0,
+            'flexGrow': 'initial',
+            '&.Mui-expanded': { m: 0 }
+          },
+          '.MuiAccordionDetails-root': { p: 0, pb: 1 }
+        }
+      }}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="filters-content"
+        id="filters-header">
+        <Typography variant="overline">Sync</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+          {appSettings?.services?.map((service) => (
+            <Button
+              key={service?.name}
+              sx={{
+                position: 'relative'
+              }}
+              variant="outlined"
+              color="primary"
+              disabled={!service.enabled}
+              onClick={() => handleSync(service)}>
+              {service.name}
+            </Button>
+          ))}
+        </Box>
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+export default AppSyncToolbar;

@@ -6,6 +6,7 @@ import { useAnswers } from './AnswersContext';
 import { AppSettings, AppService } from 'types';
 import MultiSelect from './MultiSelect';
 import AutocompleteSelect from './AutocompleteSelect';
+import { useFlags } from 'flagsmith/react';
 
 const FilterToolbar = ({
   appSettings
@@ -13,6 +14,7 @@ const FilterToolbar = ({
   appSettings: AppSettings;
   onSync?: (s: AppService) => void;
 }) => {
+  const flags = useFlags(['filters_model']);
   const { filters, updateFilter, showFilters, setShowFilters } = useAnswers();
   return (
     <>
@@ -64,15 +66,19 @@ const FilterToolbar = ({
                 options={
                   appSettings?.jira?.projects?.filter((s) => s.enabled)?.map((s) => s.key) || []
                 }
-                value={filters?.projectName || []}
-                onChange={(value: string[]) => updateFilter({ projectName: value })}
+                value={filters?.datasources?.jira?.project || []}
+                onChange={(value: string[]) =>
+                  updateFilter({ datasources: { jira: { project: value } } })
+                }
               />
               <AutocompleteSelect
                 label={`Status`}
                 sx={{ textTransform: 'capitalize' }}
                 options={['to do', 'in progress', 'done']}
-                value={filters?.status_category || []}
-                onChange={(value: string[]) => updateFilter({ status_category: value })}
+                value={filters?.datasources?.jira?.status_category || []}
+                onChange={(value: string[]) =>
+                  updateFilter({ datasources: { jira: { status_category: value } } })
+                }
               />
               <AutocompleteSelect
                 label={`Assignee`}
@@ -89,56 +95,65 @@ const FilterToolbar = ({
                   'tony leung',
                   'unassigned'
                 ]}
-                value={filters?.assignee_name || []}
-                onChange={(value: string[]) => updateFilter({ assignee_name: value })}
+                value={filters?.datasources?.jira?.assignee || []}
+                onChange={(value: string[]) =>
+                  updateFilter({ datasources: { jira: { assignee: value } } })
+                }
               />
               <AutocompleteSelect
                 label="Channel"
                 options={
                   appSettings?.slack?.channels?.filter((s) => s.enabled)?.map((s) => s.name) || []
                 }
-                value={filters?.channelId || []}
-                onChange={(value: string[]) => updateFilter({ channelId: value })}
+                value={filters?.datasources?.slack?.channelId || []}
+                onChange={(value: string[]) =>
+                  updateFilter({ datasources: { slack: { channelId: value } } })
+                }
               />
               <AutocompleteSelect
                 label="Web"
                 options={[]}
                 // options={appSettings?.web?.urls?.map((s) => s.url) || []}
-                value={filters?.url || []}
-                onChange={(value: string[]) => updateFilter({ url: value })}
+                value={filters?.datasources?.web?.url || []}
+                onChange={(value: string[]) =>
+                  updateFilter({ datasources: { web: { url: value } } })
+                }
               />
             </Box>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="filters-content"
-                id="filters-header">
-                <Typography variant="overline">Models</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Box
-                  sx={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                    gap: 2,
-                    gridTemplateRows: ''
-                  }}>
-                  {appSettings?.models
-                    ? Object.keys(appSettings?.models).map((model: string) => (
-                        <MultiSelect
-                          label={`${model} Model`}
-                          sx={{ textTransform: 'capitalize' }}
-                          options={appSettings?.models?.[model] as string[]}
-                          value={filters?.models?.[model] || []}
-                          onChange={(value: string[]) =>
-                            updateFilter({ models: { [model]: value } })
-                          }
-                        />
-                      ))
-                    : null}
-                </Box>
-              </AccordionDetails>
-            </Accordion>
+
+            {flags.filters_model.enabled ? (
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="filters-content"
+                  id="filters-header">
+                  <Typography variant="overline">Models</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                      gap: 2,
+                      gridTemplateRows: ''
+                    }}>
+                    {appSettings?.models
+                      ? Object.keys(appSettings?.models).map((model: string) => (
+                          <MultiSelect
+                            label={`${model} Model`}
+                            sx={{ textTransform: 'capitalize' }}
+                            options={appSettings?.models?.[model] as string[]}
+                            value={filters?.models?.[model] || []}
+                            onChange={(value: string[]) =>
+                              updateFilter({ models: { [model]: value } })
+                            }
+                          />
+                        ))
+                      : null}
+                  </Box>
+                </AccordionDetails>
+              </Accordion>
+            ) : null}
           </Box>
         </AccordionDetails>
       </Accordion>
