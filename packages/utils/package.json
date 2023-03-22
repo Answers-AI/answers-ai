@@ -65,7 +65,8 @@
     "request": "^2.88.2",
     "utf-8-validate": "6.0.3",
     "showdown": "^2.1.0",
-    "widdershins": "^4.0.1",
+    "swagger2openapi": "^7.0.8",
+    "yaml": "^2.2.1",
     "db": "workspace:*"
   },
   "devDependencies": {
@@ -74,6 +75,7 @@
     "@types/node": "^18.11.9",
     "@types/showdown": "^2.0.0",
     "@types/js-yaml": "^4.0.5",
+    "@types/swagger2openapi": "^7.0.0",
     "openapi-types": "^12.1.0",
     "eslint": "^7.32.0",
     "eslint-config-custom": "workspace:*",

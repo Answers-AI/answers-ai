@@ -3,13 +3,15 @@ import { OpenAPIV3_1 } from 'openapi-types';
 const openApiToMarkdown = (openApiSpec: OpenAPIV3_1.Document): string => {
   if (!openApiSpec?.paths) return '';
   const specHeading = `OpenAPI Specification for "${openApiSpec.info.title}" version "${openApiSpec.info.version}"`;
-  let output = '';
+  let output = 'test';
 
   for (const [pathName, path] of Object.entries(openApiSpec.paths)) {
     if (!path) continue;
 
     const endPointHeading = `${specHeading} Endpoint "${pathName}"`;
-
+    console.log('========');
+    console.log(pathName);
+    console.log(path.parameters);
     // Add path-level parameters
     if (path.parameters) {
       output += `#### ${endPointHeading} Parameters \n\n`;

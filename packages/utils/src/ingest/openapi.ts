@@ -1,17 +1,11 @@
+import axios from 'axios';
+import { URL } from 'url';
 import { inngest } from './client';
 import { openApiLoader } from '../openapi';
 import { EventVersionHandler } from './EventVersionHandler';
 import { chunkArray } from '../utilities/utils';
-import { OpenAPIV3_1 } from 'openapi-types';
 import { OpenApiProvider } from 'types';
-// @ts-ignore-next-line
-// import openApi3ToMarkdown from '../utilities/openApi3ToMarkdown';
-// @ts-ignore
-import widdershins from 'widdershins';
-
-import axios from 'axios';
-
-import { URL } from 'url';
+import openApiToMarkdown from '../utilities/openApiToMarkdown';
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
 
@@ -38,10 +32,6 @@ const isDomainMatch = (url1: string | undefined, url2: string | undefined): bool
 
   const urlObj1 = new URL(hostname1);
   const urlObj2 = new URL(hostname2);
-
-  if (urlObj1.hostname === urlObj2.hostname) {
-    console.log({ url1, url2 });
-  }
 
   return urlObj1.hostname === urlObj2.hostname;
 };
@@ -100,6 +90,25 @@ export const processOpenApiGuruList: EventVersionHandler<{ format?: string[]; ve
     }
   };
 
+const prefixHeaders = (markdown: string): string => {
+  const lines = markdown.split('\n');
+  let headerStack: string[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.startsWith('#')) {
+      const header = line.replace(/^#+\s*/, '');
+      const levelMatch = line.match(/^#+/);
+      const level = levelMatch ? levelMatch[0].length : 0;
+      if (level <= headerStack.length) {
+        headerStack = headerStack.slice(0, level - 1);
+      }
+      headerStack.push(header);
+      lines[i] = `##### ${headerStack.join(' - ')}`;
+    }
+  }
+  return lines.join('\n');
+};
+
 export const processOpenApiDomainList: EventVersionHandler<{
   format?: string;
   version?: string;
@@ -148,54 +157,39 @@ export const processOpenApiUrl: EventVersionHandler<{ urls: string[] }> = {
   handler: async ({ event }) => {
     const data = event.data;
     const { urls } = data;
-    const openApiJsons = (await openApiLoader.loadMany(urls)) as OpenAPIV3_1.Document[];
+    const openApiJsons = (await openApiLoader.loadMany(urls)) as any[]; //OpenAPIV3_1.Document;
 
-    const vectors = openApiJsons.flatMap(async (openApiJson: OpenAPIV3_1.Document) => {
-      const openApiSpec = openApiJson as OpenAPIV3_1.Document;
+    const vectors = await Promise.all(
+      openApiJsons.flatMap(async (openApiJson: any) => {
+        const openApiSpec = openApiJson as any;
 
-      // const markdown = openApi3ToMarkdown(openApiSpec);
-      const options = {
-        clipboard: false,
-        externalDocs: false,
-        toc_footers: false,
-        omitHeader: true,
-        html: false,
-        expandBody: true,
-        resolve: false,
-        tocSummary: false,
-        verbose: false,
-        help: false,
-        version: false,
-        discovery: false,
-        httpsnippet: false,
-        codeSamples: false,
-        sample: false,
-        search: false
-        // language_tabs: [{ javascript: 'JavaScript' }, { ruby: 'Ruby' }]
-      };
-      const markdown = await widdershins.convert(openApiJson, options);
-      console.log('================== MARKDOWN ==================');
-      console.log(markdown);
+        const originalMarkdown = await openApiToMarkdown(openApiSpec);
+        const markdown = prefixHeaders(originalMarkdown);
 
-      const headingsRegex = /^##\s+(.*)$/gm;
-      const headingsArray = [...markdown.matchAll(headingsRegex)];
+        const headingsRegex = /^#####\s+(.*)$/gm;
+        const headingsArray = [...markdown.matchAll(headingsRegex)];
 
-      return headingsArray.map((heading, i, arr) => {
-        const nextHeadingIndex = arr[i + 1] ? arr[i + 1].index : markdown.length;
-        const content = markdown.slice((heading?.index || 0) + heading[0].length, nextHeadingIndex);
-        return {
-          uid: `OpenApi_${heading[1]
-            .replace(/[^a-zA-Z]+/g, '_')
-            .replace(/_{2,}/g, '_')
-            .toLowerCase()}`,
-          text: `${heading[0]}${content}`,
-          metadata: {
-            title: openApiSpec.info.title,
-            version: openApiSpec.info.version
-          }
-        };
-      });
-    });
+        return headingsArray.map((heading, i, arr) => {
+          const nextHeadingIndex = arr[i + 1] ? arr[i + 1].index : markdown.length;
+          const content = markdown.slice(
+            (heading?.index || 0) + heading[0].length,
+            nextHeadingIndex
+          );
+
+          return {
+            uid: `OpenApi_${heading[1]
+              .replace(/[^a-zA-Z]+/g, '_')
+              .replace(/_{2,}/g, '_')
+              .toLowerCase()}`,
+            text: `${heading[0]}${content}`,
+            metadata: {
+              title: openApiSpec.info.title,
+              version: openApiSpec.info.version
+            }
+          };
+        });
+      })
+    );
 
     if (vectors?.length) {
       await Promise.all(
