@@ -1,12 +1,11 @@
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser';
-import { ReadableByteStreamController } from 'stream/web';
 
 export async function OpenAIStream(payload: any, extra: any, onEnd: (answer: string) => void) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
   let counter = 0;
-  // @ts-expect-error
+
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     headers: {
       'Content-Type': 'application/json',
@@ -16,9 +15,8 @@ export async function OpenAIStream(payload: any, extra: any, onEnd: (answer: str
     body: JSON.stringify(payload)
   });
 
-  // @ts-expect-error
   const stream = new ReadableStream({
-    async start(controller: ReadableByteStreamController) {
+    async start(controller) {
       controller.enqueue(encoder.encode(JSON.stringify(extra) + 'JSON_END'));
 
       function onParse(event: ParsedEvent | ReconnectInterval) {

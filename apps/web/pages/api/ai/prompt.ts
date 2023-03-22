@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Configuration, OpenAIApi } from 'openai';
 import cors from '@ui/cors';
-import { fetchContext } from '@ui/fetchContext';
+import { fetchContext } from '@utils/pinecone/fetchContext';
 
 type Data = {
   pineconeData?: any;

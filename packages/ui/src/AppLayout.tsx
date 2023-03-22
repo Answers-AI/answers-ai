@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
-import { Container, CssBaseline, GlobalStyles } from '@mui/material';
+import { CssBaseline, GlobalStyles } from '@mui/material';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
-import { FlagsmithContextType, FlagsmithProvider } from 'flagsmith/react';
+import { FlagsmithProvider } from 'flagsmith/react';
 import flagsmith from 'flagsmith/isomorphic';
 
 import { SessionProvider } from 'next-auth/react';
@@ -21,7 +21,7 @@ export default function AppLayout({
   flagsmithState
 }: {
   session?: Session;
-  children: React.ReactNode;
+  children: any;
   params: {
     slug: string;
   };
@@ -52,8 +52,6 @@ export default function AppLayout({
               ) : (
                 <Auth />
               )}
-
-              {/* <ReactQueryDevtools position="top-right" /> */}
             </body>
           </html>
         </ThemeProvider>
