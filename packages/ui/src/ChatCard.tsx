@@ -54,6 +54,7 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
 
       <CardActionArea
         component={NextLink}
+        prefetch={false}
         sx={{ minHeight: '100%', paddingRight: 4, paddingBottom: 4 }}
         href={`/chat/${id}`}>
         <Box
