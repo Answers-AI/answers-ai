@@ -44,7 +44,6 @@ class ConfluenceClient {
     }
 
     if (!data) {
-      console.log('url', url);
       const response = await axios.get(url, {
         headers: this.headers
       });
@@ -65,5 +64,7 @@ class ConfluenceClient {
     return data;
   }
 }
+
+export const confluenceClient = new ConfluenceClient();
 
 export default ConfluenceClient;

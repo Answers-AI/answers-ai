@@ -10,12 +10,12 @@ import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
 import { Chat } from 'db/generated/prisma-client';
 import { AnswersFilters, DataSourcesFilters, Message, SourceFilters } from 'types';
-import { PromptLayerOpenAI, OpenAI } from 'langchain/llms';
-import { loadQAMapReduceChain } from 'langchain/chains';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+// import { PromptLayerOpenAI, OpenAI } from 'langchain/llms';
+// import { loadQAMapReduceChain } from 'langchain/chains';
+// import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
 import OpenAIClient from '../openai/openai';
-import { summarizeAI, summarizeChain } from '../llm/chains';
+import { summarizeAI } from '../ingest/summarizeAI';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
@@ -78,7 +78,7 @@ export const fetchContext = async ({
             (acc, field) => ({
               ...acc,
               [field]: {
-                $in: sourceFilter[field]?.map((value: string) => value?.toLowerCase())
+                $in: sourceFilter[field]?.map((value: string) => value?.toString().toLowerCase())
               }
             }),
             {}

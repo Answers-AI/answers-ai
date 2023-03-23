@@ -1,6 +1,6 @@
 export const prepareAllForEmbedding = async (jiraObjects: any[]) => {
   // console.log('prepareAllForEmbedding');
-  // console.time('prepareAllForEmbedding');
+  // ////console.time('prepareAllForEmbedding');
   let preparedStatuses;
   try {
     if (!jiraObjects) throw new Error('Invalid jiraObjects');
@@ -15,6 +15,6 @@ export const prepareAllForEmbedding = async (jiraObjects: any[]) => {
     throw error;
   }
 
-  // console.timeEnd('prepareAllForEmbedding');
+  // //console.timeEnd('prepareAllForEmbedding');
   return preparedStatuses;
 };

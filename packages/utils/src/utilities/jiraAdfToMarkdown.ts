@@ -67,7 +67,9 @@ export const jiraAdfToMarkdown = (node: Node): string => {
       return node.content?.map((item) => jiraAdfToMarkdown(item)).join('') || '';
 
     case 'paragraph':
-      return `${node.content?.map((item) => jiraAdfToMarkdown(item)).join('')}\n\n`;
+      return !node.content
+        ? ''
+        : `${node.content?.map((item) => jiraAdfToMarkdown(item)).join('')}\n\n`;
 
     case 'text':
       return node.text || '';
@@ -111,7 +113,13 @@ export const jiraAdfToMarkdown = (node: Node): string => {
       return `> ${node.content?.map((item) => jiraAdfToMarkdown(item)).join('')}\n`;
 
     case 'codeBlock':
-      return `\`\`\`\n${node.text || ''}\n\`\`\`\n\n`;
+      if (node.text) {
+        return `\`\`\`\n${node.text || ''}\n\`\`\`\n\n`;
+      } else {
+        return `\`\`\`\n${node.content
+          ?.map((item) => jiraAdfToMarkdown(item))
+          .join('')}}\n\`\`\`\n\n`;
+      }
 
     case 'mediaGroup':
       return node.content?.map((item) => jiraAdfToMarkdown(item)).join('') || '';

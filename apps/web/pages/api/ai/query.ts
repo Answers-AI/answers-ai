@@ -77,7 +77,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
 
   try {
-    console.time('OpenAI->createCompletion: ' + prompt);
+    ////console.time('OpenAI->createCompletion: ' + prompt);
     const chatChain = createChatChain({ messages });
     const response = await chatChain.call({
       context: summary || context,
@@ -87,7 +87,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       agent_scratchpad: ''
     });
     const answer = response.text;
-    console.timeEnd('OpenAI->createCompletion: ' + prompt);
+    //console.timeEnd('OpenAI->createCompletion: ' + prompt);
 
     if (prompt && answer) {
       await inngest.send({

@@ -31,10 +31,11 @@ export interface AppSettings {
     }[];
   };
   confluence: {
-    spaces?: {
+    spaces?: ConfluenceSpaceSetting[];
+    pages?: {
       key: string;
       enabled: boolean;
-    };
+    }[];
   };
   slack: {
     channels?: SlackChannelSetting[];
@@ -65,14 +66,23 @@ export interface WebFilters {
   domain?: string[];
 }
 export interface OpenApiFilters {}
+export interface ConfluenceFilters {
+  spaceId?: string[];
+}
 export interface UserFilters {}
-export type SourceFilters = JiraFilters | SlackFilters | WebFilters | OpenApiFilters;
+export type SourceFilters =
+  | JiraFilters
+  | SlackFilters
+  | WebFilters
+  | OpenApiFilters
+  | ConfluenceFilters;
 export interface DataSourcesFilters {
   user?: UserFilters;
   jira?: JiraFilters;
   slack?: SlackFilters;
   web?: WebFilters;
   openapi?: OpenApiFilters;
+  confluence?: ConfluenceFilters;
 }
 export interface AnswersFilters {
   models?: {
@@ -111,6 +121,21 @@ export interface SlackChannelSetting extends SlackChannel {
   enabled: boolean;
 }
 export type SlackMessage = {};
+
+export type ConfluenceSpace = {
+  key: string;
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+  expand: string;
+  _links: {
+    self: string;
+  };
+};
+export interface ConfluenceSpaceSetting extends ConfluenceSpace {
+  enabled: boolean;
+}
 
 export interface Message extends Partial<DB.Message>, ChatCompletionRequestMessage {
   user?: User | null;

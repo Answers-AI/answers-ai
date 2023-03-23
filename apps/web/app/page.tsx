@@ -2,7 +2,7 @@ import React from 'react';
 
 import Chat from './Chat';
 
-export const revalidate = 1; // revalidate every minute
+// export const revalidate = 1; // revalidate every minute
 
 export const metadata = {
   title: 'Answers AI',

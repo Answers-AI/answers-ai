@@ -4,10 +4,12 @@ import { AppSettings } from 'types';
 
 import JiraSettings from '@ui/JiraSettings';
 import SlackSettings from '@ui/SlackSettings';
+import ConfluenceSettings from '@ui/ConfluenceSettings';
 
 const SETTINGS: { [key: string]: any } = {
   jira: JiraSettings,
-  slack: SlackSettings
+  slack: SlackSettings,
+  confluence: ConfluenceSettings
 };
 
 const AppSettingPage = async ({ params }: any) => {

@@ -57,11 +57,11 @@ export const createChatChain = ({ messages }: { messages: Message[] }) => {
       const response = await openai.createChatCompletion({
         max_tokens: 1000,
         messages: [
-          {
-            role: ChatCompletionRequestMessageRoleEnum.System,
-            content:
-              'You are an AI with access to the following platforms: Jira, Slack, Github, OpenAPI.'
-          },
+          // {
+          //   role: ChatCompletionRequestMessageRoleEnum.System,
+          //   content:
+          //     'You are an AI with access to the following platforms: Jira, Slack, Github, OpenAPI.'
+          // },
           {
             role: ChatCompletionRequestMessageRoleEnum.System,
             content: 'This will be your context: ' + context
@@ -121,13 +121,17 @@ export const summarizeAI = async ({
       let summary = doc.pageContent ?? '';
       console.log('[summarizeAI] Chunk', { idx });
       await sleep(100 * idx);
+
+      // const promptWrapper = `${prompt} <INPUT>${doc.pageContent}<INPUT> Summary:`,
+      const promptWrapper = `Use the following portion of a long document to see if any of the text is relevant to answer the question. \nReturn any relevant text verbatim.\n${doc.pageContent}\nQuestion: ${prompt}\nRelevant text, if any:`;
       const res = await openai.createCompletion({
         max_tokens: 2000,
-        prompt: `${prompt} <INPUT>${doc.pageContent}<INPUT> Summary:`,
+        prompt: promptWrapper,
         temperature: 0.1,
         model: 'text-davinci-003'
       });
-      if (!res?.data?.choices?.[0]?.text) {
+
+      if (res?.data?.choices?.[0]?.text) {
         summary = res?.data?.choices?.[0]?.text!;
       }
       // return summarizeChain.call({
@@ -140,6 +144,7 @@ export const summarizeAI = async ({
       Promise.all(summariesPromises)
       // timeout(15000)
     ])) as string[];
+    // const finalPrompt = `Given the following extracted parts of a long document and a question, create a final answer with references (\"SOURCES\"). \nIf you don't know the answer, just say that you don't know. Don't try to make up an answer.\nALWAYS return a \"SOURCES\" part in your answer.\n\nSOURCES:\n\nQUESTION: {question}\n=========\n{summaries}\n=========\nFINAL ANSWER:`;
     return summarizeAI({
       input: summaries?.join('\n'),
       prompt,

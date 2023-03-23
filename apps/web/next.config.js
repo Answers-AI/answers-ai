@@ -1,4 +1,6 @@
 const { PrismaPlugin } = require('experimental-prisma-webpack-plugin');
+// const { PrismaPlugin } = require('@prisma/nextjs-monorepo-workaround-plugin');
+
 const webpack = require('webpack');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
@@ -19,7 +21,7 @@ module.exports = withBundleAnalyzer({
     }
   },
   webpack: (config, { isServer }) => {
-    config.externals = [...config.externals, 'db', 'widdershins'];
+    config.externals = [...config.externals, 'db'];
     // if (isServer) {
     config.plugins = [
       ...config.plugins,

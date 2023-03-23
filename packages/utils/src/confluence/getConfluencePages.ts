@@ -81,7 +81,6 @@ export const getConfluencePage = async ({
 }: {
   pageId: string;
 }): Promise<ConfluencePage> => {
-  console.log('====================================');
   console.log(`===Fetching confluence page: ${pageId}`);
   try {
     const endpoint = `/pages/${pageId}?body-format=atlas_doc_format`;
@@ -91,8 +90,7 @@ export const getConfluencePage = async ({
 
     const docJson = JSON.parse(pageData.body.atlas_doc_format.value);
     pageData.content = removeDuplicateHeaders(jiraAdfToMarkdown(docJson));
-    console.log(JSON.stringify(docJson, null, 2));
-    console.log(pageData.content);
+    // console.log(JSON.stringify(docJson, null, 2));
     return pageData;
   } catch (error) {
     console.error('getConfluencePage:ERROR', error);
