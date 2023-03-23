@@ -129,7 +129,6 @@ export const processConfluencePage: EventVersionHandler<{ pageIds: string[] }> =
         );
       }
     } catch (e) {
-      console.log('conf upsert issue');
       console.log(e);
       throw e;
     }

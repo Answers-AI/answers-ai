@@ -167,7 +167,7 @@ export const processOpenApiUrl: EventVersionHandler<{ urls: string[] }> = {
         const markdown = prefixHeaders(originalMarkdown);
 
         const headingsRegex = /^#####\s+(.*)$/gm;
-        const headingsArray = [...markdown.matchAll(headingsRegex)];
+        const headingsArray = Array.from(markdown.matchAll(headingsRegex));
 
         return headingsArray.map((heading, i, arr) => {
           const nextHeadingIndex = arr[i + 1] ? arr[i + 1].index : markdown.length;

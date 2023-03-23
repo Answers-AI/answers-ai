@@ -109,11 +109,14 @@ export const getWebPage = async ({
 }: {
   url: string;
   getRaw: boolean;
-}): Promise<WebPage> => {
+}): Promise<WebPage | null> => {
   console.log(`===Fetching webpage: ${url}`);
   try {
     const pageHtml = await webClient.fetchWebData(url, { cache: false });
-    if (!pageHtml) throw new Error(`No valid HTML returned for url: ${url}`);
+    if (!pageHtml) {
+      console.error(`No valid HTML returned for url: ${url}`);
+      return null;
+    }
 
     if (getRaw) {
       return { url, content: pageHtml };

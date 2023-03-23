@@ -54,7 +54,7 @@ class WebClient {
         }
       } catch (err: AxiosError | any) {
         console.error(`Error fetching data from ${url}.  Status: ${err.response.status}`);
-        data = false;
+        data = null;
       }
     }
 

@@ -15,10 +15,9 @@ export const webPageLoader = redisLoader<string, WebPage>({
   keyPrefix: 'web:page',
   redisConfig: process.env.REDIS_URL as string,
   getValuesFn: async (keys) => {
-    const results: WebPage[] = [];
+    const results: Array<WebPage | null> = [];
 
     for (const url of keys) {
-      console.log(url);
       const result = await getWebPage({ url, getRaw: false });
       results.push(result);
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -27,17 +26,18 @@ export const webPageLoader = redisLoader<string, WebPage>({
     return Promise.all(results);
   },
   cacheExpirationInSeconds: 0,
-  disableCache: false
+  disableCache: true
 });
 
 export const webPageRawLoader = redisLoader<string, WebPage>({
   keyPrefix: 'web:page',
   redisConfig: process.env.REDIS_URL as string,
   getValuesFn: async (keys) => {
-    const results: WebPage[] = [];
+    const results: Array<WebPage | null> = [];
 
     for (const url of keys) {
       const result = await getWebPage({ url, getRaw: true });
+
       results.push(result);
       await new Promise((resolve) => setTimeout(resolve, 100));
     }

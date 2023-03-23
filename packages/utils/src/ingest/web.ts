@@ -12,19 +12,22 @@ import cheerio from 'cheerio';
 
 const visitedUrls = new Set<string>();
 
-async function* scrapePage(url: string, origin: string): AsyncGenerator<string> {
+async function* scrapePage(url: string, origin: string): AsyncGenerator<string | null> {
   if (!url || visitedUrls.has(url)) {
     return;
   }
 
   visitedUrls.add(url);
   const webPages = (await webPageRawLoader.loadMany([url])) as WebPage[];
-  console.log(webPages[0].content);
-  if (!webPages || !webPages.length || !webPages[0].content) return;
+  // if (url.indexOf('composable') > -1) console.log(webPages);
+  if (!webPages || !webPages.length || !webPages[0]) yield null;
 
   const webPage: WebPage = webPages[0];
 
-  if (!webPage?.content) return;
+  if (!webPage?.content) {
+    console.log('no content', url);
+    yield null;
+  }
 
   const $ = cheerio.load(webPage.content);
   const links = $('a').get();
@@ -161,7 +164,7 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
       }));
     });
 
-    if (vectors?.length) {
+    if (vectors?.length && vectors?.every((x) => !!x)) {
       await Promise.all(
         chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
           //TODO: Save to Redis by page url
@@ -195,20 +198,17 @@ export const processWebDeepScrape: EventVersionHandler<{ domain: string }> = {
     // if (!urls?.length) urls = await extractUrlsFromSitemap(`${domain}/sitemap-index.xml`);
 
     // Example usage
-    const urls: string[] = [];
+    let urls: string[] = [];
     const origin = new URL(domain).origin;
 
     for await (const link of scrapePage(domain, origin)) {
-      urls.push(new URL(link, origin).href);
+      console.log('-____________', link);
+      if (link) urls.push(new URL(link, origin).href);
     }
 
-    console.log({ urls });
+    // console.log({ urls });
 
-    const webPages = (await (
-      await webPageLoader.loadMany(urls)
-    ).filter((url) => Boolean)) as WebPage[];
-
-    console.log('webPages', webPages);
+    const webPages = (await webPageLoader.loadMany(urls.filter(Boolean))) as WebPage[];
 
     const vectors = webPages.flatMap((page) => {
       const headingsRegex = /(^|\n)##\s/g;
@@ -225,7 +225,7 @@ export const processWebDeepScrape: EventVersionHandler<{ domain: string }> = {
       }));
     });
 
-    if (vectors?.length) {
+    if (vectors?.length && vectors?.every((x) => !!x)) {
       await Promise.all(
         chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
           //TODO: Save to Redis by page url
@@ -276,7 +276,7 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
       }));
     });
 
-    if (vectors?.length) {
+    if (vectors?.length && vectors?.every((x) => !!x)) {
       await Promise.all(
         chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
           //TODO: Save to Redis by page url
