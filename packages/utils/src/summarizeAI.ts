@@ -1,6 +1,6 @@
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { randomUUID } from 'crypto';
-import { openai } from '../openai/client';
+import { openai } from './openai/client';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const timeout = (ms: number) =>
@@ -8,7 +8,7 @@ const timeout = (ms: number) =>
 export const summarizeAI = async ({
   input,
   prompt,
-  chunkSize = 7000, // 7000 is the max for openai
+  chunkSize = 3000, // 7000 is the max for openai
   id
 }: {
   input: string;
@@ -25,6 +25,7 @@ export const summarizeAI = async ({
   const inputDocs = await textSplitter.createDocuments([input]);
   if (inputDocs.length > 1) {
     ////console.time(`[summarizeAI] ${id} - ${inputDocs.length} chunks}`);
+    console.log(`[summarizeAI] ${id} - ${inputDocs.length} chunks}`);
 
     const summariesPromises = inputDocs?.map(async (doc, idx) => {
       let summary = doc.pageContent ?? '';
@@ -32,7 +33,7 @@ export const summarizeAI = async ({
       // const promptWrapper = `${prompt} <INPUT>${doc.pageContent}<INPUT> Summary:`;
       const promptWrapper = `Use the following portion of a long document to see if any of the text is relevant to answer the question. \nReturn any relevant text verbatim.\n${doc.pageContent}\nQuestion: ${prompt}\nRelevant text, if any:`;
       const res = await openai.createCompletion({
-        max_tokens: 2000,
+        max_tokens: 1000,
         prompt: promptWrapper,
         temperature: 0.1,
         model: 'text-davinci-003'

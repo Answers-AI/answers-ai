@@ -7,13 +7,13 @@ import { chunkArray } from '../utilities/utils';
 import { EventVersionHandler } from './EventVersionHandler';
 import { AnswersFilters, AppSettings } from 'types';
 import { jiraAdfToMarkdown } from '../utilities/jiraAdfToMarkdown';
-import { summarizeChain } from '../llm/chains';
-import OpenAI from '../openai/openai';
-import { openApiClient } from '../openapi';
+// import { summarizeChain } from '../llm/chains';
+// import OpenAI from '../openai/openai';
+// import { openApiClient } from '../openapi';
 import { Configuration, OpenAIApi } from 'openai';
 import { MODELS } from '../MODELS';
 import { inngest } from './client';
-import { summarizeAI } from './summarizeAI';
+import { summarizeAI } from '../summarizeAI';
 const initializeOpenAI = () => {
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY
