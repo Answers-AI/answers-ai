@@ -5,10 +5,13 @@ const webpack = require('webpack');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 });
-
+/**
+ * @type {import('next').NextConfig}
+ */
 module.exports = withBundleAnalyzer({
   experimental: {
-    appDir: true
+    appDir: true,
+    enableUndici: true
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],

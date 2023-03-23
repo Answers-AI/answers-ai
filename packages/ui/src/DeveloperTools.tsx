@@ -1,20 +1,8 @@
 'use client';
 import React, { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Container,
-  FormControlLabel,
-  Switch,
-  TextField,
-  Typography
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { AppSettings, Chat, Journey, User, Message, Prompt } from 'types';
-import PromptCard from './PromptCard';
+import { Box, Container, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
+import { AppSettings, Chat, Journey, User, Message } from 'types';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import { MessageCard } from './Message';
@@ -25,6 +13,7 @@ import FilterToolbar from './FilterToolbar';
 import ChatCard from './ChatCard';
 import JourneySection from './JourneySection';
 import { useFlags } from 'flagsmith/react';
+import { DefaultPrompts } from './DefaultPrompts';
 
 const DeveloperTools = ({
   appSettings,
@@ -98,17 +87,28 @@ const DeveloperTools = ({
     <>
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
+          'display': 'grid',
+          'flexDirection': 'column',
+          'height': '100%',
+          'gridTemplateColumns': '320px 1fr 320px',
+          'gridTemplateRows': '1fr',
 
-          py: 2
+          '> *': {
+            // background: 'rgba(0,0,0,0.2)',
+            // border: '1px solid white'
+          }
         }}>
+        {journey || journeys?.length ? (
+          <JourneySection journeys={journey ? [journey] : journeys} />
+        ) : null}
+
         <Container
           sx={{
             'display': 'flex',
             'flexDirection': 'column',
-            'overflow': 'hidden',
+            'justifyContent': 'center',
+            'overflow': 'auto',
+            'width': '100%',
             'height': '100%',
             'scrollbarWidth': 'thin',
             'flex': 1,
@@ -129,136 +129,79 @@ const DeveloperTools = ({
           }}>
           <Box
             sx={{
-              width: '100%',
-              gap: 2,
-              flexDirection: 'column',
               display: 'flex',
+              flexDirection: 'column',
               height: '100%'
             }}>
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: { md: '1fr 320px', sm: '1fr' },
-                gap: { md: 4, sm: 1 },
-                height: '100%',
-                overflow: 'hidden'
-              }}>
-              <Box
-                ref={scrollRef}
-                sx={{
-                  overflow: 'hidden',
-                  overflowY: 'auto'
-                }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 2
-                  }}>
-                  {!messages?.length ? (
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        width: '100%',
-                        flexDirection: 'column',
-                        gap: 4
-                      }}>
-                      {/* TODO: Filter journeys by selected filter */}
-                      {journey || (journeys?.length && !Object.keys(filters)?.length) ? (
-                        <JourneySection journeys={journey ? [journey] : journeys} />
-                      ) : null}
-                      {!journey && chats?.length && !Object.keys(filters)?.length ? (
-                        <Box>
-                          <Typography variant="overline">Chats</Typography>
-                          <Box
-                            sx={{
-                              width: '100%',
-                              display: 'grid',
-                              gap: 2,
-                              gridTemplateColumns: { md: 'repeat(3, minmax(0px, 1fr))', sm: '1fr' }
-                            }}>
-                            {chats?.map((chat) => (
-                              <ChatCard key={chat.id} {...chat} />
-                            ))}
-                          </Box>
-                        </Box>
-                      ) : null}
-                    </Box>
-                  ) : null}
-
-                  {messages.map((message, index) => (
-                    <MessageCard {...message} key={`message_${index}`} />
-                  ))}
-                  {error ? (
-                    <>
-                      <MessageCard
-                        user={user}
-                        role="assistant"
-                        content={`There was an error completing your request, please try again`}
-                        error={error}
-                      />
-                      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                        <Button
-                          onClick={regenerateAnswer}
-                          variant="contained"
-                          color="primary"
-                          sx={{ margin: 'auto' }}>
-                          Retry
-                        </Button>
-                      </Box>
-                    </>
-                  ) : null}
-                  {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
-                  {messages?.length && !isLoading && !error ? (
-                    <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                      <Button onClick={regenerateAnswer} variant="outlined" color="primary">
-                        Regenerate answer
-                      </Button>
-                    </Box>
-                  ) : null}
-
-                  {flags.recommended_prompts.enabled && !messages?.length ? (
-                    <DefaultPrompts
-                      prompts={prompts}
-                      handlePromptClick={handlePromptClick}
-                      expanded={flags.recommended_prompts?.value === 'expanded'}
-                    />
-                  ) : null}
-
-                  {flags.recommended_prompts_chat.value === 'messages' &&
-                  messages?.length &&
-                  !isLoading ? (
-                    <DefaultPrompts
-                      expanded={flags.recommended_prompts?.value === 'expanded'}
-                      prompts={prompts}
-                      handlePromptClick={handlePromptClick}
-                    />
-                  ) : null}
+            {messages.map((message, index) => (
+              <MessageCard {...message} key={`message_${index}`} />
+            ))}
+            {error ? (
+              <>
+                <MessageCard
+                  user={user}
+                  role="assistant"
+                  content={`There was an error completing your request, please try again`}
+                  error={error}
+                />
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    onClick={regenerateAnswer}
+                    variant="contained"
+                    color="primary"
+                    sx={{ margin: 'auto' }}>
+                    Retry
+                  </Button>
                 </Box>
+              </>
+            ) : null}
+            {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
+            {messages?.length && !isLoading && !error ? (
+              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <Button onClick={regenerateAnswer} variant="outlined" color="primary">
+                  Regenerate answer
+                </Button>
               </Box>
-              <Box
-                sx={{
-                  overflow: 'auto'
-                }}>
-                <FilterToolbar appSettings={appSettings} />
-                {flags.recommended_prompts_chat.value === 'sidebar' && messages?.length ? (
-                  <DefaultPrompts
-                    expanded={flags.recommended_prompts?.value === 'expanded'}
-                    prompts={prompts}
-                    handlePromptClick={handlePromptClick}
-                  />
-                ) : null}
-              </Box>
-            </Box>
+            ) : null}
+            {flags.recommended_prompts.enabled && !messages?.length ? (
+              <DefaultPrompts
+                prompts={prompts}
+                handlePromptClick={handlePromptClick}
+                expanded={flags.recommended_prompts?.value === 'expanded'}
+              />
+            ) : null}
+            {flags.recommended_prompts_chat.value === 'messages' &&
+            messages?.length &&
+            !isLoading ? (
+              <DefaultPrompts
+                expanded={flags.recommended_prompts?.value === 'expanded'}
+                prompts={prompts}
+                handlePromptClick={handlePromptClick}
+              />
+            ) : null}{' '}
           </Box>
         </Container>
+
         <Box
           sx={{
+            overflow: 'auto'
+          }}>
+          <FilterToolbar appSettings={appSettings} />
+          {flags.recommended_prompts_chat.value === 'sidebar' && messages?.length ? (
+            <DefaultPrompts
+              expanded={flags.recommended_prompts?.value === 'expanded'}
+              prompts={prompts}
+              handlePromptClick={handlePromptClick}
+            />
+          ) : null}
+        </Box>
+
+        <Box
+          sx={{
+            gridColumn: '1 / 4',
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
-            px: [2, 3],
-            gap: 0,
             width: '100%'
           }}>
           <AppSyncToolbar appSettings={appSettings} />
@@ -323,67 +266,5 @@ const DeveloperTools = ({
     </>
   );
 };
-interface DefaultPromptsProps {
-  prompts: Prompt[];
-  handlePromptClick: (prompt: string) => void;
-  expanded: boolean;
-}
-
-const DefaultPrompts = ({ prompts, handlePromptClick, expanded }: DefaultPromptsProps) =>
-  prompts?.length ? (
-    <Accordion
-      defaultExpanded={expanded}
-      sx={{
-        '&, .MuiAccordion-root ': {
-          'width': '100%',
-          'overflow': 'hidden',
-          'm': 0,
-          'background': 'none',
-          'boxShadow': 'none',
-          '&.Mui-expanded': {
-            margin: 0
-          },
-          '.MuiAccordionSummary-root': {
-            'px': 0,
-            'minHeight': 0,
-            '&.Mui-expanded': { minHeight: 0 },
-            'justifyContent': 'flex-start',
-            'gap': 2
-          },
-          '.MuiAccordionSummary-content': {
-            'm': 0,
-            'flexGrow': 'initial',
-            '&.Mui-expanded': { m: 0 }
-          },
-          '.MuiAccordionDetails-root': { p: 0 }
-        }
-      }}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="filters-content"
-        id="filters-header">
-        <Typography variant="overline">Recommended prompts</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <Box sx={{}}>
-          <Box
-            sx={{
-              width: '100%',
-              display: 'grid',
-              gap: 2,
-              gridTemplateColumns: { md: 'repeat(3, minmax(0px, 1fr))', sm: '1fr' }
-            }}>
-            {prompts?.map((prompt) => (
-              <PromptCard
-                key={prompt.id}
-                {...prompt}
-                onClick={() => handlePromptClick(prompt?.content)}
-              />
-            ))}
-          </Box>
-        </Box>
-      </AccordionDetails>
-    </Accordion>
-  ) : null;
 
 export default DeveloperTools;
