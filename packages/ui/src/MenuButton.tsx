@@ -5,11 +5,6 @@ import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import Typography from '@mui/material/Typography';
-import ContentDelete from '@mui/icons-material/Delete';
-import ContentCopy from '@mui/icons-material/ContentCopy';
-import ContentPaste from '@mui/icons-material/ContentPaste';
-import Cloud from '@mui/icons-material/Cloud';
 import { Popper, Grow, ClickAwayListener } from '@mui/material';
 
 export default function IconMenu({

@@ -11,7 +11,9 @@ import { useAnswers } from './AnswersContext';
 import axios from 'axios';
 import { AppSettings, AppService } from 'types';
 import { useFlags } from 'flagsmith/react';
-import ExpandMoreIcon from '@mui/icons-material/ExpandLess';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretSquareDown } from '@fortawesome/free-regular-svg-icons';
+
 const useSync = ({ onSync }: { onSync?: (a: AppService) => void }) => {
   const { filters } = useAnswers();
   const handleSync = async (service: AppService) => {
@@ -64,7 +66,7 @@ const AppSyncToolbar = ({
         }
       }}>
       <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
+        expandIcon={<FontAwesomeIcon icon={faCaretSquareDown} />}
         aria-controls="filters-content"
         id="filters-header">
         <Typography variant="overline">Sync</Typography>

@@ -12,9 +12,10 @@ import {
   IconButton,
   CardHeader
 } from '@mui/material';
-import MessageIcon from '@mui/icons-material/Message';
-import Delete from '@mui/icons-material/Delete';
-import { Chat, Prompt } from 'types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMessage, faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { Chat } from 'types';
 
 interface ChatCardProps extends Chat {
   filters: any;
@@ -27,7 +28,6 @@ interface ChatCardProps extends Chat {
   // usages?: number;
   // onClick: () => void;
 }
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MenuButton from './MenuButton';
 import { useAnswers } from './AnswersContext';
 const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) => {
@@ -44,9 +44,15 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
         action={
           <MenuButton
             aria-label="menu"
-            actions={[{ text: 'Delete Chat', onClick: () => deleteChat(id), icon: <Delete /> }]}>
+            actions={[
+              {
+                text: 'Delete Chat',
+                onClick: () => deleteChat(id),
+                icon: <FontAwesomeIcon icon={faTrashCan} />
+              }
+            ]}>
             <IconButton>
-              <MoreVertIcon />
+              <FontAwesomeIcon icon={faEllipsisV} />
             </IconButton>
           </MenuButton>
         }
@@ -109,7 +115,10 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
                 bottom: 0
               }}>
               {messages ? (
-                <Button size="small" disabled startIcon={<MessageIcon sx={{ fontSize: 16 }} />}>
+                <Button
+                  size="small"
+                  disabled
+                  startIcon={<FontAwesomeIcon icon={faMessage} sx={{ fontSize: 16 }} />}>
                   {messages?.length}
                 </Button>
               ) : null}

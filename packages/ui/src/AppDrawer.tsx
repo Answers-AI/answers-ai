@@ -8,12 +8,18 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import MessageIcon from '@mui/icons-material/QueryBuilder';
-import HomeIcon from '@mui/icons-material/Home';
-import StorageIcon from '@mui/icons-material/Storage';
-import SettingsIcon from '@mui/icons-material/Settings';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import AIIcon from '@mui/icons-material/SmartButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import {
+  faHome,
+  faHomeUser,
+  faStore,
+  faCog,
+  faRightFromBracket,
+  faAtom
+} from '@fortawesome/free-solid-svg-icons';
+import { faMessage } from '@fortawesome/free-regular-svg-icons';
+
 import React from 'react';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
@@ -36,14 +42,14 @@ export const AppDrawer = ({ params }: any) => {
       <Divider />
       <List sx={{ flex: '1' }}>
         {[
-          { text: 'Message', link: '/', icon: <HomeIcon /> },
-          { text: 'Settings', link: '/settings', icon: <SettingsIcon /> },
+          { text: 'Message', link: '/', icon: <FontAwesomeIcon icon={faMessage} /> },
+          { text: 'Settings', link: '/settings', icon: <FontAwesomeIcon icon={faCog} /> },
           ...(process.env.NODE_ENV === 'development'
             ? [
                 { component: <Divider key="divider" /> },
-                { text: 'Inngest', link: '/events', icon: <MessageIcon /> },
-                { text: 'Store', link: '/store', icon: <StorageIcon /> },
-                { text: 'Tracing', link: '/tracing', icon: <AIIcon /> }
+                { text: 'Inngest', link: '/events', icon: <FontAwesomeIcon icon={faHomeUser} /> },
+                { text: 'Store', link: '/store', icon: <FontAwesomeIcon icon={faStore} /> },
+                { text: 'Tracing', link: '/tracing', icon: <FontAwesomeIcon icon={faAtom} /> }
               ]
             : [])
         ].map((item, idx) =>
@@ -99,7 +105,7 @@ export const AppDrawer = ({ params }: any) => {
               minWidth: 0,
               justifyContent: 'center'
             }}>
-            <ExitToAppIcon />
+            <FontAwesomeIcon icon={faRightFromBracket} />
           </ListItemIcon>
           {/* <ListItemText primary={} sx={{ opacity: 0 }} /> */}
         </ListItemButton>

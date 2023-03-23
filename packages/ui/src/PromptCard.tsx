@@ -1,5 +1,5 @@
 import React from 'react';
-import NextLink from 'next/link';
+
 import {
   Box,
   Typography,
@@ -11,27 +11,18 @@ import {
   IconButton,
   CardHeader
 } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-import MoreVert from '@mui/icons-material/MoreVert';
+
 import MenuButton from './MenuButton';
 import { useAnswers } from './AnswersContext';
-import { Delete } from '@mui/icons-material';
 import { Prompt } from 'types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashCan, faEye, faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons';
+import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 interface PromptCardProps extends Prompt {
   onClick: () => void;
 }
 
-const PromptCard: React.FC<PromptCardProps> = ({
-  id,
-  title,
-  content,
-  likes,
-  dislikes,
-  usages,
-  onClick
-}) => {
+const PromptCard: React.FC<PromptCardProps> = ({ id, title, content, usages, onClick }) => {
   const { deletePrompt } = useAnswers();
   const handleLike = (evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.stopPropagation();
@@ -53,10 +44,14 @@ const PromptCard: React.FC<PromptCardProps> = ({
           <MenuButton
             aria-label="menu"
             actions={[
-              { text: 'Delete Prompt', onClick: () => deletePrompt(id), icon: <Delete /> }
+              {
+                text: 'Delete Prompt',
+                onClick: () => deletePrompt(id),
+                icon: <FontAwesomeIcon icon={faTrashCan} />
+              }
             ]}>
             <IconButton>
-              <MoreVert />
+              <FontAwesomeIcon icon={faEllipsisV} />
             </IconButton>
           </MenuButton>
         }
@@ -111,16 +106,19 @@ const PromptCard: React.FC<PromptCardProps> = ({
           bottom: 0
         }}>
         {usages ? (
-          <Button size="small" disabled startIcon={<VisibilityIcon sx={{ fontSize: 16 }} />}>
+          <Button
+            size="small"
+            disabled
+            startIcon={<FontAwesomeIcon icon={faEye} style={{ fontSize: 16 }} />}>
             {usages}
           </Button>
         ) : null}
         <Box>
           <IconButton color="secondary" sx={{}} size="small" onClick={handleLike}>
-            <ThumbUpIcon sx={{ fontSize: 16 }} />
+            <FontAwesomeIcon icon={faThumbsUp} style={{ fontSize: 16 }} />
           </IconButton>
           <IconButton size="small" color="secondary" onClick={handleLike}>
-            <ThumbDownIcon sx={{ fontSize: 16 }} />
+            <FontAwesomeIcon icon={faThumbsDown} style={{ fontSize: 16 }} />
           </IconButton>
         </Box>
       </CardActions>

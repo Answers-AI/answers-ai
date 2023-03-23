@@ -11,6 +11,9 @@ import { Session } from 'next-auth';
 import Auth from './Auth';
 import { AppDrawer } from './AppDrawer';
 import { darkModeTheme } from './theme';
+import { config } from '@fortawesome/fontawesome-svg-core';
+import '@fortawesome/fontawesome-svg-core/styles.css';
+config.autoAddCss = false;
 
 export default function AppLayout({
   session,

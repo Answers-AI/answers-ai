@@ -3,12 +3,8 @@ import React from 'react';
 import { Avatar, Box, Card, CardActions, CardContent, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { JsonViewer } from '@textea/json-viewer';
-// import { deepOrange, deepPurple } from '@mui/material/colors';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretSquareDown, faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
@@ -34,7 +30,7 @@ const Accordion = styled((props: AccordionProps) => (
 }));
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
   <MuiAccordionSummary
-    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+    expandIcon={<FontAwesomeIcon icon={faCaretSquareDown} style={{ fontSize: '0.9rem' }} />}
     {...props}
   />
 ))(({ theme }) => ({
@@ -130,7 +126,7 @@ export const MessageCard = ({
           {error ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<FontAwesomeIcon icon={faCaretSquareDown} />}
                 aria-controls="panel1a-content"
                 id="panel1a-header">
                 <Typography variant="overline">Error</Typography>
@@ -154,10 +150,10 @@ export const MessageCard = ({
             right: 0
           }}>
           <IconButton color="secondary" sx={{}} size="small" onClick={handleLike}>
-            <ThumbUpIcon sx={{ fontSize: 16 }} />
+            <FontAwesomeIcon icon={faThumbsUp} style={{ fontSize: 16 }} />
           </IconButton>
           <IconButton size="small" color="secondary" onClick={handleLike}>
-            <ThumbDownIcon sx={{ fontSize: 16 }} />
+            <FontAwesomeIcon icon={faThumbsDown} style={{ fontSize: 16 }} />
           </IconButton>
         </CardActions>
       </Box>
@@ -167,7 +163,7 @@ export const MessageCard = ({
             // Use the @mui accordion component to wrap the context and response
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<FontAwesomeIcon icon={faCaretSquareDown} />}
                 aria-controls="panel1a-content"
                 id="panel1a-header">
                 <Typography variant="overline">Context</Typography>
@@ -195,7 +191,7 @@ export const MessageCard = ({
           {pineconeData ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<FontAwesomeIcon icon={faCaretSquareDown} />}
                 aria-controls="panel1a-content"
                 id="panel1a-header">
                 <Typography variant="overline">Pinecone Data</Typography>
@@ -217,7 +213,7 @@ export const MessageCard = ({
           {completionData ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<FontAwesomeIcon icon={faCaretSquareDown} />}
                 aria-controls="panel1a-content"
                 id="panel1a-header">
                 <Typography variant="overline">Completion</Typography>
@@ -237,7 +233,7 @@ export const MessageCard = ({
             // Use the @mui accordion component to wrap the extra and response
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<FontAwesomeIcon icon={faCaretSquareDown} />}
                 aria-controls="panel1a-content"
                 id="panel1a-header">
                 <Typography variant="overline">extra</Typography>

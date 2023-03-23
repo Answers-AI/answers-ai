@@ -12,11 +12,13 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { AppSettings, Chat, Journey, User, Message, Prompt } from 'types';
 import PromptCard from './PromptCard';
 
-import DeleteIcon from '@mui/icons-material/Delete';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import { faTrashCan, faCaretSquareDown } from '@fortawesome/free-regular-svg-icons';
+
 import { MessageCard } from './Message';
 
 import AppSyncToolbar from './AppSyncToolbar';
@@ -302,7 +304,7 @@ const DeveloperTools = ({
               />
               {messages?.length ? (
                 <Button variant="outlined" color="primary" onClick={clearMessages}>
-                  <DeleteIcon />
+                  <FontAwesomeIcon icon={faTrashCan} />
                 </Button>
               ) : null}
               {/* <Button variant="outlined" color="primary" onClick={() => setShowPrompts(true)}>
@@ -359,7 +361,7 @@ const DefaultPrompts = ({ prompts, handlePromptClick, expanded }: DefaultPrompts
         }
       }}>
       <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
+        expandIcon={<FontAwesomeIcon icon={faCaretSquareDown} />}
         aria-controls="filters-content"
         id="filters-header">
         <Typography variant="overline">Recommended prompts</Typography>

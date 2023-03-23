@@ -1,13 +1,13 @@
 'use client';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useAnswers } from './AnswersContext';
 
 import { AppSettings, AppService } from 'types';
 import MultiSelect from './MultiSelect';
 import AutocompleteSelect from './AutocompleteSelect';
 import { useFlags } from 'flagsmith/react';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretSquareDown } from '@fortawesome/free-regular-svg-icons';
 const FilterToolbar = ({
   appSettings
 }: {
@@ -47,7 +47,7 @@ const FilterToolbar = ({
           }
         }}>
         <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
+          expandIcon={<FontAwesomeIcon icon={faCaretSquareDown} />}
           aria-controls="filters-content"
           id="filters-header">
           <Typography variant="overline">Filters</Typography>
@@ -134,7 +134,7 @@ const FilterToolbar = ({
             {flags.filters_model.enabled ? (
               <Accordion>
                 <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
+                  expandIcon={<FontAwesomeIcon icon={faCaretSquareDown} />}
                   aria-controls="filters-content"
                   id="filters-header">
                   <Typography variant="overline">Models</Typography>

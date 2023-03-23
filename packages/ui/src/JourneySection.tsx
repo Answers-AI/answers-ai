@@ -1,5 +1,6 @@
 import { Box, Button, Chip, Typography } from '@mui/material';
-import MessageIcon from '@mui/icons-material/Message';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMessage } from '@fortawesome/free-regular-svg-icons';
 import ChatCard from './ChatCard';
 import React from 'react';
 import NextLink from 'next/link';
@@ -45,7 +46,7 @@ function JourneySection({ journeys }: Props) {
               href={`/journey/${id}`}
               variant="outlined"
               color="primary">
-              <MessageIcon />
+              <FontAwesomeIcon icon={faMessage} />
             </Button>
           </Box>
         </Box>
