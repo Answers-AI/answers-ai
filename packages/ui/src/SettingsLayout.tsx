@@ -151,16 +151,17 @@ const AppsDrawer = ({
         })) || [])
       ]}
       renderItem={(item) => (
-        <NextLink href={item?.link} prefetch={false}>
-          <ListItemButton
-            key={item?.link}
-            sx={{ display: 'flex', gap: 2 }}
-            selected={activeApp == item?.text}
-            disabled={!item?.enabled}>
-            <ListItemIcon sx={{ minWidth: 0 }}>{item?.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
-          </ListItemButton>
-        </NextLink>
+        <ListItemButton
+          prefetch={false}
+          component={NextLink}
+          href={item?.link}
+          key={item?.link}
+          sx={{ display: 'flex', gap: 2 }}
+          selected={activeApp == item?.text}
+          disabled={!item?.enabled}>
+          <ListItemIcon sx={{ minWidth: 0 }}>{item?.icon}</ListItemIcon>
+          <ListItemText primary={item.text} />
+        </ListItemButton>
       )}
     />
     // <Drawer

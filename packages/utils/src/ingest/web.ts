@@ -1,12 +1,74 @@
 import { URL } from 'url';
 import { inngest } from './client';
-import { webPageLoader } from '../web';
+import { webPageLoader, webPageRawLoader } from '../web';
 import { EventVersionHandler } from './EventVersionHandler';
 import { chunkArray } from '../utilities/utils';
 import { WebPage } from 'types';
 import { extractUrlsFromSitemap } from '../utilities/getSitemapUrls';
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
+
+import cheerio from 'cheerio';
+
+const visitedUrls = new Set<string>();
+
+async function* scrapePage(url: string, origin: string): AsyncGenerator<string | null> {
+  if (!url || visitedUrls.has(url)) {
+    return;
+  }
+
+  visitedUrls.add(url);
+  const webPages = (await webPageRawLoader.loadMany([url])) as WebPage[];
+  // if (url.indexOf('composable') > -1) console.log(webPages);
+  if (!webPages || !webPages.length || !webPages[0]) yield null;
+
+  const webPage: WebPage = webPages[0];
+
+  if (!webPage?.content) {
+    console.log('no content', url);
+    yield null;
+  }
+
+  const $ = cheerio.load(webPage.content);
+  const links = $('a').get();
+
+  for (const element of links) {
+    const link = $(element).attr('href');
+
+    if (!link) {
+      continue;
+    }
+
+    // Parse the link using the URL module
+    const parsedLink = new URL(link, url);
+    // Check if the link is on the same domain as the input domain string
+    if (parsedLink.origin !== origin) {
+      continue;
+    }
+
+    // Check if the link points to an HTML page
+    const lowerCaseLink = parsedLink.href.toLowerCase().split('#')[0].split('?')[0];
+    if (
+      !lowerCaseLink.endsWith('.html') &&
+      !lowerCaseLink.endsWith('.htm') &&
+      !lowerCaseLink.endsWith('.php') &&
+      !lowerCaseLink.includes('.')
+    ) {
+      continue;
+    }
+
+    const cleanedLink = getCleanedUrl(lowerCaseLink);
+    if (visitedUrls.has(cleanedLink)) {
+      continue;
+    }
+
+    visitedUrls.add(cleanedLink);
+
+    yield lowerCaseLink;
+
+    yield* scrapePage(lowerCaseLink, origin);
+  }
+}
 
 const getTitleText = (page: any) => {
   if (!page.title) return '';
@@ -34,8 +96,7 @@ const getUniqueDomains = (urls: string[]) =>
     return `https://${parsedUrl.hostname.replace(/^www\./i, '')}`;
   });
 
-const summarize = (page: any) =>
-  `For webpage URL "${page?.url}" ${getTitleText(page)} the content is:\n${page?.content}`;
+const summarize = (page: any) => page?.content;
 
 export const processWebUrlScrape: EventVersionHandler<{ urls: string[]; byDomain: boolean }> = {
   event: 'web/urls.sync',
@@ -83,7 +144,8 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
     const data = event.data;
     const { domain } = data;
 
-    const urls = await extractUrlsFromSitemap(`${domain}/sitemap.xml`); // TODO: Write parser for XML
+    let urls = await extractUrlsFromSitemap(`${domain}/sitemap.xml`);
+    if (!urls?.length) urls = await extractUrlsFromSitemap(`${domain}/sitemap-index.xml`);
 
     const webPages = (await webPageLoader.loadMany(urls)) as WebPage[];
 
@@ -102,7 +164,68 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
       }));
     });
 
-    if (vectors?.length) {
+    if (vectors?.length && vectors?.every((x) => !!x)) {
+      await Promise.all(
+        chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
+          //TODO: Save to Redis by page url
+          //TODO: In event only send page urls
+          inngest.send({
+            v: '1',
+            ts: new Date().valueOf(),
+            name: 'pinecone/vectors.upserted',
+            data: {
+              _page: i,
+              _total: vectors.length,
+              _batchSize: PINECONE_VECTORS_BATCH_SIZE,
+              vectors: batchVectors
+            },
+            user: event.user
+          });
+        })
+      );
+    }
+  }
+};
+
+export const processWebDeepScrape: EventVersionHandler<{ domain: string }> = {
+  event: 'web/deep.sync',
+  v: '1',
+  handler: async ({ event }) => {
+    const data = event.data;
+    const { domain } = data;
+
+    // let urls = await extractUrlsFromSitemap(`${domain}/sitemap.xml`);
+    // if (!urls?.length) urls = await extractUrlsFromSitemap(`${domain}/sitemap-index.xml`);
+
+    // Example usage
+    let urls: string[] = [];
+    const origin = new URL(domain).origin;
+
+    for await (const link of scrapePage(domain, origin)) {
+      console.log('-____________', link);
+      if (link) urls.push(new URL(link, origin).href);
+    }
+
+    // console.log({ urls });
+
+    const webPages = (await webPageLoader.loadMany(urls.filter(Boolean))) as WebPage[];
+
+    const vectors = webPages.flatMap((page) => {
+      const headingsRegex = /(^|\n)##\s/g;
+      const headingsArray = page.content.split(headingsRegex);
+
+      return headingsArray.map((heading: any, i: any) => ({
+        uid: `WebPage_${page.url}_${i}`,
+        text: summarize({ ...page, content: heading }),
+        metadata: {
+          source: 'web',
+          url: page?.url?.toLowerCase(),
+          cleanedUrl: getCleanedUrl(page?.url)
+        }
+      }));
+    });
+
+    if (vectors?.length && vectors?.every((x) => !!x)) {
       await Promise.all(
         chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
           //TODO: Save to Redis by page url
@@ -153,8 +276,7 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
       }));
     });
 
-    console.log('Processing web scrape', iUrls, vectors.length);
-    if (vectors?.length) {
+    if (vectors?.length && vectors?.every((x) => !!x)) {
       await Promise.all(
         chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
           //TODO: Save to Redis by page url

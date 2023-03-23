@@ -30,7 +30,14 @@ export interface AppSettings {
       enabled: boolean;
     }[];
   };
-  slack?: {
+  confluence: {
+    spaces?: ConfluenceSpaceSetting[];
+    pages?: {
+      key: string;
+      enabled: boolean;
+    }[];
+  };
+  slack: {
     channels?: SlackChannelSetting[];
   };
   web?: {
@@ -59,14 +66,23 @@ export interface WebFilters {
   domain?: string[];
 }
 export interface OpenApiFilters {}
+export interface ConfluenceFilters {
+  spaceId?: string[];
+}
 export interface UserFilters {}
-export type SourceFilters = JiraFilters | SlackFilters | WebFilters | OpenApiFilters;
+export type SourceFilters =
+  | JiraFilters
+  | SlackFilters
+  | WebFilters
+  | OpenApiFilters
+  | ConfluenceFilters;
 export interface DataSourcesFilters {
   user?: UserFilters;
   jira?: JiraFilters;
   slack?: SlackFilters;
   web?: WebFilters;
   openapi?: OpenApiFilters;
+  confluence?: ConfluenceFilters;
 }
 export interface AnswersFilters {
   models?: {
@@ -106,6 +122,21 @@ export interface SlackChannelSetting extends SlackChannel {
 }
 export type SlackMessage = {};
 
+export type ConfluenceSpace = {
+  key: string;
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+  expand: string;
+  _links: {
+    self: string;
+  };
+};
+export interface ConfluenceSpaceSetting extends ConfluenceSpace {
+  enabled: boolean;
+}
+
 export interface Message extends Partial<DB.Message>, ChatCompletionRequestMessage {
   user?: User | null;
   role: ChatCompletionRequestMessageRoleEnum;
@@ -124,6 +155,61 @@ export type OpenApi = {
     version: string;
   };
 };
+
 export interface OpenApiSetting extends OpenApi {
+  enabled: boolean;
+}
+
+export interface OpenApiProvider {
+  added: string;
+  preferred: string;
+  versions: {
+    [version: string]: {
+      added: string;
+      info: {
+        'contact'?: {
+          'email'?: string;
+          'name'?: string;
+          'url'?: string;
+          'x-twitter'?: string;
+        };
+        'description'?: string;
+        'license'?: {
+          name?: string;
+          url?: string;
+        };
+        'termsOfService'?: string;
+        'title'?: string;
+        'version'?: string;
+        'x-apisguru-categories'?: string[];
+        'x-logo'?: {
+          url?: string;
+          backgroundColor?: string;
+        };
+        'x-origin'?: {
+          format?: string;
+          url?: string;
+          version?: string;
+        }[];
+        'x-providerName'?: string;
+        'x-serviceName'?: string;
+        [key: string]: any;
+      };
+      updated: string;
+      swaggerUrl?: string;
+      swaggerYamlUrl?: string;
+      openapiVer?: string;
+      externalDocs?: {
+        description?: string;
+        url?: string;
+        [key: string]: any;
+      };
+      [key: string]: any;
+    };
+  };
+}
+
+export type ConfluencePage = { id: string; space: string; body: string };
+export interface ConfluenceSetting extends ConfluencePage {
   enabled: boolean;
 }

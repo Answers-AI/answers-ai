@@ -25,32 +25,30 @@ function JourneySection({ journeys }: Props) {
       </Typography>
 
       {journeys?.map(({ id, title, filters, chats }) => (
-        <>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, py: 2 }}>
-            {title ? <Typography variant="h6">{title}</Typography> : null}
-            <Filters filters={filters} />
-            <Box
-              sx={{
-                width: '100%',
-                display: 'grid',
-                gap: 2,
-                gridTemplateColumns: { md: 'repeat(3, minmax(0px, 1fr))', sm: '1fr' }
-              }}>
-              {chats?.map((chat) => (
-                <ChatCard {...chat} />
-              ))}
+        <Box key={id} sx={{ display: 'flex', flexDirection: 'column', gap: 2, py: 2 }}>
+          {title ? <Typography variant="h6">{title}</Typography> : null}
+          <Filters filters={filters} />
+          <Box
+            sx={{
+              width: '100%',
+              display: 'grid',
+              gap: 2,
+              gridTemplateColumns: { md: 'repeat(3, minmax(0px, 1fr))', sm: '1fr' }
+            }}>
+            {chats?.map((chat) => (
+              <ChatCard key={chat.id} {...chat} />
+            ))}
 
-              <Button
-                component={NextLink}
-                prefetch={false}
-                href={`/journey/${id}`}
-                variant="outlined"
-                color="primary">
-                <MessageIcon />
-              </Button>
-            </Box>
+            <Button
+              component={NextLink}
+              prefetch={false}
+              href={`/journey/${id}`}
+              variant="outlined"
+              color="primary">
+              <MessageIcon />
+            </Button>
           </Box>
-        </>
+        </Box>
       ))}
     </Box>
   );

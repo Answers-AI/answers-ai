@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import Redis from 'ioredis';
 
 class WebClient {
@@ -12,20 +12,6 @@ class WebClient {
       Accept: 'text/plain'
     };
   }
-
-  // async handleRateLimit(response: AxiosResponse) {
-  //   let retryAfter = response.headers['Retry-After'];
-  //   let resetTime = response.headers['X-RateLimit-Reset'];
-
-  //   if (retryAfter) {
-  //     console.log(`Too many requests, retrying after ${retryAfter} seconds.`);
-  //     await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
-  //   } else if (resetTime) {
-  //     console.log(`Too many requests, retrying after ${resetTime}.`);
-  //     // let timeToWait = new Date(resetTime) - new Date();
-  //     // await new Promise((resolve) => setTimeout(resolve, timeToWait));
-  //   }
-  // }
 
   async fetchWebData(url: string, { cache = true }: { cache?: boolean } = {}) {
     let data;
@@ -62,11 +48,13 @@ class WebClient {
         //   return null;
         // }
         data = response?.data;
-        if (cache) await this.redis.set(hashKey, JSON.stringify(data));
-        if (cache) await this.redis.expire(hashKey, this.cacheExpireTime);
-      } catch (err) {
-        console.error(`Error fetching data from ${url}`, err);
-        data = false;
+        if (cache) {
+          await this.redis.set(hashKey, JSON.stringify(data));
+          await this.redis.expire(hashKey, this.cacheExpireTime);
+        }
+      } catch (err: AxiosError | any) {
+        console.error(`Error fetching data from ${url}.  Status: ${err.response.status}`);
+        data = null;
       }
     }
 

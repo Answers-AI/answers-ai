@@ -14,14 +14,34 @@ export type WebPage = {
 export const webPageLoader = redisLoader<string, WebPage>({
   keyPrefix: 'web:page',
   redisConfig: process.env.REDIS_URL as string,
-  // getValuesFn: (keys) => Promise.all(keys.map((url) => getWebPage({ url }))),
   getValuesFn: async (keys) => {
-    const results: WebPage[] = [];
+    const results: Array<WebPage | null> = [];
+
     for (const url of keys) {
-      const result = await getWebPage({ url });
+      const result = await getWebPage({ url, getRaw: false });
       results.push(result);
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
+
+    return Promise.all(results);
+  },
+  cacheExpirationInSeconds: 0,
+  disableCache: true
+});
+
+export const webPageRawLoader = redisLoader<string, WebPage>({
+  keyPrefix: 'web:page',
+  redisConfig: process.env.REDIS_URL as string,
+  getValuesFn: async (keys) => {
+    const results: Array<WebPage | null> = [];
+
+    for (const url of keys) {
+      const result = await getWebPage({ url, getRaw: true });
+
+      results.push(result);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
     return Promise.all(results);
   },
   cacheExpirationInSeconds: 0,

@@ -9,6 +9,7 @@ import * as webFunctions from '@utils/ingest/web';
 import * as openApiFunctions from '@utils/ingest/openapi';
 import * as authFunctions from '@utils/ingest/auth';
 import * as messageFunctions from '@utils/ingest/message';
+import * as confluenceFunctions from '@utils/ingest/confluence';
 
 // Create a client to send and receive events
 
@@ -20,7 +21,8 @@ const handlers = {
   ...promptFunctions,
   ...jiraFunctions,
   ...slackFunctions,
-  ...openApiFunctions
+  ...openApiFunctions,
+  ...confluenceFunctions
 };
 
 const functions = Object.values(handlers);

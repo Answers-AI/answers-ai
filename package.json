@@ -25,9 +25,9 @@
   "devDependencies": {
     "dotenv-cli": "latest",
     "eslint-config-custom": "workspace:*",
-    "inngest-cli": "^0.10.0",
+    "inngest-cli": "^0.11.0",
     "prettier": "latest",
-    "prisma": "^4.10.1",
+    "prisma": "4.10.1",
     "turbo": "latest"
   },
   "engines": {

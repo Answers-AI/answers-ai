@@ -12,7 +12,8 @@ const DEFAULT_SETTINGS = {
     { name: 'notion', enabled: false },
     { name: 'github', enabled: false },
     { name: 'drive', enabled: false },
-    { name: 'contentful', enabled: false }
+    { name: 'contentful', enabled: false },
+    { name: 'confluence', enabled: true }
   ]
 };
 

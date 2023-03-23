@@ -10,12 +10,12 @@ import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
 import { Chat } from 'db/generated/prisma-client';
 import { AnswersFilters, DataSourcesFilters, Message, SourceFilters } from 'types';
-import { PromptLayerOpenAI, OpenAI } from 'langchain/llms';
-import { loadQAMapReduceChain } from 'langchain/chains';
+// import { PromptLayerOpenAI, OpenAI } from 'langchain/llms';
+// import { loadQAMapReduceChain } from 'langchain/chains';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
 import OpenAIClient from '../openai/openai';
-import { summarizeAI, summarizeChain } from '../llm/chains';
+import { summarizeAI } from '../summarizeAI';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
@@ -78,7 +78,7 @@ export const fetchContext = async ({
             (acc, field) => ({
               ...acc,
               [field]: {
-                $in: sourceFilter[field]?.map((value: string) => value?.toLowerCase())
+                $in: sourceFilter[field]?.map((value: string) => value?.toString().toLowerCase())
               }
             }),
             {}
@@ -95,7 +95,7 @@ export const fetchContext = async ({
         filter: {
           ...filter[source]
         },
-        topK: 5
+        topK: 100
       });
     })
   )?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
@@ -106,16 +106,19 @@ export const fetchContext = async ({
     // `${history}`,
     ...(!pineconeData ? [] : pineconeData?.map((item: any) => item?.metadata?.text))
   ].join(' <SEP> ');
-
+  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 3000 });
+  const contextChunks = await textSplitter.createDocuments([context]);
+  if (contextChunks?.length > 1) {
+    console.log('Context too large', contextChunks?.length);
+  }
   let summary = await summarizeAI({
-    input: context,
-    prompt,
-    chunkSize: 3000
+    input: contextChunks[0]?.pageContent,
+    prompt
   });
 
   return {
     pineconeData,
-    context,
+    context: contextChunks[0]?.pageContent,
     summary
   };
 };

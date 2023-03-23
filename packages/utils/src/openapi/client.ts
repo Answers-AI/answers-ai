@@ -1,9 +1,16 @@
-import axios from 'axios';
+import axios, { ResponseType } from 'axios';
 import Redis from 'ioredis';
+
+const blobToString = async (blob: Blob): Promise<string> => {
+  const buffer = await blob.arrayBuffer();
+  const decoder = new TextDecoder();
+  return decoder.decode(buffer);
+};
 
 class OpenApiClient {
   redis: Redis;
-  headers: { Authorization?: string; Accept: string; Cookie?: string };
+  responseType: ResponseType;
+  headers: { Authorization?: string; Accept?: string; Cookie?: string };
   cacheExpireTime: number;
   constructor({ cacheExpireTime = 60 * 60 * 24 } = {}) {
     this.cacheExpireTime = cacheExpireTime;
@@ -11,6 +18,7 @@ class OpenApiClient {
     this.headers = {
       Accept: 'application/json'
     };
+    this.responseType = 'json';
   }
 
   async fetchOpenApiData(url: string, { cache = true }: { cache?: boolean } = {}) {
@@ -33,9 +41,28 @@ class OpenApiClient {
 
     if (!data) {
       try {
+        let contentType: string;
+        if (url.endsWith('.json')) {
+          contentType = 'json';
+          this.responseType = 'json';
+          this.headers.Accept = 'application/json';
+        } else if (url.endsWith('.yaml')) {
+          contentType = 'yaml';
+          this.responseType = 'text';
+          this.headers.Accept = 'application/x-yaml';
+        } else if (url.startsWith('blob')) {
+          contentType = 'blob';
+          this.responseType = 'blob';
+          this.headers = {};
+        } else {
+          contentType = 'text';
+          this.responseType = 'text';
+          this.headers.Accept = 'text/plain';
+        }
+
         const response = await axios.get(url, {
-          method: 'GET',
-          headers: this.headers
+          responseType: this.responseType
+          // headers: this.headers
         });
 
         if (response.status !== 200) {
@@ -44,6 +71,11 @@ class OpenApiClient {
 
         // TODO: Add handler for HTTP requests
         data = response?.data;
+
+        if (contentType === 'blob') {
+          data = await blobToString(data);
+        }
+
         if (cache) {
           await this.redis.set(hashKey, JSON.stringify(data));
           await this.redis.expire(hashKey, this.cacheExpireTime);

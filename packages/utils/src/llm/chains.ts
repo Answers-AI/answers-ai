@@ -57,11 +57,11 @@ export const createChatChain = ({ messages }: { messages: Message[] }) => {
       const response = await openai.createChatCompletion({
         max_tokens: 1000,
         messages: [
-          {
-            role: ChatCompletionRequestMessageRoleEnum.System,
-            content:
-              'You are an AI with access to the following platforms: Jira, Slack, Github, OpenAPI.'
-          },
+          // {
+          //   role: ChatCompletionRequestMessageRoleEnum.System,
+          //   content:
+          //     'You are an AI with access to the following platforms: Jira, Slack, Github, OpenAPI.'
+          // },
           {
             role: ChatCompletionRequestMessageRoleEnum.System,
             content: 'This will be your context: ' + context
@@ -98,54 +98,3 @@ export const rawChain = new LLMChain({
   prompt: rawPrompt,
   llm: chat
 });
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-const timeout = (ms: number) =>
-  new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms));
-export const summarizeAI = async ({
-  input,
-  prompt,
-  chunkSize = 1000
-}: {
-  input: string;
-  prompt?: string;
-  chunkSize?: number;
-}): Promise<string> => {
-  console.log('[summarizeAI]', { prompt, chunkSize });
-  if (!input) return input;
-  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize });
-  const inputDocs = await textSplitter.createDocuments([input]);
-
-  if (inputDocs.length > 1) {
-    const summariesPromises = inputDocs?.map(async (doc, idx) => {
-      let summary = doc.pageContent ?? '';
-      console.log('[summarizeAI] Chunk', { idx });
-      await sleep(100 * idx);
-      const res = await openai.createCompletion({
-        max_tokens: 2000,
-        prompt: `${prompt} <INPUT>${doc.pageContent}<INPUT> Summary:`,
-        temperature: 0.1,
-        model: 'text-davinci-003'
-      });
-      if (!res?.data?.choices?.[0]?.text) {
-        summary = res?.data?.choices?.[0]?.text!;
-      }
-      // return summarizeChain.call({
-      //   input: doc.pageContent,
-      //   prompt: prompt
-      // }).then((s) => s.text);
-      return summary;
-    });
-    const summaries = (await Promise.race([
-      Promise.all(summariesPromises)
-      // timeout(15000)
-    ])) as string[];
-    return summarizeAI({
-      input: summaries?.join('\n'),
-      prompt,
-      chunkSize
-    });
-  }
-  console.log('[summarizeAI] Final');
-  return input;
-};

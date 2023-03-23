@@ -59,10 +59,10 @@ export const darkModeTheme = createTheme({
           'overflow': 'hidden',
           'margin': 0,
           'background': 'none',
-          'box-shadow': 'none',
+          'boxShadow': 'none',
           '.MuiAccordionSummary-root': {
-            'min-height': 0,
-            '&.Mui-expanded': { 'min-height': 0 },
+            'minHeight': 0,
+            '&.Mui-expanded': { minHeight: 1 },
             'gap': 2
           },
           '&.Mui-expanded': { margin: 0 },

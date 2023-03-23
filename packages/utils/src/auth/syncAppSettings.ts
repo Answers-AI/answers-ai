@@ -1,7 +1,8 @@
 import { deepmerge } from '../deepmerge';
 import { getJiraProjects, JiraProject } from '../jira';
 import SlackClient from '../slack/client';
-import { AppSettings, SlackChannelSetting } from 'types';
+import { confluenceClient } from '../confluence/client';
+import { AppSettings, SlackChannelSetting, ConfluenceSpaceSetting, ConfluenceSpace } from 'types';
 import { User } from 'db/generated/prisma-client';
 
 const slackClient = new SlackClient(process.env.SLACK_TOKEN);
@@ -13,7 +14,8 @@ const DEFAULT_SETTINGS = {
     { name: 'notion', enabled: false },
     { name: 'github', enabled: false },
     { name: 'drive', enabled: false },
-    { name: 'contentful', enabled: false }
+    { name: 'contentful', enabled: false },
+    { name: 'confluence', enabled: true }
   ],
   jira: {}
 };
@@ -68,6 +70,31 @@ export async function syncAppSettings(user: User) {
     }
 
     try {
+      // Load all possible Confluence spaces on every update
+      const { results: spaces }: { results: ConfluenceSpace[] } =
+        await confluenceClient.fetchConfluenceData('/spaces', { cache: false });
+
+      const spacesById =
+        (user?.appSettings as any)?.confluence?.spaces?.reduce(
+          (acc: any, space: ConfluenceSpaceSetting) => {
+            acc[space.key] = space;
+            return acc;
+          },
+          {}
+        ) || {};
+
+      newSettings.confluence = {
+        ...(user?.appSettings as any)?.confluence,
+        spaces: spaces.map((space) => ({
+          ...space,
+          ...spacesById[space.key]
+        }))
+      };
+    } catch (error) {
+      console.log('ConfluenceSettingsError', error);
+    }
+
+    try {
       const urlSettings =
         (user?.appSettings as any)?.web?.urls?.reduce((acc: any, url: string) => {
           acc[url] = { url };
@@ -81,7 +108,9 @@ export async function syncAppSettings(user: User) {
       console.log('urlSettingsError', error);
     }
 
-    const appSettings = deepmerge(DEFAULT_SETTINGS, user?.appSettings, newSettings);
+    const appSettings = deepmerge(DEFAULT_SETTINGS, user?.appSettings, newSettings, {
+      services: DEFAULT_SETTINGS.services
+    });
     return JSON.parse(JSON.stringify(appSettings));
   }
   return DEFAULT_SETTINGS;

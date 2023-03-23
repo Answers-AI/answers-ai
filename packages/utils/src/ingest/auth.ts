@@ -16,16 +16,16 @@ export const authUserSignIn: EventVersionHandler<{
     const { data, user } = event;
     if (!user) throw new Error('NO_USER_PROVIDED');
 
-    if (!user?.appSettings) {
-      const appSettings = await syncAppSettings(user);
+    // if (!user?.appSettings) {
+    const appSettings = await syncAppSettings(user);
 
-      await prisma.user.update({
-        where: { id: user?.id },
-        data: {
-          appSettings
-        }
-      });
-    }
+    await prisma.user.update({
+      where: { id: user?.id },
+      data: {
+        appSettings
+      }
+    });
+    // }
   }
 };
 

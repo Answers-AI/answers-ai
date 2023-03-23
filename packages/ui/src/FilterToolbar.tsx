@@ -119,6 +119,16 @@ const FilterToolbar = ({
                   updateFilter({ datasources: { web: { url: value } } })
                 }
               />
+              <AutocompleteSelect
+                label="Confluence Space"
+                options={
+                  appSettings?.confluence?.spaces?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                }
+                value={filters?.datasources?.confluence?.spaceId || []}
+                onChange={(value: string[]) =>
+                  updateFilter({ datasources: { confluence: { spaceId: value } } })
+                }
+              />
             </Box>
 
             {flags.filters_model.enabled ? (
@@ -140,6 +150,7 @@ const FilterToolbar = ({
                     {appSettings?.models
                       ? Object.keys(appSettings?.models).map((model: string) => (
                           <MultiSelect
+                            key={model}
                             label={`${model} Model`}
                             sx={{ textTransform: 'capitalize' }}
                             options={appSettings?.models?.[model] as string[]}

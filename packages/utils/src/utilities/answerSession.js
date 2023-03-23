@@ -75,7 +75,7 @@ class AnswerSession {
   }
 
   async prepareAllForEmbedding(objects) {
-    console.time('prepareAllForEmbedding');
+    ////console.time('prepareAllForEmbedding');
     let preparedStatuses;
     try {
       if (!objects) throw new Error('Invalid objects');
@@ -89,7 +89,7 @@ class AnswerSession {
       console.error(error);
     }
 
-    console.timeEnd('prepareAllForEmbedding');
+    //console.timeEnd('prepareAllForEmbedding');
     return preparedStatuses;
   }
 }

@@ -21,7 +21,7 @@ export const getJiraProjects = async () => {
 };
 
 export const fetchJiraIssue = async (issueId: string) => {
-  // console.time('getSingleJiraTicket');
+  // ////console.time('getSingleJiraTicket');
 
   try {
     if (!issueId) throw new Error(`No issue with issue key ${issueId} found.`);
@@ -69,21 +69,21 @@ export const getJiraComments = async (issueKey: any) => {
 };
 
 // const indexAllJiraStatuses = async () => {
-//   console.time('indexAllJiraStatuses');
+//   ////console.time('indexAllJiraStatuses');
 //   const data = await getJiraStatuses();
 //   const vectorData = await prepareAllForEmbedding(data);
 //   // answerSession.addVectors(vectorData);
 //   await pinecone.writeVectorsToIndex(vectorData);
-//   console.timeEnd('indexAllJiraStatuses');
+//   //console.timeEnd('indexAllJiraStatuses');
 // };
 
 // const indexAllJiraStatusCategories = async () => {
-//   console.time('indexAllJiraStatusCategories');
+//   ////console.time('indexAllJiraStatusCategories');
 //   const data = await getJiraStatusCategories();
 //   const vectorData = await prepareAllForEmbedding(data);
 //   // answerSession.addVectors(vectorData);
 //   await pinecone.writeVectorsToIndex(vectorData);
-//   console.timeEnd('indexAllJiraStatusCategories');
+//   //console.timeEnd('indexAllJiraStatusCategories');
 // };
 
 export const indexAllJiraIssues = async (options: {
@@ -93,12 +93,12 @@ export const indexAllJiraIssues = async (options: {
 }) => {
   const data = await getJiraTickets(options);
   if (data) console.log('JiraIssue', data[0]);
-  // console.time(`${options.jql} Embedding`);
+  // ////console.time(`${options.jql} Embedding`);
   // const vectorData = await prepareAllForEmbedding(data);
-  // console.timeEnd(`${options.jql} Embedding`);
+  // //console.timeEnd(`${options.jql} Embedding`);
   // // answerSession.addVectors(vectorData);
 
-  // console.time(`${options.jql} Writing Vectors`);
+  // ////console.time(`${options.jql} Writing Vectors`);
   // await pinecone.writeVectorsToIndex(vectorData);
-  // console.timeEnd(`${options.jql} Writing Vectors`);
+  // //console.timeEnd(`${options.jql} Writing Vectors`);
 };

@@ -18,8 +18,8 @@
     "db:studio": "npx prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^4.10.1",
-    "prisma": "^4.10.1"
+    "@prisma/client": "4.10.1",
+    "prisma": "4.10.1"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
