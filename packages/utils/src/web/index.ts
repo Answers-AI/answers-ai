@@ -16,11 +16,32 @@ export const webPageLoader = redisLoader<string, WebPage>({
   redisConfig: process.env.REDIS_URL as string,
   getValuesFn: async (keys) => {
     const results: WebPage[] = [];
+
     for (const url of keys) {
-      const result = await getWebPage({ url });
+      console.log(url);
+      const result = await getWebPage({ url, getRaw: false });
       results.push(result);
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
+
+    return Promise.all(results);
+  },
+  cacheExpirationInSeconds: 0,
+  disableCache: false
+});
+
+export const webPageRawLoader = redisLoader<string, WebPage>({
+  keyPrefix: 'web:page',
+  redisConfig: process.env.REDIS_URL as string,
+  getValuesFn: async (keys) => {
+    const results: WebPage[] = [];
+
+    for (const url of keys) {
+      const result = await getWebPage({ url, getRaw: true });
+      results.push(result);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
     return Promise.all(results);
   },
   cacheExpirationInSeconds: 0,

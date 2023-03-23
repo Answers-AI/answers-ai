@@ -5,6 +5,11 @@ import { openai } from './openai/client';
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const timeout = (ms: number) =>
   new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms));
+
+// const summarizeModel = 'text-embedding-ada-002'
+const finalSummaryModel = 'text-davinci-003';
+const summarizeModel = 'text-embedding-ada-002';
+// const finalSummaryModel = 'text-embedding-ada-002';
 export const summarizeAI = async ({
   input,
   prompt,
@@ -36,7 +41,7 @@ export const summarizeAI = async ({
         max_tokens: 1000,
         prompt: promptWrapper,
         temperature: 0.1,
-        model: 'text-davinci-003'
+        model: summarizeModel
       });
 
       if (res?.data?.choices?.[0]?.text) {
@@ -55,7 +60,7 @@ export const summarizeAI = async ({
         max_tokens: 1000,
         prompt: finalPrompt,
         temperature: 0.1,
-        model: 'text-davinci-003'
+        model: finalSummaryModel
       });
       //console.timeEnd(`[summarizeAI] ${id} - ${inputDocs.length} chunks}`);
       return finalRes?.data?.choices?.[0]?.text!;

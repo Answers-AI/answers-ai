@@ -42,15 +42,6 @@ const convertMarkdownToHtml = (markdown: string, options?: ConverterOptions): st
   return converter.makeHtml(markdown);
 };
 
-const contentElementSelectors: string[] = [
-  'main',
-  'article',
-  '.content',
-  '.entry-content',
-  '#content',
-  '#main-content'
-];
-
 const removeDuplicateHeaders = (markdown: string): string => {
   const regex = /^(#+)(.*)$/gm;
   const headers: { level: number; start: number; end: number }[] = [];
@@ -112,11 +103,21 @@ const excludeSelectors: string[] = [
   'sup'
 ];
 
-export const getWebPage = async ({ url }: { url: string }): Promise<WebPage> => {
+export const getWebPage = async ({
+  url,
+  getRaw
+}: {
+  url: string;
+  getRaw: boolean;
+}): Promise<WebPage> => {
   console.log(`===Fetching webpage: ${url}`);
   try {
     const pageHtml = await webClient.fetchWebData(url, { cache: false });
     if (!pageHtml) throw new Error(`No valid HTML returned for url: ${url}`);
+
+    if (getRaw) {
+      return { url, content: pageHtml };
+    }
 
     let $ = cheerio.load(pageHtml);
     $(excludeSelectors.join(',')).remove();
@@ -200,120 +201,3 @@ export const getWebPage = async ({ url }: { url: string }): Promise<WebPage> => 
     throw error;
   }
 };
-
-// export const getWebPagePuppeteer = async ({ url }: { url: string }): Promise<WebPage> => {
-//   console.log('====================================');
-//   console.log(`===Fetching webpage: ${url}`);
-//   try {
-//     const pageHtml = await webClient.fetchWebData(url, { cache: false });
-//     if (!pageHtml) throw new Error(`No valid HTML returned for url: ${url}`);
-
-//     let $ = cheerio.load(pageHtml);
-//     //Remove for sure unneeded elements
-//     $(excludeSelectors.join(',')).remove();
-
-//     const initialHtml = $.html();
-
-//     const initialMarkdown = NodeHtmlMarkdown.translate(
-//       initialHtml,
-//       {
-//         // maxConsecutiveNewlines: 1
-//       },
-//       undefined,
-//       undefined
-//     );
-
-//     const html = convertMarkdownToHtml(initialMarkdown, showDownOptions);
-//     $ = cheerio.load(html);
-
-//     $('h1').each(function () {
-//       const $el = $(this);
-//       const innerHtml = $el.html();
-//       $el.replaceWith(`<h2>${innerHtml}</h2>`);
-//     });
-
-//     // $('h2').each((i, elem) => {
-//     //   const section = $('<section></section>');
-//     //   const nextSiblings = $(elem).nextUntil('h2');
-//     //   $(elem).add(nextSiblings).wrapAll(section);
-//     // });
-
-//     // $('h*').each((i, elem) => {
-//     //   const section = $('<section></section>');
-//     //   let nextSiblings = $(elem).nextUntil('h2');
-//     //   let nextElem = $(elem).next();
-//     //   if (nextElem.length && nextElem[0].tagName === 'h2') {
-//     //     // If the next element is an h2, remove the current h2 and continue to the next one
-//     //     $(elem).remove();
-//     //     return;
-//     //   }
-//     //   $(elem).html($(elem).text()).add(nextSiblings).wrapAll(section);
-//     // });
-
-//     $('h2').each((i, elem) => {
-//       const section = $('<section></section>');
-//       let nextSiblings = $(elem).nextUntil('h2');
-//       let nextElem = $(elem).next();
-//       if (nextElem.length && nextElem[0].tagName === 'h2') {
-//         // If the next element is an h2, remove the current h2 and continue to the next one
-//         $(elem).remove();
-//         return;
-//       }
-//       $(elem).html($(elem).text()).add(nextSiblings).wrapAll(section);
-//     });
-
-//     $('body')
-//       .children()
-//       .each((i, elem) => {
-//         if (elem.tagName !== 'section') {
-//           $(elem).remove();
-//         }
-//       });
-
-//     $('a').each(function () {
-//       const $link = $(this);
-//       const innerHtml = $link.html() as string;
-//       $link.replaceWith(innerHtml);
-//     });
-
-//     $('*').each(function () {
-//       if ($(this).text().trim().length < 2) {
-//         $(this).remove();
-//       }
-//     });
-
-//     const dom = new JSDOM(`<article>${$.html()}</article>`, { url });
-
-//     const document = dom.window.document;
-
-//     const reader = new Readability(document, {
-//       debug: false,
-//       keepClasses: false,
-//       disableJSONLD: true
-//     });
-//     const article = reader.parse();
-
-//     const mkdown = NodeHtmlMarkdown.translate(
-//       /* html */ article?.content || '', //$content.html() || '',
-//       /* options */ {
-//         maxConsecutiveNewlines: 1
-//       },
-//       /* customTranslators (optional) */ undefined,
-//       /* customCodeBlockTranslators (optional) */ undefined
-//     );
-
-//     console.log(mkdown);
-
-//     const pageData = {
-//       url,
-//       title: article?.title,
-//       description: article?.excerpt,
-//       content: mkdown
-//     };
-
-//     return pageData;
-//   } catch (error) {
-//     console.error('getWebPage:ERROR', error);
-//     throw error;
-//   }
-// };

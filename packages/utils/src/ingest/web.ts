@@ -1,12 +1,71 @@
 import { URL } from 'url';
 import { inngest } from './client';
-import { webPageLoader } from '../web';
+import { webPageLoader, webPageRawLoader } from '../web';
 import { EventVersionHandler } from './EventVersionHandler';
 import { chunkArray } from '../utilities/utils';
 import { WebPage } from 'types';
 import { extractUrlsFromSitemap } from '../utilities/getSitemapUrls';
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
+
+import cheerio from 'cheerio';
+
+const visitedUrls = new Set<string>();
+
+async function* scrapePage(url: string, origin: string): AsyncGenerator<string> {
+  if (!url || visitedUrls.has(url)) {
+    return;
+  }
+
+  visitedUrls.add(url);
+  const webPages = (await webPageRawLoader.loadMany([url])) as WebPage[];
+  console.log(webPages[0].content);
+  if (!webPages || !webPages.length || !webPages[0].content) return;
+
+  const webPage: WebPage = webPages[0];
+
+  if (!webPage?.content) return;
+
+  const $ = cheerio.load(webPage.content);
+  const links = $('a').get();
+
+  for (const element of links) {
+    const link = $(element).attr('href');
+
+    if (!link) {
+      continue;
+    }
+
+    // Parse the link using the URL module
+    const parsedLink = new URL(link, url);
+    // Check if the link is on the same domain as the input domain string
+    if (parsedLink.origin !== origin) {
+      continue;
+    }
+
+    // Check if the link points to an HTML page
+    const lowerCaseLink = parsedLink.href.toLowerCase().split('#')[0].split('?')[0];
+    if (
+      !lowerCaseLink.endsWith('.html') &&
+      !lowerCaseLink.endsWith('.htm') &&
+      !lowerCaseLink.endsWith('.php') &&
+      !lowerCaseLink.includes('.')
+    ) {
+      continue;
+    }
+
+    const cleanedLink = getCleanedUrl(lowerCaseLink);
+    if (visitedUrls.has(cleanedLink)) {
+      continue;
+    }
+
+    visitedUrls.add(cleanedLink);
+
+    yield lowerCaseLink;
+
+    yield* scrapePage(lowerCaseLink, origin);
+  }
+}
 
 const getTitleText = (page: any) => {
   if (!page.title) return '';
@@ -125,6 +184,70 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
   }
 };
 
+export const processWebDeepScrape: EventVersionHandler<{ domain: string }> = {
+  event: 'web/deep.sync',
+  v: '1',
+  handler: async ({ event }) => {
+    const data = event.data;
+    const { domain } = data;
+
+    // let urls = await extractUrlsFromSitemap(`${domain}/sitemap.xml`);
+    // if (!urls?.length) urls = await extractUrlsFromSitemap(`${domain}/sitemap-index.xml`);
+
+    // Example usage
+    const urls: string[] = [];
+    const origin = new URL(domain).origin;
+
+    for await (const link of scrapePage(domain, origin)) {
+      urls.push(new URL(link, origin).href);
+    }
+
+    console.log({ urls });
+
+    const webPages = (await (
+      await webPageLoader.loadMany(urls)
+    ).filter((url) => Boolean)) as WebPage[];
+
+    console.log('webPages', webPages);
+
+    const vectors = webPages.flatMap((page) => {
+      const headingsRegex = /(^|\n)##\s/g;
+      const headingsArray = page.content.split(headingsRegex);
+
+      return headingsArray.map((heading: any, i: any) => ({
+        uid: `WebPage_${page.url}_${i}`,
+        text: summarize({ ...page, content: heading }),
+        metadata: {
+          source: 'web',
+          url: page?.url?.toLowerCase(),
+          cleanedUrl: getCleanedUrl(page?.url)
+        }
+      }));
+    });
+
+    if (vectors?.length) {
+      await Promise.all(
+        chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
+          //TODO: Save to Redis by page url
+          //TODO: In event only send page urls
+          inngest.send({
+            v: '1',
+            ts: new Date().valueOf(),
+            name: 'pinecone/vectors.upserted',
+            data: {
+              _page: i,
+              _total: vectors.length,
+              _batchSize: PINECONE_VECTORS_BATCH_SIZE,
+              vectors: batchVectors
+            },
+            user: event.user
+          });
+        })
+      );
+    }
+  }
+};
+
 export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
   event: 'web/page.sync',
   v: '1',
@@ -175,63 +298,3 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
     }
   }
 };
-
-// export const processPuppetScrape: EventVersionHandler<{ urls: string[] }> = {
-//   event: 'web/puppet.sync',
-//   v: '1',
-//   handler: async ({ event }) => {
-//     const data = event.data;
-//     const { urls: iUrls } = data;
-
-//     const webPages = (await puppeteerLoader.loadMany(iUrls)) as WebPage[];
-
-//     const headingVectors = webPages.flatMap((page) => {
-//       const headingsRegex = /\n+(?=\s*##\s(?!#))/;
-//       const headingsArray = page.content.split(headingsRegex);
-
-//       return headingsArray.map((heading: any, i: any) => ({
-//         uid: `WebPage_${page.url}_${i}`,
-//         text: summarize({ ...page, content: heading }),
-//         metadata: {
-//           url: page?.url,
-//           cleanedUrl: getCleanedUrl(page?.url)
-//         }
-//       }));
-//     });
-
-//     const vectors = headingVectors.flatMap((page) => {
-//       const headingsRegex = /\n+(?=\s*##\s(?!#))/;
-//       const headingsArray = page.content.split(headingsRegex);
-
-//       return headingsArray.map((heading: any, i: any) => ({
-//         uid: `WebPage_${page.url}_${i}`,
-//         text: summarize({ ...page, content: heading }),
-//         metadata: {
-//           url: page?.url,
-//           cleanedUrl: getCleanedUrl(page?.url)
-//         }
-//       }));
-//     });
-
-//     if (vectors?.length) {
-//       await Promise.all(
-//         chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
-//           //TODO: Save to Redis by page url
-//           //TODO: In event only send page urls
-//           inngest.send({
-//             v: '1',
-//             ts: new Date().valueOf(),
-//             name: 'pinecone/vectors.upserted',
-//             data: {
-//               _page: i,
-//               _total: vectors.length,
-//               _batchSize: PINECONE_VECTORS_BATCH_SIZE,
-//               vectors: batchVectors
-//             },
-//             user: event.user
-//           });
-//         })
-//       );
-//     }
-//   }
-// };

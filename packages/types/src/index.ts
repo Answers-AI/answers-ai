@@ -155,6 +155,7 @@ export type OpenApi = {
     version: string;
   };
 };
+
 export interface OpenApiSetting extends OpenApi {
   enabled: boolean;
 }
