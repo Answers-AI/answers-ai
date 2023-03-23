@@ -151,7 +151,7 @@ const AppsDrawer = ({
         })) || [])
       ]}
       renderItem={(item) => (
-        <NextLink href={item?.link}>
+        <NextLink href={item?.link} prefetch={false}>
           <ListItemButton
             key={item?.link}
             sx={{ display: 'flex', gap: 2 }}

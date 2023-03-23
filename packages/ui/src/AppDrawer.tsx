@@ -54,6 +54,7 @@ export const AppDrawer = ({ params }: any) => {
               key={item.text}
               href={item.link}
               component={NextLink}
+              prefetch={false}
               disablePadding
               sx={{
                 display: 'block',

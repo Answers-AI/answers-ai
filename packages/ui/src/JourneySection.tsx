@@ -42,6 +42,7 @@ function JourneySection({ journeys }: Props) {
 
               <Button
                 component={NextLink}
+                prefetch={false}
                 href={`/journey/${id}`}
                 variant="outlined"
                 color="primary">

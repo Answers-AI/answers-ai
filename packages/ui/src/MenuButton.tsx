@@ -65,7 +65,7 @@ export default function IconMenu({
         anchorEl={anchorRef.current}
         role={undefined}
         placement="bottom-start"
-disablePortal
+        disablePortal
         transition>
         {({ TransitionProps, placement }) => (
           <Grow
@@ -83,7 +83,9 @@ disablePortal
                   {actions.map((action) => (
                     <MenuItem
                       onClick={action.onClick}
-                      {...(action.href ? { href: action.href, component: NextLink } : {})}>
+                      {...(action.href
+                        ? { href: action.href, component: NextLink, prefetch: false }
+                        : {})}>
                       {action.icon ? <ListItemIcon>{action.icon} </ListItemIcon> : null}
                       {action.text ? <ListItemText>{action.text}</ListItemText> : null}
                     </MenuItem>

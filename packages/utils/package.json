@@ -27,6 +27,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@dqbd/tiktoken": "^1.0.2",
     "@contentful/app-sdk": "^4.15.0",
     "@contentful/rich-text-from-markdown": "^15.16.3",
     "@mozilla/readability": "0.4.2",
