@@ -31,14 +31,14 @@ export interface AppSettings {
       enabled: boolean;
     }[];
   };
-  confluence: {
+  confluence?: {
     spaces?: ConfluenceSpaceSetting[];
     pages?: {
       key: string;
       enabled: boolean;
     }[];
   };
-  slack: {
+  slack?: {
     channels?: SlackChannelSetting[];
   };
   web?: {

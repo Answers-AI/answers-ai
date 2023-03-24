@@ -1,11 +1,7 @@
 // import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
-
-import { deepmerge } from '@utils/deepmerge';
-
-import { prisma } from 'db/dist';
-
 import { getServerSession } from 'next-auth';
+import { prisma } from 'db/dist';
 import { authOptions } from '@ui/authOptions';
 
 export async function GET(req: Request, res: Response) {

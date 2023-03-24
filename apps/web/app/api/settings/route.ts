@@ -1,11 +1,11 @@
 // import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
 import { getJiraProjects, JiraProject } from '@utils/jira';
 import { deepmerge } from '@utils/deepmerge';
 // import cors from '@ui/cors';
 import { prisma } from 'db/dist';
 
-import { getServerSession } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
 import { getAppSettings } from '@ui/getAppSettings';
 

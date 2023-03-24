@@ -1,19 +1,21 @@
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import Badge from '@mui/material/Badge';
+// import { styled } from '@mui/material/styles';
+// import Badge from '@mui/material/Badge';
 import Avatar from '@mui/material/Avatar';
-import Stack from '@mui/material/Stack';
+// import Stack from '@mui/material/Stack';
 import { AnswersFilters, AppSettings } from 'types';
 import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
 import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
+import { getUniqueUrls } from '@utils/utilities/getUniqueUrls';
+import axios from 'axios';
 
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const anchorRef = React.useRef<HTMLDivElement[]>([]);
   const enabledServices = appSettings?.services?.filter((service) => service.enabled);
   const [open, setOpen] = React.useState(-1);
   const { filters, updateFilter } = useAnswers();
-  console.log('enabledServices', { anchorRef, enabledServices, open });
+  // console.log('enabledServices', { anchorRef, enabledServices, open });
 
   const selectedService = enabledServices?.[open];
   return (
@@ -22,6 +24,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
         {enabledServices
           ?.map((service, idx) => [
             <Avatar
+              key={service.name}
               src={service.imageURL}
               alt={service.name}
               ref={(ref) => {
@@ -101,18 +104,28 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                     options={[]}
                     // options={appSettings?.web?.urls?.map((s) => s.url) || []}
                     value={filters?.datasources?.web?.url || []}
-                    onChange={(value: string[]) =>
-                      updateFilter({ datasources: { web: { url: value } } })
-                    }
+                    onChange={async (value: string[]) => {
+                      const currentUrls = filters?.datasources?.web?.url || [];
+                      const newUrls = value.filter((v) => !currentUrls.includes(v));
+                      updateFilter({ datasources: { web: { url: value } } });
+                      if (!newUrls?.length) return;
+                      const uniqueUrls = getUniqueUrls(newUrls);
+                      await axios.post(`/api/sync/web`, { urls: uniqueUrls, byDomain: false });
+                    }}
                   />
                   <AutocompleteSelect
                     label="Web Site"
                     options={[]}
                     // options={appSettings?.web?.urls?.map((s) => s.url) || []}
                     value={filters?.datasources?.web?.domain || []}
-                    onChange={(value: string[]) =>
-                      updateFilter({ datasources: { web: { domain: value } } })
-                    }
+                    onChange={async (value: string[]) => {
+                      const currentUrls = filters?.datasources?.web?.domain || [];
+                      const newUrls = value.filter((v) => !currentUrls.includes(v));
+                      updateFilter({ datasources: { web: { domain: value } } });
+                      if (!newUrls?.length) return;
+                      const uniqueUrls = getUniqueUrls(newUrls);
+                      await axios.post(`/api/sync/web`, { urls: uniqueUrls, byDomain: true });
+                    }}
                   />
                 </>
               ) : null}
