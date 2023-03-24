@@ -28,7 +28,6 @@ class OpenAI {
             model: this.defaultModel
           })
           ?.then(async (res) => {
-            // console.log('Respoonse', res);
             return res?.data?.data?.map((d) => d?.embedding);
           })
     });

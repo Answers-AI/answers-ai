@@ -68,6 +68,7 @@ class PineconeClient {
     //TODO: Remove after testing
     // await this.deleteIndex(index);
     // console.log('Vector', vectors[0]);
+    //TODO add checks for token size and chunk efficiently
     const chunks = chunkArray(vectors, 100);
     const results = await Promise.all(
       chunks.map(async (chunkedVectors) => {

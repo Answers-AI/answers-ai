@@ -144,7 +144,13 @@ export interface Message extends Partial<DB.Message>, ChatCompletionRequestMessa
   content: string;
 }
 
-export type WebPage = { url: string; content: string };
+export type WebPage = {
+  url: string;
+  content: string;
+  domain: string;
+  title?: string;
+  description?: string;
+};
 export interface WebSetting extends WebPage {
   enabled: boolean;
 }

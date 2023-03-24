@@ -1,49 +1,22 @@
 import WebClient from './client';
-import { getWebPage } from './getWebPage';
+import { getWebPageHtml } from './getWebPage';
 import redisLoader from '../redisLoader';
 
 export const webClient = new WebClient();
 
-export type WebPage = {
-  url: string;
-  content: string;
-  title?: string;
-  description?: string;
-};
-
-export const webPageLoader = redisLoader<string, WebPage>({
-  keyPrefix: 'web:page',
+export const webPageLoader = redisLoader<string, string>({
+  keyPrefix: 'web:page:v1',
   redisConfig: process.env.REDIS_URL as string,
   getValuesFn: async (keys) => {
-    const results: Array<WebPage | null> = [];
+    const results: Array<string> = [];
 
     for (const url of keys) {
-      const result = await getWebPage({ url, getRaw: false });
+      const result = await getWebPageHtml({ url });
       results.push(result);
-      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     return Promise.all(results);
   },
   cacheExpirationInSeconds: 0,
-  disableCache: true
-});
-
-export const webPageRawLoader = redisLoader<string, WebPage>({
-  keyPrefix: 'web:page',
-  redisConfig: process.env.REDIS_URL as string,
-  getValuesFn: async (keys) => {
-    const results: Array<WebPage | null> = [];
-
-    for (const url of keys) {
-      const result = await getWebPage({ url, getRaw: true });
-
-      results.push(result);
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
-
-    return Promise.all(results);
-  },
-  cacheExpirationInSeconds: 0,
-  disableCache: true
+  disableCache: false
 });

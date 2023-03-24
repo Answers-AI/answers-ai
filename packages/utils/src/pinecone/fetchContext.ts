@@ -77,9 +77,15 @@ export const fetchContext = async ({
           ...Object.keys(sourceFilter).reduce(
             (acc, field) => ({
               ...acc,
-              [field]: {
-                $in: sourceFilter[field]?.map((value: string) => value?.toString().toLowerCase())
-              }
+              ...(sourceFilter[field]?.length
+                ? {
+                    [field]: {
+                      $in: sourceFilter[field]?.map((value: string) =>
+                        value?.toString().toLowerCase()
+                      )
+                    }
+                  }
+                : null)
             }),
             {}
           )
@@ -87,8 +93,13 @@ export const fetchContext = async ({
       }
     });
   }
+  Object.keys(filter)?.forEach((source) => {
+    if (Object.keys(filter[source])?.length === 0) {
+      delete filter[source];
+    }
+  });
 
-  console.log('[FetchContext]', { datasources, filters, filter });
+  console.log('[FetchContext]', JSON.stringify({ datasources, filters, filter }));
   const pineconeData = await Promise.all(
     Object.entries(datasources)?.map(([source]) => {
       return pineconeQuery(promptEmbedding, {

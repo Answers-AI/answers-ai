@@ -12,7 +12,7 @@ interface Props {
 export default function AutocompleteSelect({ sx, label, options, value, onChange }: Props) {
   const handleChange = (event: any, newValue: any) => {
     const { target } = event;
-    console.log('Values', target.value, newValue);
+    // console.log('Values', target.value, newValue);
     onChange(
       // On autofill we get a stringified value.
 
