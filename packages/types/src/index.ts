@@ -49,6 +49,7 @@ export interface AppSettings {
     urls?: OpenApiSetting[];
   };
   models?: Models;
+  filters?: AnswersFilters
 }
 
 export interface JiraFilters {
