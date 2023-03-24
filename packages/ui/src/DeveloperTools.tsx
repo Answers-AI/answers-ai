@@ -50,10 +50,7 @@ const DeveloperTools = ({
           gridTemplateColumns: 'fit-content(320px) 1fr fit-content(320px)',
           gridTemplateRows: '1fr'
         }}>
-        {journey || journeys?.length ? (
-          <JourneySection journeys={journey ? [journey] : journeys} />
-        ) : null}
-
+        <JourneySection journeys={journey ? [journey] : journeys} />
         <ChatDetail appSettings={appSettings} user={user} prompts={prompts} />
       </Box>
     </>
