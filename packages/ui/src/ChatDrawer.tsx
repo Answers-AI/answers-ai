@@ -71,7 +71,7 @@ export interface ChatDrawerProps {
 }
 export default function ChatDrawer({ journeys }: ChatDrawerProps) {
   const { chat } = useAnswers();
-  const [open, setOpen] = React.useState(!chat);
+  const [open, setOpen] = React.useState(false);
   const [closedJourneys, setclosedJourneys] = React.useState<boolean[]>([]);
   const handleDrawerOpen = () => {
     setOpen(true);
