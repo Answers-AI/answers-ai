@@ -4,6 +4,9 @@ import createTheme from '@mui/material/styles/createTheme';
 import { amber, grey } from '@mui/material/colors';
 
 const getDesignTokens = (mode: PaletteMode) => ({
+  shape: {
+    borderRadius: 0
+  },
   breakpoints: {
     values: {
       xs: 0,
@@ -51,6 +54,15 @@ export const darkModeTheme = createTheme({
   components: {
     MuiContainer: {
       defaultProps: { maxWidth: 'xxl' }
+    },
+    MuiListItemText: {
+      styleOverrides: {
+        primary: {
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap'
+        }
+      }
     },
     MuiAccordion: {
       styleOverrides: {

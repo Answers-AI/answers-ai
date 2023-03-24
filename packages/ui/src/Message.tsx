@@ -92,6 +92,7 @@ export const MessageCard = ({
   return (
     <Card
       sx={{
+        borderRadius: 0,
         position: 'relative'
       }}>
       <Box
