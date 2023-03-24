@@ -31,7 +31,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const messages: Message[] = req.body.messages;
 
   const { journeyId, chatId, filters, content: prompt, isNewJourney } = req.body;
-  console.log('Query', { journeyId, chatId, isNewJourney, filters, prompt, messages });
+  // console.log('Query', { journeyId, chatId, isNewJourney, filters, prompt, messages });
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({
     id: chatId,
@@ -71,7 +71,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       messages,
       filters
     }));
-    console.log({ pineconeData, context, summary });
+    // console.log({ pineconeData, context, summary });
   } catch (pineconeError) {
     console.log('Pinecone error', pineconeError);
   }

@@ -1,4 +1,5 @@
-import { WebPage, webClient } from './index';
+import { webClient } from './index';
+import { WebPage } from 'types';
 import cheerio from 'cheerio';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 import { Readability } from '@mozilla/readability';
@@ -103,102 +104,86 @@ const excludeSelectors: string[] = [
   'sup'
 ];
 
-export const getWebPage = async ({
-  url,
-  getRaw
-}: {
-  url: string;
-  getRaw: boolean;
-}): Promise<WebPage | null> => {
+export const convertWebPageToMarkdown = async (url: string, pageHtml: string): Promise<WebPage> => {
+  let $ = cheerio.load(pageHtml);
+  $(excludeSelectors.join(',')).remove();
+
+  const initialHtml = $.html();
+
+  const initialMarkdown = NodeHtmlMarkdown.translate(initialHtml, {}, undefined, undefined);
+
+  const html = convertMarkdownToHtml(initialMarkdown, showDownOptions);
+  $ = cheerio.load(html);
+
+  $('h1').each(function () {
+    const $el = $(this);
+    const innerHtml = $el.html();
+    $el.replaceWith(`<h2>${innerHtml}</h2>`);
+  });
+
+  $('h2').each((i, elem) => {
+    const section = $('<section></section>');
+    let nextSiblings = $(elem).nextUntil('h2');
+    let nextElem = $(elem).next();
+    if (nextElem.length && nextElem[0].tagName === 'h2') {
+      // If the next element is an h2, remove the current h2 and continue to the next one
+      $(elem).remove();
+      return;
+    }
+    $(elem).html($(elem).text()).add(nextSiblings).wrapAll(section);
+  });
+
+  $('body')
+    .children()
+    .each((i, elem) => {
+      if (elem.tagName !== 'section') {
+        $(elem).remove();
+      }
+    });
+
+  $('a').each(function () {
+    const $link = $(this);
+    const innerHtml = $link.html() as string;
+    $link.replaceWith(innerHtml);
+  });
+
+  $('*').each(function () {
+    if ($(this).text().trim().length < 2) {
+      $(this).remove();
+    }
+  });
+
+  const dom = new JSDOM(`<article>${$.html()}</article>`, { url });
+
+  const document = dom.window.document;
+
+  const reader = new Readability(document, {
+    debug: false,
+    keepClasses: false,
+    disableJSONLD: false
+  });
+  const article = reader.parse();
+
+  const mkdown = NodeHtmlMarkdown.translate(article?.content || '', {}, undefined, undefined);
+  const domain = new URL(url).origin;
+  return {
+    url,
+    domain,
+    title: article?.title,
+    description: article?.excerpt,
+    content: mkdown
+  };
+};
+
+export const getWebPageHtml = async ({ url }: { url: string }): Promise<string> => {
   console.log(`===Fetching webpage: ${url}`);
   try {
     const pageHtml = await webClient.fetchWebData(url, { cache: false });
     if (!pageHtml) {
-      console.error(`No valid HTML returned for url: ${url}`);
-      return null;
+      throw new Error(`No valid HTML returned for url: ${url}`);
     }
 
-    if (getRaw) {
-      return { url, content: pageHtml };
-    }
-
-    let $ = cheerio.load(pageHtml);
-    $(excludeSelectors.join(',')).remove();
-
-    const initialHtml = $.html();
-
-    const initialMarkdown = NodeHtmlMarkdown.translate(initialHtml, {}, undefined, undefined);
-
-    const html = convertMarkdownToHtml(initialMarkdown, showDownOptions);
-    $ = cheerio.load(html);
-
-    $('h1').each(function () {
-      const $el = $(this);
-      const innerHtml = $el.html();
-      $el.replaceWith(`<h2>${innerHtml}</h2>`);
-    });
-
-    $('h2').each((i, elem) => {
-      const section = $('<section></section>');
-      let nextSiblings = $(elem).nextUntil('h2');
-      let nextElem = $(elem).next();
-      if (nextElem.length && nextElem[0].tagName === 'h2') {
-        // If the next element is an h2, remove the current h2 and continue to the next one
-        $(elem).remove();
-        return;
-      }
-      $(elem).html($(elem).text()).add(nextSiblings).wrapAll(section);
-    });
-
-    $('body')
-      .children()
-      .each((i, elem) => {
-        if (elem.tagName !== 'section') {
-          $(elem).remove();
-        }
-      });
-
-    $('a').each(function () {
-      const $link = $(this);
-      const innerHtml = $link.html() as string;
-      $link.replaceWith(innerHtml);
-    });
-
-    $('*').each(function () {
-      if ($(this).text().trim().length < 2) {
-        $(this).remove();
-      }
-    });
-
-    const dom = new JSDOM(`<article>${$.html()}</article>`, { url });
-
-    const document = dom.window.document;
-
-    const reader = new Readability(document, {
-      debug: false,
-      keepClasses: false,
-      disableJSONLD: false
-    });
-    const article = reader.parse();
-
-    const mkdown = NodeHtmlMarkdown.translate(
-      /* html */ article?.content || '', //$content.html() || '',
-      /* options */ {
-        // maxConsecutiveNewlines: 2
-      },
-      /* customTranslators (optional) */ undefined,
-      /* customCodeBlockTranslators (optional) */ undefined
-    );
-    // const mkdown = removeDuplicateHeaders(rawMarkdown);
-
-    const pageData = {
-      url,
-      title: article?.title,
-      description: article?.excerpt,
-      content: mkdown
-    };
-
-    return pageData;
+    return pageHtml;
   } catch (error) {
     console.error('getWebPage:ERROR', error);
     throw error;

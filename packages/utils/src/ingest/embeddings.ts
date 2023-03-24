@@ -16,7 +16,7 @@ export const processVectorsUpserted: EventVersionHandler<{ vectors: PineconeVect
   v: '1',
   handler: async ({ event }) => {
     const { vectors } = event.data;
-    console.log(vectors);
+    // console.log(vectors);
 
     const vectorData = await Promise.all(
       vectors?.map((vector) =>

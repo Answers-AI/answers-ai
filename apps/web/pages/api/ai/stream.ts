@@ -22,7 +22,7 @@ const handler = async (req: Request): Promise<Response> => {
     filters: AnswersFilters;
   };
   const handleResponse = (response: any) => {
-    console.log('handleResponse', response);
+    // console.log('handleResponse', response);
   };
   try {
     const { pineconeData, context } = await fetch(

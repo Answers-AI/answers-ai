@@ -62,7 +62,7 @@ const useAI = (options: { useStreaming?: boolean; filters?: any } = {}) => {
 
 export const syncAi = async (options: { url?: string } = {}) => {
   const { url } = options;
-  console.log('syncai', url);
+  // console.log('syncai', url);
   const response = await axios.post(
     (import.meta.env.VITE_API_URL || 'http://localhost:3000/api') + `/sync/web`,
     { url }

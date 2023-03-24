@@ -16,13 +16,28 @@ export const answersMessageSent: EventVersionHandler<{
   handler: async ({ event }) => {
     const { data, user } = event;
     const { role, content, chat, filters } = data;
-    if (filters?.datasources?.web?.url?.length)
+    if (filters?.datasources?.web?.url?.length) {
+      console.log('web/page.sync', filters.datasources.web.url);
       await inngest.send({
         v: '1',
         ts: new Date().valueOf(),
         name: 'web/page.sync',
         user,
         data: { appSettings: user?.appSettings, urls: filters.datasources.web.url }
+      });
+    }
+
+    if (filters?.datasources?.web?.domain?.length)
+      await inngest.send({
+        v: '1',
+        ts: new Date().valueOf(),
+        name: 'web/urls.sync',
+        user,
+        data: {
+          appSettings: user?.appSettings,
+          byDomain: true,
+          urls: filters.datasources.web.domain
+        }
       });
 
     return prisma.message.create({

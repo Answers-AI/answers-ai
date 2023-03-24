@@ -39,7 +39,7 @@ class WebClient {
         });
 
         if (response.status !== 200) {
-          throw new Error(`Failed to fetch data from ${url}. Status: ${response.status}`);
+          throw new Error(`Response Failed to fetch data from ${url}. Status: ${response.status}`);
         }
 
         // TODO: Add handler for HTTP requests
@@ -53,8 +53,8 @@ class WebClient {
           await this.redis.expire(hashKey, this.cacheExpireTime);
         }
       } catch (err: AxiosError | any) {
-        console.error(`Error fetching data from ${url}.  Status: ${err.response.status}`);
-        data = null;
+        console.error(`Catch Error fetching data from ${url}.  Status: ${err?.response?.status}`);
+        throw err;
       }
     }
 

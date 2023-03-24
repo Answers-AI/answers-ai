@@ -9,7 +9,7 @@ const App = () => {
       sendResponse: (response?: any) => void
     ) => {
       // 2. A page requested user data, respond with a copy of `user`
-      console.log('Message', message, sender, sendResponse);
+      // console.log('Message', message, sender, sendResponse);
     };
     chrome.runtime.onMessage.addListener(messageListener);
     return () => {

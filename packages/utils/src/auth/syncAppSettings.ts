@@ -100,9 +100,17 @@ export async function syncAppSettings(user: User) {
           acc[url] = { url };
           return acc;
         }, {}) || {};
+
+      const domainSettings =
+        (user?.appSettings as any)?.web?.domains?.reduce((acc: any, domain: string) => {
+          acc[domain] = { domain };
+          return acc;
+        }, {}) || {};
+
       newSettings.web = {
         ...(user?.appSettings as any)?.web,
-        urls: urlSettings
+        urls: urlSettings,
+        domains: domainSettings
       };
     } catch (error) {
       console.log('urlSettingsError', error);
