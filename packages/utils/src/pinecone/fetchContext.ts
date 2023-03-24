@@ -100,16 +100,21 @@ export const fetchContext = async ({
   });
 
   console.log('[FetchContext]', JSON.stringify({ datasources, filters, filter }));
-  const pineconeData = await Promise.all(
-    Object.entries(datasources)?.map(([source]) => {
+
+  const pineconeData = await Promise.all([
+    ...Object.entries(datasources)?.map(([source]) => {
       return pineconeQuery(promptEmbedding, {
         filter: {
           ...filter[source]
         },
         topK: 100
       });
+    }),
+    // TODO: Remove unfiltered search?
+    pineconeQuery(promptEmbedding, {
+      topK: 100
     })
-  )?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
+  ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
 
   // TODO: Filter pinecone data by threshold
 

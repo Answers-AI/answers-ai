@@ -68,7 +68,7 @@ export function AnswersProvider({
   journey,
   chat,
   apiUrl = '/api',
-  useStreaming: initialUseStreaming = false
+  useStreaming: initialUseStreaming = true
 }: AnswersProviderProps) {
   const router = useRouter();
   const [error, setError] = useState(null);

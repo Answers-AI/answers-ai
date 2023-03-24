@@ -126,7 +126,7 @@ export const ChatDetail = ({
               user={user}
               role="assistant"
               content={
-                'Welcome! Try asking my me something below, or select your data sources on the top right!'
+                'Welcome! Try asking me something below, or select your data sources on the top right!'
               }
             />
           ) : null}
