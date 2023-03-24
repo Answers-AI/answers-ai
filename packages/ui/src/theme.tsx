@@ -53,9 +53,7 @@ export const darkModeTheme = createTheme({
   ...getDesignTokens('dark'),
   components: {
     MuiButton: {
-      defaultProps: {
-        disableRipple: true
-      }
+      defaultProps: {}
     },
     MuiContainer: {
       defaultProps: { maxWidth: 'xxl' }

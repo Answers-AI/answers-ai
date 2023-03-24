@@ -16,6 +16,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Add from '@mui/icons-material/Add';
 import { Button, Collapse } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 const drawerWidth = 320;
 
@@ -72,8 +73,9 @@ export interface ChatDrawerProps {
 }
 export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
   // const { chat } = useAnswers();
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
-  const [opened, setOpened] = React.useState<boolean[]>([]);
+  const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({});
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -81,17 +83,20 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const handleExpandJourney = (idx: number) => (evt: any) => {
+  const handleExpandJourney = (idx: string | number) => (evt: any) => {
     evt.preventDefault();
     evt.stopPropagation();
     setOpened((prev) => {
-      const newArr = [...prev];
+      const newArr = { ...prev };
       newArr[idx] = !newArr[idx];
       return newArr;
     });
   };
   const handleNewJourney = () => {};
-  const handleNewChat = () => {};
+  const handleAddChat = ({ journey }: any) => {
+    setOpen(false);
+    router.push('/');
+  };
 
   return (
     <>
@@ -153,12 +158,12 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
                 disablePadding
                 sx={{
                   'flexDirection': 'column',
-                  '.MuiIconButton-root': {
-                    opacity: 0
-                  },
-                  '&:hover': {
+                  '.MuiIconButton-root': { opacity: 1, transition: '.1s', overflow: 'hidden' },
+                  '&:not(:hover)': {
                     '.MuiIconButton-root': {
-                      opacity: 1
+                      opacity: 0,
+                      px: 0,
+                      width: 0
                     }
                   }
                 }}>
@@ -166,18 +171,22 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
                   href={`/journey/${journey.id}`}
                   sx={{ width: '100%', py: 2, paddingRight: 1 }}>
                   <ListItemText primary={`${journey.title}`} />
-                  <IconButton onClick={handleExpandJourney(idx)}>
+                  {journey?.chats?.length ? (
+                    <IconButton onClick={handleExpandJourney(idx)}>
+                      {opened[idx] ? <ExpandLess /> : <ExpandMore />}
+                    </IconButton>
+                  ) : null}
+                  <IconButton onClick={() => handleAddChat({ journey })}>
                     <Add />
-                  </IconButton>
-                  <IconButton onClick={handleExpandJourney(idx)}>
-                    {opened[idx] ? <ExpandLess /> : <ExpandMore />}
                   </IconButton>
                 </ListItemButton>
                 <Collapse in={opened[idx]} timeout="auto" unmountOnExit sx={{ width: '100%' }}>
                   <List disablePadding>
                     {journey?.chats?.map((chat) => (
                       <ListItem key={chat.id} disablePadding>
-                        <ListItemButton sx={{ px: 4 }} href={`/chat/${chat.id}`}>
+                        <ListItemButton
+                          sx={{ px: 4, background: '#6c6c6c1a' }}
+                          href={`/chat/${chat.id}`}>
                           <ListItemText
                             primary={chat.id}
                             secondary={chat?.messages?.[0]?.content}
@@ -193,20 +202,22 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
           <ListItem disablePadding sx={{ flexDirection: 'column' }}>
             <ListItemButton
               sx={{ width: '100%', py: 2, paddingRight: 1 }}
-              onClick={handleExpandJourney(-2)}>
+              onClick={handleExpandJourney('chats')}>
               <ListItemText primary={`Chats`} />
-              <IconButton onClick={handleExpandJourney(-2)}>
+              <IconButton onClick={handleAddChat}>
                 <Add />
               </IconButton>
-              <IconButton onClick={handleExpandJourney(-2)}>
-                {opened[-2] ? <ExpandLess /> : <ExpandMore />}
+              <IconButton onClick={handleExpandJourney('chats')}>
+                {opened['chats'] ? <ExpandLess /> : <ExpandMore />}
               </IconButton>
             </ListItemButton>
-            <Collapse in={opened[-2]} timeout="auto" unmountOnExit sx={{ width: '100%' }}>
+            <Collapse in={opened['chats']} timeout="auto" unmountOnExit sx={{ width: '100%' }}>
               <List disablePadding>
                 {chats?.map((chat) => (
                   <ListItem key={chat.id} disablePadding>
-                    <ListItemButton sx={{ px: 4 }} href={`/chat/${chat.id}`}>
+                    <ListItemButton
+                      sx={{ px: 4, background: '#6c6c6c1a' }}
+                      href={`/chat/${chat.id}`}>
                       <ListItemText primary={chat.id} secondary={chat?.messages?.[0]?.content} />
                     </ListItemButton>
                   </ListItem>

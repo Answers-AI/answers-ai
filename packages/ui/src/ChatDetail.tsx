@@ -21,55 +21,27 @@ export const ChatDetail = ({
   user: User;
   prompts?: any;
 }) => {
-  const flags = useFlags([
-    'recommended_prompts',
-    'recommended_prompts_expanded',
-    'recommended_prompts_chat',
-    'filters_dashboard'
-  ]); // only causes re-render value==='messages' specified flag values / traits change
-
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const { error, chat, journey, messages, isLoading, regenerateAnswer } = useAnswers();
+  const { setInputValue, error, chat, journey, messages, isLoading, regenerateAnswer } =
+    useAnswers();
   React.useEffect(() => {
     if (messages?.length)
       scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
     inputRef.current?.focus();
   }, [chat, journey, messages, error]);
 
-  const handlePromptClick = (prompt: string) => {
-    if (!prompt) return;
-    if (inputRef.current) {
-      inputRef.current.value = prompt;
-      inputRef.current.focus();
-    }
-  };
-
   return (
     <Box
       sx={{
-        'display': 'flex',
-        'flexDirection': 'column',
-        'overflow': 'hidden',
-        'width': '100%',
-        'height': '100%',
-        'flex': 1,
-        'justifyContent': 'space-between',
-        '*': {
-          '::-webkit-scrollbar ': {
-            width: '2px'
-          },
-          '::-webkit-scrollbar-track ': {
-            background: 'transparent'
-          },
-          '::-webkit-scrollbar-thumb ': {
-            width: '1px',
-            backgroundColor: 'rgba(155, 155, 155, 0.5)',
-            borderRadius: '20px,',
-            border: 'transparent'
-          }
-        }
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        width: '100%',
+        height: '100%',
+        flex: 1,
+        justifyContent: 'space-between'
       }}>
       <AppBar
         position="static"
@@ -90,7 +62,7 @@ export const ChatDetail = ({
           </Box>
         </Toolbar>
       </AppBar>
-      <Box sx={{ height: '100%', overflow: 'auto', px: 2, py: 3 }}>
+      <Box ref={scrollRef} sx={{ height: '100%', overflow: 'auto', px: 2, py: 3 }}>
         <Box
           sx={{
             display: 'flex',
@@ -98,7 +70,7 @@ export const ChatDetail = ({
 
             gap: 2
           }}>
-          {messages.map((message, index) => (
+          {messages?.map((message, index) => (
             <MessageCard {...message} key={`message_${index}`} />
           ))}
           {error ? (
@@ -146,7 +118,7 @@ export const ChatDetail = ({
           flexDirection: 'column',
           width: '100%',
           px: 2,
-          py: 3
+          paddingBottom: 3
         }}>
         <AppSyncToolbar appSettings={appSettings} />
         <ChatInput inputRef={inputRef} />

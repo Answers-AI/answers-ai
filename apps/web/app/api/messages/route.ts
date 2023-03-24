@@ -1,3 +1,4 @@
+// import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from 'db/dist';
@@ -6,8 +7,7 @@ import { authOptions } from '@ui/authOptions';
 export async function GET(req: Request, res: Response) {
   const user = await getServerSession(authOptions);
   if (!user?.user?.email) return NextResponse.redirect('/auth');
-
-  const records = await prisma.prompt.findMany({
+  const records = await prisma.chat.findMany({
     where: {
       users: {
         some: {
@@ -16,18 +16,17 @@ export async function GET(req: Request, res: Response) {
       }
     }
   });
-
   return NextResponse.json(records);
 }
 
 export async function DELETE(req: Request, res: Response) {
-  const user = await getServerSession(authOptions);
-  if (!user?.user?.email) return NextResponse.redirect('/auth');
-
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
+
+  const user = await getServerSession(authOptions);
+  if (!user?.user?.email) return NextResponse.redirect('/auth');
   if (id) {
-    const userRecord = await prisma.prompt.findFirst({
+    const userRecord = await prisma.chat.findFirst({
       where: {
         id,
         users: { some: { email: user?.user?.email } }
@@ -35,7 +34,7 @@ export async function DELETE(req: Request, res: Response) {
     });
 
     if (!userRecord) return NextResponse.redirect('/auth');
-    await prisma.prompt.delete({
+    await prisma.chat.delete({
       where: {
         id
       }
@@ -52,7 +51,7 @@ export async function PATCH(req: Request, res: Response) {
     const { id, likes, dislikes } = await req.json();
 
     if (id) {
-      await prisma.prompt.update({
+      await prisma.message.update({
         where: {
           id
         },

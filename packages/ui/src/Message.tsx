@@ -15,6 +15,8 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import { Message, User } from 'types';
 import { useFlags } from 'flagsmith/react';
+import ReactMarkdown from 'react-markdown';
+import { useAnswers } from './AnswersContext';
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -71,6 +73,7 @@ interface MessageCardProps extends Partial<Message> {
 }
 
 export const MessageCard = ({
+  id,
   content,
   role,
   user,
@@ -84,11 +87,34 @@ export const MessageCard = ({
   summary,
   completionData,
   filters,
+  likes,
+  dislikes,
   ...other
 }: MessageCardProps) => {
   const { developer_mode } = useFlags(['developer_mode']); // only causes re-render if specified flag values / traits change
+  const { updateMessage } = useAnswers();
+  const [lastInteraction, setLastInteraction] = React.useState<string>('');
 
-  const handleLike = () => {};
+  const handleLike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
+    evt.stopPropagation();
+    evt.preventDefault();
+    setLastInteraction('like');
+    if (id)
+      await updateMessage({
+        id: id,
+        likes: (likes ?? 0) + 1
+      });
+  };
+  const handleDislike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
+    evt.stopPropagation();
+    evt.preventDefault();
+    setLastInteraction('dislike');
+    if (id)
+      await updateMessage({
+        id,
+        dislikes: (dislikes ?? 0) + 1
+      });
+  };
   return (
     <Card
       sx={{
@@ -116,15 +142,8 @@ export const MessageCard = ({
           }}>
           {content ? (
             <>
-              <Typography
-                sx={{
-                  whiteSpace: 'pre-line',
-                  code: { color: 'white', backgroundColor: 'black', padding: 2 }
-                }}
-                variant="subtitle1"
-                color="text.secondary"
-                component="div">
-                {content?.trim()}
+              <Typography variant="body1" color="text.secondary" component="div">
+                <ReactMarkdown>{content}</ReactMarkdown>
               </Typography>
             </>
           ) : null}
@@ -154,10 +173,17 @@ export const MessageCard = ({
             bottom: 0,
             right: 0
           }}>
-          <IconButton color="secondary" sx={{}} size="small" onClick={handleLike}>
+          <IconButton
+            color={lastInteraction === 'like' ? 'secondary' : 'default'}
+            sx={{}}
+            size="small"
+            onClick={handleLike}>
             <ThumbUpIcon sx={{ fontSize: 16 }} />
           </IconButton>
-          <IconButton size="small" color="secondary" onClick={handleLike}>
+          <IconButton
+            size="small"
+            color={lastInteraction === 'dislike' ? 'secondary' : 'default'}
+            onClick={handleDislike}>
             <ThumbDownIcon sx={{ fontSize: 16 }} />
           </IconButton>
         </CardActions>

@@ -8,12 +8,12 @@ const timeout = (ms: number) =>
 
 // const summarizeModel = 'text-embedding-ada-002'
 const finalSummaryModel = 'text-davinci-003';
-const summarizeModel = 'text-embedding-ada-002';
+const summarizeModel = 'text-davinci-003';
 // const finalSummaryModel = 'text-embedding-ada-002';
 export const summarizeAI = async ({
   input,
   prompt,
-  chunkSize = 3000, // 7000 is the max for openai
+  chunkSize = 4000, // 7000 is the max for openai
   id
 }: {
   input: string;
@@ -26,44 +26,53 @@ export const summarizeAI = async ({
     id = randomUUID();
   }
   if (!input) return input;
+
   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize });
   const inputDocs = await textSplitter.createDocuments([input]);
   if (inputDocs.length > 1) {
-    console.time(`[summarizeAI] ${id} - ${inputDocs.length} chunks}`);
-    console.log(`[summarizeAI] ${id} - ${inputDocs.length} chunks}`);
-
+    console.time(`[summarizeAI] ${id} - ${inputDocs.length} chunks`);
+    console.log(`[summarizeAI] ${id} - ${inputDocs.length} chunks`);
     const summariesPromises = inputDocs?.map(async (doc, idx) => {
-      let summary = doc.pageContent ?? '';
+      let summary = '';
       await sleep(100 * idx);
       // const promptWrapper = `${prompt} <INPUT>${doc.pageContent}<INPUT> Summary:`;
-      const promptWrapper = `Use the following portion of a long document to see if any of the text is relevant to answer the question. \nReturn any relevant text verbatim.\n${doc.pageContent}\nQuestion: ${prompt}\nRelevant text, if any:`;
+      const promptWrapper = `Use the following portion of a long document to see if any of the text is relevant to answer the question. \nReturn any relevant text verbatim.\n\nDocument:${doc.pageContent}\n\n\nQuestion: ${prompt}\nRelevant text, if any:`;
       const res = await openai.createCompletion({
         max_tokens: 1000,
         prompt: promptWrapper,
         temperature: 0.1,
         model: summarizeModel
       });
-
       if (res?.data?.choices?.[0]?.text) {
         summary = res?.data?.choices?.[0]?.text!;
       }
+
       return summary;
     });
     const summaries = await Promise.all(summariesPromises);
+    console.log(`[summarizeAI] ${id} - Summarized ${summaries?.length} chunks`);
     const summaryText = summaries?.join('<SEP>');
     const summaryDocs = await textSplitter.createDocuments([summaryText]);
     if (summaryDocs.length === 1) {
       // const finalPrompt = `${prompt} <INPUT>${summaryText}<INPUT> Summary:`;
-      const finalPrompt = `Given the following extracted parts of a long document and a question, create a final answer with references (\"SOURCES\"). \nIf you don't know the answer, just say that you don't know. Don't try to make up an answer.\nALWAYS return a \"SOURCES\" part in your answer.\n\nSOURCES:\n\nQUESTION: {prompt}\n=========\n{summaryText}\n=========\nFINAL ANSWER:`;
 
+      const finalPrompt = `Given the following extracted parts of a long document and a question, create a final answer with references (\"SOURCES\"). \nIf you don't know the answer, just say that you don't know. Don't try to make up an answer.\nALWAYS return a \"SOURCES\" part in your answer.\n\nSOURCES:\n\nQUESTION: ${prompt}\n=========\n${summaryText}\n=========\nFINAL ANSWER:`;
+      console.time(`[summarizeAI] ${id} - FinalSummary`);
       const finalRes = await openai.createCompletion({
-        max_tokens: 1000,
+        max_tokens: 2000,
         prompt: finalPrompt,
         temperature: 0.1,
         model: finalSummaryModel
       });
-      console.timeEnd(`[summarizeAI] ${id} - ${inputDocs.length} chunks}`);
-      return finalRes?.data?.choices?.[0]?.text!;
+      const result = finalRes?.data?.choices?.[0]?.text!;
+      console.timeEnd(`[summarizeAI] ${id} - FinalSummary`);
+      console.timeEnd(`[summarizeAI] ${id} - ${inputDocs.length} chunks`);
+      console.log(
+        `[summarizeAI] ${id} - ${inputDocs.length} chunks ratio: ${
+          (input?.length / result?.length) * 100
+        }`
+      );
+      return result;
     } else {
       return summarizeAI({
         input: summaryText,

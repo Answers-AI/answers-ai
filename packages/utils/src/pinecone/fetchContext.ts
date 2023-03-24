@@ -34,12 +34,14 @@ export const fetchContext = async ({
   chat,
   prompt,
   messages = [],
-  filters = {}
+  filters = {},
+  threshold = 0.75 //TODO Calculate threshold based on input and pineconedata
 }: {
   chat?: Chat;
   prompt: string;
   messages: Message[];
   filters: AnswersFilters;
+  threshold?: number;
 }) => {
   // const hasDefaultFilter = Object.keys(filters).length;
   // const history = messages
@@ -115,26 +117,36 @@ export const fetchContext = async ({
       topK: 100
     })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
-
   // TODO: Filter pinecone data by threshold
 
   const context = [
     // `${history}`,
-    ...(!pineconeData ? [] : pineconeData?.map((item: any) => item?.metadata?.text))
+    ...(!pineconeData
+      ? []
+      : pineconeData?.filter((x) => x.score! > threshold)?.map((item: any) => item?.metadata?.text))
   ].join(' <SEP> ');
-  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 3000 });
+
+  // 100 vectors(avg 4000) -> 1
+  // 100 vectors(avg 1000) -> 4
+
+  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 40000 });
   const contextChunks = await textSplitter.createDocuments([context]);
+
   if (contextChunks?.length > 1) {
     console.log('Context too large', contextChunks?.length);
   }
+
+  const contextText = contextChunks[0]?.pageContent;
   let summary = await summarizeAI({
-    input: contextChunks[0]?.pageContent,
-    prompt
+    input: contextText,
+    prompt,
+    chunkSize: 3000
   });
+  console.log('SUMMARY RATIO', (summary?.length / contextText?.length) * 100);
 
   return {
     pineconeData,
-    context: contextChunks[0]?.pageContent,
+    context: contextText,
     summary
   };
 };

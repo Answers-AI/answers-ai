@@ -64,7 +64,7 @@ export const createChatChain = ({ messages }: { messages: Message[] }) => {
           // },
           {
             role: ChatCompletionRequestMessageRoleEnum.System,
-            content: 'This will be your context: ' + context
+            content: `Reply based on the context provided. If you don't know the answers say you don't know. If you think you're absolutely right, say so. <CONTEXT>${context}<CONTEXT>`
           },
           {
             role: ChatCompletionRequestMessageRoleEnum.User,

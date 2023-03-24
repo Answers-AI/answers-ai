@@ -14,27 +14,27 @@ import { prisma } from 'db/dist';
 
 export const SYSTEM_SETTINGS = {
   services: [
-    { name: 'jira', enabled: true, imageURL: '/images/jira.png' },
-    { name: 'slack', enabled: true, imageURL: '/images/slack.png' },
-    { name: 'confluence', enabled: true, imageURL: '/images/confluence.png' },
-    { name: 'web', enabled: true, imageURL: '/images/web.png' },
-    { name: 'notion', enabled: false, imageURL: '/images/notion.png' },
-    { name: 'github', enabled: false, imageURL: '/images/github.png' },
-    { name: 'drive', enabled: false, imageURL: '/images/drive.png' },
-    { name: 'contentful', enabled: false, imageURL: '/images/contentful.png' }
+    { name: 'jira', enabled: true, imageURL: '/static/images/jira.png' },
+    { name: 'slack', enabled: true, imageURL: '/static/images/slack.png' },
+    { name: 'confluence', enabled: true, imageURL: '/static/images/confluence.png' },
+    { name: 'web', enabled: true, imageURL: '/static/images/web.png' },
+    { name: 'notion', enabled: false, imageURL: '/static/images/notion.png' },
+    { name: 'github', enabled: false, imageURL: '/static/images/github.png' },
+    { name: 'drive', enabled: false, imageURL: '/static/images/drive.png' },
+    { name: 'contentful', enabled: false, imageURL: '/static/images/contentful.png' }
   ]
 };
 
 export const NO_ORG_SETTINGS = {
   services: [
-    { name: 'web', enabled: true, imageURL: '/images/web.png' },
-    { name: 'jira', enabled: false, imageURL: '/images/jira.png' },
-    { name: 'slack', enabled: false, imageURL: '/images/slack.png' },
-    { name: 'confluence', enabled: false, imageURL: '/images/confluence.png' },
-    { name: 'notion', enabled: false, imageURL: '/images/notion.png' },
-    { name: 'github', enabled: false, imageURL: '/images/github.png' },
-    { name: 'drive', enabled: false, imageURL: '/images/drive.png' },
-    { name: 'contentful', enabled: false, imageURL: '/images/contentful.png' }
+    { name: 'web', enabled: true, imageURL: '/static/images/web.png' },
+    { name: 'jira', enabled: false, imageURL: '/static/images/jira.png' },
+    { name: 'slack', enabled: false, imageURL: '/static/images/slack.png' },
+    { name: 'confluence', enabled: false, imageURL: '/static/images/confluence.png' },
+    { name: 'notion', enabled: false, imageURL: '/static/images/notion.png' },
+    { name: 'github', enabled: false, imageURL: '/static/images/github.png' },
+    { name: 'drive', enabled: false, imageURL: '/static/images/drive.png' },
+    { name: 'contentful', enabled: false, imageURL: '/static/images/contentful.png' }
   ]
 };
 

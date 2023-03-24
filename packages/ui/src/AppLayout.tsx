@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { CssBaseline, GlobalStyles } from '@mui/material';
+import { CssBaseline } from '@mui/material';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { FlagsmithProvider } from 'flagsmith/react';
 import flagsmith from 'flagsmith/isomorphic';
@@ -11,7 +11,7 @@ import { Session } from 'next-auth';
 import Auth from './Auth';
 import { AppDrawer } from './AppDrawer';
 import { darkModeTheme } from './theme';
-
+import GlobalStyles from './GlobalStyles';
 export default function AppLayout({
   session,
   // Layouts must accept a children prop.
@@ -36,10 +36,8 @@ export default function AppLayout({
         }}
         flagsmith={flagsmith}>
         <ThemeProvider theme={darkModeTheme}>
-          <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
-
           <CssBaseline enableColorScheme />
-
+          <GlobalStyles />
           <html lang="en" style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
             <body style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
               {session ? (
