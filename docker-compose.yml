@@ -19,6 +19,8 @@ services:
     command: npx prisma studio
     environment:
       - DATABASE_URL=postgresql://example_user:example_password@postgres:5433/example_db?schema=public
+    depends_on:
+      - postgres
   redis:
     image: redis:latest
     ports:
