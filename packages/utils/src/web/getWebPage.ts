@@ -147,12 +147,6 @@ export const convertWebPageToMarkdown = async (url: string, pageHtml: string): P
     $link.replaceWith(innerHtml);
   });
 
-  $('*').each(function () {
-    if ($(this).text().trim().length < 2) {
-      $(this).remove();
-    }
-  });
-
   const dom = new JSDOM(`<article>${$.html()}</article>`, { url });
 
   const document = dom.window.document;
@@ -171,7 +165,7 @@ export const convertWebPageToMarkdown = async (url: string, pageHtml: string): P
     domain,
     title: article?.title,
     description: article?.excerpt,
-    content: mkdown
+    content: `# ${url}\n${mkdown}`
   };
 };
 

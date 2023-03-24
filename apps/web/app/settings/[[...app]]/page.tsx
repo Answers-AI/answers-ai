@@ -1,7 +1,5 @@
-import { getAppSettings } from '@ui/getAppSettings';
 import React from 'react';
-import { AppSettings } from 'types';
-
+import { getAppSettings } from '@ui/getAppSettings';
 import JiraSettings from '@ui/JiraSettings';
 import SlackSettings from '@ui/SlackSettings';
 import ConfluenceSettings from '@ui/ConfluenceSettings';

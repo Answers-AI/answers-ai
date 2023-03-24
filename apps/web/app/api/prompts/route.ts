@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { prisma } from 'db/dist';
 import { getServerSession } from 'next-auth';
+import { prisma } from 'db/dist';
 import { authOptions } from '@ui/authOptions';
 
 export async function GET(req: Request, res: Response) {

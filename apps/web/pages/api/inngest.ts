@@ -1,6 +1,6 @@
 import { Inngest } from 'inngest';
 import { serve } from 'inngest/next';
-import { createInngestFunctions, EventVersionHandler } from '@utils/ingest/EventVersionHandler';
+import { createInngestFunctions } from '@utils/ingest/EventVersionHandler';
 import * as jiraFunctions from '@utils/ingest/jira';
 import * as promptFunctions from '@utils/ingest/prompt';
 import * as slackFunctions from '@utils/ingest/slack';

@@ -5,6 +5,7 @@ import { EventVersionHandler } from './EventVersionHandler';
 import { chunkArray } from '../utilities/utils';
 import { WebPage } from 'types';
 import { extractUrlsFromSitemap } from '../utilities/getSitemapUrls';
+import { getUniqueUrls, getUniqueUrl } from '../utilities/getUniqueUrls';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
@@ -42,7 +43,6 @@ const splitPageHtmlChunkMore = async (markdownChunk: string) => {
 
   return smallerChunks;
 };
-
 const splitPageHtml = async (iPage: WebPage) => {
   const page = await convertWebPageToMarkdown(iPage.url, iPage.content);
 
@@ -73,7 +73,6 @@ async function* scrapePage(
   const url = getUniqueUrl(iUrl);
 
   if (!url || visitedUrls.has(url)) {
-    console.log({ iUrl, url });
     // yield null;
     return;
   }
@@ -88,8 +87,6 @@ async function* scrapePage(
       yield null;
       return;
     }
-    // console.log(`Scraping pageHtml ${pageHtml}...`);
-
     if (!pageHtml) {
       console.log(`Error: Webpage ${url} returned a non-200 response.`);
       yield null;
@@ -144,14 +141,6 @@ async function* scrapePage(
     return;
   }
 }
-
-const getUniqueUrl = (url: string) => {
-  const parsedUrl = new URL(url);
-  const hostname = parsedUrl.hostname.replace(/^www\./i, '');
-  const path = parsedUrl.pathname.replace(/\/+$/, ''); // remove trailing slashes
-  return `https://${hostname}${path.replace(/\/+/g, '/')}`;
-};
-const getUniqueUrls = (urls: string[]) => Array.from(new Set(urls.map((url) => getUniqueUrl(url))));
 
 const getUniqueDomains = (urls: string[]) =>
   urls?.map((url) => {
@@ -249,7 +238,9 @@ const getWebPagesVectors = async (webPages: WebPage[]) => {
         }
 
         page.content = `# ${page.url}\n${page.content}`;
+
         const markdownChunks = await splitPageHtml(page);
+
         if (!markdownChunks?.length) return [];
 
         return markdownChunks.map((headingChunk: string, i: any) => ({
