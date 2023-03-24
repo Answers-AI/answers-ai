@@ -1,6 +1,5 @@
 import { URL } from 'url';
 import { confluenceClient, ConfluencePage } from './index';
-import { jiraAdfToMarkdown } from '../utilities/jiraAdfToMarkdown';
 
 const removeDuplicateHeaders = (markdown: string): string => {
   const regex = /^(#+)(.*)$/gm;
@@ -44,7 +43,6 @@ export const getConfluencePages = async ({
   limit?: number;
   cursor?: string;
 } = {}): Promise<(ConfluencePage | null)[]> => {
-  console.log('====================================');
   console.log('===Fetching all confluence pages===');
   try {
     const endpoint = `/pages?body-format=atlas_doc_format&limit=${limit}${
@@ -53,13 +51,7 @@ export const getConfluencePages = async ({
     const pagesResult: { results: any[]; _links: { next: string } } =
       await confluenceClient.fetchConfluenceData(endpoint, { cache: false });
 
-    const pages = pagesResult.results.map((page) => {
-      if (!page?.body?.atlas_doc_format?.value) return false;
-
-      const docJson = JSON.parse(page.body.atlas_doc_format.value);
-      page.content = removeDuplicateHeaders(jiraAdfToMarkdown(docJson));
-      return page;
-    });
+    const pages = pagesResult.results.filter((page) => !!page?.body?.atlas_doc_format?.value);
 
     if (pagesResult._links?.next) {
       const nextCursor = new URL(pagesResult._links.next).searchParams.get('cursor');
@@ -88,9 +80,6 @@ export const getConfluencePage = async ({
     if (!pageData?.body?.atlas_doc_format?.value)
       throw new Error(`No valid data returned for id: ${pageId}`);
 
-    const docJson = JSON.parse(pageData.body.atlas_doc_format.value);
-    pageData.content = removeDuplicateHeaders(jiraAdfToMarkdown(docJson));
-    // console.log(JSON.stringify(docJson, null, 2));
     return pageData;
   } catch (error) {
     console.error('getConfluencePage:ERROR', error);

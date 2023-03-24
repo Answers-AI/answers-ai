@@ -133,8 +133,6 @@ async function* scrapePage(
         continue;
       }
 
-      // visitedUrls.add(uniqueLink);
-
       yield lowerCaseLink;
 
       yield* scrapePage(lowerCaseLink, origin, urls);
@@ -146,14 +144,6 @@ async function* scrapePage(
     return;
   }
 }
-
-const getTitleText = (page: any) => {
-  if (!page.title) return '';
-  return `the title of the page is "${page.title}" and`;
-};
-
-const getCleanedUrl = (url: string) =>
-  url.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/[\/\\]/g, '');
 
 const getUniqueUrl = (url: string) => {
   const parsedUrl = new URL(url);
@@ -257,6 +247,8 @@ const getWebPagesVectors = async (webPages: WebPage[]) => {
         if (!page?.content) {
           return [];
         }
+
+        page.content = `# ${page.url}\n${page.content}`;
         const markdownChunks = await splitPageHtml(page);
         if (!markdownChunks?.length) return [];
 
