@@ -14,8 +14,41 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
   const anchorRef = React.useRef<HTMLDivElement[]>([]);
   const enabledServices = appSettings?.services?.filter((service) => service.enabled);
   const [open, setOpen] = React.useState(-1);
+  const [urls, setUrls] = React.useState<string[]>([]);
+  const [domains, setDomains] = React.useState<string[]>([]);
   const { filters, updateFilter } = useAnswers();
-  // console.log('enabledServices', { anchorRef, enabledServices, open });
+
+  React.useEffect(() => {
+    const getUrls = async () => {
+      try {
+        const webUrls = await axios.post(`/api/ai/getUrlList`);
+
+        if (webUrls?.data?.urls && webUrls?.data?.urls?.length > 0) {
+          setUrls(webUrls.data.urls);
+        } else {
+          setUrls([]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getUrls();
+
+    const getDomains = async () => {
+      try {
+        const webDomains = await axios.post(`/api/ai/getDomainList`);
+
+        if (webDomains?.data?.domains && webDomains?.data?.domains?.length > 0) {
+          setDomains(webDomains.data.domains);
+        } else {
+          setDomains([]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getDomains();
+  }, []);
 
   const selectedService = enabledServices?.[open];
   return (
@@ -101,7 +134,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                 <>
                   <AutocompleteSelect
                     label="Web Page"
-                    options={[]}
+                    options={urls}
                     // options={appSettings?.web?.urls?.map((s) => s.url) || []}
                     value={filters?.datasources?.web?.url || []}
                     onChange={async (value: string[]) => {
@@ -115,7 +148,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                   />
                   <AutocompleteSelect
                     label="Web Site"
-                    options={[]}
+                    options={domains}
                     // options={appSettings?.web?.urls?.map((s) => s.url) || []}
                     value={filters?.datasources?.web?.domain || []}
                     onChange={async (value: string[]) => {
