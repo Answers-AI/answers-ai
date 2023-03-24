@@ -33,7 +33,7 @@ export const AppDrawer = ({ params }: any) => {
             </IconButton> */}
         <Avatar>AI</Avatar>
       </DrawerHeader>
-      <Divider />
+
       <List sx={{ flex: '1' }}>
         {[
           { text: 'Message', link: '/', icon: <HomeIcon /> },

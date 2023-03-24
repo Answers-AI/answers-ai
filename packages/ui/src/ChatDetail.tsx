@@ -71,7 +71,11 @@ export const ChatDetail = ({
           }
         }
       }}>
-      <AppBar position="static" sx={{ paddingLeft: 4 }}>
+      <AppBar
+        position="static"
+        sx={{ paddingLeft: 4, borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}
+        color={'transparent'}
+        elevation={0}>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {journey ? journey?.title : null}
@@ -86,46 +90,54 @@ export const ChatDetail = ({
           </Box>
         </Toolbar>
       </AppBar>
-      <Box
-        sx={{ display: 'flex', flexDirection: 'column', overflow: 'auto', flex: 1, gap: 2, p: 2 }}>
-        {messages.map((message, index) => (
-          <MessageCard {...message} key={`message_${index}`} />
-        ))}
-        {error ? (
-          <>
-            <MessageCard
-              user={user}
-              role="assistant"
-              content={`There was an error completing your request, please try again`}
-              error={error}
-            />
-            <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-              <Button
-                onClick={regenerateAnswer}
-                variant="contained"
-                color="primary"
-                sx={{ margin: 'auto' }}>
-                Retry
+      <Box sx={{ height: '100%', overflow: 'auto', px: 2, py: 3 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+
+            gap: 2
+          }}>
+          {messages.map((message, index) => (
+            <MessageCard {...message} key={`message_${index}`} />
+          ))}
+          {error ? (
+            <>
+              <MessageCard
+                user={user}
+                role="assistant"
+                content={`There was an error completing your request, please try again`}
+                error={error}
+              />
+              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <Button
+                  onClick={regenerateAnswer}
+                  variant="contained"
+                  color="primary"
+                  sx={{ margin: 'auto' }}>
+                  Retry
+                </Button>
+              </Box>
+            </>
+          ) : null}
+          {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
+          {messages?.length && !isLoading && !error ? (
+            <Box sx={{ py: 2, width: '100%', display: 'flex', justifyContent: 'center' }}>
+              <Button onClick={regenerateAnswer} variant="outlined" color="primary">
+                Regenerate answer
               </Button>
             </Box>
-          </>
-        ) : null}
-        {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
-        {messages?.length && !isLoading && !error ? (
-          <Box sx={{ py: 2, width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <Button onClick={regenerateAnswer} variant="outlined" color="primary">
-              Regenerate answer
-            </Button>
-          </Box>
-        ) : null}
+          ) : null}
+        </Box>
       </Box>
-
       <Box
         sx={{
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
-          width: '100%'
+          width: '100%',
+          px: 2,
+          py: 3
         }}>
         <AppSyncToolbar appSettings={appSettings} />
         <ChatInput inputRef={inputRef} />

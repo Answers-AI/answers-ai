@@ -111,21 +111,12 @@ const FilterToolbar = ({
                 }
               />
               <AutocompleteSelect
-                label="Web Page"
+                label="Web"
                 options={[]}
                 // options={appSettings?.web?.urls?.map((s) => s.url) || []}
                 value={filters?.datasources?.web?.url || []}
                 onChange={(value: string[]) =>
                   updateFilter({ datasources: { web: { url: value } } })
-                }
-              />
-              <AutocompleteSelect
-                label="Web Site"
-                options={[]}
-                // options={appSettings?.web?.urls?.map((s) => s.url) || []}
-                value={filters?.datasources?.web?.domain || []}
-                onChange={(value: string[]) =>
-                  updateFilter({ datasources: { web: { domain: value } } })
                 }
               />
               <AutocompleteSelect
