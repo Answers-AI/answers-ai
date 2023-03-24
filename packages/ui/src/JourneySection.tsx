@@ -4,6 +4,9 @@ import ChatCard from './ChatCard';
 import React from 'react';
 import NextLink from 'next/link';
 import { AnswersFilters, Journey } from 'types';
+import TreeView from '@mui/lab/TreeView';
+import TreeItem from '@mui/lab/TreeItem';
+import ChatDrawer from './ChatDrawer';
 
 interface Props {
   journeys?: Journey[];
@@ -18,40 +21,7 @@ function JourneySection({ journeys }: Props) {
       </Box>
     );
   }
-  return (
-    <Box>
-      <Typography variant="overline">
-        Journey{journeys && journeys?.length > 1 ? 's' : ''}
-      </Typography>
-
-      {journeys?.map(({ id, title, filters, chats }) => (
-        <Box key={id} sx={{ display: 'flex', flexDirection: 'column', gap: 2, py: 2 }}>
-          {title ? <Typography variant="h6">{title}</Typography> : null}
-          <Filters filters={filters} />
-          <Box
-            sx={{
-              width: '100%',
-              display: 'grid',
-              gap: 2,
-              gridTemplateColumns: { md: 'repeat(3, minmax(0px, 1fr))', sm: '1fr' }
-            }}>
-            {chats?.map((chat) => (
-              <ChatCard key={chat.id} {...chat} />
-            ))}
-
-            <Button
-              component={NextLink}
-              prefetch={false}
-              href={`/journey/${id}`}
-              variant="outlined"
-              color="primary">
-              <MessageIcon />
-            </Button>
-          </Box>
-        </Box>
-      ))}
-    </Box>
-  );
+  return <ChatDrawer journeys={journeys} />;
 }
 
 const Filters = ({ filters, sx }: { filters: any; sx?: any }) => {

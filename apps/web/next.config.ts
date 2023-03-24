@@ -8,22 +8,18 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /**
  * @type {import('next').NextConfig}
  */
-module.exports = withBundleAnalyzer({
+const nextConfig = {
   experimental: {
-    appDir: true,
-    enableUndici: true
+    appDir: true
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],
   modularizeImports: {
     '@mui/material/?(((\\w*)?/?)*)': {
       transform: '@mui/material/{{ matches.[1] }}/{{member}}'
-    },
-    '@mui/icons-material/?(((\\w*)?/?)*)': {
-      transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}'
     }
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config: any) => {
     config.externals = [...config.externals, 'db'];
     // if (isServer) {
     config.plugins = [
@@ -38,4 +34,6 @@ module.exports = withBundleAnalyzer({
 
     return config;
   }
-});
+};
+
+export default withBundleAnalyzer(nextConfig);

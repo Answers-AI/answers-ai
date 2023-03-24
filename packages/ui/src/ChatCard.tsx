@@ -83,7 +83,7 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
                 component="div"
                 sx={{
                   overflow: 'hidden',
-                  textOverflow: 'elipsis',
+                  textOverflow: 'ellipsis',
                   display: '-webkit-box',
                   WebkitLineClamp: '3',
                   WebkitBoxOrient: 'vertical'

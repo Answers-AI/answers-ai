@@ -9,13 +9,13 @@ const slackClient = new SlackClient(process.env.SLACK_TOKEN);
 
 const DEFAULT_SETTINGS = {
   services: [
-    { name: 'jira', enabled: true },
-    { name: 'slack', enabled: true },
-    { name: 'notion', enabled: false },
-    { name: 'github', enabled: false },
-    { name: 'drive', enabled: false },
-    { name: 'contentful', enabled: false },
-    { name: 'confluence', enabled: true }
+    { name: 'jira', enabled: true, imageURL: '/static/images/jira.png' },
+    { name: 'slack', enabled: true, imageURL: '/static/images/slack.png' },
+    { name: 'notion', enabled: false, imageURL: '/static/images/notion.png' },
+    { name: 'github', enabled: false, imageURL: '/static/images/github.png' },
+    { name: 'drive', enabled: false, imageURL: '/static/images/drive.png' },
+    { name: 'contentful', enabled: false, imageURL: '/static/images/contentful.png' },
+    { name: 'confluence', enabled: true, imageURL: '/static/images/confluence.png' }
   ],
   jira: {}
 };

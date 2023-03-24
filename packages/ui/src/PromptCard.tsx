@@ -90,7 +90,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
                 component="div"
                 sx={{
                   overflow: 'hidden',
-                  textOverflow: 'elipsis',
+                  textOverflow: 'ellipsis',
                   display: '-webkit-box',
                   WebkitLineClamp: '3',
                   WebkitBoxOrient: 'vertical'

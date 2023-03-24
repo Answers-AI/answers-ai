@@ -21,6 +21,7 @@ export type RecommendedPrompt = {
 export interface AppService {
   name: string;
   enabled: boolean;
+  imageURL: string;
 }
 export interface AppSettings {
   services?: AppService[];

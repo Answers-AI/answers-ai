@@ -17,89 +17,78 @@ const Chat = async ({ chatId, journeyId }: Params) => {
   if (!session?.user) {
     return <a href={'/auth'}>Redirect</a>;
   }
+  const appSettingsPromise = getAppSettings();
 
-  const appSettings = await getAppSettings();
-  const prompts = JSON.parse(
-    JSON.stringify(
-      await prisma.prompt.findMany({
-        where: {
-          OR: [
-            {
-              usages: {
-                gt: 0
-              }
-            },
-            {
-              likes: {
-                gt: 0
-              }
-            }
-          ]
-        },
-        orderBy: [
+  const promptsPromise = prisma.prompt
+    .findMany({
+      where: {
+        OR: [
           {
-            usages: 'desc'
+            usages: {
+              gt: 0
+            }
+          },
+          {
+            likes: {
+              gt: 0
+            }
           }
         ]
-      })
-    )
-  );
-  let chat;
-  if (chatId) {
-    chat = JSON.parse(
-      JSON.stringify(
-        await prisma.chat.findUnique({
+      },
+      orderBy: [
+        {
+          usages: 'desc'
+        }
+      ]
+    })
+    .then((data) => JSON.parse(JSON.stringify(data)));
+
+  const chatPromise = chatId
+    ? prisma.chat
+        .findUnique({
           where: {
             id: chatId
           },
           include: { prompt: true, messages: { include: { user: true } } }
         })
-      )
-    );
-    if (!chat) redirect('/');
-  }
+        .then((data) => JSON.parse(JSON.stringify(data)))
+    : null;
 
-  const chats = JSON.parse(
-    JSON.stringify(
-      await prisma.chat.findMany({
-        where: {
-          users: {
-            some: { email: session.user.email }
-          },
-          journeyId: journeyId ?? null
+  const chatsPromise = prisma.chat
+    .findMany({
+      where: {
+        users: {
+          some: { email: session.user.email }
         },
-        orderBy: {
-          createdAt: 'desc'
-        },
-        include: {
-          prompt: true,
-          messages: { orderBy: { createdAt: 'asc' }, include: { user: true } }
+        journeyId: journeyId ?? null
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      include: {
+        prompt: true,
+        messages: { orderBy: { createdAt: 'asc' }, include: { user: true } }
+      }
+    })
+    .then((data) => JSON.parse(JSON.stringify(data)));
+
+  const journeysPromise = prisma.journey
+    .findMany({
+      where: {
+        users: {
+          some: { email: session.user.email }
         }
-      })
-    )
-  );
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      include: { chats: { include: { prompt: true, messages: { include: { user: true } } } } }
+    })
+    .then((data) => JSON.parse(JSON.stringify(data)));
 
-  const journeys = JSON.parse(
-    JSON.stringify(
-      await prisma.journey.findMany({
-        where: {
-          users: {
-            some: { email: session.user.email }
-          }
-        },
-        orderBy: {
-          createdAt: 'desc'
-        },
-        include: { chats: { include: { prompt: true, messages: { include: { user: true } } } } }
-      })
-    )
-  );
-
-  let journey;
-  if (journeyId) {
-    journey = JSON.parse(
-      JSON.stringify(
-        await prisma.journey.findUnique({
+  const journeyPromise = journeyId
+    ? prisma.journey
+        .findUnique({
           where: {
             // users: {
             //   some: { email: session.user.email }
@@ -111,10 +100,18 @@ const Chat = async ({ chatId, journeyId }: Params) => {
           // },
           include: { chats: { include: { prompt: true, messages: { include: { user: true } } } } }
         })
-      )
-    );
-    if (!journey) redirect('/');
-  }
+        .then((data) => JSON.parse(JSON.stringify(data)))
+    : null;
+
+  const [appSettings, prompts, chat, chats, journeys, journey] = await Promise.all([
+    appSettingsPromise,
+    promptsPromise,
+    chatPromise,
+    chatsPromise,
+    journeysPromise,
+    journeyPromise
+  ]);
+
   return (
     <AnswersProvider chat={chat as Chat} journey={journey}>
       <DeveloperTools
