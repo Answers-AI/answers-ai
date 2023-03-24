@@ -102,7 +102,7 @@ export default function ChatDrawer({ journeys }: ChatDrawerProps) {
           ...(open ? { opacity: 0 } : { opacity: 1, transitionDelay: '.25s' })
         }}>
         <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
-          {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          {!open ? <Add /> : <ChevronLeftIcon />}
         </IconButton>
       </DrawerHeader>
       <Drawer

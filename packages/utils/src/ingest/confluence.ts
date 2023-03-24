@@ -4,12 +4,15 @@ import { EventVersionHandler } from './EventVersionHandler';
 import { chunkArray } from '../utilities/utils';
 import { ConfluencePage } from '../confluence';
 import { getConfluencePages } from '../confluence/getConfluencePages';
+import { jiraAdfToMarkdown } from '../utilities/jiraAdfToMarkdown';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
-const PINECONE_VECTORS_BATCH_SIZE = 100;
+const PINECONE_VECTORS_BATCH_SIZE = 10;
 
 const prefixHeaders = (markdown: string): string => {
   const lines = markdown.split('\n');
   let headerStack: string[] = [];
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (line.startsWith('#')) {
@@ -23,60 +26,110 @@ const prefixHeaders = (markdown: string): string => {
       lines[i] = `##### ${headerStack.join(' - ')}`;
     }
   }
+
   return lines.join('\n');
 };
 
-const splitMarkdown = (rawMarkdown: string) => {
+const recursiveCharacterTextSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 6000 });
+const splitPageHtmlChunkMore = async (markdownChunk: string) => {
+  const contextChunks = await recursiveCharacterTextSplitter.createDocuments([markdownChunk]);
+  const smallerChunks = contextChunks.map((chunk) => `${chunk.pageContent}`);
+
+  return smallerChunks;
+};
+
+const splitPageAdf = async (page: ConfluencePage) => {
+  if (!page?.body?.atlas_doc_format?.value) return [];
+  const docJson = JSON.parse(page.body.atlas_doc_format.value);
+  page.content = `# ${page.title}\n${jiraAdfToMarkdown(docJson)}`;
+
   const headingsRegex = /\n+(?=\s*#####\s(?!#))/;
-  const markdown = prefixHeaders(rawMarkdown)
+  const markdown = prefixHeaders(page.content)
     .replace(/\n{2,}/g, '\n')
     .replace(/^(#+\s+.+)\n(#+\s+.+\n)/gm, '$2');
+
   const markdownChunks = markdown.split(headingsRegex);
-  return markdownChunks;
+
+  const contextChunks = await Promise.all(
+    markdownChunks.map(async (chunk) => {
+      const header = chunk.match(/(#+\s+.+)\n/)?.[1] ?? '';
+      const content = chunk.replace(header, '');
+      const chunkMore = await splitPageHtmlChunkMore(content);
+      const chunksWithHeader = chunkMore.map((chunk) => `${header}\n${chunk}`);
+      return chunksWithHeader;
+    })
+  );
+
+  return contextChunks.flat();
+};
+
+const getConfluencePagesVectors = async (confluencePages: ConfluencePage[]) => {
+  const vectors = (
+    await Promise.all(
+      confluencePages.map(async (page) => {
+        if (!page?.body?.atlas_doc_format?.value) {
+          return [];
+        }
+
+        const markdownChunks = await splitPageAdf(page);
+        if (!markdownChunks?.length) return [];
+
+        return markdownChunks.map((headingChunk: string, i: any) => ({
+          uid: `WebPage_${page.title}_${i}`,
+          text: headingChunk,
+          metadata: {
+            id: page.id,
+            spaceId: page.spaceId.toString(),
+            status: page.status,
+            title: page.title,
+            authorId: page.authorId,
+            createdAt: page.createdAt
+          }
+        }));
+      })
+    )
+  )
+    .flat()
+    .filter(Boolean);
+
+  return vectors;
+};
+
+const embedVectors = async (event: any, vectors: any[]) => {
+  let outVectors: void[] = [];
+
+  if (vectors?.length && vectors?.every((x: any) => !!x)) {
+    outVectors = await Promise.all(
+      chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
+        inngest.send({
+          v: '1',
+          ts: new Date().valueOf(),
+          name: 'pinecone/vectors.upserted',
+          data: {
+            _page: i,
+            _total: vectors.length,
+            _batchSize: PINECONE_VECTORS_BATCH_SIZE,
+            vectors: batchVectors
+          },
+          user: event.user
+        });
+      })
+    );
+  }
+
+  return outVectors;
 };
 
 export const processConfluencePages: EventVersionHandler<{ pageIds: string[] }> = {
   event: 'confluence/app.sync',
   v: '1',
   handler: async ({ event }) => {
-    const confluencePages = (await getConfluencePages()) as ConfluencePage[];
-
-    const vectors = confluencePages.flatMap((page: ConfluencePage | null) => {
-      if (!page) return null;
-      const markdownChunks: string[] = splitMarkdown(`# ${page.title}\n${page.content}`);
-      if (!markdownChunks?.length) return null;
-
-      return markdownChunks.map((headingChunk: any, i: any) => ({
-        uid: `ConfluencePage_${page.id}_${i}`,
-        text: headingChunk,
-        metadata: {
-          id: page.id,
-          spaceId: page.spaceId.toString(),
-          status: page.status,
-          title: page.title,
-          authorId: page.authorId,
-          createdAt: page.createdAt
-        }
-      }));
-    });
-
-    if (vectors?.length && vectors?.every((x) => !!x)) {
-      await Promise.all(
-        chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
-          inngest.send({
-            v: '1',
-            ts: new Date().valueOf(),
-            name: 'pinecone/vectors.upserted',
-            data: {
-              _page: i,
-              _total: vectors.length,
-              _batchSize: PINECONE_VECTORS_BATCH_SIZE,
-              vectors: batchVectors
-            },
-            user: event.user
-          });
-        })
-      );
+    try {
+      const confluencePages = (await getConfluencePages()) as ConfluencePage[];
+      const vectors = await getConfluencePagesVectors(confluencePages);
+      const embeddedVectors = await embedVectors(event, vectors);
+    } catch (error) {
+      console.error(`[confluence/app.sync] ${error}`);
     }
   }
 };
@@ -90,47 +143,10 @@ export const processConfluencePage: EventVersionHandler<{ pageIds: string[] }> =
       const { pageIds } = data;
 
       const confluencePages = (await confluencePageLoader.loadMany(pageIds)) as ConfluencePage[];
-
-      const vectors = confluencePages.flatMap((page) => {
-        const markdownChunks = splitMarkdown(`# ${page.title}\n${page.content}`);
-
-        return markdownChunks.map((headingChunk: any, i: any) => ({
-          uid: `ConfluencePage_${page.id}_${i}`,
-          text: headingChunk,
-          metadata: {
-            id: page.id,
-            spaceId: page.spaceId.toString(),
-            status: page.status,
-            title: page.title,
-            authorId: page.authorId,
-            createdAt: page.createdAt
-          }
-        }));
-      });
-
-      if (vectors?.length && vectors?.every((x) => !!x)) {
-        await Promise.all(
-          chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map(async (batchVectors, i) => {
-            const myEvent: any = await inngest.send({
-              v: '1',
-              ts: new Date().valueOf(),
-              name: 'pinecone/vectors.upserted',
-              data: {
-                _page: i,
-                _total: vectors.length,
-                _batchSize: PINECONE_VECTORS_BATCH_SIZE,
-                vectors: batchVectors
-              },
-              user: event.user
-            });
-
-            return myEvent;
-          })
-        );
-      }
-    } catch (e) {
-      console.log(e);
-      throw e;
+      const vectors = await getConfluencePagesVectors(confluencePages);
+      const embeddedVectors = await embedVectors(event, vectors);
+    } catch (error) {
+      console.error(`[confluence/page.sync] ${error}`);
     }
   }
 };

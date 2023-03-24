@@ -48,7 +48,6 @@ export const confluencePageLoader = redisLoader<string, ConfluencePage>({
     for (const pageId of keys) {
       const result = await getConfluencePage({ pageId });
       results.push(result);
-      await new Promise((resolve) => setTimeout(resolve, 100));
     }
     return Promise.all(results);
   },

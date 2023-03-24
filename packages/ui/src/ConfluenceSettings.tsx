@@ -95,7 +95,7 @@ export const ConfluenceSettings = ({ appSettings }: ConfluenceSettingsProps) => 
                       onChange={() => handleEnableSpace(space)}
                     />
                   }
-                  label={space.key}
+                  label={space.name}
                 />
               ))}
           </FormGroup>
