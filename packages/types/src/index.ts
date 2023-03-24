@@ -49,6 +49,7 @@ export interface AppSettings {
     urls?: OpenApiSetting[];
   };
   models?: Models;
+  filters?: AnswersFilters
 }
 
 export interface JiraFilters {
@@ -101,6 +102,9 @@ type Models = {
 };
 
 export interface User extends Omit<DB.User, 'appSettings'> {
+  appSettings: AppSettings;
+}
+export interface Organization extends Omit<DB.Organization, 'appSettings'> {
   appSettings: AppSettings;
 }
 

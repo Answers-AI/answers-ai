@@ -1,22 +1,9 @@
 import { getServerSession } from 'next-auth';
 import { deepmerge } from '@utils/deepmerge';
 import { authOptions } from './authOptions';
-
+import { NO_ORG_SETTINGS, SYSTEM_SETTINGS } from '@utils/auth/syncAppSettings';
 import { prisma } from 'db/dist';
 import { MODELS } from '@utils/MODELS';
-
-const DEFAULT_SETTINGS = {
-  services: [
-    { name: 'jira', enabled: true, imageURL: '/static/images/jira.png' },
-    { name: 'slack', enabled: true, imageURL: '/static/images/slack.png' },
-    { name: 'confluence', enabled: true, imageURL: '/static/images/confluence.png' },
-    { name: 'web', enabled: true, imageURL: '/static/images/web.png' },
-    { name: 'notion', enabled: false, imageURL: '/static/images/notion.png' },
-    { name: 'github', enabled: false, imageURL: '/static/images/github.png' },
-    { name: 'drive', enabled: false, imageURL: '/static/images/drive.png' },
-    { name: 'contentful', enabled: false, imageURL: '/static/images/contentful.png' }
-  ]
-};
 
 export async function getAppSettings(req?: any, res?: any) {
   const session = await (req && res
@@ -30,15 +17,23 @@ export async function getAppSettings(req?: any, res?: any) {
     ? await prisma.user.findUnique({
         where: {
           email: session?.user?.email
-        }
+        },
+        include: { organization: true }
       })
     : null;
 
+  let settings = SYSTEM_SETTINGS;
   if (user) {
-    return deepmerge({}, DEFAULT_SETTINGS, JSON.parse(JSON.stringify(user?.appSettings)), {
-      models: MODELS
-    });
+    if (!user?.organization) settings = NO_ORG_SETTINGS;
+    settings = deepmerge(
+      {},
+      JSON.parse(JSON.stringify(user.organization?.appSettings ?? {})),
+      JSON.parse(JSON.stringify(user.appSettings)),
+      {
+        models: MODELS
+      }
+    );
   }
 
-  return DEFAULT_SETTINGS;
+  return settings;
 }

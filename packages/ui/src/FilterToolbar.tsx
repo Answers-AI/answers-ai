@@ -16,6 +16,7 @@ const FilterToolbar = ({
 }) => {
   const flags = useFlags(['filters_model']);
   const { filters, updateFilter, showFilters, setShowFilters } = useAnswers();
+
   return (
     <>
       <Accordion

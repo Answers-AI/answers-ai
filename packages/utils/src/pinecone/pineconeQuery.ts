@@ -17,7 +17,7 @@ export const pineconeQuery = async (
     filter,
     topK = 20,
     namespace = process.env.PINECONE_INDEX_NAMESPACE
-  }: { filter: any; topK?: number; namespace?: string }
+  }: { filter?: any; topK?: number; namespace?: string }
 ) => {
   // TODO: Use metadata inferred from the question
   try {

@@ -26,13 +26,6 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
     updateAppSettings(localSettings);
   };
 
-  const handleJiraProjectsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalSettings((prevSettings) => ({
-      ...prevSettings,
-      jiraProjects: event.target.value.split(',')
-    }));
-  };
-
   const handleEnableProject = (project: { key: string; enabled: boolean }) => {
     setLocalSettings((prevSettings) => ({
       ...prevSettings,

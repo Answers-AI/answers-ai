@@ -18,8 +18,10 @@ import React from 'react';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import { useFlags } from 'flagsmith/react';
 
 export const AppDrawer = ({ params }: any) => {
+  const flags = useFlags(['settings']);
   // TODO - Use params from request: https://github.com/vercel/next.js/issues/43704
   const [pathname, setPathname] = React.useState('');
   React.useEffect(() => {
@@ -37,7 +39,9 @@ export const AppDrawer = ({ params }: any) => {
       <List sx={{ flex: '1' }}>
         {[
           { text: 'Message', link: '/', icon: <HomeIcon /> },
-          { text: 'Settings', link: '/settings', icon: <SettingsIcon /> },
+          ...(flags?.settings?.enabled
+            ? [{ text: 'Settings', link: '/settings', icon: <SettingsIcon /> }]
+            : []),
           ...(process.env.NODE_ENV === 'development'
             ? [
                 { component: <Divider key="divider" /> },

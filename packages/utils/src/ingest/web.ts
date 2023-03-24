@@ -7,6 +7,7 @@ import { WebPage } from 'types';
 import { extractUrlsFromSitemap } from '../utilities/getSitemapUrls';
 import { getUniqueUrls, getUniqueUrl } from '../utilities/getUniqueUrls';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { prisma } from 'db/dist';
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
 
@@ -331,24 +332,41 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
   handler: async ({ event }) => {
     try {
       const data = event.data;
+      if (!data?.urls) {
+        throw new Error('Invalid input data: missing "urls" property');
+      }
+
       const { urls } = data;
 
       const uniqueUrls = getUniqueUrls(Array.from(urls));
+      const uniqueDomains = getUniqueDomains(Array.from(urls));
       const webPagesHtml = (await webPageLoader.loadMany(uniqueUrls)) as string[];
 
-      const webPages = uniqueUrls
-        .map((url, index) => {
+      const webPages = await Promise.all(
+        uniqueUrls.map(async (url, index) => {
           const content = webPagesHtml[index];
           const domain = new URL(url).origin;
 
-          return {
+          const webData = {
             url,
             domain,
             content
           };
+
+          const uploadToDb = await prisma.webDocument.upsert({
+            create: webData,
+            update: webData,
+            where: {
+              url: webData.url
+            }
+          });
+
+          return webData;
         })
-        .filter((x) => !!x?.content);
-      const vectors = await getWebPagesVectors(webPages);
+      );
+
+      const filteredPages = webPages.filter((x) => !!x?.content);
+      const vectors = await getWebPagesVectors(filteredPages);
 
       const embeddedVectors = await embedVectors(event, vectors);
     } catch (error) {

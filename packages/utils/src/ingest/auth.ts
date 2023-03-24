@@ -15,17 +15,7 @@ export const authUserSignIn: EventVersionHandler<{
   handler: async ({ event }) => {
     const { data, user } = event;
     if (!user) throw new Error('NO_USER_PROVIDED');
-
-    // if (!user?.appSettings) {
-    const appSettings = await syncAppSettings(user);
-
-    await prisma.user.update({
-      where: { id: user?.id },
-      data: {
-        appSettings
-      }
-    });
-    // }
+    await syncAppSettings(user);
   }
 };
 
@@ -39,16 +29,6 @@ export const authCreateUser: EventVersionHandler<{
   handler: async ({ event }) => {
     const { data, user } = event;
     if (!user) throw new Error('NO_USER_PROVIDED');
-
-    if (!user?.appSettings) {
-      const appSettings = await syncAppSettings(user);
-
-      await prisma.user.update({
-        where: { id: user?.id },
-        data: {
-          appSettings
-        }
-      });
-    }
+    await syncAppSettings(user);
   }
 };

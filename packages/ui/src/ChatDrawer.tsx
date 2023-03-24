@@ -73,7 +73,7 @@ export interface ChatDrawerProps {
 export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
   // const { chat } = useAnswers();
   const [open, setOpen] = React.useState(false);
-  const [closedJourneys, setclosedJourneys] = React.useState<boolean[]>([]);
+  const [opened, setOpened] = React.useState<boolean[]>([]);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -84,7 +84,7 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
   const handleExpandJourney = (idx: number) => (evt: any) => {
     evt.preventDefault();
     evt.stopPropagation();
-    setclosedJourneys((prev) => {
+    setOpened((prev) => {
       const newArr = [...prev];
       newArr[idx] = !newArr[idx];
       return newArr;
@@ -170,14 +170,10 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
                     <Add />
                   </IconButton>
                   <IconButton onClick={handleExpandJourney(idx)}>
-                    {!closedJourneys[idx] ? <ExpandLess /> : <ExpandMore />}
+                    {opened[idx] ? <ExpandLess /> : <ExpandMore />}
                   </IconButton>
                 </ListItemButton>
-                <Collapse
-                  in={!closedJourneys[idx]}
-                  timeout="auto"
-                  unmountOnExit
-                  sx={{ width: '100%' }}>
+                <Collapse in={opened[idx]} timeout="auto" unmountOnExit sx={{ width: '100%' }}>
                   <List disablePadding>
                     {journey?.chats?.map((chat) => (
                       <ListItem key={chat.id} disablePadding>
@@ -195,13 +191,18 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
             </React.Fragment>
           ))}
           <ListItem disablePadding sx={{ flexDirection: 'column' }}>
-            <ListItemButton sx={{ width: '100%', py: 2, paddingRight: 1 }}>
+            <ListItemButton
+              sx={{ width: '100%', py: 2, paddingRight: 1 }}
+              onClick={handleExpandJourney(-2)}>
               <ListItemText primary={`Chats`} />
-              <IconButton>
+              <IconButton onClick={handleExpandJourney(-2)}>
                 <Add />
               </IconButton>
+              <IconButton onClick={handleExpandJourney(-2)}>
+                {opened[-2] ? <ExpandLess /> : <ExpandMore />}
+              </IconButton>
             </ListItemButton>
-            <Collapse timeout="auto" unmountOnExit sx={{ width: '100%' }}>
+            <Collapse in={opened[-2]} timeout="auto" unmountOnExit sx={{ width: '100%' }}>
               <List disablePadding>
                 {chats?.map((chat) => (
                   <ListItem key={chat.id} disablePadding>

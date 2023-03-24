@@ -121,6 +121,15 @@ export const ChatDetail = ({
             </>
           ) : null}
           {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
+          {!messages?.length ? (
+            <MessageCard
+              user={user}
+              role="assistant"
+              content={
+                'Welcome! Try asking me something below, or select your data sources on the top right!'
+              }
+            />
+          ) : null}
           {messages?.length && !isLoading && !error ? (
             <Box sx={{ py: 2, width: '100%', display: 'flex', justifyContent: 'center' }}>
               <Button onClick={regenerateAnswer} variant="outlined" color="primary">

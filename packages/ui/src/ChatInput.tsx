@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import { Box, FormControlLabel, Switch, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useAnswers } from './AnswersContext';
+import { useFlags } from 'flagsmith/react';
 
 export const ChatInput = ({ inputRef }: { inputRef: any }) => {
   const {
@@ -18,7 +19,7 @@ export const ChatInput = ({ inputRef }: { inputRef: any }) => {
     setUseStreaming,
     setShowFilters
   } = useAnswers();
-
+  const flags = useFlags(['settings_stream']);
   const [inputValue, setInputValue] = useState('');
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,9 +35,7 @@ export const ChatInput = ({ inputRef }: { inputRef: any }) => {
   const handleInputFocus = () => {
     if (!Object.keys(filters)?.length) setShowFilters(true);
   };
-  const handleInputBlur = () => {
-    if (Object.keys(filters)?.length) setShowFilters(false);
-  };
+
   const isNewJourney = !!Object.keys(filters)?.length && !journey && !chat;
 
   return (
@@ -66,17 +65,19 @@ export const ChatInput = ({ inputRef }: { inputRef: any }) => {
         }}>
         {/* Toggle component that updates when using query or streaming */}
 
-        <FormControlLabel
-          control={
-            <Switch
-              {...{ inputProps: { 'aria-label': 'Stream mode' } }}
-              checked={useStreaming}
-              onChange={() => setUseStreaming(!useStreaming)}
-              name="Stream"
-            />
-          }
-          label={'Stream'}
-        />
+        {flags.settings_stream.enabled ? (
+          <FormControlLabel
+            control={
+              <Switch
+                {...{ inputProps: { 'aria-label': 'Stream mode' } }}
+                checked={useStreaming}
+                onChange={() => setUseStreaming(!useStreaming)}
+                name="Stream"
+              />
+            }
+            label={'Stream'}
+          />
+        ) : null}
         {messages?.length ? (
           <Button variant="outlined" color="primary" onClick={clearMessages}>
             <DeleteIcon />
