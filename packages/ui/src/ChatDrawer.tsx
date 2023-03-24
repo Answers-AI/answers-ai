@@ -15,7 +15,7 @@ import { useAnswers } from './AnswersContext';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Add from '@mui/icons-material/Add';
-import { Collapse } from '@mui/material';
+import { Button, Collapse } from '@mui/material';
 
 const drawerWidth = 320;
 
@@ -134,12 +134,27 @@ export default function ChatDrawer({ journeys }: ChatDrawerProps) {
             {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </DrawerHeader>
+        <ListItem sx={{ flexDirection: 'column' }} disablePadding>
+          <Button
+            href={`/`}
+            sx={{ px: 2, width: '100%', textTransform: 'capitalize' }}
+            onClick={handleNewJourney}
+            color="primary">
+            <ListItemText primary={'Create new journey'} />
+            <Add />
+          </Button>
+        </ListItem>
         <List disablePadding sx={{ flex: 1 }}>
           {journeys?.map((journey, idx) => (
             <React.Fragment key={journey.id}>
               <ListItem key={journey.id} disablePadding sx={{ flexDirection: 'column' }}>
-                <ListItemButton href={`/journey/${journey.id}`} sx={{ width: '100%', py: 2 }}>
+                <ListItemButton
+                  href={`/journey/${journey.id}`}
+                  sx={{ width: '100%', py: 2, paddingRight: 1 }}>
                   <ListItemText primary={`${journey.title}`} />
+                  <IconButton onClick={handleExpandJourney(idx)}>
+                    <Add />
+                  </IconButton>
                   <IconButton onClick={handleExpandJourney(idx)}>
                     {!closedJourneys[idx] ? <ExpandLess /> : <ExpandMore />}
                   </IconButton>
@@ -160,26 +175,12 @@ export default function ChatDrawer({ journeys }: ChatDrawerProps) {
                         </ListItemButton>
                       </ListItem>
                     ))}
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        href={`/journey/${journey.id}`}
-                        sx={{ px: 4 }}
-                        onClick={handleNewChat}>
-                        <ListItemText primary={'Create new chat'} />
-                      </ListItemButton>
-                    </ListItem>
                   </List>
                 </Collapse>
               </ListItem>
             </React.Fragment>
           ))}
         </List>
-        <ListItem sx={{ flexDirection: 'column' }} disablePadding>
-          <ListItemButton href={`/`} sx={{ width: '100%' }} onClick={handleNewJourney}>
-            <ListItemText primary={'Create new journey'} />
-            <Add />
-          </ListItemButton>
-        </ListItem>
       </Drawer>
     </>
   );
