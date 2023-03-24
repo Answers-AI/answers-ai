@@ -45,7 +45,7 @@ class PineconeClient {
   }
 
   async writeVectorToIndex(vector) {
-    ////console.time('writeVectorToIndex');
+    console.time('writeVectorToIndex');
     await this.init();
     const index = this.client.Index(this.indexName);
     //TODO: Remove after testing
@@ -56,11 +56,11 @@ class PineconeClient {
       namespace: this.namespace
     });
 
-    //console.timeEnd('writeVectorToIndex');
+    console.timeEnd('writeVectorToIndex');
   }
 
   async writeVectorsToIndex(vectors) {
-    // ////console.time('writeVectorsToIndex');
+    // console.time('writeVectorsToIndex');
     await this.init();
 
     const index = this.client.Index(this.indexName);
@@ -90,7 +90,7 @@ class PineconeClient {
     if (errors?.length) {
       throw errors[0];
     }
-    // //console.timeEnd('writeVectorsToIndex');
+    console.timeEnd('writeVectorsToIndex');
   }
 }
 

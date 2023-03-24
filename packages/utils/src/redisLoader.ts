@@ -44,13 +44,13 @@ const redisLoader = <K, V>({
     if (disableCache) return getValuesFn(cacheKeys);
     const cacheKeyStrings = cacheKeys.map(hashKey);
     // console.log('Loading from redis', cacheKeyStrings?.length);
-    // ////console.time('Loading from redis:' + cacheKeyStrings?.length);
+    // console.time('Loading from redis:' + cacheKeyStrings?.length);
 
     const cachedValues = await redis.mget(...cacheKeyStrings).catch((err) => {
       console.log('Redis error: ', err);
       return cacheKeyStrings?.map(() => null);
     });
-    // //console.timeEnd('Loading from redis:' + cacheKeyStrings?.length);
+    console.timeEnd('Loading from redis:' + cacheKeyStrings?.length);
 
     const cacheMissKeys: K[] = [];
     const results: (V | null)[] = [];

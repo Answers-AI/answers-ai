@@ -35,14 +35,14 @@ export const getJiraTickets = async ({
   try {
     const initialPullCount = 1;
 
-    ////console.time(`getJiraTickets ->JQL:${jql}`);
+    console.time(`getJiraTickets ->JQL:${jql}`);
     let total = 0;
     // maxResults -= initialPullCount;
     // batchSize = Math.min(batchSize, maxResults);
     let endpoint = `/search?jql=${jql}&maxResults=${initialPullCount}&startAt=${startAt}&fields=${JIRA_FIELDS.join(
       ','
     )}`;
-    // ////console.time(endpoint);
+    // console.time(endpoint);
     let data: { issues: JiraIssue[]; errors?: any; isLast: boolean; total: number } =
       await jiraClient.fetchJiraData(endpoint, { cache: false });
     console.debug(`getJiraTickets ->JQL:${jql}` + 'Total: ' + data.total);
@@ -68,20 +68,20 @@ export const getJiraTickets = async ({
         ','
       )}`;
       // console.log('FetchNextEdnpoint', nextEndpoint, startAt, total);
-      // ////console.time(nextEndpoint);
+      // console.time(nextEndpoint);
       promises.push(
         jiraClient.fetchJiraData(nextEndpoint, { cache: false }).then((result) => result.issues)
       );
       // result = await jiraClient.fetchJiraData(nextEndpoint);
       // allTickets = allTickets.concat();
-      // //console.timeEnd(nextEndpoint);
+      console.timeEnd(nextEndpoint);
       startAt += maxResults;
     }
 
     const allTickets = (await Promise.all(promises)).flat();
     // console.log('allTickets', allTickets);
     console.log(`${jql} Issue Count: ${allTickets.length}`);
-    //console.timeEnd(`getJiraTickets ->JQL:${jql}`);
+    console.timeEnd(`getJiraTickets ->JQL:${jql}`);
 
     return allTickets;
   } catch (error) {

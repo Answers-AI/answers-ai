@@ -29,7 +29,7 @@ export const summarizeAI = async ({
   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize });
   const inputDocs = await textSplitter.createDocuments([input]);
   if (inputDocs.length > 1) {
-    ////console.time(`[summarizeAI] ${id} - ${inputDocs.length} chunks}`);
+    console.time(`[summarizeAI] ${id} - ${inputDocs.length} chunks}`);
     console.log(`[summarizeAI] ${id} - ${inputDocs.length} chunks}`);
 
     const summariesPromises = inputDocs?.map(async (doc, idx) => {
@@ -62,7 +62,7 @@ export const summarizeAI = async ({
         temperature: 0.1,
         model: finalSummaryModel
       });
-      //console.timeEnd(`[summarizeAI] ${id} - ${inputDocs.length} chunks}`);
+      console.timeEnd(`[summarizeAI] ${id} - ${inputDocs.length} chunks}`);
       return finalRes?.data?.choices?.[0]?.text!;
     } else {
       return summarizeAI({

@@ -33,7 +33,7 @@ class JiraClient {
   async fetchJiraData(endpoint: string, { cache = true }: { cache?: boolean } = {}) {
     const url = `https://lastrev.atlassian.net/rest/api/3${endpoint}`;
     let data;
-    // ////console.time('FetchJiraData:' + endpoint);
+    // console.time('FetchJiraData:' + endpoint);
     // Add cache around this call to Jira
     //TODO remove custom implementation when issue is fixed: https://github.com/RasCarlito/axios-cache-adapter/issues/272
     const hashKey = 'v4-get-' + url;
@@ -63,7 +63,7 @@ class JiraClient {
       if (cache) await this.redis.set(hashKey, JSON.stringify(data));
       if (cache) await this.redis.expire(hashKey, this.cacheExpireTime);
     }
-    // //console.timeEnd('FetchJiraData:' + endpoint);
+    console.timeEnd('FetchJiraData:' + endpoint);
     return data;
   }
 }

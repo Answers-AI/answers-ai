@@ -3,16 +3,17 @@ import MessageIcon from '@mui/icons-material/Message';
 import ChatCard from './ChatCard';
 import React from 'react';
 import NextLink from 'next/link';
-import { AnswersFilters, Journey } from 'types';
+import { AnswersFilters, Chat, Journey } from 'types';
 import TreeView from '@mui/lab/TreeView';
 import TreeItem from '@mui/lab/TreeItem';
 import ChatDrawer from './ChatDrawer';
 
 interface Props {
   journeys?: Journey[];
+  chats?: Chat[];
 }
 
-function JourneySection({ journeys }: Props) {
+function JourneySection({ journeys, chats }: Props) {
   if (!journeys) {
     return (
       <Box>
@@ -21,7 +22,7 @@ function JourneySection({ journeys }: Props) {
       </Box>
     );
   }
-  return <ChatDrawer journeys={journeys} />;
+  return <ChatDrawer journeys={journeys} chats={chats} />;
 }
 
 const Filters = ({ filters, sx }: { filters: any; sx?: any }) => {

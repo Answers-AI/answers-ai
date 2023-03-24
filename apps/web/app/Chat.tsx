@@ -60,7 +60,7 @@ const Chat = async ({ chatId, journeyId }: Params) => {
         users: {
           some: { email: session.user.email }
         },
-        journeyId: journeyId ?? null
+        journeyId: null
       },
       orderBy: {
         createdAt: 'desc'

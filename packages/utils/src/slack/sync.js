@@ -13,7 +13,7 @@ answerSession.initPinecone({
 const slackClient = new SlackClient(process.env.SLACK_TOKEN);
 
 export const indexSingleSlackChannel = async (channelId) => {
-  ////console.time('indexSingleSlackChannel');
+  console.time('indexSingleSlackChannel');
   // console.log(slackClient.cache.channels);
   const channel = await slackClient.getChannel(channelId);
 
@@ -34,7 +34,7 @@ export const indexSingleSlackChannel = async (channelId) => {
   //   const vectorData = await answerSession.prepareAllForEmbedding(data);
   // answerSession.addVectors(vectorData);
   //   await answerSession.pinecone.writeVectorsToIndex(vectorData);
-  //console.timeEnd('indexSingleSlackChannel');
+  console.timeEnd('indexSingleSlackChannel');
 };
 
 export const syncSlack = async () => {
@@ -182,9 +182,9 @@ export const syncSlack = async () => {
           //   `Error indexing Slack messages for channel ${channel.cache.info.name}: Not a member of channel`
           // );
         } else {
-          ////console.time(channel.cache.info.name);
+          console.time(channel.cache.info.name);
           await indexSingleSlackChannel(channel.id);
-          //console.timeEnd(channel.cache.info.name);
+          console.timeEnd(channel.cache.info.name);
         }
       } catch (error) {
         console.error(

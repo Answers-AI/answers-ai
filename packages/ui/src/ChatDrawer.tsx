@@ -10,7 +10,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { Journey } from 'types';
+import { Chat, Journey } from 'types';
 import { useAnswers } from './AnswersContext';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -34,9 +34,9 @@ const closedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.leavingScreen
   }),
   overflowX: 'hidden',
-  width: `calc(${theme.spacing(0)} + 1px)`,
+  width: `calc(${theme.spacing(0)} + 0px)`,
   [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(0)} + 1px)`
+    width: `calc(${theme.spacing(0)} + 0px)`
   }
 });
 
@@ -67,10 +67,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   })
 );
 export interface ChatDrawerProps {
-  journeys: Journey[];
+  journeys?: Journey[];
+  chats?: Chat[];
 }
-export default function ChatDrawer({ journeys }: ChatDrawerProps) {
-  const { chat } = useAnswers();
+export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
+  // const { chat } = useAnswers();
   const [open, setOpen] = React.useState(false);
   const [closedJourneys, setclosedJourneys] = React.useState<boolean[]>([]);
   const handleDrawerOpen = () => {
@@ -147,7 +148,20 @@ export default function ChatDrawer({ journeys }: ChatDrawerProps) {
         <List disablePadding sx={{ flex: 1 }}>
           {journeys?.map((journey, idx) => (
             <React.Fragment key={journey.id}>
-              <ListItem key={journey.id} disablePadding sx={{ flexDirection: 'column' }}>
+              <ListItem
+                key={journey.id}
+                disablePadding
+                sx={{
+                  'flexDirection': 'column',
+                  '.MuiIconButton-root': {
+                    opacity: 0
+                  },
+                  '&:hover': {
+                    '.MuiIconButton-root': {
+                      opacity: 1
+                    }
+                  }
+                }}>
                 <ListItemButton
                   href={`/journey/${journey.id}`}
                   sx={{ width: '100%', py: 2, paddingRight: 1 }}>
@@ -180,6 +194,25 @@ export default function ChatDrawer({ journeys }: ChatDrawerProps) {
               </ListItem>
             </React.Fragment>
           ))}
+          <ListItem disablePadding sx={{ flexDirection: 'column' }}>
+            <ListItemButton sx={{ width: '100%', py: 2, paddingRight: 1 }}>
+              <ListItemText primary={`Chats`} />
+              <IconButton>
+                <Add />
+              </IconButton>
+            </ListItemButton>
+            <Collapse timeout="auto" unmountOnExit sx={{ width: '100%' }}>
+              <List disablePadding>
+                {chats?.map((chat) => (
+                  <ListItem key={chat.id} disablePadding>
+                    <ListItemButton sx={{ px: 4 }} href={`/chat/${chat.id}`}>
+                      <ListItemText primary={chat.id} secondary={chat?.messages?.[0]?.content} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </Collapse>
+          </ListItem>
         </List>
       </Drawer>
     </>
