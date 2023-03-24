@@ -20,35 +20,47 @@ export async function POST(request: Request) {
   const user = await prisma.user.findUnique({
     where: {
       email: session?.user?.email
-    }
-  });
-  const newSettings = await request.json();
-
-  // Add all possible jiraprojects on every update
-  const jiraProjects = await getJiraProjects().then((projects) =>
-    projects.map((project) => ({ name: project?.name, key: project?.key }))
-  );
-
-  // Keep the existing settings for the projects
-  const projectsSettingsByKey = newSettings?.jira?.projects?.reduce(
-    (acc: any, project: JiraProject) => {
-      acc[project.key] = { ...project };
-      return acc;
     },
-    {}
-  );
-  const appSettings = deepmerge({}, user?.appSettings, newSettings, {
-    jira: {
-      projects: jiraProjects.map((project) => ({
-        ...project,
-        ...projectsSettingsByKey?.[project.key]
-      }))
+    include: { organization: true }
+  });
+  if (user) {
+    const newSettings = await request.json();
+
+    // Add all possible jiraprojects on every update
+    const jiraProjects = await getJiraProjects().then((projects) =>
+      projects.map((project) => ({ name: project?.name, key: project?.key }))
+    );
+
+    // Keep the existing settings for the projects
+    const projectsSettingsByKey = newSettings?.jira?.projects?.reduce(
+      (acc: any, project: JiraProject) => {
+        acc[project.key] = { ...project };
+        return acc;
+      },
+      {}
+    );
+    const appSettings = deepmerge({}, user?.appSettings, newSettings, {
+      jira: {
+        projects: jiraProjects.map((project) => ({
+          ...project,
+          ...projectsSettingsByKey?.[project.key]
+        }))
+      }
+    });
+    // TODO: Validate user has org update access
+    // TODO: REMOVE THIS AFTER ENABLING USER SETTINGS
+    if (user.organization) {
+      await prisma.organization.update({
+        where: { id: user.organization.id },
+        data: { appSettings }
+      });
+    } else {
+      await prisma.user.update({
+        where: { email: session?.user?.email },
+        data: { appSettings }
+      });
     }
-  });
-  await prisma.user.update({
-    where: { email: session?.user?.email },
-    data: { appSettings }
-  });
+  }
 
   return NextResponse.json(user);
 }

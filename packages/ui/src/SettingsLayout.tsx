@@ -1,33 +1,14 @@
 'use client';
 import React, { useState } from 'react';
-import {
-  TextField,
-  Select,
-  MenuItem,
-  Typography,
-  FormControl,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Button,
-  Box,
-  Avatar,
-  Divider,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Container
-} from '@mui/material';
+import { Avatar, ListItemButton, ListItemIcon, ListItemText, Container } from '@mui/material';
 
 import { AppSettings } from 'types';
-import useAppSettings from './useAppSettings';
+
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import NextLink from 'next/link';
 import SelectedListItem from './SelectedListItem';
+import { useFlags } from 'flagsmith/react';
+import { redirect } from 'next/navigation';
 
 export const SettingsLayout = ({
   appSettings,
@@ -38,61 +19,8 @@ export const SettingsLayout = ({
   activeApp: string;
   children?: any;
 }) => {
-  const { isLoading, updateAppSettings } = useAppSettings();
-  const [localSettings, setLocalSettings] = useState<AppSettings>(appSettings);
-  React.useEffect(() => {
-    setLocalSettings(appSettings);
-  }, [appSettings]);
-  const handleSave = () => {
-    updateAppSettings(localSettings);
-  };
-
-  const handleJiraProjectsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalSettings((prevSettings) => ({
-      ...prevSettings,
-      jiraProjects: event.target.value.split(',')
-    }));
-  };
-
-  const handleSlackChannelsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalSettings((prevSettings) => ({
-      ...prevSettings,
-      slackChannels: event.target.value.split(',')
-    }));
-  };
-  const handleEnableProject = (project: { key: string; enabled: boolean }) => {
-    setLocalSettings((prevSettings) => ({
-      ...prevSettings,
-      jira: {
-        ...prevSettings?.jira,
-        projects: prevSettings?.jira?.projects?.map((p) => {
-          if (p.key === project.key) {
-            return {
-              ...p,
-              enabled: !p.enabled
-            };
-          }
-          return p;
-        })
-      }
-    }));
-  };
-  const handleEnableService = (service: { name: string; enabled: boolean }) => {
-    setLocalSettings((prevSettings) => ({
-      ...prevSettings,
-      services: prevSettings?.services?.map((p) => {
-        if (p.name === service.name) {
-          return {
-            ...p,
-            enabled: !p.enabled
-          };
-        }
-        return p;
-      })
-    }));
-  };
-  // return <div>Loading...</div>;
-
+  const flags = useFlags(['settings']);
+  if (!flags?.settings?.enabled) return redirect('/');
   return (
     <Container>
       <Grid2 container sx={{ flex: 1, position: 'relative', p: 4, gap: 4 }}>

@@ -52,6 +52,11 @@ declare module '@mui/material/styles' {
 export const darkModeTheme = createTheme({
   ...getDesignTokens('dark'),
   components: {
+    MuiButton: {
+      defaultProps: {
+        disableRipple: true
+      }
+    },
     MuiContainer: {
       defaultProps: { maxWidth: 'xxl' }
     },

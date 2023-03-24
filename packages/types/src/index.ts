@@ -103,6 +103,9 @@ type Models = {
 export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
 }
+export interface Organization extends Omit<DB.Organization, 'appSettings'> {
+  appSettings: AppSettings;
+}
 
 export interface Prompt extends DB.Prompt {
   content: string;
