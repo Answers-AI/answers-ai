@@ -5,7 +5,7 @@ import { amber, grey } from '@mui/material/colors';
 
 const getDesignTokens = (mode: PaletteMode) => ({
   shape: {
-    borderRadius: 0
+    borderRadius: 2
   },
   breakpoints: {
     values: {

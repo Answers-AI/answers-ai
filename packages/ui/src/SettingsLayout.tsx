@@ -144,7 +144,10 @@ const AppsDrawer = ({
           link: '/settings/' + service?.name,
           enabled: service?.enabled,
           icon: (
-            <Avatar sx={{ width: 30, height: 30, borderRadius: 2 }} src={service?.imageURL}>
+            <Avatar
+              sx={{ width: 30, height: 30, borderRadius: 2 }}
+              src={service?.imageURL}
+              variant="circular">
               {service?.name[0]?.toUpperCase()}
             </Avatar>
           )
