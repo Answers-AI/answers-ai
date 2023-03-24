@@ -11,11 +11,12 @@ const DEFAULT_SETTINGS = {
   services: [
     { name: 'jira', enabled: true, imageURL: '/static/images/jira.png' },
     { name: 'slack', enabled: true, imageURL: '/static/images/slack.png' },
+    { name: 'confluence', enabled: true, imageURL: '/static/images/confluence.png' },
+    { name: 'web', enabled: true, imageURL: '/static/images/web.png' },
     { name: 'notion', enabled: false, imageURL: '/static/images/notion.png' },
     { name: 'github', enabled: false, imageURL: '/static/images/github.png' },
     { name: 'drive', enabled: false, imageURL: '/static/images/drive.png' },
-    { name: 'contentful', enabled: false, imageURL: '/static/images/contentful.png' },
-    { name: 'confluence', enabled: true, imageURL: '/static/images/confluence.png' }
+    { name: 'contentful', enabled: false, imageURL: '/static/images/contentful.png' }
   ],
   jira: {}
 };

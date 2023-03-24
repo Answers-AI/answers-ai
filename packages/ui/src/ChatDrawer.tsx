@@ -111,7 +111,10 @@ export default function ChatDrawer({ journeys }: ChatDrawerProps) {
           '& .MuiDrawer-paper': {
             position: 'absolute',
             boxSizing: 'border-box'
-          }
+          },
+          'display': 'flex',
+          'flexDirection': 'column',
+          'height': '100%'
         }}
         variant="permanent"
         anchor="left"
@@ -123,6 +126,7 @@ export default function ChatDrawer({ journeys }: ChatDrawerProps) {
             display: 'flex',
             justifyContent: 'space-between',
             transition: '.2s',
+            paddingLeft: 2,
             ...(open ? {} : { opacity: 0 })
           }}>
           <Typography variant="h5">Journeys</Typography>
@@ -130,8 +134,7 @@ export default function ChatDrawer({ journeys }: ChatDrawerProps) {
             {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </DrawerHeader>
-        <Divider />
-        <List disablePadding>
+        <List disablePadding sx={{ flex: 1 }}>
           {journeys?.map((journey, idx) => (
             <React.Fragment key={journey.id}>
               <ListItem key={journey.id} disablePadding sx={{ flexDirection: 'column' }}>
@@ -168,7 +171,6 @@ export default function ChatDrawer({ journeys }: ChatDrawerProps) {
                   </List>
                 </Collapse>
               </ListItem>
-              <Divider />
             </React.Fragment>
           ))}
         </List>
