@@ -8,9 +8,14 @@ import { useAnswers } from './AnswersContext';
 
 interface DefaultPromptsProps {
   expanded?: boolean;
+  handleChange: (evt: any, expanded: boolean) => void;
   onPromptSelected: (prompt: string) => void;
 }
-export const DefaultPrompts = ({ expanded, onPromptSelected }: DefaultPromptsProps) => {
+export const DefaultPrompts = ({
+  expanded,
+  handleChange,
+  onPromptSelected
+}: DefaultPromptsProps) => {
   const { prompts, setInputValue } = useAnswers();
   const handlePromptClick = (prompt: string) => {
     onPromptSelected(prompt);
@@ -18,7 +23,8 @@ export const DefaultPrompts = ({ expanded, onPromptSelected }: DefaultPromptsPro
 
   return prompts?.length ? (
     <Accordion
-      defaultExpanded={expanded}
+      expanded={expanded}
+      onChange={handleChange}
       sx={{
         '&, .MuiAccordion-root ': {
           'width': '100%',

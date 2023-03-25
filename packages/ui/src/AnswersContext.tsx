@@ -171,6 +171,7 @@ export function AnswersProvider({
     setJourneyId(undefined);
     setFilters({});
     setError(null);
+    setIsLoading(false);
     router.push('/');
   };
 

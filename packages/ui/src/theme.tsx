@@ -52,6 +52,17 @@ declare module '@mui/material/styles' {
 export const darkModeTheme = createTheme({
   ...getDesignTokens('dark'),
   components: {
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          pre: {
+            background: 'black',
+            padding: '16px',
+            borderRadius: '2px'
+          }
+        }
+      }
+    },
     MuiButton: {
       defaultProps: {}
     },

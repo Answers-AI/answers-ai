@@ -54,14 +54,15 @@ export const createChatChain = ({ messages }: { messages: Message[] }) => {
       history: Message[];
       agent_scratchpad: string;
     }) => {
+      console.log('[ChatChain] context', context?.length);
       const response = await openai.createChatCompletion({
-        max_tokens: 1000,
+        max_tokens: 2000,
         messages: [
-          // {
-          //   role: ChatCompletionRequestMessageRoleEnum.System,
-          //   content:
-          //     'You are an AI with access to the following platforms: Jira, Slack, Github, OpenAPI.'
-          // },
+          {
+            role: ChatCompletionRequestMessageRoleEnum.System,
+            content:
+              'You are a talkative AI assistant that helps people. You provide many details and are very informative.'
+          },
           {
             role: ChatCompletionRequestMessageRoleEnum.System,
             content: `Reply based on the context provided. If you don't know the answers say you don't know. If you think you're absolutely right, say so. <CONTEXT>${context}<CONTEXT>`

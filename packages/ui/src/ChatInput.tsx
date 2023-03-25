@@ -24,8 +24,10 @@ export const ChatInput = ({ inputRef }: { inputRef: any }) => {
   const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
   const [inputValue, setInputValue] = useState('');
 
-  const [showPrompts, setShowPrompts] = useState(flags?.recommended_prompts_expand?.enabled);
-
+  const [showPrompts, setShowPrompts] = useState(
+    !messages?.length && flags?.recommended_prompts_expand?.enabled
+  );
+  React.useEffect(() => {}, []);
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
@@ -50,12 +52,15 @@ export const ChatInput = ({ inputRef }: { inputRef: any }) => {
 
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column' }}>
-      <DefaultPrompts onPromptSelected={handlePromptSelected} expanded={showPrompts} />
+      <DefaultPrompts
+        onPromptSelected={handlePromptSelected}
+        expanded={showPrompts}
+        handleChange={(_, value) => setShowPrompts(value)}
+      />
 
       <TextField
         inputRef={inputRef}
         sx={{ textarea: { minHeight: 23, paddingRight: 4, paddingBottom: 5 } }}
-        inputRef={inputRef}
         variant="filled"
         fullWidth
         placeholder="How can you help me accomplish my goal?"

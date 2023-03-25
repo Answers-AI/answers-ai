@@ -48,7 +48,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     ts: new Date().valueOf(),
     name: 'answers/message.sent',
     user: user,
-    data: { role: 'user', chat, content: prompt, filters, messages }
+    data: { role: 'user', chat, content: prompt }
   });
 
   if (user)
@@ -78,11 +78,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
 
   try {
-    console.time('OpenAI->createCompletion: ' + prompt);
-    if (!summary) {
-      console.log('NO SUMMARY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-      console.log('WithContext', (summary || context)?.length);
-    }
+    console.time('[ChatCompletion]: ' + prompt);
 
     const chatChain = createChatChain({ messages });
     const response = await chatChain.call({
@@ -93,7 +89,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       agent_scratchpad: ''
     });
     const answer = response.text;
-    console.timeEnd('OpenAI->createCompletion: ' + prompt);
+    console.timeEnd('[ChatCompletion]: ' + prompt);
     let message;
     if (prompt && answer) {
       message = await prisma.message.create({

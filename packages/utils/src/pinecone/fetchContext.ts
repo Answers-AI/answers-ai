@@ -1,41 +1,25 @@
-import { Configuration, OpenAIApi } from 'openai';
-
-const initializeOpenAI = () => {
-  const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY
-  });
-  return new OpenAIApi(configuration);
-};
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
 import { Chat } from 'db/generated/prisma-client';
-import { AnswersFilters, DataSourcesFilters, Message, SourceFilters } from 'types';
-// import { PromptLayerOpenAI, OpenAI } from 'langchain/llms';
-// import { loadQAMapReduceChain } from 'langchain/chains';
+import { AnswersFilters, Message } from 'types';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-
 import OpenAIClient from '../openai/openai';
 import { summarizeAI } from '../summarizeAI';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
 
-// const model = process.env.PROMPT_LAYER_API_KEY
-//   ? new PromptLayerOpenAI({
-//       temperature: 0,
-//       promptLayerApiKey: process.env.PROMPT_LAYER_API_KEY
-//     })
-//   : new OpenAI({ temperature: 0 });
-
-// const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
-// const qaChain = loadQAMapReduceChain(model);
-
+// const SUMMARY_CHUNK_SIZE = 10_000; // Max
+const SUMMARY_CHUNK_SIZE = 3_000; // Controls how many tokens will fit into each chunk sent to the summarization
+const SUMMARY_TOKEN_SIZE = 2_000; // (openai max_tokens) Controls the ouput tokens of the summarization
+const CONTEXT_PAGES = 2; // How many context pages we want to process for completion
+const PINECONE_THRESHOLD = 0.68;
 export const fetchContext = async ({
   chat,
   prompt,
   messages = [],
   filters = {},
-  threshold = 0.75 //TODO Calculate threshold based on input and pineconedata
+  threshold = PINECONE_THRESHOLD //TODO Calculate threshold based on input and pineconedata
 }: {
   chat?: Chat;
   prompt: string;
@@ -112,12 +96,10 @@ export const fetchContext = async ({
         topK: 100
       });
     }),
-    // TODO: Remove unfiltered search?
     pineconeQuery(promptEmbedding, {
       topK: 100
     })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
-  // TODO: Filter pinecone data by threshold
 
   const context = [
     // `${history}`,
@@ -126,23 +108,21 @@ export const fetchContext = async ({
       : pineconeData?.filter((x) => x.score! > threshold)?.map((item: any) => item?.metadata?.text))
   ].join(' <SEP> ');
 
-  // 100 vectors(avg 4000) -> 1
-  // 100 vectors(avg 1000) -> 4
+  const textSplitter = new RecursiveCharacterTextSplitter({
+    chunkSize: SUMMARY_CHUNK_SIZE * CONTEXT_PAGES
+  });
+  let contextText = context;
+  try {
+    const contextChunks = await textSplitter.createDocuments([context]);
 
-  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 40000 });
-  const contextChunks = await textSplitter.createDocuments([context]);
-
-  if (contextChunks?.length > 1) {
-    console.log('Context too large', contextChunks?.length);
-  }
-
-  const contextText = contextChunks[0]?.pageContent;
+    contextText = contextChunks[0]?.pageContent;
+  } catch (err) {}
   let summary = await summarizeAI({
     input: contextText,
     prompt,
-    chunkSize: 3000
+    chunkSize: SUMMARY_CHUNK_SIZE,
+    maxTokens: SUMMARY_TOKEN_SIZE
   });
-  console.log('SUMMARY RATIO', (summary?.length / contextText?.length) * 100);
 
   return {
     pineconeData,

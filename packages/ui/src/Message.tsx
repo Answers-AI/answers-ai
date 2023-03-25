@@ -190,17 +190,15 @@ export const MessageCard = ({
       </Box>
       {developer_mode?.enabled ? (
         <Box>
-          {context ? (
-            // Use the @mui accordion component to wrap the context and response
+          {summary ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header">
-                <Typography variant="overline">Context</Typography>
+                <Typography variant="overline">Summary ({summary?.length})</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography variant="overline">Summary</Typography>
                 <Typography
                   sx={{ whiteSpace: 'pre-line' }}
                   variant="body1"
@@ -208,7 +206,19 @@ export const MessageCard = ({
                   component="div">
                   {summary}
                 </Typography>
-                <Typography variant="overline">Context</Typography>
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {context ? (
+            // Use the @mui accordion component to wrap the context and response
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Context ({context?.length})</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
                 <Typography
                   sx={{ whiteSpace: 'pre-line' }}
                   variant="body1"
