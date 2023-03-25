@@ -16,9 +16,11 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import MoreVert from '@mui/icons-material/MoreVert';
 import MenuButton from './MenuButton';
+import Favorite from '@mui/icons-material/Favorite';
 import { useAnswers } from './AnswersContext';
 import { Delete } from '@mui/icons-material';
 import { Prompt } from 'types';
+import { useFlags } from 'flagsmith/react';
 interface PromptCardProps extends Prompt {
   onClick: () => void;
 }
@@ -32,10 +34,29 @@ const PromptCard: React.FC<PromptCardProps> = ({
   usages,
   onClick
 }) => {
-  const { deletePrompt } = useAnswers();
-  const handleLike = (evt: React.MouseEvent<HTMLButtonElement>) => {
+  const flags = useFlags(['delete_prompt']);
+  const { deletePrompt, updatePrompt } = useAnswers();
+  const [lastInteraction, setLastInteraction] = React.useState<string>('');
+
+  const handleLike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.stopPropagation();
     evt.preventDefault();
+    setLastInteraction('like');
+    if (id)
+      await updatePrompt({
+        id: id,
+        likes: (likes ?? 0) + 1
+      });
+  };
+  const handleDislike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
+    evt.stopPropagation();
+    evt.preventDefault();
+    setLastInteraction('dislike');
+    if (id)
+      await updatePrompt({
+        id,
+        dislikes: (dislikes ?? 0) + 1
+      });
   };
   return (
     <Card
@@ -47,20 +68,22 @@ const PromptCard: React.FC<PromptCardProps> = ({
         justifyContent: 'space-between',
         flexDirection: 'column'
       }}>
-      <CardHeader
-        sx={{ position: 'absolute', top: 0, right: 0, zIndex: 999999 }}
-        action={
-          <MenuButton
-            aria-label="menu"
-            actions={[
-              { text: 'Delete Prompt', onClick: () => deletePrompt(id), icon: <Delete /> }
-            ]}>
-            <IconButton>
-              <MoreVert />
-            </IconButton>
-          </MenuButton>
-        }
-      />
+      {flags?.delete_prompt?.enabled ? (
+        <CardHeader
+          sx={{ position: 'absolute', top: 0, right: 0, zIndex: 999999 }}
+          action={
+            <MenuButton
+              aria-label="menu"
+              actions={[
+                { text: 'Delete Prompt', onClick: () => deletePrompt(id), icon: <Delete /> }
+              ]}>
+              <IconButton>
+                <MoreVert />
+              </IconButton>
+            </MenuButton>
+          }
+        />
+      ) : null}
       <Box
         sx={{
           width: '100%',
@@ -73,7 +96,9 @@ const PromptCard: React.FC<PromptCardProps> = ({
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            paddingRight: 4,
+            ...(flags?.delete_prompt?.enabled && {
+              paddingRight: 4
+            }),
             paddingBottom: 4
           }}
           onClick={onClick}>
@@ -110,16 +135,29 @@ const PromptCard: React.FC<PromptCardProps> = ({
           left: 0,
           bottom: 0
         }}>
-        {usages ? (
-          <Button size="small" disabled startIcon={<VisibilityIcon sx={{ fontSize: 16 }} />}>
-            {usages}
+        <Box sx={{ display: 'flex' }}>
+          {usages ? (
+            <Button size="small" disabled startIcon={<VisibilityIcon sx={{ fontSize: 16 }} />}>
+              {usages}
+            </Button>
+          ) : null}
+
+          <Button size="small" disabled startIcon={<Favorite sx={{ fontSize: 16 }} />}>
+            {likes - dislikes}
           </Button>
-        ) : null}
+        </Box>
         <Box>
-          <IconButton color="secondary" sx={{}} size="small" onClick={handleLike}>
+          <IconButton
+            color={lastInteraction === 'like' ? 'secondary' : 'default'}
+            sx={{}}
+            size="small"
+            onClick={handleLike}>
             <ThumbUpIcon sx={{ fontSize: 16 }} />
           </IconButton>
-          <IconButton size="small" color="secondary" onClick={handleLike}>
+          <IconButton
+            size="small"
+            color={lastInteraction === 'dislike' ? 'secondary' : 'default'}
+            onClick={handleDislike}>
             <ThumbDownIcon sx={{ fontSize: 16 }} />
           </IconButton>
         </Box>

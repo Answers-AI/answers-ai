@@ -15,7 +15,7 @@ export const answersMessageSent: EventVersionHandler<{
   event: 'answers/message.sent',
   handler: async ({ event }) => {
     const { data, user } = event;
-    const { role, content, chat, filters } = data;
+    const { role, content, chat } = data;
     // if (filters?.datasources?.web?.url?.length) {
     //   console.log('web/page.sync', filters.datasources.web.url);
     //   await inngest.send({

@@ -6,7 +6,6 @@ import React from 'react';
 import { authOptions } from '@ui/authOptions';
 import { prisma } from 'db/dist';
 import { Chat, Journey } from 'types';
-import { redirect } from 'next/navigation';
 
 export interface Params {
   chatId?: string;
@@ -22,20 +21,12 @@ const Chat = async ({ chatId, journeyId }: Params) => {
   const promptsPromise = prisma.prompt
     .findMany({
       where: {
-        OR: [
-          {
-            usages: {
-              gt: 0
-            }
-          },
-          {
-            likes: {
-              gt: 0
-            }
-          }
-        ]
+        usages: { gt: 1 }
       },
       orderBy: [
+        {
+          likes: 'desc'
+        },
         {
           usages: 'desc'
         }
@@ -67,7 +58,7 @@ const Chat = async ({ chatId, journeyId }: Params) => {
       },
       include: {
         prompt: true,
-        messages: { orderBy: { createdAt: 'asc' }, include: { user: true } }
+        messages: { orderBy: { createdAt: 'desc' }, include: { user: true } }
       }
     })
     .then((data) => JSON.parse(JSON.stringify(data)));
@@ -90,14 +81,8 @@ const Chat = async ({ chatId, journeyId }: Params) => {
     ? prisma.journey
         .findUnique({
           where: {
-            // users: {
-            //   some: { email: session.user.email }
-            // },
             id: journeyId
           },
-          // orderBy: {
-          //   createdAt: 'desc'
-          // },
           include: { chats: { include: { prompt: true, messages: { include: { user: true } } } } }
         })
         .then((data) => JSON.parse(JSON.stringify(data)))
@@ -113,7 +98,11 @@ const Chat = async ({ chatId, journeyId }: Params) => {
   ]);
 
   return (
-    <AnswersProvider chat={chat as Chat} journey={journey}>
+    <AnswersProvider
+      chat={chat as Chat}
+      journey={journey}
+      prompts={prompts}
+      chats={chats as Chat[]}>
       <DeveloperTools
         user={session?.user}
         appSettings={appSettings}

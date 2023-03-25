@@ -25,7 +25,7 @@ const handler = async (req: Request): Promise<Response> => {
     // console.log('handleResponse', response);
   };
   try {
-    const { pineconeData, context } = await fetch(
+    const { pineconeData, summary } = await fetch(
       `${
         process.env.VERCEL_URL?.includes('localhost')
           ? `http://${process.env.VERCEL_URL}`
@@ -52,7 +52,7 @@ const handler = async (req: Request): Promise<Response> => {
       n: 1
     };
 
-    const stream = await OpenAIStream(payload, { pineconeData, context }, handleResponse);
+    const stream = await OpenAIStream(payload, { pineconeData, context: summary }, handleResponse);
     return cors(req, new Response(stream));
   } catch (error) {
     const payload = {

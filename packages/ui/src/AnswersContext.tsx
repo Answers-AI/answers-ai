@@ -11,7 +11,9 @@ interface AnswersContextType {
   error?: any;
   chat?: Chat | null;
   journey?: Journey | null;
-  messages: Array<Message>;
+  messages?: Array<Message>;
+  prompts?: Array<Prompt>;
+  chats?: Array<Chat>;
   sendMessage: (args: { content: string; isNewJourney?: boolean }) => void;
   clearMessages: () => void;
   regenerateAnswer: () => void;
@@ -22,30 +24,38 @@ interface AnswersContextType {
   setUseStreaming: (useStreaming: boolean) => void;
   showFilters?: boolean;
   setShowFilters: (showFilters: boolean) => void;
+  inputValue: string;
+  setInputValue: (value: string) => void;
   deleteChat: (id: string) => Promise<void>;
   deletePrompt: (id: string) => Promise<void>;
   deleteJourney: (id: string) => Promise<void>;
-  updateChat: (chat: Chat) => Promise<void>;
-  updatePrompt: (prompt: Prompt) => Promise<void>;
-  updateJourney: (journey: Journey) => Promise<void>;
+  updateMessage: (message: Partial<Message>) => Promise<void>;
+  updateChat: (chat: Partial<Chat>) => Promise<void>;
+  updatePrompt: (prompt: Partial<Prompt>) => Promise<void>;
+  updateJourney: (journey: Partial<Journey>) => Promise<void>;
 }
 
 const AnswersContext = createContext<AnswersContextType>({
   error: null,
   messages: [],
+  chats: [],
+  prompts: [],
   filters: {},
   updateFilter: () => {},
   sendMessage: () => {},
   regenerateAnswer: () => {},
   clearMessages: () => {},
   isLoading: false,
+  inputValue: '',
   useStreaming: true,
   setUseStreaming: () => {},
   showFilters: false,
   setShowFilters: () => {},
+  setInputValue: () => {},
   deleteChat: async () => {},
   deletePrompt: async () => {},
   deleteJourney: async () => {},
+  updateMessage: async () => {},
   updateChat: async () => {},
   updatePrompt: async () => {},
   updateJourney: async () => {}
@@ -61,17 +71,22 @@ interface AnswersProviderProps {
   useStreaming?: boolean;
   chat?: Chat | null;
   journey?: Journey;
+  prompts?: Prompt[];
+  chats?: Chat[];
 }
 
 export function AnswersProvider({
   children,
   journey,
+  prompts,
   chat,
+  chats,
   apiUrl = '/api',
   useStreaming: initialUseStreaming = false
 }: AnswersProviderProps) {
   const router = useRouter();
   const [error, setError] = useState(null);
+  const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Array<Message>>(chat?.messages ?? []);
   const [filters, setFilters] = useState<AnswersFilters>(
@@ -156,26 +171,31 @@ export function AnswersProvider({
     setJourneyId(undefined);
     setFilters({});
     setError(null);
+    setIsLoading(false);
     router.push('/');
   };
-  const refresh = () => router.refresh();
+
   const deleteChat = async (id: string) =>
-    axios.delete(`${apiUrl}/chats?id=${id}`).then(() => refresh());
+    axios.delete(`${apiUrl}/chats?id=${id}`).then(() => router.refresh());
   const deletePrompt = async (id: string) =>
-    axios.delete(`${apiUrl}/prompts?id=${id}`).then(() => refresh());
+    axios.delete(`${apiUrl}/prompts?id=${id}`).then(() => router.refresh());
   const deleteJourney = async (id: string) =>
-    axios.delete(`${apiUrl}/journeys?id=${id}`).then(() => refresh());
-  const updateChat = async (chat: Chat) =>
-    axios.patch(`${apiUrl}/journeys`, chat).then(() => refresh());
-  const updatePrompt = async (prompt: Prompt) =>
-    axios.patch(`${apiUrl}/journeys`, prompt).then(() => refresh());
-  const updateJourney = async (journey: Journey) =>
-    axios.patch(`${apiUrl}/journeys`, journey).then(() => refresh());
+    axios.delete(`${apiUrl}/journeys?id=${id}`).then(() => router.refresh());
+  const updateChat = async (chat: Partial<Chat>) =>
+    axios.patch(`${apiUrl}/chats`, chat).then(() => router.refresh());
+  const updatePrompt = async (prompt: Partial<Prompt>) =>
+    axios.patch(`${apiUrl}/prompts`, prompt).then(() => router.refresh());
+  const updateJourney = async (journey: Partial<Journey>) =>
+    axios.patch(`${apiUrl}/journeys`, journey).then(() => router.refresh());
+  const updateMessage = async (message: Partial<Message>) =>
+    axios.patch(`${apiUrl}/messages`, message).then(() => router.refresh());
 
   const contextValue = {
     chat,
+    chats,
     journey,
     messages,
+    prompts,
     sendMessage,
     clearMessages,
     regenerateAnswer,
@@ -188,12 +208,15 @@ export function AnswersProvider({
     error,
     showFilters,
     setShowFilters,
+    inputValue,
+    setInputValue,
     deleteChat,
     deletePrompt,
     deleteJourney,
     updateChat,
     updatePrompt,
-    updateJourney
+    updateJourney,
+    updateMessage
   };
   return <AnswersContext.Provider value={contextValue}>{children}</AnswersContext.Provider>;
 }

@@ -5,6 +5,7 @@ import { Box, FormControlLabel, Switch, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
+import { DefaultPrompts } from './DefaultPrompts';
 
 export const ChatInput = ({ inputRef }: { inputRef: any }) => {
   const {
@@ -19,9 +20,14 @@ export const ChatInput = ({ inputRef }: { inputRef: any }) => {
     setUseStreaming,
     setShowFilters
   } = useAnswers();
-  const flags = useFlags(['settings_stream']);
+
+  const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
   const [inputValue, setInputValue] = useState('');
 
+  const [showPrompts, setShowPrompts] = useState(
+    !messages?.length && flags?.recommended_prompts_expand?.enabled
+  );
+  React.useEffect(() => {}, []);
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
@@ -29,20 +35,32 @@ export const ChatInput = ({ inputRef }: { inputRef: any }) => {
   const handleSubmit = () => {
     if (!inputValue) return;
     sendMessage({ content: inputValue, isNewJourney });
-
+    setShowPrompts(false);
     setInputValue('');
   };
   const handleInputFocus = () => {
     if (!Object.keys(filters)?.length) setShowFilters(true);
   };
+  const handlePromptSelected = (prompt: string) => {
+    setInputValue(prompt);
+  };
+  const handleInputBlur = () => {
+    if (flags?.recommended_prompts_expand?.value == 'blur') setShowPrompts(true);
+  };
 
   const isNewJourney = !!Object.keys(filters)?.length && !journey && !chat;
 
   return (
-    <Box display="flex" position="relative">
+    <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column' }}>
+      <DefaultPrompts
+        onPromptSelected={handlePromptSelected}
+        expanded={showPrompts}
+        handleChange={(_, value) => setShowPrompts(value)}
+      />
+
       <TextField
-        sx={{ textarea: { paddingRight: 4, paddingBottom: 5 } }}
         inputRef={inputRef}
+        sx={{ textarea: { minHeight: 23, paddingRight: 4, paddingBottom: 5 } }}
         variant="filled"
         fullWidth
         placeholder="How can you help me accomplish my goal?"
@@ -52,6 +70,7 @@ export const ChatInput = ({ inputRef }: { inputRef: any }) => {
         onFocus={handleInputFocus}
         onKeyPress={(e) => (e.key === 'Enter' && !e.shiftKey ? handleSubmit() : null)}
         onChange={handleInputChange}
+        onBlur={handleInputBlur}
       />
 
       <Box

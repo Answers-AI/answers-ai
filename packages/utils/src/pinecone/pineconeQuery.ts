@@ -21,12 +21,12 @@ export const pineconeQuery = async (
 ) => {
   // TODO: Use metadata inferred from the question
   try {
-    console.time('PineconeQuery:' + JSON.stringify({ filter, topK, namespace }));
+    console.time('[PineconeQuery]' + JSON.stringify({ filter, topK, namespace }));
     await pinecone.init({
       environment: process.env.PINECONE_ENVIRONMENT!,
       apiKey: process.env.PINECONE_API_KEY!
     });
-    console.log('PQ filter', filter);
+
     const result = await pinecone.Index(process.env.PINECONE_INDEX!).query({
       vector: embeddings,
       topK,
@@ -34,12 +34,11 @@ export const pineconeQuery = async (
       includeMetadata: true,
       namespace
     });
-    console.timeEnd('PineconeQuery:' + JSON.stringify({ filter, topK, namespace }));
-    console.log('PINECONE RESULT', result?.data?.matches?.length);
+    console.timeEnd('[PineconeQuery]' + JSON.stringify({ filter, topK, namespace }));
+    console.log('[PineconeQuery]', result?.data?.matches?.length);
     return result?.data;
   } catch (error) {
-    console.timeEnd('PineconeQuery:' + JSON.stringify({ filter, topK, namespace }));
-    console.error('PINECONE ERROR');
+    console.timeEnd('[PineconeQuery]' + JSON.stringify({ filter, topK, namespace }));
     throw error;
   }
 };

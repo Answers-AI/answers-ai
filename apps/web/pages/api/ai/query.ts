@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth';
 
 import { Message } from 'types';
+import { prisma } from 'db/dist';
 import cors from '@ui/cors';
 import { inngest } from '@utils/ingest/client';
 import { authOptions } from '@ui/authOptions';
@@ -47,7 +48,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     ts: new Date().valueOf(),
     name: 'answers/message.sent',
     user: user,
-    data: { role: 'user', chat, content: prompt, filters, messages }
+    data: { role: 'user', chat, content: prompt }
   });
 
   if (user)
@@ -77,28 +78,37 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
 
   try {
-    console.time('OpenAI->createCompletion: ' + prompt);
+    console.time('[ChatCompletion]: ' + prompt);
+
     const chatChain = createChatChain({ messages });
     const response = await chatChain.call({
-      context: summary || context,
+      context: summary,
       userName: user.name,
       input: prompt,
       history: messages,
       agent_scratchpad: ''
     });
     const answer = response.text;
-    console.timeEnd('OpenAI->createCompletion: ' + prompt);
-
+    console.timeEnd('[ChatCompletion]: ' + prompt);
+    let message;
     if (prompt && answer) {
+      message = await prisma.message.create({
+        data: {
+          chat: { connect: { id: chat.id } },
+          role: 'assistant',
+          content: answer
+        }
+      });
       await inngest.send({
         v: '1',
         ts: new Date().valueOf(),
         name: 'answers/prompt.answered',
         user: user,
-        data: { chat, messages, prompt, answer }
+        data: { message, prompt }
       });
     }
     res.status(200).json({
+      ...message,
       chat,
       prompt,
       context,
