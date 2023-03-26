@@ -1,147 +1,141 @@
-# Answers AI
+Answers AI: Monorepo Guide
+==========================
 
-This is the official Answers AI monorepo
+Welcome to the official Answers AI monorepo guide! This comprehensive guide covers everything you need to know about setting up, running, and developing the Answers AI project locally on both Mac and Windows systems.
 
-## What's inside?
+Table of Contents
+-----------------
 
-This monorepo uses [pnpm](https://pnpm.io) as a package manager. It includes the following packages/apps:
+1.  [Overview](#overview)
+2.  [Prerequisites](#prerequisites)
+3.  [Running the Project Locally](#running-the-project-locally)
+4.  [Use Cases](#use-cases)
+5.  [FAQ](#faq)
 
-## Apps and Packages
+Overview
+--------
 
-- [`web`](./packages/web/README.md): a [Next.js](https://nextjs.org/) app holding the frontend and serverless functions for the Answers AI website
-- [`utils`](./packages/utils/README.md): a library shared applications with utilities to sync and query data to the Answers AI database
-- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
+The Answers AI monorepo uses [pnpm](https://pnpm.io) as its package manager and includes the following packages and apps:
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+*   `web`: A [Next.js](https://nextjs.org/) app that serves as the frontend and serverless functions for the Answers AI website.
+*   `utils`: A shared library of applications that provides utilities for syncing and querying data with the Answers AI database.
+*   `eslint-config-custom`: Custom `eslint` configurations that include `eslint-config-next` and `eslint-config-prettier`.
+*   `tsconfig`: Shared `tsconfig.json` files used throughout the monorepo.
 
-## Utilities
+All packages and apps are written in [TypeScript](https://www.typescriptlang.org/).
 
-This turborepo has some additional tools already setup for you:
+Prerequisites
+-------------
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+Before running the project locally, make sure you have the following software installed on your system:
 
-## Build
+*   [Node.js](https://nodejs.org/)
+*   [pnpm](https://pnpm.io/)
+*   [Docker](https://www.docker.com/) (for development purposes)
 
-To build all apps and packages, run the following command:
+Running the Project Locally
+---------------------------
 
+Follow these step-by-step instructions to set up and run the Answers AI project on your local machine.
+
+### Step 1: Clone the Repository
+
+Clone the Answers AI repository to your local machine by running the following command in your terminal (Mac) or Command Prompt (Windows):
+
+
+```bash
+git clone https://github.com/Answers-AI/answers-ai.git
 ```
-pnpm run build
+
+### Step 2: Install Dependencies
+
+Navigate to the root directory of the cloned repository and run the following command to install all required dependencies:
+
+```bash
+pnpm install
 ```
 
-## Develop
+> Note: If you have a M1 mac and get an error about canvas you can run this command to fix
 
-To develop all apps and packages, run the following command:
-
+```bash
+brew install pkg-config cairo pango libpng jpeg giflib librsvg
 ```
+
+### Step 3: Set Up Environment Variables
+
+Create a `.env` file in the root directory of the repository and include the necessary environment variables, such as `DATABASE_URL` and `REDIS_URL`. Use the provided `.env.example` file as a template.
+
+### Step 4: Run the Project
+
+To run the project in development mode, execute the following command in the root directory:
+
+
+```bash
 pnpm run dev
 ```
 
-## Redis
+This command starts the development server for all apps and packages. To access the web app, open your browser and navigate to `http://localhost:3000`.
 
-Redis is used as a cache layer for OpenAi, Jira and general purpose key-value storage, in development this will run with Docker and Production uses a hosted database.
+Use Cases
+---------
 
-The the database is configured through `REDIS_URL`.
+The Answers AI project can be used for a variety of purposes, including:
 
-[Example usage](packages/utils/src/redisLoader.ts)
+1.  Providing AI-powered answers to user questions.
+2.  Integrating with external data sources like OpenAI, Jira, and other APIs.
+3.  Analyzing and visualizing data through interactive dashboards and reports.
 
-## Prisma
+FAQ
+---
 
-The database of choice is PostgreSQL, in development this will run with Docker and Production uses a hosted database.
+**Q: How do I set up a new service data source?**
 
-The database is configured with [Prisma](https://www.prisma.io/), the database is configured through `DATABASE_URL`.
+A: Follow these steps to set up a new service data source:
 
-The database is configured with [Prisma](https://www.prisma.io/), the database is configured through `DATABASE_URL`.
+1.  Navigate to `apps/web/app/api/sync`.
+2.  Create a new folder for the service you're adding.
+3.  Create a `route.ts` file and use existing `route.ts` files as examples if needed.
+4.  Ensure the Inngest event "name" property has a unique root name (e.g., "jira/app.sync").
+5.  Go to `packages/types/src/index.ts` and add your service to the `AppSettings` object.
+6.  Navigate to `packages/utils/src/ingest` and create a new file for your service (e.g., <code>jira.ts</code>).
 
-### Develop
 
-To create develop migrations use
+**Q: How do I migrate the database for development and deployment?**
 
-```
-pnpm run db:migrate dev
-```
-
-### Deployment
-
-Update your `.env` file to have the correct `DATABASE_URL` and run
-
-```
-pnpm run db:migrate deploy
-```
-
-## Inngest
-
-The project uses Inngest, a JavaScript-based open-source event-driven platform.
-
-It allows us to create functions that are triggered in response to events and can be used to execute tasks based on the event's data.
-
-### Running the dev Inngest server
-
-The dev server is ran automatically when using turbo!
-
-To run it manually, run the following command:
+A: To migrate the database for development, run the following command in the root directory:
 
 ```bash
-npx inngest-cli@latest dev -u http://localhost:3000/api/inngest
+`pnpm run db:migrate dev`
 ```
 
-This will start the Inngest local server and will synchronize events on the specified URL.
+To deploy the database, update the `DATABASE_URL` in your `.env` file with the correct value and run:
 
-Open the Inngest dashboard to see the available functions and events.
-
-### Working with events
-
-When running the web locally go to http://localhost:3000/events to see the status and send events.
-
-## Remote Caching
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
+```bash
+`pnpm run db:migrate deploy`
 ```
 
+**Q: How do I use the Inngest server during development?**
+
+A: The Inngest server runs automatically when using the `pnpm run dev` command. To run it manually, execute the following command:
+
+```bash
+`npx inngest-cli@latest dev -u http://localhost:3000/api/inngest`
+```
+
+This will start the Inngest local server and synchronize events on the specified URL. Open the Inngest dashboard to see the available functions and events. To work with events when running the web app locally, go to `http://localhost:3000/events` to see the status and send events.
+
+**Q: How do I enable remote caching with Turborepo?**
+
+A: To enable remote caching, you need a Vercel account. If you don't have one, [create an account](https://vercel.com/signup), then enter the following commands:
+
+```bash
 pnpm dlx turbo login
-
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+This will authenticate the Turborepo CLI with your Vercel account. Next, link your Turborepo to your remote cache by running the following command from the root of your repository:
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your turborepo:
-
-```
-
+```bash
 pnpm dlx turbo link
-
 ```
 
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
-
-```
-
-```
-
-## Setting up a new service data source
-
-Go to apps/web/app/api/sync
-Create a new folder for the service you are adding.
-Create a route.ts file
-Review other route.ts files for direction if needed.
-Make sure the inngest event "name" property has a unique root name. e.g. "jira/app.sync"
-
-Go to packages/types/src/index.ts
-Add your service to the AppSettings object
-
-Go to packages/utils/src/ingest
-Create a new file for your service (e.g. jira.ts)
+For more information about Turborepo, check out their [documentation](https://turbo.build/).
