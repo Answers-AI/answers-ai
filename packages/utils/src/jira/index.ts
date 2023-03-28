@@ -27,11 +27,7 @@ export const fetchJiraIssue = async (issueId: string) => {
     if (!issueId) throw new Error(`No issue with issue key ${issueId} found.`);
     let endpoint = `/issue/${issueId}`;
     let data: JiraIssue = await jiraClient.fetchJiraData(endpoint);
-    // if (!data || data?.errors) {
-    //   throw new Error(`issueID:${issueId} - ${data?.errorMessages?.join(' | ')}`);
-    // }
 
-    // issue = new JiraIssue(data);
     return data;
   } catch (error) {
     console.error(error);
@@ -45,60 +41,19 @@ export const jiraIssueLoader = redisLoader<string, JiraIssue>({
   cacheExpirationInSeconds: 0
 });
 
+export const jiraCommentsLoader = redisLoader<string, JiraIssue>({
+  keyPrefix: 'jira:comment',
+  redisConfig: process.env.REDIS_URL as string,
+  getValuesFn: (issueKey) => getJiraComments(issueKey),
+  cacheExpirationInSeconds: 0
+});
+
 export const getJiraComments = async (issueKey: any) => {
+  if (!issueKey) return null;
   let comments = await jiraClient.fetchJiraData(`/issue/${issueKey}/comment`);
 
   if (!comments?.comments?.length) return null;
 
-  // if (comments) {
-  //   // metadata fields can not be over 10000 bytes
-  //   const encoder = new TextEncoder();
-  //   const encodedString = encoder.encode(comments);
-  //   const sizeInBytes = encodedString.byteLength;
-  //   if (sizeInBytes > 9000) {
-  //     console.log("comments too long", sizeInBytes);
-  //     return comments.substring(0, 9000);
-  //   } else {
-  //     return comments;
-  //   }
-  // }
-  // console.log('JIRA COMMENTS');
-  // console.log(comments.comments[0]);
   const jiraComments = comments.comments;
   return jiraComments;
-};
-
-// const indexAllJiraStatuses = async () => {
-//   console.time('indexAllJiraStatuses');
-//   const data = await getJiraStatuses();
-//   const vectorData = await prepareAllForEmbedding(data);
-//   // answerSession.addVectors(vectorData);
-//   await pinecone.writeVectorsToIndex(vectorData);
-//   console.timeEnd('indexAllJiraStatuses');
-// };
-
-// const indexAllJiraStatusCategories = async () => {
-//   console.time('indexAllJiraStatusCategories');
-//   const data = await getJiraStatusCategories();
-//   const vectorData = await prepareAllForEmbedding(data);
-//   // answerSession.addVectors(vectorData);
-//   await pinecone.writeVectorsToIndex(vectorData);
-//   console.timeEnd('indexAllJiraStatusCategories');
-// };
-
-export const indexAllJiraIssues = async (options: {
-  jql: string;
-  batchSize?: number;
-  maxResults?: number;
-}) => {
-  const data = await getJiraTickets(options);
-  if (data) console.log('JiraIssue', data[0]);
-  // console.time(`${options.jql} Embedding`);
-  // const vectorData = await prepareAllForEmbedding(data);
-  console.timeEnd(`${options.jql} Embedding`);
-  // // answerSession.addVectors(vectorData);
-
-  // console.time(`${options.jql} Writing Vectors`);
-  // await pinecone.writeVectorsToIndex(vectorData);
-  console.timeEnd(`${options.jql} Writing Vectors`);
 };

@@ -75,7 +75,7 @@ const getConfluencePagesVectors = async (confluencePages: ConfluencePage[]) => {
         if (!markdownChunks?.length) return [];
 
         return markdownChunks.map((headingChunk: string, i: any) => ({
-          uid: `WebPage_${page.title}_${i}`,
+          uid: `ConfluencePage_${page.title}_${i}`,
           text: headingChunk,
           metadata: {
             id: page.id,

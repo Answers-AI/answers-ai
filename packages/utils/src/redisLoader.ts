@@ -43,14 +43,13 @@ const redisLoader = <K, V>({
   const batchLoadFn = async (cacheKeys: readonly K[]) => {
     if (disableCache) return getValuesFn(cacheKeys);
     const cacheKeyStrings = cacheKeys.map(hashKey);
-    // console.log('Loading from redis', cacheKeyStrings?.length);
-    // console.time('Loading from redis:' + cacheKeyStrings?.length);
+    // console.time('Loading from redis' + cacheKeyStrings?.length);
 
     const cachedValues = await redis.mget(...cacheKeyStrings).catch((err) => {
       console.log('Redis error: ', err);
       return cacheKeyStrings?.map(() => null);
     });
-    console.timeEnd('Loading from redis:' + cacheKeyStrings?.length);
+    // console.timeEnd('Loading from redis:' + cacheKeyStrings?.length);
 
     const cacheMissKeys: K[] = [];
     const results: (V | null)[] = [];
@@ -77,10 +76,10 @@ const redisLoader = <K, V>({
     }
 
     if (cacheMissKeys.length > 0) {
-      console.log('Cache miss', {
-        cacheMissKey: hashKey(cacheMissKeys[0]),
-        count: cacheMissKeys.length
-      });
+      // console.log('Cache miss', {
+      //   cacheMissKey: hashKey(cacheMissKeys[0]),
+      //   count: cacheMissKeys.length
+      // });
       const nonCachedValues = await getValuesFn(cacheMissKeys);
       const nonCachedKeyValues: [K, V | null][] = nonCachedValues.map((value, index) => [
         cacheMissKeys[index],

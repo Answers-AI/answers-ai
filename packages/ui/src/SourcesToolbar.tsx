@@ -152,12 +152,12 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                     // options={appSettings?.web?.urls?.map((s) => s.url) || []}
                     value={filters?.datasources?.web?.domain || []}
                     onChange={async (value: string[]) => {
-                      // const currentUrls = filters?.datasources?.web?.domain || [];
-                      // const newUrls = value.filter((v) => !currentUrls.includes(v));
+                      const currentUrls = filters?.datasources?.web?.domain || [];
+                      const newUrls = value.filter((v) => !currentUrls.includes(v));
                       updateFilter({ datasources: { web: { domain: value } } });
-                      // if (!newUrls?.length) return;
-                      // const uniqueUrls = getUniqueUrls(newUrls);
-                      // await axios.post(`/api/sync/web`, { urls: uniqueUrls, byDomain: true });
+                      if (!newUrls?.length) return;
+                      const uniqueUrls = getUniqueUrls(newUrls);
+                      await axios.post(`/api/sync/web`, { urls: uniqueUrls, byDomain: true });
                     }}
                   />
                 </>

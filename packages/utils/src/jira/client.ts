@@ -63,7 +63,7 @@ class JiraClient {
       if (cache) await this.redis.set(hashKey, JSON.stringify(data));
       if (cache) await this.redis.expire(hashKey, this.cacheExpireTime);
     }
-    console.timeEnd('FetchJiraData:' + endpoint);
+    // console.timeEnd('FetchJiraData:' + endpoint);
     return data;
   }
 }
