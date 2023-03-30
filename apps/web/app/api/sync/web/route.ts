@@ -1,5 +1,5 @@
 import { getAppSettings } from '@ui/getAppSettings';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@ui/authOptions';
 import { inngest } from '@utils/ingest/client';
 import { getUniqueUrls } from '@utils/utilities/getUniqueUrls';
@@ -11,12 +11,22 @@ interface RequestBody {
 }
 
 export async function POST(req: Request, res: NextResponse) {
+  console.time('web route');
+  console.time('getAppSettings');
   const appSettings = await getAppSettings();
-  const session = await getServerSession(authOptions);
-  const user = session?.user;
+  console.timeEnd('getAppSettings');
 
-  const { url, urls, byDomain } = await req.json();
+  console.time('getServerSession');
+  const session = await getServerSession(authOptions);
+  console.timeEnd('getServerSession');
+
+  console.time('user');
+  const user = session?.user;
+  console.timeEnd('user');
+
+  const { urls, byDomain } = await req.json();
   const uniqueUrls = getUniqueUrls(urls);
+  console.log({ urls, uniqueUrls, byDomain });
 
   inngest.send({
     v: '1',
@@ -25,5 +35,7 @@ export async function POST(req: Request, res: NextResponse) {
     user,
     data: { appSettings, urls: uniqueUrls, byDomain: !!byDomain }
   });
+
+  console.timeEnd('web route');
   return NextResponse.json({ status: 'ok' });
 }

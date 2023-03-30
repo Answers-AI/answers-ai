@@ -5,9 +5,14 @@ declare global {
 }
 
 export const prisma = global.prisma || new PrismaClient();
+console.log(
+  'db/src/client primsa: global isss: ',
+  global.prisma ? Object.keys(global.prisma) : 'undefined'
+);
+
 const SOFT_DELETE_MODELS = ['Chat', 'Message', 'Prompt', 'Journey'];
 
-prisma.$use(async (params, next) => {
+prisma.$use(async (params: any, next: any) => {
   if (SOFT_DELETE_MODELS.includes(params.model!)) {
     if (params.action === 'findUnique' || params.action === 'findFirst') {
       // Change to findFirst - you cannot filter
@@ -54,7 +59,7 @@ prisma.$use(async (params, next) => {
 //   return next(params);
 // });
 
-prisma.$use(async (params, next) => {
+prisma.$use(async (params: any, next: any) => {
   // Check incoming query type
   if (SOFT_DELETE_MODELS.includes(params.model!)) {
     if (params.action == 'delete') {
@@ -75,4 +80,5 @@ prisma.$use(async (params, next) => {
   }
   return next(params);
 });
-if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
+
+if (process.env.NODE_ENV !== 'production' && !global.prisma) global.prisma = prisma;

@@ -1,5 +1,4 @@
-const { PrismaPlugin } = require('experimental-prisma-webpack-plugin');
-// const { PrismaPlugin } = require('@prisma/nextjs-monorepo-workaround-plugin');
+const { PrismaPlugin } = require('@prisma/nextjs-monorepo-workaround-plugin');
 
 const webpack = require('webpack');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
@@ -11,7 +10,8 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 module.exports = withBundleAnalyzer({
   experimental: {
     appDir: true,
-    enableUndici: true
+    enableUndici: true,
+    serverComponentsExternalPackages: ['@prisma/client']
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],
@@ -24,17 +24,19 @@ module.exports = withBundleAnalyzer({
     }
   },
   webpack: (config, { isServer }) => {
-    config.externals = [...config.externals, 'db'];
-    // if (isServer) {
+    config.externals = [...config.externals, 'db', 'puppeteer'];
+
     config.plugins = [
       ...config.plugins,
-      new PrismaPlugin(),
       new webpack.IgnorePlugin({
         resourceRegExp: /canvas/,
         contextRegExp: /jsdom$/
       })
     ];
-    // }
+
+    if (isServer) {
+      config.plugins = [...config.plugins, new PrismaPlugin()];
+    }
 
     return config;
   }

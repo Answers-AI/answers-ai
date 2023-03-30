@@ -28,7 +28,8 @@ export const indexSingleSlackChannel = async (channelId) => {
   //   const data = await Promise.all(promises);
 
   messages.map(async (m) => {
-    return await m.getTidiedInfo();
+    const tidiedInfo = await m.getTidiedInfo();
+    return tidiedInfo;
   });
 
   //   const vectorData = await answerSession.prepareAllForEmbedding(data);

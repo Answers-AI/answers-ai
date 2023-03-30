@@ -23,7 +23,6 @@ class OpenAI {
       getValuesFn: (keys) =>
         this.openai
           .createEmbedding({
-            //@ts-expect-error
             input: keys,
             model: this.defaultModel
           })

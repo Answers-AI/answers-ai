@@ -23,7 +23,7 @@ const initializeOpenAI = () => {
 
 export const openai = initializeOpenAI();
 
-const chat = new ChatOpenAI({ modelName: 'gpt-3.5-turbo-0301', temperature: 0.1 });
+const chat = new ChatOpenAI({ modelName: 'gpt-3.5-turbo', temperature: 0.1 });
 const openAIModel = new OpenAI({ temperature: 0.1 });
 export const createChatChain = ({ messages }: { messages: Message[] }) => {
   // const chatHistoryPrompt = ChatPromptTemplate.fromPromptMessages([

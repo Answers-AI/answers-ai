@@ -1,16 +1,17 @@
 import React from 'react';
 
-import Chat from '../../Chat';
+import Chat from '@ui/Chat';
 
 // export const revalidate = 1; // revalidate every minute
 
 export const metadata = {
-  title: 'Chat | Answers AI',
-  description: 'Your chat'
+  title: 'Journey | Answers AI',
+  description: 'Your yourney'
 };
 
 const Homepage = async ({ params }: any) => {
-  // @ts-expect-error
+  console.log('journey/[[journeyId]]/page', params);
+  // @ts-expect-error Async Server Component
   return <Chat {...params} />;
 };
 

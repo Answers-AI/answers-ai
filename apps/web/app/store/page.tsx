@@ -7,6 +7,7 @@ export const metadata = {
 const DB_STUDIO_SERVER_URL = process.env.DB_STUDIO_SERVER_URL || 'http://localhost:5555/';
 
 const DB_STUDIO = () => {
+  console.log('settings/app/page');
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>

@@ -27,13 +27,13 @@
     "eslint-config-custom": "workspace:*",
     "inngest-cli": "^0.11.0",
     "prettier": "latest",
-    "prisma": "4.10.1",
+    "prisma": "4.12.0",
     "turbo": "latest"
   },
   "engines": {
     "node": ">=14.0.0"
   },
-  "packageManager": "pnpm@7.12.2",
+  "packageManager": "pnpm@7.30.5",
   "dependencies": {
     "wait-on": "^7.0.1"
   }

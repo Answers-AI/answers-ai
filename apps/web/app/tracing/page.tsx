@@ -4,6 +4,8 @@ export const metadata = {
   title: 'Tracing | Answers AI'
 };
 const DB_STUDIO = () => {
+  console.log('tracing/page');
+
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>

@@ -49,7 +49,8 @@ export const confluencePageLoader = redisLoader<string, ConfluencePage>({
       const result = await getConfluencePage({ pageId });
       results.push(result);
     }
-    return Promise.all(results);
+    const allResults = await Promise.all(results);
+    return allResults;
   },
   cacheExpirationInSeconds: 0,
   disableCache: true

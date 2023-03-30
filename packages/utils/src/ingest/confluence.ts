@@ -33,7 +33,9 @@ const prefixHeaders = (markdown: string): string => {
 const recursiveCharacterTextSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 6000 });
 const splitPageHtmlChunkMore = async (markdownChunk: string) => {
   const contextChunks = await recursiveCharacterTextSplitter.createDocuments([markdownChunk]);
-  const smallerChunks = contextChunks.map((chunk) => `${chunk.pageContent}`);
+  const smallerChunks: string[] = contextChunks.map(
+    (chunk: { pageContent: any }) => `${chunk.pageContent}`
+  );
 
   return smallerChunks;
 };
@@ -55,7 +57,7 @@ const splitPageAdf = async (page: ConfluencePage) => {
       const header = chunk.match(/(#+\s+.+)\n/)?.[1] ?? '';
       const content = chunk.replace(header, '');
       const chunkMore = await splitPageHtmlChunkMore(content);
-      const chunksWithHeader = chunkMore.map((chunk) => `${header}\n${chunk}`);
+      const chunksWithHeader = chunkMore.map((chunk: any) => `${header}\n${chunk}`);
       return chunksWithHeader;
     })
   );

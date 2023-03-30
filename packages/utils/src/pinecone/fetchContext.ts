@@ -9,6 +9,38 @@ import { summarizeAI } from '../summarizeAI';
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
 
+const processArray = (arr: Array<any>) => {
+  console.time('Process Array');
+  const map = new Map();
+
+  for (const obj of arr) {
+    const key = obj.metadata.url || obj.metadata.key;
+
+    if (map.has(key)) {
+      const value = `${map.get(key)}\n${obj.metadata.text}`;
+
+      map.set(key, value);
+    } else {
+      map.set(key, obj.metadata.text);
+    }
+  }
+
+  const reducedArr = Array.from(map, ([key, text]) => {
+    const obj = arr.find((o) => o.metadata.key === key || o.metadata.url === key);
+    return { ...obj, metadata: { ...obj.metadata, text } };
+  });
+
+  const firstScore = reducedArr[0].score;
+
+  // filter out any items with a score less than 10% of the first item's score
+  const filteredArr = reducedArr.filter((obj) => obj.score > firstScore * 0.99);
+  console.log({ filteredArr });
+
+  console.timeEnd('Process Array');
+
+  return filteredArr;
+};
+
 // const SUMMARY_CHUNK_SIZE = 10_000; // Max
 const SUMMARY_CHUNK_SIZE = 3_000; // Controls how many tokens will fit into each chunk sent to the summarization
 const SUMMARY_TOKEN_SIZE = 2_000; // (openai max_tokens) Controls the ouput tokens of the summarization
@@ -85,29 +117,38 @@ export const fetchContext = async ({
     }
   });
 
-  console.log('[FetchContext]', JSON.stringify({ datasources, filters, filter }));
+  // console.log('[FetchContext]', JSON.stringify({ datasources, filters, filter }));
 
-  const pineconeData = await Promise.all([
+  console.time('Pineconedata');
+  console.time('Pineconedata get');
+
+  const pineconeDataRaw = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
       return pineconeQuery(promptEmbedding, {
         filter: {
           ...filter[source]
         },
-        topK: 100
+        topK: 10
       });
     }),
     pineconeQuery(promptEmbedding, {
-      topK: 100
+      topK: 10
     })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
+  console.timeEnd('Pineconedata get');
 
+  const pineconeData = processArray(pineconeDataRaw);
+
+  console.time('Pineconedata score');
   const context = [
     // `${history}`,
     ...(!pineconeData
       ? []
       : pineconeData?.filter((x) => x.score! > threshold)?.map((item: any) => item?.metadata?.text))
   ].join(' <SEP> ');
+  console.timeEnd('Pineconedata score');
 
+  console.time('Pineconedata split');
   const textSplitter = new RecursiveCharacterTextSplitter({
     chunkSize: SUMMARY_CHUNK_SIZE * CONTEXT_PAGES
   });
@@ -116,13 +157,20 @@ export const fetchContext = async ({
     const contextChunks = await textSplitter.createDocuments([context]);
 
     contextText = contextChunks[0]?.pageContent;
-  } catch (err) {}
+  } catch (err) {
+    console.log('Error creating documents with pinecone data', err);
+  }
+  console.timeEnd('Pineconedata split');
+  console.time('Pineconedata summarize');
   let summary = await summarizeAI({
     input: contextText,
     prompt,
     chunkSize: SUMMARY_CHUNK_SIZE,
     maxTokens: SUMMARY_TOKEN_SIZE
   });
+
+  console.timeEnd('Pineconedata summarize');
+  console.timeEnd('Pineconedata');
 
   return {
     pineconeData,

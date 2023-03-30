@@ -1,6 +1,6 @@
 // import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { getJiraProjects, JiraProject } from '@utils/jira';
 import { deepmerge } from '@utils/deepmerge';
 // import cors from '@ui/cors';

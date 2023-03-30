@@ -11,7 +11,8 @@ const SETTINGS: { [key: string]: any } = {
 };
 
 const AppSettingPage = async ({ params }: any) => {
-  const appSettings = await getAppSettings();
+  console.log('settings/app/page', params);
+
   const Component = SETTINGS[params.app];
   if (!Component && params.app)
     return (
@@ -20,7 +21,11 @@ const AppSettingPage = async ({ params }: any) => {
         when this integration is ready
       </div>
     );
-  if (Component) return <Component appSettings={appSettings} />;
+
+  if (Component) {
+    const appSettings = await getAppSettings();
+    return <Component appSettings={appSettings} />;
+  }
 
   return null;
 };

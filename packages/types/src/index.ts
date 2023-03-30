@@ -1,4 +1,13 @@
-import * as DB from 'db/generated/prisma-client';
+import {
+  User as DbUser,
+  Organization as DbOrganization,
+  Prompt as DbPrompt,
+  Chat as DbChat,
+  Journey as DbJourney,
+  Message as DbMessage
+} from 'db/generated/prisma-client';
+
+// import * as DB from  'db/generated/prisma-client';
 
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
 export type PineconeObject = {
@@ -49,7 +58,7 @@ export interface AppSettings {
     urls?: OpenApiSetting[];
   };
   models?: Models;
-  filters?: AnswersFilters
+  filters?: AnswersFilters;
 }
 
 export interface JiraFilters {
@@ -101,23 +110,23 @@ type Models = {
   [key: string]: string[];
 };
 
-export interface User extends Omit<DB.User, 'appSettings'> {
+export interface User extends Omit<DbUser, 'appSettings'> {
   appSettings: AppSettings;
 }
-export interface Organization extends Omit<DB.Organization, 'appSettings'> {
+export interface Organization extends Omit<DbOrganization, 'appSettings'> {
   appSettings: AppSettings;
 }
 
-export interface Prompt extends DB.Prompt {
+export interface Prompt extends DbPrompt {
   content: string;
 }
-export interface Chat extends Omit<DB.Chat, 'filters'> {
+export interface Chat extends Omit<DbChat, 'filters'> {
   filters: AnswersFilters;
   prompt: Prompt | null;
   messages: Message[] | null;
 }
 
-export interface Journey extends DB.Journey {
+export interface Journey extends DbJourney {
   chats: Chat[] | null;
 }
 
@@ -142,7 +151,7 @@ export interface ConfluenceSpaceSetting extends ConfluenceSpace {
   enabled: boolean;
 }
 
-export interface Message extends Partial<DB.Message>, ChatCompletionRequestMessage {
+export interface Message extends Partial<DbMessage>, ChatCompletionRequestMessage {
   user?: User | null;
   role: ChatCompletionRequestMessageRoleEnum;
   content: string;

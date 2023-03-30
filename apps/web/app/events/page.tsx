@@ -9,6 +9,7 @@ const INNGEST_SERVER_URL = process.env.INNGEST_SERVER_URL || 'http://localhost:8
 
 const Inngest = async () => {
   const appSettings = await getAppSettings();
+  console.log('events/page ');
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>

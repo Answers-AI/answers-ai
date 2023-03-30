@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 
 import { Message } from 'types';
 import { prisma } from 'db/dist';
@@ -80,7 +80,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   try {
     console.time('[ChatCompletion]: ' + prompt);
 
+    console.time('[query createChatChain]: ' + prompt);
     const chatChain = createChatChain({ messages });
+    console.timeEnd('[query createChatChain]: ' + prompt);
+    console.time('[query chatChain.call]: ' + prompt);
     const response = await chatChain.call({
       context: summary,
       userName: user.name,
@@ -88,10 +91,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       history: messages,
       agent_scratchpad: ''
     });
+    console.timeEnd('[query chatChain.call]: ' + prompt);
     const answer = response.text;
     console.timeEnd('[ChatCompletion]: ' + prompt);
     let message;
+
     if (prompt && answer) {
+      console.time('[query prisma.message.create]: ' + prompt);
       message = await prisma.message.create({
         data: {
           chat: { connect: { id: chat.id } },
@@ -99,6 +105,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
           content: answer
         }
       });
+      console.timeEnd('[query prisma.message.create]: ' + prompt);
+
+      console.time('[query prompt.answered]: ' + prompt);
       await inngest.send({
         v: '1',
         ts: new Date().valueOf(),
@@ -106,7 +115,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         user: user,
         data: { message, prompt }
       });
+      console.timeEnd('[query prompt.answered]: ' + prompt);
     }
+
     res.status(200).json({
       ...message,
       chat,

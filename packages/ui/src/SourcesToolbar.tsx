@@ -1,56 +1,89 @@
 import * as React from 'react';
 // import { styled } from '@mui/material/styles';
 // import Badge from '@mui/material/Badge';
+import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 // import Stack from '@mui/material/Stack';
-import { AnswersFilters, AppSettings } from 'types';
+
+import { AnswersFilters, AppService, AppSettings } from 'types';
 import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
 import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
 import { getUniqueUrls } from '@utils/utilities/getUniqueUrls';
 import axios from 'axios';
+import SourcesModalWeb from './SourcesModalWeb';
 
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
-  const anchorRef = React.useRef<HTMLDivElement[]>([]);
-  const enabledServices = appSettings?.services?.filter((service) => service.enabled);
-  const [open, setOpen] = React.useState(-1);
+  const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
+  const enabledServices: AppService[] | undefined = appSettings?.services?.filter(
+    (service) => service.enabled
+  );
+  const [serviceOpen, setServiceOpen] = React.useState<string>('');
   const [urls, setUrls] = React.useState<string[]>([]);
   const [domains, setDomains] = React.useState<string[]>([]);
   const { filters, updateFilter } = useAnswers();
+  const [openWebModal, setOpenWebModal] = React.useState(false);
+
+  const addUrl = async (value: string[]) => {
+    const currentUrls = filters?.datasources?.web?.url || [];
+    console.log('addUrl', { value, currentUrls });
+    const newUrls = value.filter((v) => !currentUrls.includes(v));
+    updateFilter({ datasources: { web: { url: value } } });
+    if (!newUrls?.length) return;
+    const uniqueUrls = getUniqueUrls(newUrls);
+    await axios.post(`/api/sync/web`, { urls: uniqueUrls, byDomain: false });
+  };
+
+  const addDomain = async (value: string[]) => {
+    // const currentUrls = filters?.datasources?.web?.domain || [];
+    // const newUrls = value.filter((v) => !currentUrls.includes(v));
+    updateFilter({ datasources: { web: { domain: value } } });
+    // if (!newUrls?.length) return;
+    // const uniqueUrls = getUniqueUrls(newUrls);
+    // await axios.post(`/api/sync/web`, { urls: uniqueUrls, byDomain: true });
+  };
+
+  const toggleWebModal = () => {
+    setOpenWebModal(!openWebModal);
+  };
+
+  const getUrls = async () => {
+    try {
+      const webUrls = await axios.post(`/api/ai/getUrlList`);
+
+      if (webUrls?.data?.urls && webUrls?.data?.urls?.length > 0) {
+        setUrls(webUrls.data.urls);
+      } else {
+        setUrls([]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getDomains = async () => {
+    try {
+      const webDomains = await axios.post(`/api/ai/getDomainList`);
+
+      if (webDomains?.data?.domains && webDomains?.data?.domains?.length > 0) {
+        setDomains(webDomains.data.domains);
+      } else {
+        setDomains([]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   React.useEffect(() => {
-    const getUrls = async () => {
-      try {
-        const webUrls = await axios.post(`/api/ai/getUrlList`);
+    const selectedService = enabledServices?.find((service) => service.name === serviceOpen);
+    if (selectedService?.name === 'web') {
+      getUrls();
+      getDomains();
+    }
+  }, [serviceOpen]);
 
-        if (webUrls?.data?.urls && webUrls?.data?.urls?.length > 0) {
-          setUrls(webUrls.data.urls);
-        } else {
-          setUrls([]);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getUrls();
-
-    const getDomains = async () => {
-      try {
-        const webDomains = await axios.post(`/api/ai/getDomainList`);
-
-        if (webDomains?.data?.domains && webDomains?.data?.domains?.length > 0) {
-          setDomains(webDomains.data.domains);
-        } else {
-          setDomains([]);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getDomains();
-  }, []);
-
-  const selectedService = enabledServices?.[open];
+  const selectedService = enabledServices?.find((service) => service.name === serviceOpen);
   return (
     <>
       <AvatarGroup total={enabledServices?.length} spacing={-8}>
@@ -61,11 +94,9 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
               src={service.imageURL}
               alt={service.name}
               ref={(ref) => {
-                if (ref) anchorRef.current[idx] = ref;
+                if (ref) serviceRefs.current[service.name] = ref;
               }}
-              onClick={() => setOpen(idx)}
-              // onMouseEnter={() => setOpen(idx)}
-              // onMouseLeave={() => setOpen(-1)}
+              onClick={() => setServiceOpen(service.name)}
             />
           ])
           .flat()}
@@ -74,8 +105,8 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
         <Popover
           key={selectedService?.name}
           open
-          anchorEl={anchorRef.current[open]}
-          onClose={() => setOpen(-1)}
+          anchorEl={serviceRefs.current[serviceOpen]}
+          onClose={() => setServiceOpen('')}
           PaperProps={{
             sx: {
               marginLeft: '-2px',
@@ -132,33 +163,29 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
               ) : null}
               {selectedService.name === 'web' ? (
                 <>
+                  <Button variant="contained" onClick={toggleWebModal}>
+                    Open Modal
+                  </Button>
+                  {openWebModal && (
+                    <SourcesModalWeb
+                      isOpen={openWebModal}
+                      handleAddUrl={addUrl}
+                      handleAddDomain={addDomain}
+                    />
+                  )}
                   <AutocompleteSelect
                     label="Web Page"
                     options={urls}
                     // options={appSettings?.web?.urls?.map((s) => s.url) || []}
                     value={filters?.datasources?.web?.url || []}
-                    onChange={async (value: string[]) => {
-                      const currentUrls = filters?.datasources?.web?.url || [];
-                      const newUrls = value.filter((v) => !currentUrls.includes(v));
-                      updateFilter({ datasources: { web: { url: value } } });
-                      if (!newUrls?.length) return;
-                      const uniqueUrls = getUniqueUrls(newUrls);
-                      await axios.post(`/api/sync/web`, { urls: uniqueUrls, byDomain: false });
-                    }}
+                    onChange={addUrl}
                   />
                   <AutocompleteSelect
                     label="Web Site"
                     options={domains}
                     // options={appSettings?.web?.urls?.map((s) => s.url) || []}
                     value={filters?.datasources?.web?.domain || []}
-                    onChange={async (value: string[]) => {
-                      // const currentUrls = filters?.datasources?.web?.domain || [];
-                      // const newUrls = value.filter((v) => !currentUrls.includes(v));
-                      updateFilter({ datasources: { web: { domain: value } } });
-                      // if (!newUrls?.length) return;
-                      // const uniqueUrls = getUniqueUrls(newUrls);
-                      // await axios.post(`/api/sync/web`, { urls: uniqueUrls, byDomain: true });
-                    }}
+                    onChange={addDomain}
                   />
                 </>
               ) : null}

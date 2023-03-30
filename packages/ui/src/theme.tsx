@@ -63,6 +63,24 @@ export const darkModeTheme = createTheme({
         }
       }
     },
+    MuiModal: {
+      styleOverrides: {
+        root: {
+          pre: {
+            background: 'blue',
+            padding: '16px',
+            borderRadius: '2px'
+          }
+        }
+      }
+    },
+    MuiBackdrop: {
+      styleOverrides: {
+        root: {
+          background: 'rgba(0, 0, 0, 0.75)'
+        }
+      }
+    },
     MuiButton: {
       defaultProps: {}
     },

@@ -1,7 +1,8 @@
-import { getServerSession, Session } from 'next-auth';
+import React from 'react';
+import { getServerSession } from 'next-auth/next';
+import { Session } from 'next-auth/core/types';
 import { authOptions } from '@ui/authOptions';
 import AppLayout from '@ui/AppLayout';
-import React from 'react';
 import flagsmith from 'flagsmith/isomorphic';
 
 export default async function RootLayout({
@@ -15,6 +16,7 @@ export default async function RootLayout({
     slug: string;
   };
 }) {
+  console.log('app layout', params);
   const session = await getServerSession(authOptions);
   await flagsmith.init({
     // fetches flags on the server and passes them to the App
