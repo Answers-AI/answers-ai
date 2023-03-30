@@ -10,6 +10,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 module.exports = withBundleAnalyzer({
   experimental: {
     appDir: true,
+    serverComponentsExternalPackages: ['@prisma/client']
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],
@@ -21,8 +22,8 @@ module.exports = withBundleAnalyzer({
       transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}'
     }
   },
-  webpack: (config, { isServer, dev }) => {
-    config.externals = [...config.externals, 'db'];
+  webpack: (config) => {
+    config.externals = [...config.externals, 'db', 'puppeteer'];
 
     config.plugins = [
       ...config.plugins,
@@ -32,6 +33,10 @@ module.exports = withBundleAnalyzer({
         contextRegExp: /jsdom$/
       })
     ];
+
+    // if (isServer) {
+    //   config.plugins = [...config.plugins, new PrismaPlugin()];
+    // }
 
     return config;
   }

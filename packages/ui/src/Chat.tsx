@@ -1,8 +1,8 @@
+import React from 'react';
+import { getServerSession } from 'next-auth/next';
 import { AnswersProvider } from '@ui/AnswersContext';
 import DeveloperTools from '@ui/DeveloperTools';
 import { getAppSettings } from '@ui/getAppSettings';
-import { getServerSession } from 'next-auth';
-import React from 'react';
 import { authOptions } from '@ui/authOptions';
 import { prisma } from 'db/dist';
 import { Chat, Journey } from 'types';
@@ -34,7 +34,7 @@ const Chat = async ({ chatId, journeyId }: Params) => {
         }
       ]
     })
-    .then((data) => JSON.parse(JSON.stringify(data)));
+    .then((data: any) => JSON.parse(JSON.stringify(data)));
 
   const chatPromise = chatId
     ? prisma.chat
@@ -44,7 +44,7 @@ const Chat = async ({ chatId, journeyId }: Params) => {
           },
           include: { prompt: true, messages: { include: { user: true } } }
         })
-        .then((data) => JSON.parse(JSON.stringify(data)))
+        .then((data: any) => JSON.parse(JSON.stringify(data)))
     : null;
 
   const chatsPromise = prisma.chat
@@ -63,7 +63,7 @@ const Chat = async ({ chatId, journeyId }: Params) => {
         messages: { orderBy: { createdAt: 'desc' }, include: { user: true } }
       }
     })
-    .then((data) => JSON.parse(JSON.stringify(data)));
+    .then((data: any) => JSON.parse(JSON.stringify(data)));
 
   const journeysPromise = prisma.journey
     .findMany({
@@ -77,7 +77,7 @@ const Chat = async ({ chatId, journeyId }: Params) => {
       },
       include: { chats: { include: { prompt: true, messages: { include: { user: true } } } } }
     })
-    .then((data) => JSON.parse(JSON.stringify(data)));
+    .then((data: any) => JSON.parse(JSON.stringify(data)));
 
   const journeyPromise = journeyId
     ? prisma.journey
@@ -87,10 +87,10 @@ const Chat = async ({ chatId, journeyId }: Params) => {
           },
           include: { chats: { include: { prompt: true, messages: { include: { user: true } } } } }
         })
-        .then((data) => JSON.parse(JSON.stringify(data)))
+        .then((data: any) => JSON.parse(JSON.stringify(data)))
     : null;
   const id = Date.now();
-  console.time(`${id}] ChatPrismaQueries`);
+
   const [appSettings, prompts, chat, chats, journeys, journey] = await Promise.all([
     appSettingsPromise,
     promptsPromise,
@@ -99,7 +99,7 @@ const Chat = async ({ chatId, journeyId }: Params) => {
     journeysPromise,
     journeyPromise
   ]);
-  console.timeEnd(`${id}] ChatPrismaQueries`);
+
   return (
     <AnswersProvider
       chat={chat as Chat}

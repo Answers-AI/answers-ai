@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 
 import cors from '@ui/cors';
 import { authOptions } from '@ui/authOptions';
-import { getUrlList } from '@ui/chat/getUrlList';
+import getUrlList from '@ui/chat/getUrlList';
 
 type Data = {
   urls: string[];

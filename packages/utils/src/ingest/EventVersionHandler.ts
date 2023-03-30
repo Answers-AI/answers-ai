@@ -39,17 +39,21 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
               handler = eventHandlerMap[eventName][v];
             }
           }
+
           if (!handler) {
             throw new Error(`No handler for ${eventName}:${v}`);
           }
+
           const result = await handler({ event, ...other } as any);
-          console.timeEnd(`[${ts}] Processing  ${eventName}`);
+          
           return result;
         } catch (error) {
           console.error(`[${ts}] Error processing ${eventName}`);
           // console.log({ eventHandlerMap, handler, error });
           console.log({ error });
           throw error;
+        } finally {
+          console.timeEnd(`[${ts}] Processing ${eventName}`);
         }
       }
     );

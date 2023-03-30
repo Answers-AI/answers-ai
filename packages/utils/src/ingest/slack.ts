@@ -74,7 +74,8 @@ export const procesChannelUpdated: EventVersionHandler<{
           return Promise.resolve([]);
         }
         let messages: SlackMessage[] = await channel.getMessages();
-        return Promise.all(messages.map((m) => new SlackMessageModel(m)));
+        const allPromises = await Promise.all(messages.map((m) => new SlackMessageModel(m)));
+        return allPromises;
       })
     ).then((messages) => messages.flat());
 

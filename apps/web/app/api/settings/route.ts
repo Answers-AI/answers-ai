@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { deepmerge } from '@utils/deepmerge';
 import { prisma } from 'db/dist';
 

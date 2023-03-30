@@ -15,7 +15,8 @@ export const webPageLoader = redisLoader<string, string>({
       results.push(result);
     }
 
-    return Promise.all(results);
+    const allResults = await Promise.all(results);
+    return allResults;
   },
   cacheExpirationInSeconds: 0,
   disableCache: false

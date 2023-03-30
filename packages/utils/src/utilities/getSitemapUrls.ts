@@ -9,7 +9,6 @@ import cheerio from 'cheerio';
  */
 export async function extractUrlsFromSitemap(sitemapUrl: string): Promise<string[]> {
   try {
-    console.log('sitemapUrl', sitemapUrl);
     const { data } = await axios.get(sitemapUrl);
 
     const $ = cheerio.load(data.toString());
@@ -29,8 +28,8 @@ export async function extractUrlsFromSitemap(sitemapUrl: string): Promise<string
     }
 
     return sitemapUrls;
-  } catch (err) {
-    console.log('extractUrlsFromSitemap ', err);
+  } catch (err: any) {
+    console.log(`Error extractUrlsFromSitemap on url ${sitemapUrl}.  Message: err?.message`);
     return [];
   }
 }

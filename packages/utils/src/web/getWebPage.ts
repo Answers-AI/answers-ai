@@ -101,13 +101,19 @@ const excludeSelectors: string[] = [
   '[class*="toc"]',
   '[class*="table-of-contents"]',
   'cite',
-  'sup'
+  'sup',
+  'hr'
 ];
 
 export const convertWebPageToMarkdown = async (url: string, pageHtml: string): Promise<WebPage> => {
   let $ = cheerio.load(pageHtml);
   $(excludeSelectors.join(',')).remove();
 
+  $('a').each(function () {
+    const $link = $(this);
+    const innerHtml = $link.html() as string;
+    $link.replaceWith(innerHtml);
+  });
   const initialHtml = $.html();
 
   const initialMarkdown = NodeHtmlMarkdown.translate(initialHtml, {}, undefined, undefined);
@@ -140,12 +146,6 @@ export const convertWebPageToMarkdown = async (url: string, pageHtml: string): P
         $(elem).remove();
       }
     });
-
-  $('a').each(function () {
-    const $link = $(this);
-    const innerHtml = $link.html() as string;
-    $link.replaceWith(innerHtml);
-  });
 
   const dom = new JSDOM(`<article>${$.html()}</article>`, { url });
 

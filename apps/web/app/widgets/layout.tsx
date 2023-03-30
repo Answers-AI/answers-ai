@@ -4,7 +4,7 @@ import AppWidgetLayout from '@ui/AppWidgetLayout';
 import React from 'react';
 import flagsmith from 'flagsmith/isomorphic';
 
-export default async function RootLayout({
+const WidgetLayout = async ({
   // Layouts must accept a children prop.
   params,
   // This will be populated with nested layouts or pages
@@ -14,7 +14,7 @@ export default async function RootLayout({
   params: {
     slug: string;
   };
-}) {
+}) => {
   const session = await getServerSession(authOptions);
   await flagsmith.init({
     // fetches flags on the server and passes them to the App
@@ -35,4 +35,6 @@ export default async function RootLayout({
       {children}
     </AppWidgetLayout>
   );
-}
+};
+
+export default WidgetLayout;

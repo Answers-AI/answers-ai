@@ -6,7 +6,7 @@ import flagsmith from 'flagsmith/isomorphic';
 import { getProviders } from 'next-auth/react';
 import { getAppSettings } from '@ui/getAppSettings';
 
-export default async function RootLayout({
+const MainUiLayout = async ({
   // Layouts must accept a children prop.
   params,
   // This will be populated with nested layouts or pages
@@ -16,7 +16,7 @@ export default async function RootLayout({
   params: {
     slug: string;
   };
-}) {
+}) => {
   const session = await getServerSession(authOptions);
 
   const providers = await getProviders();
@@ -47,4 +47,6 @@ export default async function RootLayout({
       {children}
     </AppLayout>
   );
-}
+};
+
+export default MainUiLayout;
