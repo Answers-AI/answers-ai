@@ -335,6 +335,8 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
       if (!data?.urls) {
         throw new Error('Invalid input data: missing "urls" property');
       }
+      // TODO: Validate if the URL exists in database
+      // TODO: Verify how long it passed since it was synced
 
       const { urls } = data;
 
