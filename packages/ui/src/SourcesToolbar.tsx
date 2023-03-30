@@ -163,7 +163,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
               ) : null}
               {selectedService.name === 'web' ? (
                 <>
-                  <Button variant="contained" onClick={toggleWebModal}>
+                  {/* <Button variant="contained" onClick={toggleWebModal}>
                     Open Modal
                   </Button>
                   {openWebModal && (
@@ -172,7 +172,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                       handleAddUrl={addUrl}
                       handleAddDomain={addDomain}
                     />
-                  )}
+                  )} */}
                   <AutocompleteSelect
                     label="Web Page"
                     options={urls}
