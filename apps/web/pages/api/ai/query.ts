@@ -111,11 +111,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       ...message,
       chat,
       prompt,
+      role: 'assistant',
+      content: answer,
       context,
       summary,
       filters,
-      role: 'assistant',
-      content: answer,
       pineconeData,
       completionData
     });
@@ -124,9 +124,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     console.error(error);
     if (error.response) {
       const { data } = error.response;
-      res.status(500).json({ prompt, error } as any);
+      res
+        .status(500)
+        .json({ prompt, error, context, summary, filters, pineconeData, completionData } as any);
     } else {
-      res.status(500).json({ prompt, error });
+      res
+        .status(500)
+        .json({ prompt, error, context, summary, filters, pineconeData, completionData });
     }
   }
 };

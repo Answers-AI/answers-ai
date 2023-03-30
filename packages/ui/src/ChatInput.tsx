@@ -38,14 +38,12 @@ export const ChatInput = ({ inputRef }: { inputRef: any }) => {
     setShowPrompts(false);
     setInputValue('');
   };
-  const handleInputFocus = () => {
-    if (!Object.keys(filters)?.length) setShowFilters(true);
-  };
+
   const handlePromptSelected = (prompt: string) => {
     setInputValue(prompt);
   };
-  const handleInputBlur = () => {
-    if (flags?.recommended_prompts_expand?.value == 'blur') setShowPrompts(true);
+  const handleInputFocus = () => {
+    if (flags?.recommended_prompts_expand?.value == 'blur') setShowPrompts(false);
   };
 
   const isNewJourney = !!Object.keys(filters)?.length && !journey && !chat;
@@ -65,12 +63,11 @@ export const ChatInput = ({ inputRef }: { inputRef: any }) => {
         fullWidth
         placeholder="How can you help me accomplish my goal?"
         value={inputValue}
-        // onBlur={handleInputBlur}
+        // onBlur={handleInputFocus}
         multiline
-        onFocus={handleInputFocus}
         onKeyPress={(e) => (e.key === 'Enter' && !e.shiftKey ? handleSubmit() : null)}
         onChange={handleInputChange}
-        onBlur={handleInputBlur}
+        onFocus={handleInputFocus}
       />
 
       <Box
