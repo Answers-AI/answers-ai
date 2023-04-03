@@ -19,7 +19,7 @@ importers:
       inngest-cli: 0.11.0
       prettier: 2.8.7
       prisma: 4.10.1
-      turbo: 1.8.5
+      turbo: 1.8.8
 
   apps/web:
     specifiers:
@@ -186,7 +186,7 @@ importers:
       eslint: 7.32.0
       eslint-config-next: 13.0.0_jofidmxrjzhj7l6vknpw5ecvfe
       eslint-config-prettier: 8.6.0_eslint@7.32.0
-      eslint-config-turbo: 0.0.10_eslint@7.32.0
+      eslint-config-turbo: 1.8.8_eslint@7.32.0
       eslint-plugin-react: 7.31.8_eslint@7.32.0
     devDependencies:
       typescript: 4.9.5
@@ -202,12 +202,14 @@ importers:
 
   packages/types:
     specifiers:
+      '@algolia/client-search': ^4.16.0
       '@types/node': ^18.13.0
       db: workspace:*
       openai: ^3.2.1
       tsconfig: workspace:*
       typescript: ^4.8.4
     devDependencies:
+      '@algolia/client-search': 4.16.0
       '@types/node': 18.13.0
       db: link:../db
       openai: 3.2.1
@@ -279,6 +281,7 @@ importers:
 
   packages/utils:
     specifiers:
+      '@algolia/client-search': ^4.16.0
       '@contentful/app-sdk': ^4.15.0
       '@contentful/rich-text-from-markdown': ^15.16.3
       '@dqbd/tiktoken': ^1.0.2
@@ -293,6 +296,7 @@ importers:
       '@types/showdown': ^2.0.0
       '@types/swagger2openapi': ^7.0.0
       airtable: ^0.11.6
+      algoliasearch: ^4.16.0
       axios: ^1.3.4
       bufferutil: ^4.0.4
       canvas: ^2.11.0
@@ -333,6 +337,7 @@ importers:
       utf-8-validate: 6.0.3
       yaml: ^2.2.1
     dependencies:
+      '@algolia/client-search': 4.16.0
       '@contentful/app-sdk': 4.16.0_u7f6bgiup7w5sfdcoer7otydty
       '@contentful/rich-text-from-markdown': 15.16.3
       '@dqbd/tiktoken': 1.0.2
@@ -341,6 +346,7 @@ importers:
       '@prisma/client': 4.10.1
       '@slack/web-api': 6.8.1
       airtable: 0.11.6
+      algoliasearch: 4.16.0
       axios: 1.3.4
       bufferutil: 4.0.7
       canvas: 2.11.0
@@ -389,6 +395,90 @@ importers:
       typescript: 4.9.5
 
 packages:
+
+  /@algolia/cache-browser-local-storage/4.16.0:
+    resolution: {integrity: sha512-jVrk0YB3tjOhD5/lhBtYCVCeLjZmVpf2kdi4puApofytf/R0scjWz0GdozlW4HhU+Prxmt/c9ge4QFjtv5OAzQ==}
+    dependencies:
+      '@algolia/cache-common': 4.16.0
+    dev: false
+
+  /@algolia/cache-common/4.16.0:
+    resolution: {integrity: sha512-4iHjkSYQYw46pITrNQgXXhvUmcekI8INz1m+SzmqLX8jexSSy4Ky4zfGhZzhhhLHXUP3+x/PK/c0qPjxEvRwKQ==}
+
+  /@algolia/cache-in-memory/4.16.0:
+    resolution: {integrity: sha512-p7RYykvA6Ip6QENxrh99nOD77otVh1sJRivcgcVpnjoZb5sIN3t33eUY1DpB9QSBizcrW+qk19rNkdnZ43a+PQ==}
+    dependencies:
+      '@algolia/cache-common': 4.16.0
+    dev: false
+
+  /@algolia/client-account/4.16.0:
+    resolution: {integrity: sha512-eydcfpdIyuWoKgUSz5iZ/L0wE/Wl7958kACkvTHLDNXvK/b8Z1zypoJavh6/km1ZNQmFpeYS2jrmq0kUSFn02w==}
+    dependencies:
+      '@algolia/client-common': 4.16.0
+      '@algolia/client-search': 4.16.0
+      '@algolia/transporter': 4.16.0
+    dev: false
+
+  /@algolia/client-analytics/4.16.0:
+    resolution: {integrity: sha512-cONWXH3BfilgdlCofUm492bJRWtpBLVW/hsUlfoFtiX1u05xoBP7qeiDwh9RR+4pSLHLodYkHAf5U4honQ55Qg==}
+    dependencies:
+      '@algolia/client-common': 4.16.0
+      '@algolia/client-search': 4.16.0
+      '@algolia/requester-common': 4.16.0
+      '@algolia/transporter': 4.16.0
+    dev: false
+
+  /@algolia/client-common/4.16.0:
+    resolution: {integrity: sha512-QVdR4019ukBH6f5lFr27W60trRxQF1SfS1qo0IP6gjsKhXhUVJuHxOCA6ArF87jrNkeuHEoRoDU+GlvaecNo8g==}
+    dependencies:
+      '@algolia/requester-common': 4.16.0
+      '@algolia/transporter': 4.16.0
+
+  /@algolia/client-personalization/4.16.0:
+    resolution: {integrity: sha512-irtLafssDGPuhYqIwxqOxiWlVYvrsBD+EMA1P9VJtkKi3vSNBxiWeQ0f0Tn53cUNdSRNEssfoEH84JL97SV2SQ==}
+    dependencies:
+      '@algolia/client-common': 4.16.0
+      '@algolia/requester-common': 4.16.0
+      '@algolia/transporter': 4.16.0
+    dev: false
+
+  /@algolia/client-search/4.16.0:
+    resolution: {integrity: sha512-xsfrAE1jO/JDh1wFrRz+alVyW+aA6qnkzmbWWWZWEgVF3EaFqzIf9r1l/aDtDdBtNTNhX9H3Lg31+BRtd5izQA==}
+    dependencies:
+      '@algolia/client-common': 4.16.0
+      '@algolia/requester-common': 4.16.0
+      '@algolia/transporter': 4.16.0
+
+  /@algolia/logger-common/4.16.0:
+    resolution: {integrity: sha512-U9H8uCzSDuePJmbnjjTX21aPDRU6x74Tdq3dJmdYu2+pISx02UeBJm4kSgc9RW5jcR5j35G9gnjHY9Q3ngWbyQ==}
+
+  /@algolia/logger-console/4.16.0:
+    resolution: {integrity: sha512-+qymusiM+lPZKrkf0tDjCQA158eEJO2IU+Nr/sJ9TFyI/xkFPjNPzw/Qbc8Iy/xcOXGlc6eMgmyjtVQqAWq6UA==}
+    dependencies:
+      '@algolia/logger-common': 4.16.0
+    dev: false
+
+  /@algolia/requester-browser-xhr/4.16.0:
+    resolution: {integrity: sha512-gK+kvs6LHl/PaOJfDuwjkopNbG1djzFLsVBklGBsSU6h6VjFkxIpo6Qq80IK14p9cplYZfhfaL12va6Q9p3KVQ==}
+    dependencies:
+      '@algolia/requester-common': 4.16.0
+    dev: false
+
+  /@algolia/requester-common/4.16.0:
+    resolution: {integrity: sha512-3Zmcs/iMubcm4zqZ3vZG6Zum8t+hMWxGMzo0/uY2BD8o9q5vMxIYI0c4ocdgQjkXcix189WtZNkgjSOBzSbkdw==}
+
+  /@algolia/requester-node-http/4.16.0:
+    resolution: {integrity: sha512-L8JxM2VwZzh8LJ1Zb8TFS6G3icYsCKZsdWW+ahcEs1rGWmyk9SybsOe1MLnjonGBaqPWJkn9NjS7mRdjEmBtKA==}
+    dependencies:
+      '@algolia/requester-common': 4.16.0
+    dev: false
+
+  /@algolia/transporter/4.16.0:
+    resolution: {integrity: sha512-H9BVB2EAjT65w7XGBNf5drpsW39x2aSZ942j4boSAAJPPlLmjtj5IpAP7UAtsV8g9Beslonh0bLa1XGmE/P0BA==}
+    dependencies:
+      '@algolia/cache-common': 4.16.0
+      '@algolia/logger-common': 4.16.0
+      '@algolia/requester-common': 4.16.0
 
   /@ampproject/remapping/2.2.0:
     resolution: {integrity: sha512-qRmjj8nj9qmLTQXXmaR1cck3UXSRMPrbsLJAasZpF+t3riI71BXed5ebIOYwQntykeZuhjsdweEc9BxH5Jc26w==}
@@ -1827,7 +1917,7 @@ packages:
       '@babel/runtime': 7.21.0
       '@emotion/is-prop-valid': 1.2.0
       '@mui/types': 7.2.3_@types+react@18.0.28
-      '@mui/utils': 5.11.12_react@18.2.0
+      '@mui/utils': 5.11.13_react@18.2.0
       '@popperjs/core': 2.11.6
       '@types/react': 18.0.28
       clsx: 1.2.1
@@ -2045,8 +2135,8 @@ packages:
       react-transition-group: 4.4.5_biqbaboplfbrettd7655fr4n2y
     dev: false
 
-  /@mui/private-theming/5.11.12_pmekkgnqduwlme35zpnqhenc34:
-    resolution: {integrity: sha512-hnJ0svNI1TPeWZ18E6DvES8PB4NyMLwal6EyXf69rTrYqT6wZPLjB+HiCYfSOCqU/fwArhupSqIIkQpDs8CkAw==}
+  /@mui/private-theming/5.11.13_pmekkgnqduwlme35zpnqhenc34:
+    resolution: {integrity: sha512-PJnYNKzW5LIx3R+Zsp6WZVPs6w5sEKJ7mgLNnUXuYB1zo5aX71FVLtV7geyPXRcaN2tsoRNK7h444ED0t7cIjA==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       '@types/react': ^17.0.0 || ^18.0.0
@@ -2056,7 +2146,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.21.0
-      '@mui/utils': 5.11.12_react@18.2.0
+      '@mui/utils': 5.11.13_react@18.2.0
       '@types/react': 18.0.28
       prop-types: 15.8.1
       react: 18.2.0
@@ -2159,10 +2249,10 @@ packages:
       '@babel/runtime': 7.21.0
       '@emotion/react': 11.10.6_pmekkgnqduwlme35zpnqhenc34
       '@emotion/styled': 11.10.6_oouaibmszuch5k64ms7uxp2aia
-      '@mui/private-theming': 5.11.12_pmekkgnqduwlme35zpnqhenc34
+      '@mui/private-theming': 5.11.13_pmekkgnqduwlme35zpnqhenc34
       '@mui/styled-engine': 5.11.11_xqp3pgpqjlfxxa3zxu4zoc4fba
       '@mui/types': 7.2.3_@types+react@18.0.28
-      '@mui/utils': 5.11.12_react@18.2.0
+      '@mui/utils': 5.11.13_react@18.2.0
       '@types/react': 18.0.28
       clsx: 1.2.1
       csstype: 3.1.1
@@ -3294,6 +3384,25 @@ packages:
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
       uri-js: 4.4.1
+
+  /algoliasearch/4.16.0:
+    resolution: {integrity: sha512-HAjKJ6bBblaXqO4dYygF4qx251GuJ6zCZt+qbJ+kU7sOC+yc84pawEjVpJByh+cGP2APFCsao2Giz50cDlKNPA==}
+    dependencies:
+      '@algolia/cache-browser-local-storage': 4.16.0
+      '@algolia/cache-common': 4.16.0
+      '@algolia/cache-in-memory': 4.16.0
+      '@algolia/client-account': 4.16.0
+      '@algolia/client-analytics': 4.16.0
+      '@algolia/client-common': 4.16.0
+      '@algolia/client-personalization': 4.16.0
+      '@algolia/client-search': 4.16.0
+      '@algolia/logger-common': 4.16.0
+      '@algolia/logger-console': 4.16.0
+      '@algolia/requester-browser-xhr': 4.16.0
+      '@algolia/requester-common': 4.16.0
+      '@algolia/requester-node-http': 4.16.0
+      '@algolia/transporter': 4.16.0
+    dev: false
 
   /ansi-colors/4.1.3:
     resolution: {integrity: sha512-/6w/C21Pm1A7aZitlI5Ni/2J6FFQN8i1Cvz3kHABAAbw93v/NlvKdVOqz7CCWz/3iv/JplRSEEZ83XION15ovw==}
@@ -4934,13 +5043,13 @@ packages:
       eslint: 7.32.0
     dev: false
 
-  /eslint-config-turbo/0.0.10_eslint@7.32.0:
-    resolution: {integrity: sha512-o4ULFZYM1OihSd63eDGEuy9rt6tW4ma6xnW9grnr44BoJwKaGQko2aka9kfqQs0vtmwD1++Os3ThPHETmzkFzA==}
+  /eslint-config-turbo/1.8.8_eslint@7.32.0:
+    resolution: {integrity: sha512-+yT22sHOT5iC1sbBXfLIdXfbZuiv9bAyOXsxTxFCWelTeFFnANqmuKB3x274CFvf7WRuZ/vYP/VMjzU9xnFnxA==}
     peerDependencies:
       eslint: '>6.6.0'
     dependencies:
       eslint: 7.32.0
-      eslint-plugin-turbo: 0.0.10_eslint@7.32.0
+      eslint-plugin-turbo: 1.8.8_eslint@7.32.0
     dev: false
 
   /eslint-import-resolver-node/0.3.7:
@@ -5091,8 +5200,8 @@ packages:
       string.prototype.matchall: 4.0.8
     dev: false
 
-  /eslint-plugin-turbo/0.0.10_eslint@7.32.0:
-    resolution: {integrity: sha512-T7QRwF4rjBQCJD9AHLHn9ShtHCHNkfIZW5Oio92WtQYhoU5jZCU3ynU+ONFXLuvoUx4dJ19WergIyHL+DwL2+g==}
+  /eslint-plugin-turbo/1.8.8_eslint@7.32.0:
+    resolution: {integrity: sha512-zqyTIvveOY4YU5jviDWw9GXHd4RiKmfEgwsjBrV/a965w0PpDwJgEUoSMB/C/dU310Sv9mF3DSdEjxjJLaw6rA==}
     peerDependencies:
       eslint: '>6.6.0'
     dependencies:
@@ -10604,65 +10713,65 @@ packages:
       safe-buffer: 5.2.1
     dev: false
 
-  /turbo-darwin-64/1.8.5:
-    resolution: {integrity: sha512-CAYh56bzeHfnh7jTm03r29bh8p5a/EjQo1Id5yLUH7hS7msTau/+YpxJWPodLbN0UQsUYivUqHQkglJ+eMJ7xA==}
+  /turbo-darwin-64/1.8.8:
+    resolution: {integrity: sha512-18cSeIm7aeEvIxGyq7PVoFyEnPpWDM/0CpZvXKHpQ6qMTkfNt517qVqUTAwsIYqNS8xazcKAqkNbvU1V49n65Q==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-darwin-arm64/1.8.5:
-    resolution: {integrity: sha512-R3jCPOv+lu3dcvMhj8b/Defv6dyUwX6W+tbX7d6YUCA46Plf/bGCQ8+MSbxmr/4E1GyGOVFsn1wRfiYk0us/Dg==}
+  /turbo-darwin-arm64/1.8.8:
+    resolution: {integrity: sha512-ruGRI9nHxojIGLQv1TPgN7ud4HO4V8mFBwSgO6oDoZTNuk5ybWybItGR+yu6fni5vJoyMHXOYA2srnxvOc7hjQ==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-64/1.8.5:
-    resolution: {integrity: sha512-YRc/KNRZeUVvth11UO4SDQZR2IqGgl9MSsbzqoHuFz4B4Q5QXH7onHogv9aXWE/BZBBbcrSBTlwBSG0Gg+J8hg==}
+  /turbo-linux-64/1.8.8:
+    resolution: {integrity: sha512-N/GkHTHeIQogXB1/6ZWfxHx+ubYeb8Jlq3b/3jnU4zLucpZzTQ8XkXIAfJG/TL3Q7ON7xQ8yGOyGLhHL7MpFRg==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-arm64/1.8.5:
-    resolution: {integrity: sha512-8exVZb7XBl/V3gHSweuUyG2D9IzfWqwLvlXoeLWlVYSj61Ajgdv+WU7lvUmx+H2s+sSKqmIFmewA5Lw6YY37sg==}
+  /turbo-linux-arm64/1.8.8:
+    resolution: {integrity: sha512-hKqLbBHgUkYf2Ww8uBL9UYdBFQ5677a7QXdsFhONXoACbDUPvpK4BKlz3NN7G4NZ+g9dGju+OJJjQP0VXRHb5w==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-64/1.8.5:
-    resolution: {integrity: sha512-fA8PU5ZNoFnQkapG06WiEqfsVQ5wbIPkIqTwUsd/M2Lp+KgxE79SQbuEI+2vQ9SmwM5qoMi515IPjgvXAJXgCw==}
+  /turbo-windows-64/1.8.8:
+    resolution: {integrity: sha512-2ndjDJyzkNslXxLt+PQuU21AHJWc8f6MnLypXy3KsN4EyX/uKKGZS0QJWz27PeHg0JS75PVvhfFV+L9t9i+Yyg==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-arm64/1.8.5:
-    resolution: {integrity: sha512-SW/NvIdhckLsAWjU/iqBbCB0S8kXupKscUK3kEW1DZIr3MYcP/yIuaE/IdPuqcoF3VP0I3TLD4VTYCCKAo3tKA==}
+  /turbo-windows-arm64/1.8.8:
+    resolution: {integrity: sha512-xCA3oxgmW9OMqpI34AAmKfOVsfDljhD5YBwgs0ZDsn5h3kCHhC4x9W5dDk1oyQ4F5EXSH3xVym5/xl1J6WRpUg==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo/1.8.5:
-    resolution: {integrity: sha512-UBnH2wIFb5g6OQCk8f34Ud15ZXV4xEMmugeDJTU5Ur2LpVRsNEny0isSCYdb3Iu3howoNyyXmtpaxWsAwNYkkg==}
+  /turbo/1.8.8:
+    resolution: {integrity: sha512-qYJ5NjoTX+591/x09KgsDOPVDUJfU9GoS+6jszQQlLp1AHrf1wRFA3Yps8U+/HTG03q0M4qouOfOLtRQP4QypA==}
     hasBin: true
     requiresBuild: true
     optionalDependencies:
-      turbo-darwin-64: 1.8.5
-      turbo-darwin-arm64: 1.8.5
-      turbo-linux-64: 1.8.5
-      turbo-linux-arm64: 1.8.5
-      turbo-windows-64: 1.8.5
-      turbo-windows-arm64: 1.8.5
+      turbo-darwin-64: 1.8.8
+      turbo-darwin-arm64: 1.8.8
+      turbo-linux-64: 1.8.8
+      turbo-linux-arm64: 1.8.8
+      turbo-windows-64: 1.8.8
+      turbo-windows-arm64: 1.8.8
     dev: true
 
   /turndown/7.1.1:

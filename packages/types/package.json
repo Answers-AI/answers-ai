@@ -9,6 +9,7 @@
   "devDependencies": {
     "db": "workspace:*",
     "openai": "^3.2.1",
+    "@algolia/client-search": "^4.16.0",
     "@types/node": "^18.13.0",
     "tsconfig": "workspace:*",
     "typescript": "^4.8.4"

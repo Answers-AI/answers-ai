@@ -1,4 +1,5 @@
 import * as DB from 'db/generated/prisma-client';
+import { Hit } from '@algolia/client-search';
 
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
 export type PineconeObject = {
@@ -45,11 +46,15 @@ export interface AppSettings {
     urls?: WebSetting[];
     domains?: WebSetting[];
   };
+  algolia?: {
+    index?: string[];
+    preview?: boolean;
+  };
   openapi?: {
     urls?: OpenApiSetting[];
   };
   models?: Models;
-  filters?: AnswersFilters
+  filters?: AnswersFilters;
 }
 
 export interface JiraFilters {
@@ -67,17 +72,27 @@ export interface WebFilters {
   url?: string[];
   domain?: string[];
 }
+
+export interface AlgoliaFilters {
+  index?: string[];
+  preview?: string[];
+}
+
 export interface OpenApiFilters {}
+
 export interface ConfluenceFilters {
   spaceId?: string[];
 }
+
 export interface UserFilters {}
+
 export type SourceFilters =
   | JiraFilters
   | SlackFilters
   | WebFilters
   | OpenApiFilters
   | ConfluenceFilters;
+
 export interface DataSourcesFilters {
   user?: UserFilters;
   jira?: JiraFilters;
@@ -97,6 +112,7 @@ type Models = {
   jira: string[];
   slack: string[];
   web: string[];
+  algolia: string[];
   openapi: string[];
   [key: string]: string[];
 };
@@ -104,6 +120,7 @@ type Models = {
 export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
 }
+
 export interface Organization extends Omit<DB.Organization, 'appSettings'> {
   appSettings: AppSettings;
 }
@@ -146,6 +163,19 @@ export interface Message extends Partial<DB.Message>, ChatCompletionRequestMessa
   user?: User | null;
   role: ChatCompletionRequestMessageRoleEnum;
   content: string;
+}
+
+export type AlgoliaHit = Hit<{
+  path: string;
+  title: string;
+  contentBody: string;
+  summary: string;
+  locale: string;
+  url?: string;
+  domain?: string;
+}>;
+export interface AlgoliaSetting extends AlgoliaHit {
+  enabled: boolean;
 }
 
 export type WebPage = {
