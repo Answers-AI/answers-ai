@@ -87,7 +87,8 @@ const Chat = async ({ chatId, journeyId }: Params) => {
         })
         .then((data) => JSON.parse(JSON.stringify(data)))
     : null;
-
+  const id = Date.now();
+  console.time(`${id}] ChatPrismaQueries`);
   const [appSettings, prompts, chat, chats, journeys, journey] = await Promise.all([
     appSettingsPromise,
     promptsPromise,
@@ -96,16 +97,17 @@ const Chat = async ({ chatId, journeyId }: Params) => {
     journeysPromise,
     journeyPromise
   ]);
-
+  console.timeEnd(`${id}] ChatPrismaQueries`);
   return (
     <AnswersProvider
       chat={chat as Chat}
       journey={journey}
       prompts={prompts}
-      chats={chats as Chat[]}>
+      chats={chats as Chat[]}
+      appSettings={appSettings}>
       <DeveloperTools
-        user={session?.user}
         appSettings={appSettings}
+        user={session?.user}
         prompts={prompts}
         chats={chats as Chat[]}
         journeys={journeys as Journey[]}

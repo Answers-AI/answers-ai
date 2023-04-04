@@ -6,6 +6,7 @@ import { prisma } from 'db/dist';
 import { MODELS } from '@utils/MODELS';
 
 export async function getAppSettings(req?: any, res?: any) {
+  console.log('Session', req);
   const session = await (req && res
     ? getServerSession(req, res, authOptions)
     : getServerSession(authOptions));
@@ -25,12 +26,14 @@ export async function getAppSettings(req?: any, res?: any) {
   let settings = SYSTEM_SETTINGS;
   if (user) {
     if (!user?.organization) settings = NO_ORG_SETTINGS;
+    console.log('UserOrg', user.organization);
     settings = deepmerge(
       {},
       JSON.parse(JSON.stringify(user.organization?.appSettings ?? {})),
       JSON.parse(JSON.stringify(user.appSettings)),
       {
-        models: MODELS
+        models: MODELS,
+        services: SYSTEM_SETTINGS.services
       }
     );
   }

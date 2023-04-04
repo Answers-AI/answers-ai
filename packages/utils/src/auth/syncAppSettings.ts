@@ -14,29 +14,47 @@ import { prisma } from 'db/dist';
 
 export const SYSTEM_SETTINGS = {
   services: [
-    { name: 'jira', enabled: true, imageURL: '/static/images/jira.png' },
-    { name: 'slack', enabled: true, imageURL: '/static/images/slack.png' },
-    { name: 'confluence', enabled: true, imageURL: '/static/images/confluence.png' },
-    { name: 'web', enabled: true, imageURL: '/static/images/web.png' },
-    { name: 'notion', enabled: false, imageURL: '/static/images/notion.png' },
-    { name: 'github', enabled: false, imageURL: '/static/images/github.png' },
-    { name: 'drive', enabled: false, imageURL: '/static/images/drive.png' },
-    { name: 'contentful', enabled: false, imageURL: '/static/images/contentful.png' },
-    { name: 'algolia', enabled: false, imageURL: '/static/images/algolia.png' }
+    { id: 'jira', name: 'jira', enabled: true, imageURL: '/static/images/jira.png' },
+    { id: 'slack', name: 'slack', enabled: true, imageURL: '/static/images/slack.png' },
+    {
+      id: 'confluence',
+      name: 'confluence',
+      enabled: true,
+      imageURL: '/static/images/confluence.png'
+    },
+    { id: 'web', name: 'web', enabled: true, imageURL: '/static/images/web.png' },
+    { id: 'notion', name: 'notion', enabled: false, imageURL: '/static/images/notion.png' },
+    { id: 'github', name: 'github', enabled: false, imageURL: '/static/images/github.png' },
+    { id: 'drive', name: 'drive', enabled: false, imageURL: '/static/images/drive.png' },
+    {
+      id: 'contentful',
+      name: 'contentful',
+      enabled: false,
+      imageURL: '/static/images/contentful.png'
+    }
   ]
 };
 
 export const NO_ORG_SETTINGS = {
   services: [
-    { name: 'web', enabled: true, imageURL: '/static/images/web.png' },
-    { name: 'jira', enabled: false, imageURL: '/static/images/jira.png' },
-    { name: 'slack', enabled: false, imageURL: '/static/images/slack.png' },
-    { name: 'confluence', enabled: false, imageURL: '/static/images/confluence.png' },
-    { name: 'notion', enabled: false, imageURL: '/static/images/notion.png' },
-    { name: 'github', enabled: false, imageURL: '/static/images/github.png' },
-    { name: 'drive', enabled: false, imageURL: '/static/images/drive.png' },
-    { name: 'contentful', enabled: false, imageURL: '/static/images/contentful.png' },
-    { name: 'algolia', enabled: false, imageURL: '/static/images/algolia.png' }
+    { id: 'web', name: 'web', enabled: true, imageURL: '/static/images/web.png' },
+    { id: 'jira', name: 'jira', enabled: false, imageURL: '/static/images/jira.png' },
+    { id: 'slack', name: 'slack', enabled: false, imageURL: '/static/images/slack.png' },
+    {
+      id: 'confluence',
+      name: 'confluence',
+      enabled: false,
+      imageURL: '/static/images/confluence.png'
+    },
+    { id: 'notion', name: 'notion', enabled: false, imageURL: '/static/images/notion.png' },
+    { id: 'github', name: 'github', enabled: false, imageURL: '/static/images/github.png' },
+    { id: 'drive', name: 'drive', enabled: false, imageURL: '/static/images/drive.png' },
+    {
+      id: 'contentful',
+      name: 'contentful',
+      enabled: false,
+      imageURL: '/static/images/contentful.png'
+    }
   ]
 };
 
@@ -56,6 +74,10 @@ export async function syncAppSettings(user: User) {
     if (user.organizationId) {
       organization = await prisma.organization.findUnique({
         where: { id: user.organizationId }
+      });
+    } else {
+      organization = await prisma.organization.create({
+        data: { users: { connect: { id: user.id } }, name: `${user?.name} Organization` }
       });
     }
     // }

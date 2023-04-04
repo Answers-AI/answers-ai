@@ -68,54 +68,51 @@ export const ConfluenceSettings = ({ appSettings }: ConfluenceSettingsProps) => 
         justifyContent: 'flex-start',
         gap: 2
       }}>
-      <Typography variant="h5">Confluence</Typography>
-      <Paper sx={{ p: 2 }}>
-        <FormControl sx={{}} component="fieldset" variant="standard">
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <FormLabel color="primary" component="legend">
-              <strong>Enabled Spaces</strong>
-            </FormLabel>
-            <Button onClick={handleToggleAll}>
-              {allToggled ? 'Deselect' : 'Select'} All {localSettings?.confluence?.spaces?.length}
-            </Button>
-          </Box>
-          <FormGroup
-            sx={{
-              display: 'flex',
-              flexDirection: 'row'
-            }}>
-            {localSettings &&
-              localSettings?.confluence?.spaces?.map((space) => (
-                <FormControlLabel
-                  key={space.key}
-                  control={
-                    <Checkbox
-                      name={space.key}
-                      checked={!!space.enabled}
-                      onChange={() => handleEnableSpace(space)}
-                    />
-                  }
-                  label={space.name}
-                />
-              ))}
-          </FormGroup>
-          {/* <FormHelperText>Be careful</FormHelperText> */}
-        </FormControl>
-
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, py: 2 }}>
-          <Button
-            type="button"
-            color="error"
-            variant="text"
-            onClick={() => setLocalSettings(appSettings)}
-            disabled={isLoading}>
-            Discard
-          </Button>
-          <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
-            Save
+      <FormControl sx={{}} component="fieldset" variant="standard">
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <FormLabel color="primary" component="legend">
+            <strong>Enabled Spaces</strong>
+          </FormLabel>
+          <Button onClick={handleToggleAll}>
+            {allToggled ? 'Deselect' : 'Select'} All {localSettings?.confluence?.spaces?.length}
           </Button>
         </Box>
-      </Paper>
+        <FormGroup
+          sx={{
+            display: 'flex',
+            flexDirection: 'row'
+          }}>
+          {localSettings &&
+            localSettings?.confluence?.spaces?.map((space) => (
+              <FormControlLabel
+                key={space.key}
+                control={
+                  <Checkbox
+                    name={space.key}
+                    checked={!!space.enabled}
+                    onChange={() => handleEnableSpace(space)}
+                  />
+                }
+                label={space.name}
+              />
+            ))}
+        </FormGroup>
+        {/* <FormHelperText>Be careful</FormHelperText> */}
+      </FormControl>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, py: 2 }}>
+        <Button
+          type="button"
+          color="error"
+          variant="text"
+          onClick={() => setLocalSettings(appSettings)}
+          disabled={isLoading}>
+          Discard
+        </Button>
+        <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
+          Save
+        </Button>
+      </Box>
     </Box>
   );
 };

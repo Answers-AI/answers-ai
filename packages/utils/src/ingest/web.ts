@@ -371,6 +371,7 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
       const vectors = await getWebPagesVectors(filteredPages);
 
       const embeddedVectors = await embedVectors(event, vectors);
+      // TODO: Update webData with syncedAt
     } catch (error) {
       console.error(`[web/page.sync] ${error}`);
     }

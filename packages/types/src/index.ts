@@ -20,7 +20,9 @@ export type RecommendedPrompt = {
   views?: number;
 };
 export interface AppService {
+  id: string;
   name: string;
+  description: string;
   enabled: boolean;
   imageURL: string;
 }

@@ -9,6 +9,7 @@ import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
 import { getUniqueUrls } from '@utils/utilities/getUniqueUrls';
 import axios from 'axios';
+import Image from 'next/image';
 
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const anchorRef = React.useRef<HTMLDivElement[]>([]);
@@ -57,16 +58,15 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
         {enabledServices
           ?.map((service, idx) => [
             <Avatar
+              sx={{ obejctFit: 'contain' }}
               key={service.name}
-              src={service.imageURL}
               alt={service.name}
               ref={(ref) => {
                 if (ref) anchorRef.current[idx] = ref;
               }}
-              onClick={() => setOpen(idx)}
-              // onMouseEnter={() => setOpen(idx)}
-              // onMouseLeave={() => setOpen(-1)}
-            />
+              onClick={() => setServiceOpen(service.name)}>
+              <Image src={service.imageURL} alt={`${service.name} logo`} width={40} height={40} />
+            </Avatar>
           ])
           .flat()}
       </AvatarGroup>

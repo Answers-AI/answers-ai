@@ -73,54 +73,51 @@ export const SlackSettings = ({ appSettings }: SlackSettingsProps) => {
 
         gap: 2
       }}>
-      <Typography variant="h5">Slack</Typography>
-      <Paper sx={{ p: 2 }}>
-        <FormControl sx={{}} component="fieldset" variant="standard">
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <FormLabel component="legend">
-              <strong>Enabled Channels</strong>
-            </FormLabel>{' '}
-            <Button onClick={handleToggleAll}>
-              {allToggled ? 'Select' : 'Select'} All {localSettings?.slack?.channels?.length}
-            </Button>
-          </Box>
-          <FormGroup
-            sx={{
-              display: 'flex',
-              flexDirection: 'row'
-            }}>
-            {localSettings &&
-              localSettings?.slack?.channels?.map((channel) => (
-                <FormControlLabel
-                  key={channel.id}
-                  control={
-                    <Checkbox
-                      name={channel.name}
-                      checked={!!channel.enabled}
-                      onChange={() => handleEnableChannel(channel)}
-                    />
-                  }
-                  label={channel.name}
-                />
-              ))}
-          </FormGroup>
-          {/* <FormHelperText>Be careful</FormHelperText> */}
-        </FormControl>
-
-        <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 2, py: 2 }}>
-          <Button
-            type="button"
-            color="error"
-            variant="text"
-            onClick={() => setLocalSettings(appSettings)}
-            disabled={isLoading}>
-            Discard
-          </Button>
-          <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
-            Save
+      <FormControl sx={{}} component="fieldset" variant="standard">
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <FormLabel component="legend">
+            <strong>Enabled Channels</strong>
+          </FormLabel>{' '}
+          <Button onClick={handleToggleAll}>
+            {allToggled ? 'Select' : 'Select'} All {localSettings?.slack?.channels?.length}
           </Button>
         </Box>
-      </Paper>
+        <FormGroup
+          sx={{
+            display: 'flex',
+            flexDirection: 'row'
+          }}>
+          {localSettings &&
+            localSettings?.slack?.channels?.map((channel) => (
+              <FormControlLabel
+                key={channel.id}
+                control={
+                  <Checkbox
+                    name={channel.name}
+                    checked={!!channel.enabled}
+                    onChange={() => handleEnableChannel(channel)}
+                  />
+                }
+                label={channel.name}
+              />
+            ))}
+        </FormGroup>
+        {/* <FormHelperText>Be careful</FormHelperText> */}
+      </FormControl>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 2, py: 2 }}>
+        <Button
+          type="button"
+          color="error"
+          variant="text"
+          onClick={() => setLocalSettings(appSettings)}
+          disabled={isLoading}>
+          Discard
+        </Button>
+        <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
+          Save
+        </Button>
+      </Box>
     </Box>
   );
 };

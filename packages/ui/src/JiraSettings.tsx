@@ -69,54 +69,51 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
 
         gap: 2
       }}>
-      <Typography variant="h5">Jira</Typography>
-      <Paper sx={{ p: 2 }}>
-        <FormControl sx={{}} component="fieldset" variant="standard">
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <FormLabel color="primary" component="legend">
-              <strong>Enabled Projects</strong>
-            </FormLabel>
-            <Button onClick={handleToggleAll}>
-              {allToggled ? 'Deselect' : 'Select'} All {localSettings?.jira?.projects?.length}
-            </Button>
-          </Box>
-          <FormGroup
-            sx={{
-              display: 'flex',
-              flexDirection: 'row'
-            }}>
-            {localSettings &&
-              localSettings?.jira?.projects?.map((project) => (
-                <FormControlLabel
-                  key={project.key}
-                  control={
-                    <Checkbox
-                      name={project.key}
-                      checked={!!project.enabled}
-                      onChange={() => handleEnableProject(project)}
-                    />
-                  }
-                  label={project.key}
-                />
-              ))}
-          </FormGroup>
-          {/* <FormHelperText>Be careful</FormHelperText> */}
-        </FormControl>
-
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, py: 2 }}>
-          <Button
-            type="button"
-            color="error"
-            variant="text"
-            onClick={() => setLocalSettings(appSettings)}
-            disabled={isLoading}>
-            Discard
-          </Button>
-          <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
-            Save
+      <FormControl sx={{}} component="fieldset" variant="standard">
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <FormLabel color="primary" component="legend">
+            <strong>Enabled Projects</strong>
+          </FormLabel>
+          <Button onClick={handleToggleAll}>
+            {allToggled ? 'Deselect' : 'Select'} All {localSettings?.jira?.projects?.length}
           </Button>
         </Box>
-      </Paper>
+        <FormGroup
+          sx={{
+            display: 'flex',
+            flexDirection: 'row'
+          }}>
+          {localSettings &&
+            localSettings?.jira?.projects?.map((project) => (
+              <FormControlLabel
+                key={project.key}
+                control={
+                  <Checkbox
+                    name={project.key}
+                    checked={!!project.enabled}
+                    onChange={() => handleEnableProject(project)}
+                  />
+                }
+                label={project.key}
+              />
+            ))}
+        </FormGroup>
+        {/* <FormHelperText>Be careful</FormHelperText> */}
+      </FormControl>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, py: 2 }}>
+        <Button
+          type="button"
+          color="error"
+          variant="text"
+          onClick={() => setLocalSettings(appSettings)}
+          disabled={isLoading}>
+          Discard
+        </Button>
+        <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
+          Save
+        </Button>
+      </Box>
     </Box>
   );
 };

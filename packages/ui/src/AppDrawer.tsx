@@ -19,24 +19,22 @@ import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { useFlags } from 'flagsmith/react';
+import { usePathname } from 'next/navigation';
 
 export const AppDrawer = ({ params }: any) => {
   const flags = useFlags(['settings']);
   // TODO - Use params from request: https://github.com/vercel/next.js/issues/43704
-  const [pathname, setPathname] = React.useState('');
-  React.useEffect(() => {
-    setPathname(typeof window === 'undefined' ? '' : window.location.pathname);
-  }, []);
+  const pathname = usePathname();
   return (
     <Drawer variant="permanent" sx={{ sm: { width: 0 } }}>
       <DrawerHeader sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         {/* <IconButton onClick={handleDrawerClose}>
               {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
             </IconButton> */}
-        <Avatar>AI</Avatar>
+        <Avatar sx={{ objectFit: 'contain' }}>AI</Avatar>
       </DrawerHeader>
 
-      <List sx={{ flex: '1' }}>
+      <List sx={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
         {[
           { text: 'Message', link: '/', icon: <HomeIcon /> },
           ...(flags?.settings?.enabled
@@ -44,7 +42,6 @@ export const AppDrawer = ({ params }: any) => {
             : []),
           ...(process.env.NODE_ENV === 'development'
             ? [
-                { component: <Divider key="divider" /> },
                 { text: 'Inngest', link: '/events', icon: <MessageIcon /> },
                 { text: 'Store', link: '/store', icon: <StorageIcon /> },
                 { text: 'Tracing', link: '/tracing', icon: <AIIcon /> }
@@ -62,18 +59,18 @@ export const AppDrawer = ({ params }: any) => {
               disablePadding
               sx={{
                 display: 'block',
-                transition: 'all 0.3s ease-in-out',
-                ...(pathname === item.link
-                  ? {
-                      boxShadow: (theme) => `inset 4px 0px 0px 0px ${theme.palette.primary.dark}`
-                    }
-                  : {})
+                transition: 'all 0.3s ease-in-out'
               }}>
               <ListItemButton
+                selected={
+                  (pathname?.includes(item.link) && item.link !== '/') || pathname === item.link
+                }
                 aria-label={item.text}
                 sx={{
                   minHeight: 48,
-                  px: 2.5
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
                 }}>
                 <ListItemIcon
                   sx={{
@@ -82,7 +79,6 @@ export const AppDrawer = ({ params }: any) => {
                   }}>
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={item.text} sx={{ opacity: 0 }} />
               </ListItemButton>
             </ListItem>
           )
@@ -93,11 +89,7 @@ export const AppDrawer = ({ params }: any) => {
           aria-label={'sign out'}
           // href={link}
           onClick={() => signOut()}
-          sx={{
-            minHeight: 48,
-            // ...(pathname === link ? { bgcolor: 'primary.main' } : {}),
-            px: 2.5
-          }}>
+          sx={{ minHeight: 48, width: 48 }}>
           <ListItemIcon
             sx={{
               minWidth: 0,
@@ -171,6 +163,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     'flexShrink': 0,
     'whiteSpace': 'nowrap',
     'boxSizing': 'border-box',
+    'border': 'none',
     ...(open && {
       ...openedMixin(theme),
       '& .MuiDrawer-paper': openedMixin(theme)
