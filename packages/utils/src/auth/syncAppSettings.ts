@@ -21,7 +21,8 @@ export const SYSTEM_SETTINGS = {
     { name: 'notion', enabled: false, imageURL: '/static/images/notion.png' },
     { name: 'github', enabled: false, imageURL: '/static/images/github.png' },
     { name: 'drive', enabled: false, imageURL: '/static/images/drive.png' },
-    { name: 'contentful', enabled: false, imageURL: '/static/images/contentful.png' }
+    { name: 'contentful', enabled: false, imageURL: '/static/images/contentful.png' },
+    { name: 'algolia', enabled: false, imageURL: '/static/images/algolia.png' }
   ]
 };
 
@@ -34,7 +35,8 @@ export const NO_ORG_SETTINGS = {
     { name: 'notion', enabled: false, imageURL: '/static/images/notion.png' },
     { name: 'github', enabled: false, imageURL: '/static/images/github.png' },
     { name: 'drive', enabled: false, imageURL: '/static/images/drive.png' },
-    { name: 'contentful', enabled: false, imageURL: '/static/images/contentful.png' }
+    { name: 'contentful', enabled: false, imageURL: '/static/images/contentful.png' },
+    { name: 'algolia', enabled: false, imageURL: '/static/images/algolia.png' }
   ]
 };
 

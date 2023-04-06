@@ -10,6 +10,7 @@ import * as openApiFunctions from '@utils/ingest/openapi';
 import * as authFunctions from '@utils/ingest/auth';
 import * as messageFunctions from '@utils/ingest/message';
 import * as confluenceFunctions from '@utils/ingest/confluence';
+import * as algoliaFunctions from '@utils/ingest/algolia';
 
 // Create a client to send and receive events
 
@@ -22,7 +23,8 @@ const handlers = {
   ...jiraFunctions,
   ...slackFunctions,
   ...openApiFunctions,
-  ...confluenceFunctions
+  ...confluenceFunctions,
+  ...algoliaFunctions
 };
 
 const functions = Object.values(handlers);
