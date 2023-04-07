@@ -22,7 +22,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
 
   const domains = await getDomainList();
-  console.log('URLS', domains);
 
   res.status(200).json({ domains: domains.map((u) => u.domain) });
 };
