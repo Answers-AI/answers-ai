@@ -15,8 +15,9 @@ import { AppSettings } from 'types';
 import useAppSettings from './useAppSettings';
 export interface JiraSettingsProps {
   appSettings: AppSettings;
+  editable: boolean;
 }
-export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
+export const JiraSettings = ({ appSettings, editable }: JiraSettingsProps) => {
   const { isLoading, updateAppSettings } = useAppSettings();
   const [localSettings, setLocalSettings] = useState<AppSettings>(appSettings);
   React.useEffect(() => {
@@ -101,19 +102,21 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
         {/* <FormHelperText>Be careful</FormHelperText> */}
       </FormControl>
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, py: 2 }}>
-        <Button
-          type="button"
-          color="error"
-          variant="text"
-          onClick={() => setLocalSettings(appSettings)}
-          disabled={isLoading}>
-          Discard
-        </Button>
-        <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
-          Save
-        </Button>
-      </Box>
+      {editable ? (
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, py: 2 }}>
+          <Button
+            type="button"
+            color="error"
+            variant="text"
+            onClick={() => setLocalSettings(appSettings)}
+            disabled={isLoading}>
+            Discard
+          </Button>
+          <Button type="button" variant="contained" onClick={handleSave} disabled={isLoading}>
+            Save
+          </Button>
+        </Box>
+      ) : null}
     </Box>
   );
 };

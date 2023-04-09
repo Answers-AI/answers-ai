@@ -119,13 +119,17 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                 <>
                   <AutocompleteSelect
                     label="Confluence Space"
-                    options={
-                      appSettings?.confluence?.spaces?.filter((s) => s.enabled)?.map((s) => s.id) ||
-                      []
-                    }
-                    value={filters?.datasources?.confluence?.spaceId || []}
-                    onChange={(value: string[]) =>
-                      updateFilter({ datasources: { confluence: { spaceId: value } } })
+                    options={appSettings?.confluence?.spaces?.filter((s) => s.enabled) || []}
+                    getOptionLabel={(option) => {
+                      return option?.name;
+                    }}
+                    value={filters?.datasources?.confluence?.spaces || []}
+                    onChange={(value) =>
+                      updateFilter({
+                        datasources: {
+                          confluence: { spaces: value }
+                        }
+                      })
                     }
                   />
                 </>

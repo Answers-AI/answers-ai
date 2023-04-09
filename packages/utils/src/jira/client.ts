@@ -1,13 +1,21 @@
 import axios, { AxiosResponse } from 'axios';
 import Redis from 'ioredis';
+import { JiraProject } from '.';
 
 class JiraClient {
   redis: Redis;
+  accessToken?: string;
+  cloudId: Promise<string>;
   headers: { Authorization: string; Accept: string };
   cacheExpireTime: number;
-  constructor({ cacheExpireTime = 60 * 60 * 24 } = {}) {
+  constructor({
+    cacheExpireTime = 60 * 60 * 24,
+    accessToken
+  }: { cacheExpireTime?: number; accessToken?: string } = {}) {
     this.cacheExpireTime = cacheExpireTime;
     this.redis = new Redis(process.env.REDIS_URL as string);
+    this.accessToken = accessToken;
+    this.cloudId = this.getCloudId();
     this.headers = {
       Authorization: `Basic ${Buffer.from(`brad@lastrev.com:${process.env.JIRA_API}`).toString(
         'base64'
@@ -15,7 +23,23 @@ class JiraClient {
       Accept: 'application/json'
     };
   }
+  async getAppData() {
+    const response = await axios.get('https://api.atlassian.com/oauth/token/accessible-resources', {
+      headers: this.headers
+    });
 
+    console.log('Response', response.data);
+    return response.data;
+  }
+
+  async getCloudId() {
+    const appData = await this.getAppData();
+    console.log('APpData', appData);
+    const confluenceData = appData.find((app: any) =>
+      app.scopes?.some((scope: string) => scope.includes('confluence'))
+    );
+    return confluenceData.id;
+  }
   async handleRateLimit(response: AxiosResponse) {
     let retryAfter = response.headers['Retry-After'];
     let resetTime = response.headers['X-RateLimit-Reset'];
@@ -65,6 +89,10 @@ class JiraClient {
     }
     console.timeEnd('FetchJiraData:' + endpoint);
     return data;
+  }
+  async getJiraProjects() {
+    let projects: JiraProject[] = await this.fetchJiraData(`/project`);
+    return projects.filter((project) => !project.archived);
   }
 }
 

@@ -2,14 +2,23 @@ import * as React from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 
-interface Props {
+interface Props<T> {
   sx?: any;
   label: string;
-  options: any[];
-  value: string[];
-  onChange: any;
+  options: T[];
+  value: T[];
+  onChange: (value: T[]) => void;
+  getOptionLabel?: (value: T) => string;
 }
-export default function AutocompleteSelect({ sx, label, options, value, onChange }: Props) {
+export default function AutocompleteSelect<T>({
+  sx,
+  label,
+  options,
+  value,
+  onChange,
+  getOptionLabel,
+  ...props
+}: Props<T>) {
   const handleChange = (event: any, newValue: any) => {
     const { target } = event;
     // console.log('Values', target.value, newValue);
@@ -24,15 +33,15 @@ export default function AutocompleteSelect({ sx, label, options, value, onChange
       sx={{ width: '100%', ...sx }}
       freeSolo
       multiple
-      limitTags={2}
       id={`${label}`}
       options={options}
-      getOptionLabel={(option) => option}
+      getOptionLabel={getOptionLabel as any}
       value={value}
       onChange={handleChange}
       renderInput={(params) => (
         <TextField {...params} label={label} placeholder={`Enter ${label}`} />
       )}
+      {...props}
     />
   );
 }

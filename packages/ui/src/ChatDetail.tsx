@@ -11,7 +11,7 @@ import { DefaultPrompts } from './DefaultPrompts';
 import { ChatInput } from './ChatInput';
 import MenuIcon from '@mui/icons-material/Menu';
 import SourcesToolbar from './SourcesToolbar';
-
+import { Filters } from './Filters';
 export const ChatDetail = ({
   appSettings,
   user,
@@ -52,7 +52,7 @@ export const ChatDetail = ({
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {journey ? journey?.title : null}
-            {chat ? chat?.id : null}
+            {chat ? chat?.title ?? chat.id : null}
           </Typography>
 
           <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
@@ -122,6 +122,7 @@ export const ChatDetail = ({
           paddingBottom: 3
         }}>
         <AppSyncToolbar appSettings={appSettings} />
+        {/* {journey ? <Filters filters={journey.filters} /> : null} */}
         <ChatInput inputRef={inputRef} />
       </Box>
     </Box>

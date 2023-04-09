@@ -24,10 +24,8 @@ const DeveloperTools = ({
     <>
       <Box
         sx={{
-          display: 'grid',
-          height: '100%',
-          gridTemplateColumns: 'fit-content(320px) 1fr fit-content(320px)',
-          gridTemplateRows: '1fr'
+          display: 'flex',
+          height: '100%'
         }}>
         <JourneySection journeys={journeys} chats={chats} />
         <ChatDetail appSettings={appSettings} user={user} prompts={prompts} />

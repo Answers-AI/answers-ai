@@ -1,11 +1,11 @@
 'use client';
 import { PaletteMode } from '@mui/material';
 import createTheme from '@mui/material/styles/createTheme';
-import { amber, grey } from '@mui/material/colors';
+import { teal, grey, deepOrange } from '@mui/material/colors';
 
 const getDesignTokens = (mode: PaletteMode) => ({
   shape: {
-    borderRadius: 4
+    borderRadius: 12
   },
   breakpoints: {
     values: {
@@ -20,21 +20,22 @@ const getDesignTokens = (mode: PaletteMode) => ({
   palette: {
     mode,
     primary: {
-      ...amber,
+      ...teal,
       ...(mode === 'dark' && {
-        main: amber[300]
+        main: teal[300]
       })
     },
-    background: {
-      default: '#0b0b0b',
-      paper: '#161616'
+    secondary: {
+      ...deepOrange,
+      main: deepOrange[200]
     },
-    // ...(mode === 'dark' && {
-    //   background: {
-    //     default: deepOrange[900],
-    //     paper: deepOrange[900]
-    //   }
-    // }),
+
+    ...(mode === 'dark' && {
+      background: {
+        default: '#0b0b0b',
+        paper: '#161616'
+      }
+    }),
     text: {
       ...(mode === 'light'
         ? {
@@ -100,6 +101,7 @@ export const darkModeTheme = createTheme({
       defaultProps: {},
       styleOverrides: {
         root: {
+          // borderRadius: theme.spacing(0),
           padding: theme.spacing(0.5, 1)
         }
       }

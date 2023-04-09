@@ -3,7 +3,6 @@ import { styled, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -11,17 +10,19 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { Chat, Journey } from 'types';
-import { useAnswers } from './AnswersContext';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Add from '@mui/icons-material/Add';
 import { Button, Collapse } from '@mui/material';
 import { usePathname, useRouter } from 'next/navigation';
 
-const drawerWidth = 320;
+const drawerWidth = 400;
 
 const openedMixin = (theme: Theme): CSSObject => ({
-  width: drawerWidth,
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    width: drawerWidth
+  },
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen
@@ -70,13 +71,15 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export interface ChatDrawerProps {
   journeys?: Journey[];
   chats?: Chat[];
+  defaultOpen?: boolean;
 }
-export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
+
+export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerProps) {
   // const { chat } = useAnswers();
   const router = useRouter();
   const pathname = usePathname();
-  const [open, setOpen] = React.useState(false);
-  const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({});
+  const [open, setOpen] = React.useState(defaultOpen);
+  const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({ chats: true });
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -104,7 +107,7 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
       <DrawerHeader
         sx={{
           position: 'absolute',
-          zIndex: 9999,
+          zIndex: 10,
           transition: '.2s',
           ...(open ? { opacity: 0 } : { opacity: 1, transitionDelay: '.25s' })
         }}>
@@ -115,6 +118,8 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
       <Drawer
         sx={{
           'flexShrink': 0,
+          'position': { md: 'relative', xs: 'absolute' },
+          'zIndex': 1,
           '& .MuiDrawer-paper': {
             position: 'absolute',
             boxSizing: 'border-box'
@@ -183,7 +188,11 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
                   </IconButton>
                 </ListItemButton>
                 <Collapse
-                  in={opened[idx] || !!journey?.chats?.find((c) => pathname.includes(c.id))}
+                  in={
+                    pathname === `/journey/${journey.id}` ||
+                    opened[idx] ||
+                    !!journey?.chats?.find((c) => pathname?.includes(c.id))
+                  }
                   timeout="auto"
                   unmountOnExit
                   sx={{ width: '100%' }}>
@@ -194,7 +203,7 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
                           selected={pathname === `/chat/${chat.id}`}
                           href={`/chat/${chat.id}`}>
                           <ListItemText
-                            primary={chat.id}
+                            primary={chat.title}
                             secondary={chat?.messages?.[0]?.content}
                           />
                         </ListItemButton>

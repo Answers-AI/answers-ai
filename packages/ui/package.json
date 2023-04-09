@@ -47,10 +47,11 @@
     "encoding": "^0.1.13",
     "flagsmith": "^3.18.2",
     "framer-motion": "^10.10.0",
-    "next": "13.2.5-canary.20",
-    "next-auth": "^4.20.1",
+    "next": "13.2.5-canary.34",
+    "next-auth": "^4.21.1",
     "react": "18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.9",
     "react-markdown": "^8.0.6",
     "types": "workspace:*",
     "utils": "workspace:*"

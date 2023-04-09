@@ -3,7 +3,6 @@ import React from 'react';
 import JiraSettings from './JiraSettings';
 import SlackSettings from './SlackSettings';
 import ConfluenceSettings from './ConfluenceSettings';
-import { useAnswers } from './AnswersContext';
 
 const SETTINGS: { [key: string]: any } = {
   jira: JiraSettings,
@@ -11,9 +10,9 @@ const SETTINGS: { [key: string]: any } = {
   confluence: ConfluenceSettings
 };
 
-const AppSettingPage = ({ app }: any) => {
+const IntegrationSettings = ({ app, appSettings, editable }: any) => {
   const Component = SETTINGS[app];
-  const { appSettings } = useAnswers();
+
   if (!Component && app)
     return (
       <div>
@@ -21,9 +20,9 @@ const AppSettingPage = ({ app }: any) => {
         this integration is ready
       </div>
     );
-  if (Component) return <Component appSettings={appSettings} />;
+  if (Component) return <Component appSettings={appSettings} editable={editable} />;
 
   return null;
 };
 
-export default AppSettingPage;
+export default IntegrationSettings;

@@ -61,9 +61,9 @@ export const DefaultPrompts = ({
           <Box
             sx={{
               width: '100%',
-              display: 'grid',
-              gap: 2,
-              gridTemplateColumns: { md: 'repeat(auto-fit, minmax(320px, 1fr))', sm: '1fr' }
+              display: 'flex',
+              gap: 2
+              // gridTemplateColumns: { md: 'repeat(auto-fit, minmax(320px, 1fr))', sm: '1fr' }
             }}>
             {prompts?.map((prompt) => (
               <PromptCard

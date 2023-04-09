@@ -91,7 +91,7 @@ export const fetchContext = async ({
   console.time(`[${ts}] Pineconedata`);
   console.time(`[${ts}] Pineconedata get`);
 
-  const pineconeDataRaw = await Promise.all([
+  const pineconeData = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
       return pineconeQuery(promptEmbedding, {
         filter: {
@@ -105,13 +105,13 @@ export const fetchContext = async ({
     })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
   console.timeEnd(`[${ts}] Pineconedata get`);
-  console.time(`[${ts}] Pineconedata score`);
+
   const context = [
     // `${history}`,
     ...(!pineconeData
+      ? []
       : pineconeData?.filter((x) => x.score! > threshold)?.map((item: any) => item?.metadata?.text))
   ].join(' <SEP> ');
-  console.timeEnd(`[${ts}] Pineconedata score`);
 
   console.time(`[${ts}] Pineconedata split`);
   const textSplitter = new RecursiveCharacterTextSplitter({
@@ -127,7 +127,7 @@ export const fetchContext = async ({
   }
   console.timeEnd(`[${ts}] Pineconedata split`);
   console.time(`[${ts}] Pineconedata summarize`);
-  let summary;
+  let summary = '';
   try {
     summary = await summarizeAI({
       input: contextText,

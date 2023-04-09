@@ -1,5 +1,6 @@
 import JiraIssueModel from './models/issue';
-import { JiraIssue, jiraClient } from './index';
+import { JiraIssue } from './index';
+import JiraClient from './client';
 
 // const getJiraStatuses = async () => {
 //   let statuses = await jiraClient.fetchJiraData(`/status`);
@@ -24,10 +25,12 @@ const JIRA_FIELDS = [
   'updated'
 ];
 export const getJiraTickets = async ({
+  jiraClient,
   jql,
   startAt = 0,
   maxResults = 100
 }: {
+  jiraClient: JiraClient;
   jql: string;
   startAt?: number | undefined;
   maxResults?: number | undefined;

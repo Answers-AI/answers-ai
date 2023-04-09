@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import { DefaultPrompts } from './DefaultPrompts';
+import { Filters } from './Filters';
 
 export const ChatInput = ({ inputRef }: { inputRef: any }) => {
   const {
@@ -56,6 +57,7 @@ export const ChatInput = ({ inputRef }: { inputRef: any }) => {
         handleChange={(_, value) => setShowPrompts(value)}
       />
 
+      {filters ? <Filters filters={filters} /> : null}
       <TextField
         inputRef={inputRef}
         sx={{ textarea: { minHeight: 23, paddingRight: 4, paddingBottom: 5 } }}

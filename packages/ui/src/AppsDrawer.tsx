@@ -1,72 +1,25 @@
 'use client';
-import React, { useState } from 'react';
-import {
-  Avatar,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Container,
-  Dialog,
-  Typography,
-  Box,
-  ClickAwayListener
-} from '@mui/material';
+import React from 'react';
+import { Box, ClickAwayListener } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
-
-import { AppService, AppSettings } from 'types';
-
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
-import NextLink from 'next/link';
-import SelectedListItem from './SelectedListItem';
-import { useFlags } from 'flagsmith/react';
-import { redirect } from 'next/navigation';
+import { AppSettings } from 'types';
+import { useRouter } from 'next/navigation';
 import IntegrationCard from './IntegrationCard';
 
-export const SettingsLayout = ({
-  appSettings,
-  activeApp,
-  children
-}: {
-  appSettings: AppSettings;
-  activeApp: string;
-  children?: any;
-}) => {
-  const flags = useFlags(['settings']);
-  if (!flags?.settings?.enabled) return redirect('/');
-  return (
-    <Container
-      sx={{
-        flex: 1,
-        height: '100%',
-        position: 'relative',
-        py: 2,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 4
-      }}>
-      <Box>
-        <Typography variant="h4">Integrations</Typography>
-        <Typography>Manage your data sources and other connections</Typography>
-      </Box>
-      <Grid2 container sx={{ gap: 2, width: '100%' }}>
-        <AppsDrawer appSettings={appSettings} activeApp={activeApp} />
-      </Grid2>
-    </Container>
-  );
-};
-
-const AppsDrawer = ({
+export const AppsDrawer = ({
   appSettings,
   activeApp
 }: {
   appSettings: AppSettings;
-  activeApp: string;
+  activeApp?: string;
 }) => {
   // const [expanded, setExpanded] = React.useState<any>({
   //   // ...appSettings?.services?.reduce((accum, item, idx) => ({ ...accum, [idx]: item.enabled }), {})
   // });
-  const [expanded, setExpanded] = React.useState<AppService | null>(null);
-  console.log('Expanded', expanded);
+  const router = useRouter();
+  const selected = appSettings?.services?.find((item) => item.id === activeApp);
+
+  // console.log('Expanded', expanded);
   return (
     <>
       <Box
@@ -89,15 +42,16 @@ const AppsDrawer = ({
         }}>
         {appSettings?.services?.map((item, idx) => (
           <IntegrationCard
+            appSettings={appSettings}
             key={item?.id}
             {...item}
             expanded={false}
-            onClick={() => setExpanded(item)}
+            onClick={() => router.push(`/settings/integrations/${item?.id}`)}
           />
         ))}
       </Box>
       <AnimatePresence>
-        {!!expanded ? (
+        {!!selected ? (
           <Box
             // open={!!expanded}
             // onClose={() => setExpanded(null)}
@@ -111,7 +65,7 @@ const AppsDrawer = ({
               placeContent: 'center',
               placeItems: 'center',
               // transform: 'translate(-50%, -50%)',
-              zIndex: 9999,
+              zIndex: 1,
               height: '100%',
               width: '100%',
               // display: 'flex',
@@ -120,7 +74,7 @@ const AppsDrawer = ({
               pointerEvents: 'none',
               background: 'rgba(0,0,0,0.4)'
             }}>
-            <ClickAwayListener onClickAway={() => setExpanded(null)}>
+            <ClickAwayListener onClickAway={() => router.push('/settings/integrations')}>
               <Box
                 component={motion.div}
                 sx={{
@@ -133,7 +87,7 @@ const AppsDrawer = ({
                   willChange: 'transform',
                   pointerEvents: 'all'
                 }}>
-                <IntegrationCard {...expanded} expanded />
+                <IntegrationCard {...selected} expanded appSettings={appSettings} editable />
               </Box>
             </ClickAwayListener>
           </Box>

@@ -1,5 +1,5 @@
 'use client';
-import { Avatar } from '@mui/material';
+import { Avatar, Box } from '@mui/material';
 import NextLink from 'next/link';
 import { signOut } from 'next-auth/react';
 import List from '@mui/material/List';
@@ -47,10 +47,11 @@ export const AppDrawer = ({ params }: any) => {
                 { text: 'Tracing', link: '/tracing', icon: <AIIcon /> }
               ]
             : [])
-        ].map((item, idx) =>
-          item?.component ? (
-            item?.component
-          ) : (
+        ].map(
+          (item) => (
+            // item?.component ? (
+            //   item?.component
+            // ) : (
             <ListItem
               key={item.text}
               href={item.link}
@@ -82,24 +83,26 @@ export const AppDrawer = ({ params }: any) => {
               </ListItemButton>
             </ListItem>
           )
+          // )
         )}
+        <Box sx={{ flex: 1 }}> </Box>
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          <ListItemButton
+            aria-label={'sign out'}
+            // href={link}
+            onClick={() => signOut()}
+            sx={{ minHeight: 48, width: 48 }}>
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                justifyContent: 'center'
+              }}>
+              <ExitToAppIcon />
+            </ListItemIcon>
+            {/* <ListItemText primary={} sx={{ opacity: 0 }} /> */}
+          </ListItemButton>
+        </ListItem>
       </List>
-      <ListItem disablePadding sx={{ display: 'block' }}>
-        <ListItemButton
-          aria-label={'sign out'}
-          // href={link}
-          onClick={() => signOut()}
-          sx={{ minHeight: 48, width: 48 }}>
-          <ListItemIcon
-            sx={{
-              minWidth: 0,
-              justifyContent: 'center'
-            }}>
-            <ExitToAppIcon />
-          </ListItemIcon>
-          {/* <ListItemText primary={} sx={{ opacity: 0 }} /> */}
-        </ListItemButton>
-      </ListItem>
     </Drawer>
   );
 };

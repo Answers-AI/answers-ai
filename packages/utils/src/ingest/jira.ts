@@ -1,4 +1,4 @@
-import { getJiraComments, getJiraProjects, JiraIssue, JiraProject } from '../jira';
+import { getJiraComments, getJiraProjects, jiraClient, JiraIssue, JiraProject } from '../jira';
 import { getJiraTickets } from '../jira/getJiraTickets';
 import { jiraIssueLoader } from '../jira';
 
@@ -14,6 +14,8 @@ import { Configuration, OpenAIApi } from 'openai';
 import { MODELS } from '../MODELS';
 import { inngest } from './client';
 import { summarizeAI } from '../summarizeAI';
+import JiraClient from '../jira/client';
+import { getUserClients } from '../auth/getUserClients';
 const initializeOpenAI = () => {
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY
@@ -34,12 +36,18 @@ export const processJiraUpdated: EventVersionHandler<{
   event: 'jira/app.sync',
   v: '1',
   handler: async ({ event, step }) => {
-    const { filters, appSettings } = event.data;
+    const {
+      user,
+      data: { filters, appSettings }
+    } = event;
+    if (!user) throw new Error('User is requierd');
+    const { jiraClient } = await getUserClients(user);
+
     const { datasources: { jira: { project } = { project: [] } } = {} } = filters;
     const projectKeysFilter = appSettings?.jira?.projects
       ?.filter((p) => (project?.length ? project?.includes(p.key) : p.enabled))
       ?.map((p) => p.key);
-    const projects = await getJiraProjects();
+    const projects = await jiraClient.getJiraProjects();
 
     // Fetch all Jira issues in the configured projects
     console.log({ project, projectKeysFilter });
@@ -76,9 +84,13 @@ export const procesProjectUpdated: EventVersionHandler<{ projectKeys: string[]; 
   v: '1',
   handler: async ({ event, step }) => {
     const { projectKeys, model } = event.data;
+    const { user } = event;
+    if (!user) throw new Error('User is requierd');
+    const { jiraClient } = await getUserClients(user);
 
     // Chunk projects into batches of 10
     const issues = await getJiraTickets({
+      jiraClient,
       jql: `project in (${projectKeys?.join(',')})`
     });
 
@@ -119,8 +131,14 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
   handler: async ({ event, step }) => {
     try {
       const { issuesKeys } = event.data;
-
-      const issues = (await jiraIssueLoader.loadMany(issuesKeys)) as JiraIssue[];
+      const {
+        user,
+        data: {}
+      } = event;
+      if (!user) throw new Error('User is requierd');
+      const { jiraClient } = await getUserClients(user);
+      const loader = jiraIssueLoader(jiraClient);
+      const issues = (await loader.loadMany(issuesKeys)) as JiraIssue[];
 
       // TODO: Create a JiraIssueCommentsLoader
       // or TODO: Pull issue and comments from Prisma

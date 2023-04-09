@@ -1,15 +1,19 @@
 import { getAppSettings } from '@ui/getAppSettings';
 import React from 'react';
 
-import { SettingsLayout } from '@ui/SettingsLayout';
+import { IntegrationsSettings } from '@ui/IntegrationsSettings';
 
-const Settings = async ({ children, params }: any) => {
+const Settings = async ({ children, params, ...other }: any) => {
   const appSettings = await getAppSettings();
 
+  console.log('settings/integrations ', { params, other });
+
+  const [activeApp] = params?.app || [];
   return (
-    <SettingsLayout appSettings={appSettings} activeApp={params?.app}>
+    <>
+      <IntegrationsSettings appSettings={appSettings} activeApp={activeApp}></IntegrationsSettings>
       {React.cloneElement(children, { appSettings })}
-    </SettingsLayout>
+    </>
   );
 };
 

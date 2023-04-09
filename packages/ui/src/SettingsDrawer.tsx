@@ -1,12 +1,10 @@
 'use client';
 import * as React from 'react';
-import { styled, Theme, CSSObject } from '@mui/material/styles';
+import { styled, Theme, CSSObject, alpha } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 
-import BusinessIcon from '@mui/icons-material/PeopleAlt';
-import SettingsIcon from '@mui/icons-material/Settings';
 import WifiTetheringIcon from '@mui/icons-material/WifiTethering';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -16,6 +14,7 @@ import { Chat } from 'types';
 import { ListItemIcon, ListSubheader } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
+import AppSyncToolbar from './AppSyncToolbar';
 const drawerWidth = 200;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -79,23 +78,23 @@ export interface SettingsDrawerProps {
 
 const DEFAULT_SETTINGS = [
   {
-    id: 'general',
-    link: '/settings/general',
-    title: 'general',
-    icon: <SettingsIcon />
-  },
-  {
-    id: 'members',
-    link: '/settings/members',
-    title: 'members',
-    icon: <BusinessIcon />
-  },
-  {
     id: 'integrations',
     link: '/settings/integrations',
     title: 'integrations',
     icon: <WifiTetheringIcon />
   }
+  // {
+  //   id: 'general',
+  //   link: '/settings/general',
+  //   title: 'general',
+  //   icon: <SettingsIcon />
+  // },
+  // {
+  //   id: 'members',
+  //   link: '/settings/members',
+  //   title: 'members',
+  //   icon: <BusinessIcon />
+  // }
 ];
 export default function SettingsDrawer({
   settings = DEFAULT_SETTINGS,
@@ -104,38 +103,16 @@ export default function SettingsDrawer({
   // const { chat } = useAnswers();
 
   const currentPath = usePathname();
-  console.log('currentPath', currentPath);
+
   const router = useRouter();
   const [open, setOpen] = React.useState(true);
-  const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({});
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-  const handleExpandSetting = (idx: string | number) => (evt: any) => {
-    evt.preventDefault();
-    evt.stopPropagation();
-    setOpened((prev) => {
-      const newArr = { ...prev };
-      newArr[idx] = !newArr[idx];
-      return newArr;
-    });
-  };
-  const handleNewSetting = () => {};
-  const handleAddChat = ({ setting }: any) => {
-    setOpen(false);
-    router.push('/');
-  };
 
   return (
     <>
       <DrawerHeader
         sx={{
           position: 'absolute',
-          zIndex: 9999,
+          zIndex: 1,
           transition: '.2s',
           paddingTop: 8,
           ...(open ? { opacity: 0 } : { opacity: 1, transitionDelay: '.25s' })
@@ -149,7 +126,10 @@ export default function SettingsDrawer({
           'flexShrink': 0,
           '& .MuiDrawer-paper': {
             background: (theme) =>
-              `linear-gradient(0deg, ${theme.palette.background.paper} 10%, #2f2f2f)`,
+              `linear-gradient(0deg, ${alpha(theme.palette.background.paper, 0)} 10%,  ${alpha(
+                theme.palette.background.paper,
+                1
+              )} )`,
             borderRight: '1px solid rgba(255, 255, 255, 0.12)',
             position: 'absolute',
             boxSizing: 'border-box'
@@ -178,6 +158,7 @@ export default function SettingsDrawer({
           <Typography variant="body1">
             <strong>Settings</strong>
           </Typography>
+
           {/* <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
             {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton> */}
@@ -241,6 +222,8 @@ export default function SettingsDrawer({
               </ListItem>
             </React.Fragment>
           ))}
+
+          <AppSyncToolbar expanded />
         </List>
       </Drawer>
     </>

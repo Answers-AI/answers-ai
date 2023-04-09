@@ -40,7 +40,6 @@
       "outputs": ["dist/**"]
     },
     "db#build": {
-      "cache": false,
       "dependsOn": [],
       "outputs": ["dist/**"]
     },

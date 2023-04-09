@@ -99,6 +99,7 @@ model VerificationToken {
 
 model Chat {
   id   String @id @default(uuid())
+  title String?
   prompt Prompt? @relation(fields: promptId, references: id)
   promptId String?
 

@@ -49,18 +49,17 @@ export async function POST(request: Request) {
     });
     // TODO: Validate user has org update access
     // TODO: REMOVE THIS AFTER ENABLING USER SETTINGS
-    if (user.organization) {
-      await prisma.organization.update({
-        where: { id: user.organization.id },
-        data: { appSettings }
-      });
-    } else {
-      await prisma.user.update({
-        where: { email: session?.user?.email },
-        data: { appSettings }
-      });
-    }
+    // if (user.organization) {
+    //   await prisma.organization.update({
+    //     where: { id: user.organization.id },
+    //     data: { appSettings }
+    //   });
+    // } else {
+    await prisma.user.update({
+      where: { email: session?.user?.email },
+      data: { appSettings }
+    });
+    // }
+    return NextResponse.json({ appSettings });
   }
-
-  return NextResponse.json(user);
 }

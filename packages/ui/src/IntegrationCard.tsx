@@ -5,41 +5,37 @@ import {
   Typography,
   Card,
   CardContent,
-  CardActions,
   Button,
   CardActionArea,
-  IconButton,
   CardHeader,
-  Avatar,
-  Paper
+  Avatar
 } from '@mui/material';
 
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-import MoreVert from '@mui/icons-material/MoreVert';
-import MenuButton from './MenuButton';
-
 import { useAnswers } from './AnswersContext';
-import { Delete } from '@mui/icons-material';
-import { AppService } from 'types';
+import { AppService, AppSettings } from 'types';
 import { useFlags } from 'flagsmith/react';
 import IntegrationSetting from './IntegrationSetting';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { signIn } from 'next-auth/react';
 
 interface IntegrationCardProps extends AppService {
+  appSettings: AppSettings;
   onClick?: () => void;
-  expanded: boolean;
+  expanded?: boolean;
+  editable?: boolean;
 }
 
 const IntegrationCard: React.FC<IntegrationCardProps> = ({
+  appSettings,
   id,
   name,
   expanded,
-  description,
   imageURL,
+  providerId,
   onClick,
-  enabled
+  enabled,
+  editable
 }) => {
   // const [expanded, setExpanded] = React.useState(false);
   const flags = useFlags(['delete_prompt']);
@@ -48,26 +44,10 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
   // const onClick = () => {
   //   setExpanded(!expanded);
   // };
-  const handleLike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
-    evt.stopPropagation();
-    evt.preventDefault();
-    setLastInteraction('like');
-    if (id)
-      await updatePrompt({
-        id: id
-        // likes: (likes ?? 0) + 1
-      });
+  const handleAuthIntegration = () => {
+    signIn(providerId, { callbackUrl: `/settings/integrations/${name}` });
   };
-  const handleDislike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
-    evt.stopPropagation();
-    evt.preventDefault();
-    setLastInteraction('dislike');
-    if (id)
-      await updatePrompt({
-        id
-        // dislikes: (dislikes ?? 0) + 1
-      });
-  };
+
   const Wrapper: ElementType = expanded ? Box : CardActionArea;
   return (
     <>
@@ -117,12 +97,18 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
                     <Image src={imageURL} alt={`${name} logo`} width={40} height={40} />
                   </Avatar>
                 }
-                sx={{ 'p': 0, 'width': '100%', '.MuiCardHeader-action': { m: 0 } }}
                 action={
-                  <Button variant="contained" color="secondary" disabled={enabled}>
-                    {enabled ? 'Connected' : 'Connect'}
-                  </Button>
+                  providerId ? (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      disabled={enabled && !expanded}
+                      onClick={handleAuthIntegration}>
+                      {expanded && enabled ? 'Refresh auth' : enabled ? 'Connected' : 'Connect'}
+                    </Button>
+                  ) : null
                 }
+                sx={{ 'p': 0, 'width': '100%', '.MuiCardHeader-action': { m: 0 } }}
               />
               {name ? (
                 <Typography
@@ -139,30 +125,39 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
                 </Typography>
               ) : null}
 
-              <Typography
-                variant="body1"
-                sx={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  textTransform: 'capitalize',
-                  display: '-webkit-box',
-                  WebkitLineClamp: '3',
-                  WebkitBoxOrient: 'vertical'
-                }}>
-                {description ?? `Complete the integration with ${name}`}
-              </Typography>
-              {expanded ? (
+              {!enabled ? (
+                <Typography
+                  variant="body1"
+                  sx={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    textTransform: 'capitalize',
+                    display: '-webkit-box',
+                    WebkitLineClamp: '3',
+                    WebkitBoxOrient: 'vertical'
+                  }}>
+                  {`Complete the integration with ${name}`}
+                </Typography>
+              ) : null}
+
+              {enabled ? (
                 <Box
                   component={motion.div}
                   sx={{
-                    // transition: '.25s',
+                    transition: '.25s',
                     overflow: 'hidden',
-                    transitionDelay: '1s',
-
-                    ...(expanded ? { maxHeight: 400 } : { maxHeight: 0 })
+                    // transitionDelay: '1s',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    ...(expanded ? { maxHeight: '90vh', transitionDelay: '3s' } : { maxHeight: 0 })
                   }}>
                   <Typography variant="overline">Settings</Typography>
-                  <IntegrationSetting app={name} />
+                  <IntegrationSetting
+                    app={name}
+                    expanded={expanded}
+                    appSettings={appSettings}
+                    editable={editable}
+                  />
                 </Box>
               ) : null}
             </CardContent>

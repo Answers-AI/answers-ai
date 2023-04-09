@@ -1,0 +1,23 @@
+export const NO_ORG_SETTINGS = {
+  services: [
+    { id: 'google', name: 'google', imageURL: '/static/images/web.png' },
+    { id: 'web', name: 'web', imageURL: '/static/images/web.png' },
+    { id: 'jira', name: 'jira', imageURL: '/static/images/jira.png' },
+    { id: 'slack', name: 'slack', imageURL: '/static/images/slack.png' },
+    {
+      id: 'confluence',
+      name: 'confluence',
+
+      imageURL: '/static/images/confluence.png'
+    },
+    { id: 'notion', name: 'notion', imageURL: '/static/images/notion.png' },
+    { id: 'github', name: 'github', imageURL: '/static/images/github.png' },
+    { id: 'drive', name: 'drive', imageURL: '/static/images/drive.png' },
+    {
+      id: 'contentful',
+      name: 'contentful',
+
+      imageURL: '/static/images/contentful.png'
+    }
+  ]
+};

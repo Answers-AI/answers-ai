@@ -38,12 +38,13 @@ export const fetchJiraIssue = async (issueId: string) => {
     throw error;
   }
 };
-export const jiraIssueLoader = redisLoader<string, JiraIssue>({
-  keyPrefix: 'jira:issue',
-  redisConfig: process.env.REDIS_URL as string,
-  getValuesFn: (keys) => getJiraTickets({ jql: `key in (${keys?.join(',')})` }),
-  cacheExpirationInSeconds: 0
-});
+export const jiraIssueLoader = (jiraClient: JiraClient) =>
+  redisLoader<string, JiraIssue>({
+    keyPrefix: 'jira:issue',
+    redisConfig: process.env.REDIS_URL as string,
+    getValuesFn: (keys) => getJiraTickets({ jql: `key in (${keys?.join(',')})`, jiraClient }),
+    cacheExpirationInSeconds: 0
+  });
 
 export const getJiraComments = async (issueKey: any) => {
   let comments = await jiraClient.fetchJiraData(`/issue/${issueKey}/comment`);
