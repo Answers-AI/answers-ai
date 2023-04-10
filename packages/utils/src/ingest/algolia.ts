@@ -5,7 +5,7 @@ import { AlgoliaHit } from 'types';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
 
-const PINECONE_VECTORS_BATCH_SIZE = 10;
+const PINECONE_VECTORS_BATCH_SIZE = 100;
 
 const { ALGOLIA_APPLICATION_ID = '', ALGOLIA_ADMIN_API_KEY = '' } = process.env;
 
@@ -30,7 +30,9 @@ const prefixHeaders = (markdown: string): string => {
   return lines.join('\n');
 };
 
-const recursiveCharacterTextSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 3000 });
+const recursiveCharacterTextSplitter = new RecursiveCharacterTextSplitter({
+  chunkSize: 3000
+});
 
 const splitPageHtmlChunkMore = async (markdownChunk: string) => {
   const contextChunks = await recursiveCharacterTextSplitter.createDocuments([markdownChunk]);

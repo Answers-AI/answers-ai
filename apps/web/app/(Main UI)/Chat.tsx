@@ -11,6 +11,7 @@ export interface Params {
   chatId?: string;
   journeyId?: string;
 }
+
 const Chat = async ({ chatId, journeyId }: Params) => {
   const session = await getServerSession(authOptions);
   if (!session?.user) {

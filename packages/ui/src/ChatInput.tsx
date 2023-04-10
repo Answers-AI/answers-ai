@@ -1,13 +1,16 @@
 'use client';
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
-import { Box, FormControlLabel, Switch, TextField } from '@mui/material';
+import Box from '@mui/material/Box';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import { DefaultPrompts } from './DefaultPrompts';
 
-export const ChatInput = ({ inputRef }: { inputRef: any }) => {
+export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: boolean }) => {
   const {
     chat,
     journey,
@@ -97,7 +100,7 @@ export const ChatInput = ({ inputRef }: { inputRef: any }) => {
             label={'Stream'}
           />
         ) : null}
-        {messages?.length ? (
+        {!isWidget && messages?.length ? (
           <Button variant="outlined" color="primary" onClick={clearMessages}>
             <DeleteIcon />
           </Button>
