@@ -43,6 +43,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     journeyId
   });
 
+  console.log('Chat', chat);
+
   await inngest.send({
     v: '1',
     ts: new Date().valueOf(),

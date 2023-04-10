@@ -1,29 +1,28 @@
-// // import React from 'react';
+// import React from 'react';
 
-// interface ExternalChatWidgetProps {
-//   src: string;
-// }
+interface ExternalChatWidgetProps {
+  src: string;
+}
 
-// const ExternalChatWidget: React.FC<ExternalChatWidgetProps> = ({
-//   src = 'https://localhost:3000/'
-// }) => {
-//   return (
-//     <div
-//       style={{
-//         position: 'fixed',
-//         top: 0,
-//         right: 0,
-//         width: '20vw',
-//         height: '100vh',
-//         zIndex: 9998,
-//         display: 'flex',
-//         borderLeft: 'solid 1px #fff'
-//       }}>
-//       hello worlds
-//       <iframe src={src} width="100%" height="100%" style={{ border: 'none' }} />
-//     </div>
-//   );
-// };
+const ExternalChatWidget: React.FC<ExternalChatWidgetProps> = ({
+  src = 'https://localhost:3000/'
+}) => {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        right: 0,
+        width: '20vw',
+        height: '100vh',
+        zIndex: 9998,
+        display: 'flex',
+        borderLeft: 'solid 1px #fff'
+      }}>
+      <iframe src={src} width="100%" height="100%" style={{ border: 'none' }} />
+    </div>
+  );
+};
 
 // export default ExternalChatWidget;
 

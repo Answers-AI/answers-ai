@@ -1,6 +1,6 @@
 import React from 'react';
 
-// import ChatWidget from '@ui/ChatWidget';
+import ChatWidget from '@ui/ChatWidget';
 
 export const metadata = {
   title: 'Chat | Answers AI',
@@ -8,8 +8,7 @@ export const metadata = {
 };
 
 const WidgetChat = async ({ params }: any) => {
-  // return <ChatWidget {...params} />;
-  return <>Hello world</>;
+  return <ChatWidget {...params} />;
 };
 
 export default WidgetChat;
