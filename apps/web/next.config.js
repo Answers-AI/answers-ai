@@ -1,10 +1,9 @@
 const { PrismaPlugin } = require('experimental-prisma-webpack-plugin');
-// const { PrismaPlugin } = require('@prisma/nextjs-monorepo-workaround-plugin');
-
 const webpack = require('webpack');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 });
+
 /**
  * @type {import('next').NextConfig}
  */
@@ -23,9 +22,9 @@ module.exports = withBundleAnalyzer({
       transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}'
     }
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
     config.externals = [...config.externals, 'db'];
-    // if (isServer) {
+
     config.plugins = [
       ...config.plugins,
       new PrismaPlugin(),
@@ -34,7 +33,6 @@ module.exports = withBundleAnalyzer({
         contextRegExp: /jsdom$/
       })
     ];
-    // }
 
     return config;
   }

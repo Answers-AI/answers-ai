@@ -37,6 +37,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
 
     const getDomains = async () => {
       try {
+        console.log('getDomains');
         const webDomains = await axios.post(`/api/ai/getDomainList`);
 
         if (webDomains?.data?.domains && webDomains?.data?.domains?.length > 0) {

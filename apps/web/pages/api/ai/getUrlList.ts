@@ -26,7 +26,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const params: { domains?: string[] } = {};
   if (domains) params.domains = domains;
   const urls = await getUrlList(params);
-  console.log('URLS', urls);
 
   res.status(200).json({ urls: urls.map((u) => u.url) });
 };

@@ -69,6 +69,7 @@ interface MessageExtra {
   summary?: string;
   completionData?: object;
   filters?: object;
+  isWidget?: boolean;
 }
 interface MessageCardProps extends Partial<Message>, MessageExtra {
   error?: AxiosError<MessageExtra>;
@@ -91,6 +92,7 @@ export const MessageCard = ({
   filters,
   likes,
   dislikes,
+  isWidget,
   ...other
 }: MessageCardProps) => {
   const { developer_mode } = useFlags(['developer_mode']); // only causes re-render if specified flag values / traits change
@@ -134,17 +136,24 @@ export const MessageCard = ({
         sx={{
           position: 'relative',
           display: 'flex',
-          padding: 2,
-          width: '100%'
+          px: isWidget ? 1 : 2,
+          py: isWidget ? 1 : 2,
+          width: '100%',
+          flexDirection: isWidget ? 'column' : 'row'
         }}>
-        <Avatar sx={{ bgcolor: role == 'user' ? 'secondary.main' : 'primary.main' }}>
+        <Avatar
+          sx={{
+            bgcolor: role == 'user' ? 'secondary.main' : 'primary.main',
+            height: isWidget ? '24px' : '32px',
+            width: isWidget ? '24px' : '32px'
+          }}>
           {role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
         </Avatar>
         <CardContent
           sx={{
             position: 'relative',
             py: 0,
-            px: 2,
+            px: isWidget ? 1 : 2,
             width: '100%',
             display: 'flex',
             flexDirection: 'column'
@@ -161,7 +170,8 @@ export const MessageCard = ({
         <CardActions
           sx={{
             position: 'absolute',
-            bottom: 0,
+            bottom: isWidget ? 'auto' : 0,
+            top: isWidget ? 0 : 'auto',
             right: 0
           }}>
           <IconButton
