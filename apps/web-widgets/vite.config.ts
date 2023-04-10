@@ -6,7 +6,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     rollupOptions: {
-      input: './src/Main.tsx',
+      input: './src/main.tsx',
       output: {
         entryFileNames: '[name].js',
         format: 'umd',
