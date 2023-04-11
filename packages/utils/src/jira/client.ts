@@ -1,19 +1,26 @@
 import axios, { AxiosResponse } from 'axios';
 import Redis from 'ioredis';
-import { JiraProject } from '.';
+import { JiraIssue, JiraProject } from 'types';
+import { getJiraTickets } from './getJiraTickets';
+import redisLoader from '../redisLoader';
 
 class JiraClient {
-  redis: Redis;
+  static redis = new Redis(process.env.REDIS_URL as string);
   accessToken?: string;
   cloudId: Promise<string>;
   headers: { Authorization: string; Accept: string };
   cacheExpireTime: number;
+  issueLoader = redisLoader<string, JiraIssue>({
+    keyPrefix: 'jira:issue',
+    redisConfig: process.env.REDIS_URL as string,
+    getValuesFn: (keys) => this.getJiraTickets({ jql: `key in (${keys?.join(',')})` }),
+    cacheExpirationInSeconds: 0
+  });
   constructor({
     cacheExpireTime = 60 * 60 * 24,
     accessToken
   }: { cacheExpireTime?: number; accessToken?: string } = {}) {
     this.cacheExpireTime = cacheExpireTime;
-    this.redis = new Redis(process.env.REDIS_URL as string);
     this.accessToken = accessToken;
     this.cloudId = this.getCloudId();
     this.headers = {
@@ -63,7 +70,7 @@ class JiraClient {
     const hashKey = 'v4-get-' + url;
     if (cache) {
       try {
-        const cachedData = await this.redis.get(hashKey);
+        const cachedData = await JiraClient.redis.get(hashKey);
 
         if (cachedData) {
           data = JSON.parse(cachedData);
@@ -84,53 +91,41 @@ class JiraClient {
         return null;
       }
       data = response?.data;
-      if (cache) await this.redis.set(hashKey, JSON.stringify(data));
-      if (cache) await this.redis.expire(hashKey, this.cacheExpireTime);
+      if (cache) await JiraClient.redis.set(hashKey, JSON.stringify(data));
+      if (cache) await JiraClient.redis.expire(hashKey, this.cacheExpireTime);
     }
     console.timeEnd('FetchJiraData:' + endpoint);
     return data;
+  }
+  async getJiraTickets(options: any) {
+    return getJiraTickets({ ...options, jiraClient: this });
   }
   async getJiraProjects() {
     let projects: JiraProject[] = await this.fetchJiraData(`/project`);
     return projects.filter((project) => !project.archived);
   }
-}
 
-const headers = {
-  Authorization: `Basic ${Buffer.from(`brad@lastrev.com:${process.env.JIRA_API}`).toString(
-    'base64'
-  )}`,
-  Accept: 'application/json'
-};
+  async fetchJiraIssue(issueId: string) {
+    try {
+      if (!issueId) throw new Error(`No issue with issue key ${issueId} found.`);
+      let endpoint = `/issue/${issueId}`;
+      let data: JiraIssue = await this.fetchJiraData(endpoint);
 
-const handleRateLimit = async (response: { headers?: any }) => {
-  let retryAfter = response.headers.get('Retry-After');
-  let resetTime = response.headers.get('X-RateLimit-Reset');
-
-  if (retryAfter) {
-    console.log(`Too many requests, retrying after ${retryAfter} seconds.`);
-    await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
-  } else if (resetTime) {
-    console.log(`Too many requests, retrying after ${resetTime}.`);
-    // let timeToWait = new Date(resetTime) - new Date();
-    // await new Promise((resolve) => setTimeout(resolve, timeToWait));
-  } else {
-    console.log('no wait', Object.keys(response));
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
-};
 
-// const fetchJiraData = async (endpoint: any) => {
-//   const url = `https://lastrev.atlassian.net/rest/api/3${endpoint}`;
-//   let response = await axios.get(url, {
-//     method: 'GET',
-//     headers
-//   });
+  async getJiraComments(issueKey: any) {
+    let comments = await this.fetchJiraData(`/issue/${issueKey}/comment`);
 
-//   if (response.status === 429) {
-//     await handleRateLimit(response);
-//     return null;
-//   }
-//   return response.data;
-// };
+    if (!comments?.comments?.length) return null;
+
+    const jiraComments = comments.comments;
+    return jiraComments;
+  }
+}
 
 export default JiraClient;

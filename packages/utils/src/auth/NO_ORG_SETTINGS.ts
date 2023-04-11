@@ -1,7 +1,7 @@
 export const NO_ORG_SETTINGS = {
   services: [
     { id: 'google', name: 'google', imageURL: '/static/images/web.png' },
-    { id: 'web', name: 'web', imageURL: '/static/images/web.png' },
+    { id: 'web', name: 'web', imageURL: '/static/images/web.png', enabled: true },
     { id: 'jira', name: 'jira', imageURL: '/static/images/jira.png' },
     { id: 'slack', name: 'slack', imageURL: '/static/images/slack.png' },
     {

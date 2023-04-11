@@ -1,5 +1,5 @@
 import { deepmerge } from '../deepmerge';
-import { JiraProject } from '../jira';
+import { JiraProject } from 'types';
 import SlackClient from '../slack/client';
 
 import {
@@ -11,6 +11,7 @@ import {
 } from 'types';
 
 import { getUserClients } from './getUserClients';
+import { SYSTEM_SETTINGS } from './SYSTEM_SETTINGS';
 
 export const buildSettings = async (user: User, org?: Organization) => {
   const { jiraClient, confluenceClient, slackClient } = await getUserClients(user);
@@ -24,7 +25,7 @@ export const buildSettings = async (user: User, org?: Organization) => {
   //   return NO_ORG_SETTINGS;
   // }
   // Load all possible jiraprojects on every update
-  let newSettings: Partial<AppSettings> = deepmerge({}, orgSettings, userSettings);
+  let newSettings: Partial<AppSettings> = deepmerge({}, orgSettings, userSettings, SYSTEM_SETTINGS);
   try {
     const jiraProjects = await jiraClient
       .getJiraProjects()
@@ -109,5 +110,6 @@ export const buildSettings = async (user: User, org?: Organization) => {
     // TODO: Constant error
     // console.log('urlSettingsError', error);
   }
+  console.log('NewSettings', newSettings);
   return newSettings;
 };

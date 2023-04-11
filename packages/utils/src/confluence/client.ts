@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import Redis from 'ioredis';
-import { ConfluenceSpace } from 'types';
+import { ConfluencePage, ConfluenceSpace } from 'types';
+import redisLoader from '../redisLoader';
 
 interface RequestOptions {
   cache?: boolean;
@@ -12,6 +13,28 @@ class ConfluenceClient {
   cloudId: Promise<string>;
   headers: { Authorization: string; Accept: string };
   cacheExpireTime: number;
+  pagesLoader = redisLoader<string, ConfluencePage>({
+    keyPrefix: 'confluence:page',
+    redisConfig: process.env.REDIS_URL as string,
+    getValuesFn: async () => this.getConfluencePages(),
+    cacheExpirationInSeconds: 0,
+    disableCache: true
+  });
+  pageLoader = redisLoader<string, ConfluencePage>({
+    keyPrefix: 'confluence:page',
+    redisConfig: process.env.REDIS_URL as string,
+    getValuesFn: async (keys) => {
+      const results: ConfluencePage[] = [];
+      for (const pageId of keys) {
+        const result = await this.getConfluencePage({ pageId });
+        results.push(result);
+      }
+      return Promise.all(results);
+    },
+    cacheExpirationInSeconds: 0,
+    disableCache: true
+  });
+
   constructor({
     cacheExpireTime = 60 * 60 * 24,
     accessToken
@@ -104,6 +127,55 @@ class ConfluenceClient {
     }
 
     return data;
+  }
+  async getConfluencePage({ pageId }: { pageId: string }) {
+    console.log(`===Fetching confluence page: ${pageId}`);
+    try {
+      const endpoint = `/pages/${pageId}?body-format=atlas_doc_format`;
+      const pageData = await confluenceClient.fetchConfluenceData(endpoint, { cache: false });
+      if (!pageData?.body?.atlas_doc_format?.value)
+        throw new Error(`No valid data returned for id: ${pageId}`);
+
+      return pageData;
+    } catch (error) {
+      console.error('getConfluencePage:ERROR', error);
+      throw error;
+    }
+  }
+
+  async getConfluencePages({
+    limit = 250,
+    cursor = ''
+  }: {
+    limit?: number;
+    cursor?: string;
+  } = {}) {
+    console.log('===Fetching all confluence pages===');
+    try {
+      const endpoint = `/pages?body-format=atlas_doc_format&limit=${limit}${
+        cursor ? `&cursor=${cursor}` : ''
+      }`;
+      const pagesResult: { results: any[]; _links: { next: string } } =
+        await this.fetchConfluenceData(endpoint, { cache: false });
+
+      const pages = pagesResult.results.filter((page) => !!page?.body?.atlas_doc_format?.value);
+
+      if (pagesResult._links?.next) {
+        const nextCursor = new URL(pagesResult._links.next).searchParams.get('cursor');
+        if (nextCursor) {
+          const nextPageResults = await this.getConfluencePages({
+            limit,
+            cursor: nextCursor
+          });
+          pages.push(...nextPageResults);
+        }
+      }
+
+      return pages;
+    } catch (error) {
+      console.error('getConfluencePages:ERROR', error);
+      throw error;
+    }
   }
 }
 

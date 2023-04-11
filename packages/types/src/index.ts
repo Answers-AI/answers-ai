@@ -261,7 +261,38 @@ export interface OpenApiProvider {
   };
 }
 
-export type ConfluencePage = { id: string; space: string; body: string };
+export type ConfluencePage = {
+  id: number;
+  status: string;
+  title: string;
+  spaceId: number;
+  parentId: number;
+  authorId: string;
+  createdAt: string;
+  version: {
+    createdAt: string;
+    message: string;
+    number: number;
+    minorEdit: boolean;
+    authorId: string;
+  };
+  content: string;
+  body: {
+    storage?: {
+      representation: string;
+      value: string;
+    };
+    atlas_doc_format?: {
+      representation: string;
+      value: string;
+    };
+  };
+};
+
 export interface ConfluenceSetting extends ConfluencePage {
   enabled: boolean;
 }
+
+export type JiraProject = { key: string; name: string; archived: any };
+export type JiraIssue = { key: string; self: string; id: string; fields: any; archived: any };
+export type JiraComment = { key: string; self: string; id: string; fields: any; archived: any };

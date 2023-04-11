@@ -1,11 +1,10 @@
 import { inngest } from './client';
-import { confluencePageLoader, confluencePagesLoader } from '../confluence';
 import { EventVersionHandler } from './EventVersionHandler';
 import { chunkArray } from '../utilities/utils';
-import { ConfluencePage } from '../confluence';
-import { getConfluencePages } from '../confluence/getConfluencePages';
+import { ConfluencePage } from 'types';
 import { jiraAdfToMarkdown } from '../utilities/jiraAdfToMarkdown';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { getUserClients } from '../auth/getUserClients';
 
 const PINECONE_VECTORS_BATCH_SIZE = 10;
 
@@ -125,7 +124,10 @@ export const processConfluencePages: EventVersionHandler<{ pageIds: string[] }> 
   v: '1',
   handler: async ({ event }) => {
     try {
-      const confluencePages = (await getConfluencePages()) as ConfluencePage[];
+      const { user } = event;
+      if (!user) throw new Error('User is requierd');
+      const { confluenceClient } = await getUserClients(user);
+      const confluencePages = (await confluenceClient.getConfluencePages()) as ConfluencePage[];
       const vectors = await getConfluencePagesVectors(confluencePages);
       const embeddedVectors = await embedVectors(event, vectors);
     } catch (error) {
@@ -141,8 +143,12 @@ export const processConfluencePage: EventVersionHandler<{ pageIds: string[] }> =
     try {
       const data = event.data;
       const { pageIds } = data;
-
-      const confluencePages = (await confluencePageLoader.loadMany(pageIds)) as ConfluencePage[];
+      const { user } = event;
+      if (!user) throw new Error('User is requierd');
+      const { confluenceClient } = await getUserClients(user);
+      const confluencePages = (await confluenceClient.pageLoader.loadMany(
+        pageIds
+      )) as ConfluencePage[];
       const vectors = await getConfluencePagesVectors(confluencePages);
       const embeddedVectors = await embedVectors(event, vectors);
     } catch (error) {

@@ -1,21 +1,16 @@
-import { getJiraComments, getJiraProjects, jiraClient, JiraIssue, JiraProject } from '../jira';
-import { getJiraTickets } from '../jira/getJiraTickets';
-import { jiraIssueLoader } from '../jira';
-
+import { JiraIssue, JiraProject } from 'types';
 import { chunkArray } from '../utilities/utils';
 
 import { EventVersionHandler } from './EventVersionHandler';
 import { AnswersFilters, AppSettings } from 'types';
 import { jiraAdfToMarkdown } from '../utilities/jiraAdfToMarkdown';
-// import { summarizeChain } from '../llm/chains';
-// import OpenAI from '../openai/openai';
-// import { openApiClient } from '../openapi';
+
 import { Configuration, OpenAIApi } from 'openai';
 import { MODELS } from '../MODELS';
 import { inngest } from './client';
 import { summarizeAI } from '../summarizeAI';
-import JiraClient from '../jira/client';
 import { getUserClients } from '../auth/getUserClients';
+
 const initializeOpenAI = () => {
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY
@@ -89,14 +84,13 @@ export const procesProjectUpdated: EventVersionHandler<{ projectKeys: string[]; 
     const { jiraClient } = await getUserClients(user);
 
     // Chunk projects into batches of 10
-    const issues = await getJiraTickets({
-      jiraClient,
+    const issues = await jiraClient.getJiraTickets({
       jql: `project in (${projectKeys?.join(',')})`
     });
 
     try {
       // @ts-ignore
-      await jiraIssueLoader.primeAll(issues.map((issue) => [issue.key, issue]));
+      await jiraClient.issueLoader.primeAll(issues.map((issue) => [issue.key, issue]));
     } catch (error) {
       console.log('Error priming loader', error);
     }
@@ -130,21 +124,21 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
   v: '1',
   handler: async ({ event, step }) => {
     try {
-      const { issuesKeys } = event.data;
       const {
         user,
-        data: {}
+        data: { issuesKeys }
       } = event;
       if (!user) throw new Error('User is requierd');
       const { jiraClient } = await getUserClients(user);
-      const loader = jiraIssueLoader(jiraClient);
-      const issues = (await loader.loadMany(issuesKeys)) as JiraIssue[];
+
+      const issues = (await jiraClient.issueLoader.loadMany(issuesKeys)) as JiraIssue[];
 
       // TODO: Create a JiraIssueCommentsLoader
       // or TODO: Pull issue and comments from Prisma
       const jiraIssueComments = await Promise.all(
         issues?.map(async (issue) =>
-          getJiraComments(issue?.id)
+          jiraClient
+            .getJiraComments(issue?.id)
             .then((comments) => ({ ...issue, comments }))
             .catch((err) => null)
         )

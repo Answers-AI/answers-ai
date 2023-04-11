@@ -33,9 +33,10 @@ export async function getAppSettings(req?: any, res?: any): Promise<AppSettings>
       acc[account.provider] = account;
       return acc;
     }, {});
+
     services = services?.map((service) => ({
       ...service,
-      enabled: !!service.providerId && !!accountsByProvider[service.providerId]
+      enabled: service.enabled || (!!service.providerId && !!accountsByProvider[service.providerId])
     }));
 
     if (!user?.organization) settings = NO_ORG_SETTINGS;

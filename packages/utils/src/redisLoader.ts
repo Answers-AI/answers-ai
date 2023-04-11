@@ -32,7 +32,7 @@ const redisLoader = <K, V>({
 }: {
   keyPrefix: string;
   redisConfig: string;
-  getValuesFn: (keys: K[]) => Promise<(V | null)[]>;
+  getValuesFn: (keys: readonly K[] | K[]) => Promise<(V | null)[]>;
   cacheExpirationInSeconds?: number;
   disableCache?: boolean;
 }) => {
@@ -41,7 +41,7 @@ const redisLoader = <K, V>({
     `v1:${keyPrefix || 'default'}:redisLoader:` +
     createHash('sha1').update(JSON.stringify(key)).digest('base64');
 
-  const batchLoadFn = async (cacheKeys: K[]) => {
+  const batchLoadFn = async (cacheKeys: readonly K[]) => {
     if (disableCache) return getValuesFn(cacheKeys);
     const cacheKeyStrings = cacheKeys.map(hashKey);
     // console.log('Loading from redis', cacheKeyStrings?.length);

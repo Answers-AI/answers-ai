@@ -2,7 +2,7 @@ import { prisma } from 'db/dist';
 
 export async function upsertChat({
   id,
-  email = process.env.DEFAULT_USER_EMAIL,
+  email = process.env.DEFAULT_USER_EMAIL!,
   filters,
   prompt,
   isNewJourney,

@@ -1,8 +1,8 @@
-import ConfluenceClient from '../confluence/client';
-import { User } from 'types';
-import JiraClient from '../jira/client';
 import { prisma } from 'db/dist';
+import ConfluenceClient from '../confluence/client';
+import JiraClient from '../jira/client';
 import SlackApiClient from '../slack/client';
+
 export async function getUserClients(user: { id: string }) {
   const accounts = await prisma.account.findMany({
     where: {

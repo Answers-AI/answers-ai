@@ -1,11 +1,5 @@
-import JiraIssueModel from './models/issue';
-import { JiraIssue } from './index';
+import { JiraIssue } from 'types';
 import JiraClient from './client';
-
-// const getJiraStatuses = async () => {
-//   let statuses = await jiraClient.fetchJiraData(`/status`);
-//   return statuses.map((status) => new JiraStatus(status));
-// };
 
 const JIRA_FIELDS = [
   'uid',

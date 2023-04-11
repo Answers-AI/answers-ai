@@ -55,7 +55,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
   const selectedService = enabledServices?.[open];
   return (
     <>
-      <AvatarGroup total={enabledServices?.length} spacing={-8}>
+      <AvatarGroup total={enabledServices?.length} max={10} spacing={-8}>
         {enabledServices
           ?.map((service, idx) => [
             <Avatar
@@ -65,7 +65,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
               ref={(ref) => {
                 if (ref) anchorRef.current[idx] = ref;
               }}
-              onClick={() => setServiceOpen(service.name)}>
+              onClick={() => setOpen(idx)}>
               <Image src={service.imageURL} alt={`${service.name} logo`} width={40} height={40} />
             </Avatar>
           ])

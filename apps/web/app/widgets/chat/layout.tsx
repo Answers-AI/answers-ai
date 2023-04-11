@@ -12,5 +12,5 @@ export default async function RootLayout({
     slug: string;
   };
 }) {
-  return <AnswersProvider>{children}</AnswersProvider>;
+  return <AnswersProvider appSettings={{}}>{children}</AnswersProvider>;
 }
