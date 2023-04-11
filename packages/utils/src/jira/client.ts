@@ -22,13 +22,13 @@ class JiraClient {
   }: { cacheExpireTime?: number; accessToken?: string } = {}) {
     this.cacheExpireTime = cacheExpireTime;
     this.accessToken = accessToken;
-    this.cloudId = this.getCloudId();
     this.headers = {
       Authorization: `Basic ${Buffer.from(`brad@lastrev.com:${process.env.JIRA_API}`).toString(
         'base64'
       )}`,
       Accept: 'application/json'
     };
+    this.cloudId = this.getCloudId();
   }
   async getAppData() {
     const response = await axios.get('https://api.atlassian.com/oauth/token/accessible-resources', {

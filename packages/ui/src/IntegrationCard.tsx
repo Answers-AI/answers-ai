@@ -94,7 +94,13 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
               <CardHeader
                 avatar={
                   <Avatar>
-                    <Image src={imageURL} alt={`${name} logo`} width={40} height={40} />
+                    <Image
+                      style={{ background: 'white', padding: '6px' }}
+                      src={imageURL}
+                      alt={`${name} logo`}
+                      width={40}
+                      height={40}
+                    />
                   </Avatar>
                 }
                 action={

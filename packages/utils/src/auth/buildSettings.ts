@@ -85,7 +85,7 @@ export const buildSettings = async (user: User, org?: Organization) => {
       }))
     };
   } catch (error) {
-    // console.log('ConfluenceSettingsError', error);
+    console.log('ConfluenceSettingsError', error);
   }
 
   try {

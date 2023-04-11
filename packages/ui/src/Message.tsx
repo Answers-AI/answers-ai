@@ -68,6 +68,7 @@ interface MessageExtra {
   context?: string;
   summary?: string;
   completionData?: object;
+  completionRequest?: object;
   filters?: object;
   isWidget?: boolean;
 }
@@ -89,6 +90,7 @@ export const MessageCard = ({
   context,
   summary,
   completionData,
+  completionRequest,
   filters,
   likes,
   dislikes,
@@ -265,6 +267,25 @@ export const MessageCard = ({
                     filters,
                     pineconeData
                   }}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {completionRequest ? (
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Completion request</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <JsonViewer
+                  rootName=""
+                  value={completionRequest}
                   theme={'dark'}
                   // defaultInspectDepth={0}
                   collapseStringsAfterLength={100}

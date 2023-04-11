@@ -1,6 +1,7 @@
 import { OpenAIStream } from '@utils/OpenAIStream';
 import cors from '@ui/corsEdge';
 import { AnswersFilters, Message } from 'types';
+import { getCompletionRequest } from '@utils/llm/getCompletionRequest';
 
 export const config = {
   runtime: 'edge'
@@ -25,7 +26,7 @@ const handler = async (req: Request): Promise<Response> => {
     // console.log('handleResponse', response);
   };
   try {
-    const { pineconeData, summary } = await fetch(
+    const response = await fetch(
       `${
         process.env.VERCEL_URL?.includes('localhost')
           ? `http://${process.env.VERCEL_URL}`
@@ -40,19 +41,31 @@ const handler = async (req: Request): Promise<Response> => {
       }
     ).then((res) => res.json());
 
+    const { pineconeData, context, summary } = response;
+
+    const completionRequest = getCompletionRequest({
+      context: summary,
+      input: prompt,
+      history: messages
+    });
     const payload = {
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.1,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
-      max_tokens: 1000,
-      stream: true,
-      n: 1
+      ...completionRequest,
+      // model: 'gpt-3.5-turbo',
+      // messages: [{ role: 'user', content: prompt }],
+      // temperature: 0.1,
+      // top_p: 1,
+      // frequency_penalty: 0,
+      // presence_penalty: 0,
+      // max_tokens: 1000,
+      stream: true
+      // n: 1
     };
 
-    const stream = await OpenAIStream(payload, { pineconeData, context: summary }, handleResponse);
+    const stream = await OpenAIStream(
+      payload,
+      { pineconeData, context, summary, completionRequest },
+      handleResponse
+    );
     return cors(req, new Response(stream));
   } catch (error) {
     const payload = {

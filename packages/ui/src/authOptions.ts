@@ -27,16 +27,19 @@ declare module 'next-auth/jwt' {
 const ATLASSIAN_SCOPE = {
   // 'write:jira-work': true,
   // 'read:jira-work': true,
-  'read:jira-user': true,
-  'read:oauth-provider': true,
   'offline_access': true,
-  'read:me': true,
-  'read:confluence-user': true,
-  'read:confluence-space.summary': true,
-  'read:confluence-props': true,
   'read:confluence-content.all': true,
   'read:confluence-content.summary': true,
-  'read:confluence-groups': true
+  'read:confluence-content': true,
+  'read:confluence-groups': true,
+  'read:confluence-props': true,
+  'read:confluence-space.summary': true,
+  'read:confluence-user': true,
+  'read:jira-user': true,
+  'read:me': true,
+  'read:oauth-provider': true,
+  'read:page:confluence': true,
+  'read:space:confluence': true
 };
 export const authOptions: AuthOptions = {
   session: {
@@ -91,13 +94,13 @@ export const authOptions: AuthOptions = {
           if (!chatApp?.user) {
             throw new Error('Invalid API Key');
           }
+          // @ts-expect-error
+          return chatApp?.user! as AnswersUser;
         } catch (e) {
           console.log(e);
-          throw e;
-        } finally {
-          return chatApp?.user as AnswersUser;
+          // throw e;
         }
-
+        return null;
         // Return a user object with the necessary fields
       }
     }),
@@ -133,10 +136,11 @@ export const authOptions: AuthOptions = {
         session.user.id = token.id!;
       }
       return session;
-    },
-    async redirect({ url, baseUrl }) {
-      return url.startsWith(baseUrl) ? url : baseUrl;
     }
+    // async redirect({ url, baseUrl }) {
+    //   console.log('Redirect', { url, baseUrl });
+    //   return url.startsWith(baseUrl) ? url : baseUrl;
+    // }
   },
   events: USER_EVENTS.reduce(
     (acc, event) => ({

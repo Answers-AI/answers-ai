@@ -6,7 +6,7 @@ import { jiraAdfToMarkdown } from '../utilities/jiraAdfToMarkdown';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { getUserClients } from '../auth/getUserClients';
 
-const PINECONE_VECTORS_BATCH_SIZE = 10;
+const PINECONE_VECTORS_BATCH_SIZE = 50;
 
 const prefixHeaders = (markdown: string): string => {
   const lines = markdown.split('\n');
@@ -74,7 +74,7 @@ const getConfluencePagesVectors = async (confluencePages: ConfluencePage[]) => {
         if (!markdownChunks?.length) return [];
 
         return markdownChunks.map((headingChunk: string, i: any) => ({
-          uid: `WebPage_${page.title}_${i}`,
+          uid: `Confluence_${page.title}_${i}`,
           text: headingChunk,
           metadata: {
             id: page.id,

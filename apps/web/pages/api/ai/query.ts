@@ -27,7 +27,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     return;
   }
 
-  let completionData;
+  let completionData, completionRequest;
 
   const messages: Message[] = req.body.messages;
 
@@ -74,7 +74,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     }));
     // console.log({ pineconeData, context, summary });
   } catch (contextError) {
-    // console.log('fetchContext', contextError);
+    console.log('fetchContext', contextError);
     throw contextError;
   }
 
@@ -95,6 +95,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     });
     console.timeEnd(`[${ts}] [query chatChain.call]: ` + prompt);
     const answer = response.text;
+    completionRequest = response.completionRequest;
     console.timeEnd(`[${ts}] [ChatCompletion]: ` + prompt);
     let message;
     if (prompt && answer) {
@@ -128,12 +129,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       summary,
       filters,
       pineconeData,
-      completionData
+      completionData,
+      completionRequest
     });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ prompt, error, context, summary, filters, pineconeData, completionData } as any);
+    console.log('Error', error);
+    res.status(500).json({
+      prompt,
+      error,
+      context,
+      summary,
+      filters,
+      pineconeData,
+      completionData,
+      completionRequest
+    } as any);
   }
 };
 

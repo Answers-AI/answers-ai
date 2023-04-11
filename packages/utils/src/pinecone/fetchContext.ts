@@ -10,7 +10,7 @@ const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
 
 // const SUMMARY_CHUNK_SIZE = 10_000; // Maximum number of tokens to send to the summarization
-const SUMMARY_CHUNK_SIZE = 10_000; // Controls how many tokens will fit into each chunk sent to the summarization
+const SUMMARY_CHUNK_SIZE = 6_000; // Controls how many tokens will fit into each chunk sent to the summarization
 const SUMMARY_TOKEN_SIZE = 2_000; // (openai max_tokens) Controls the ouput tokens of the summarization
 const CONTEXT_PAGES = 1; // How many context pages we want to process for completion
 const PINECONE_THRESHOLD = 0.68;
@@ -97,20 +97,16 @@ export const fetchContext = async ({
         filter: {
           ...filter[source]
         },
-        topK: 100
+        topK: 200
       });
-    }),
-    pineconeQuery(promptEmbedding, {
-      topK: 100
     })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
   console.timeEnd(`[${ts}] Pineconedata get`);
 
+  const filteredData = pineconeData?.filter((x) => x.score! > threshold);
   const context = [
     // `${history}`,
-    ...(!pineconeData
-      ? []
-      : pineconeData?.filter((x) => x.score! > threshold)?.map((item: any) => item?.metadata?.text))
+    ...(!filteredData ? [] : filteredData?.map((item: any) => item?.metadata?.text))
   ].join(' <SEP> ');
 
   console.time(`[${ts}] Pineconedata split`);
@@ -143,6 +139,7 @@ export const fetchContext = async ({
   console.timeEnd(`[${ts}] Pineconedata`);
 
   return {
+    filteredData,
     pineconeData,
     context: contextText,
     summary

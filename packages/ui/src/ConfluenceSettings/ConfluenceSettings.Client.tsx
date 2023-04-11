@@ -14,7 +14,6 @@ import React, { useState } from 'react';
 import {
   AnswersFilters,
   AppSettings,
-  ConfluenceFilters,
   ConfluenceSettings as ConfluenceSettingsType,
   ConfluenceSpaceSetting
 } from 'types';

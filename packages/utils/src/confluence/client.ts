@@ -43,15 +43,12 @@ class ConfluenceClient {
 
     this.redis = new Redis(process.env.REDIS_URL as string);
     this.accessToken = accessToken;
-    this.cloudId = this.getCloudId();
     this.headers = {
-      Authorization: accessToken
-        ? `Bearer ${accessToken}`
-        : `Basic ${Buffer.from(`adam@lastrev.com:${process.env.CONFLUENCE_ACCESS_TOKEN}`).toString(
-            'base64'
-          )}`,
+      Authorization: accessToken ? `Bearer ${accessToken}` : '',
       Accept: 'application/json'
     };
+
+    this.cloudId = this.getCloudId();
   }
 
   async handleRateLimit(response: AxiosResponse) {
@@ -65,13 +62,12 @@ class ConfluenceClient {
       headers: this.headers
     });
 
-    console.log('Response', response.data);
     return response.data;
   }
 
   async getCloudId() {
     const appData = await this.getAppData();
-    console.log('APpData', appData);
+
     const confluenceData = appData.find((app: any) =>
       app.scopes?.some((scope: string) => scope.includes('confluence'))
     );
@@ -92,9 +88,10 @@ class ConfluenceClient {
 
   async fetchConfluenceData(endpoint: string, { cache = true }: RequestOptions = {}) {
     const cloudId = await this.cloudId;
-    const url = `https://api.atlassian.com/ex/confluence/${cloudId}/wiki/rest/api/v2${endpoint}`;
+    const url = `https://api.atlassian.com/ex/confluence/${cloudId}/${endpoint}`;
     let data: any;
 
+    console.log('[fetchConfluenceData] URL', url);
     if (cache) {
       try {
         const cachedData = await this.redis.get(url);
@@ -131,8 +128,8 @@ class ConfluenceClient {
   async getConfluencePage({ pageId }: { pageId: string }) {
     console.log(`===Fetching confluence page: ${pageId}`);
     try {
-      const endpoint = `/pages/${pageId}?body-format=atlas_doc_format`;
-      const pageData = await confluenceClient.fetchConfluenceData(endpoint, { cache: false });
+      const endpoint = `wiki/api/v2/pages/${pageId}?body-format=atlas_doc_format`;
+      const pageData = await this.fetchConfluenceData(endpoint, { cache: false });
       if (!pageData?.body?.atlas_doc_format?.value)
         throw new Error(`No valid data returned for id: ${pageId}`);
 
@@ -152,7 +149,7 @@ class ConfluenceClient {
   } = {}) {
     console.log('===Fetching all confluence pages===');
     try {
-      const endpoint = `/pages?body-format=atlas_doc_format&limit=${limit}${
+      const endpoint = `wiki/api/v2/pages?body-format=atlas_doc_format&limit=${limit}${
         cursor ? `&cursor=${cursor}` : ''
       }`;
       const pagesResult: { results: any[]; _links: { next: string } } =
@@ -161,7 +158,9 @@ class ConfluenceClient {
       const pages = pagesResult.results.filter((page) => !!page?.body?.atlas_doc_format?.value);
 
       if (pagesResult._links?.next) {
-        const nextCursor = new URL(pagesResult._links.next).searchParams.get('cursor');
+        const nextCursor = new URL('https://test.com' + pagesResult._links.next).searchParams.get(
+          'cursor'
+        );
         if (nextCursor) {
           const nextPageResults = await this.getConfluencePages({
             limit,
@@ -178,7 +177,5 @@ class ConfluenceClient {
     }
   }
 }
-
-export const confluenceClient = new ConfluenceClient();
 
 export default ConfluenceClient;
