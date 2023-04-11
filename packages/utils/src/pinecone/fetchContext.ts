@@ -9,10 +9,10 @@ import { summarizeAI } from '../summarizeAI';
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
 
-// const SUMMARY_CHUNK_SIZE = 10_000; // Max
-const SUMMARY_CHUNK_SIZE = 3_000; // Controls how many tokens will fit into each chunk sent to the summarization
+// const SUMMARY_CHUNK_SIZE = 10_000; // Maximum number of tokens to send to the summarization
+const SUMMARY_CHUNK_SIZE = 10_000; // Controls how many tokens will fit into each chunk sent to the summarization
 const SUMMARY_TOKEN_SIZE = 2_000; // (openai max_tokens) Controls the ouput tokens of the summarization
-const CONTEXT_PAGES = 2; // How many context pages we want to process for completion
+const CONTEXT_PAGES = 1; // How many context pages we want to process for completion
 const PINECONE_THRESHOLD = 0.68;
 export const fetchContext = async ({
   chat,

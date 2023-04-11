@@ -1,14 +1,11 @@
 import React from 'react';
+import { getServerSession } from 'next-auth';
 
 import ChatWidget from '@ui/ChatWidget';
 
-export const metadata = {
-  title: 'Chat | Answers AI',
-  description: 'Your chat'
+const WidgetPageServer = async ({ params }: any) => {
+  const session = await getServerSession();
+  return <ChatWidget {...params} session={session} />;
 };
 
-const WidgetChat = async ({ params }: any) => {
-  return <ChatWidget {...params} />;
-};
-
-export default WidgetChat;
+export default WidgetPageServer;
