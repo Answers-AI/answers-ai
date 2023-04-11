@@ -6,7 +6,7 @@ interface Props {
   height: string;
 }
 
-const App = () => {
+const App = ({ iframeSrc }: { iframeSrc: string }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   const toggleChat = () => setIsChatOpen(!isChatOpen);
@@ -39,7 +39,7 @@ const App = () => {
           zIndex: 9999
         }}>
         <iframe
-          src="http://localhost:3000/widgets/chat"
+          src={`${iframeSrc}/widgets/chat`}
           style={{ height: '100%', width: '100%', border: 'none' }}
         />
       </div>
