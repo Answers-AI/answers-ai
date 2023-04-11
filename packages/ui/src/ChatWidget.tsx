@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import ChatDetailWidget from './ChatDetailWidget';
 import { signIn } from 'next-auth/react';
 import { Session } from 'next-auth';
+import { useRouter } from 'next/navigation';
 
 interface ChatWidgetProps {
   params: any;
@@ -11,6 +12,7 @@ interface ChatWidgetProps {
 
 const ChatWidget: React.FC<ChatWidgetProps> = ({ session, params }) => {
   const [isAuthorized, setIsAuthorized] = useState(!!session?.user);
+  const Router = useRouter();
 
   useEffect(() => {
     if (isAuthorized) return;
@@ -31,9 +33,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ session, params }) => {
       );
       // console.log('signInResponse', signInResponse);
       setIsAuthorized(!!signInResponse?.ok);
+      Router.refresh();
     };
     signInAsync();
-  }, [isAuthorized]);
+  }, [isAuthorized, Router]);
 
   return isAuthorized && session?.user ? (
     <ChatDetailWidget user={session.user} appSettings={session.user.appSettings} {...params} />
