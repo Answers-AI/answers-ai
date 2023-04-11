@@ -2,6 +2,7 @@ import ConfluenceClient from '../confluence/client';
 import { User } from 'types';
 import JiraClient from '../jira/client';
 import { prisma } from 'db/dist';
+import SlackApiClient from '../slack/client';
 export async function getUserClients(user: { id: string }) {
   const accounts = await prisma.account.findMany({
     where: {
@@ -19,5 +20,8 @@ export async function getUserClients(user: { id: string }) {
   const jiraClient = new JiraClient({
     accessToken: accountsByProvider?.atlassian?.access_token
   });
-  return { jiraClient, confluenceClient };
+  const slackClient = new SlackApiClient({
+    accessToken: accountsByProvider?.slack?.access_token
+  });
+  return { jiraClient, confluenceClient, slackClient };
 }

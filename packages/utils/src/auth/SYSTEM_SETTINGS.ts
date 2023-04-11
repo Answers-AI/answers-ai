@@ -8,7 +8,7 @@ export const SYSTEM_SETTINGS: AppSettings = {
       name: 'jira',
       imageURL: '/static/images/jira.png'
     },
-    { id: 'slack', name: 'slack', imageURL: '/static/images/slack.png' },
+    { id: 'slack', providerId: 'slack', name: 'slack', imageURL: '/static/images/slack.png' },
     {
       id: 'confluence',
       providerId: 'atlassian',
@@ -18,8 +18,8 @@ export const SYSTEM_SETTINGS: AppSettings = {
     },
     { id: 'web', name: 'web', imageURL: '/static/images/web.png' },
     { id: 'notion', name: 'notion', imageURL: '/static/images/notion.png' },
-    { id: 'github', name: 'github', imageURL: '/static/images/github.png' },
-    { id: 'drive', name: 'drive', imageURL: '/static/images/drive.png' },
+    { id: 'github', providerId: 'github', name: 'github', imageURL: '/static/images/github.png' },
+    { id: 'drive', providerId: 'google', name: 'drive', imageURL: '/static/images/drive.png' },
     {
       id: 'contentful',
       name: 'contentful',

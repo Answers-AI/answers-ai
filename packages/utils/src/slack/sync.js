@@ -10,7 +10,7 @@ answerSession.initPinecone({
   indexName: 'adam-test-jira-2023-02-08-01'
 });
 
-const slackClient = new SlackClient(process.env.SLACK_TOKEN);
+const slackClient = new SlackClient({ accessToken: process.env.SLACK_TOKEN });
 
 export const indexSingleSlackChannel = async (channelId) => {
   console.time('indexSingleSlackChannel');

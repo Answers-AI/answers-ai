@@ -10,7 +10,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 module.exports = withBundleAnalyzer({
   experimental: {
     appDir: true,
-    enableUndici: true
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],

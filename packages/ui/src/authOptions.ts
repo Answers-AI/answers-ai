@@ -2,6 +2,7 @@ import { AuthOptions, DefaultSession } from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 import AtlassianProvider from 'next-auth/providers/atlassian';
+import SlackProvider from 'next-auth/providers/slack';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from 'db/dist';
 import { inngest } from '@utils/ingest/client';
@@ -47,6 +48,17 @@ export const authOptions: AuthOptions = {
   },
   adapter: PrismaAdapter(prisma),
   providers: [
+    SlackProvider({
+      clientId: process.env.SLACK_CLIENT_ID!,
+      clientSecret: process.env.SLACK_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          // scope: 'openid email profile channels:read groups:read mpim:read im:read'
+          scope: 'openid email profile'
+        }
+      }
+    }),
     AtlassianProvider({
       clientId: process.env.ATLASSIAN_CLIENT_ID!,
       clientSecret: process.env.ATLASSIAN_CLIENT_SECRET!,

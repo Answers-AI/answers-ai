@@ -6,15 +6,14 @@ import {
   User,
   AppSettings,
   Organization,
-  SlackChannelSetting,
   ConfluenceSpaceSetting,
-  ConfluenceSpace
+  SlackChannelSetting
 } from 'types';
-import { NO_ORG_SETTINGS } from './NO_ORG_SETTINGS';
+
 import { getUserClients } from './getUserClients';
 
 export const buildSettings = async (user: User, org?: Organization) => {
-  const { jiraClient, confluenceClient } = getUserClients(user);
+  const { jiraClient, confluenceClient, slackClient } = await getUserClients(user);
   // if (!session?.user?.email) return NextResponse.redirect('/auth');
   // TODO: Move this into a middleware
   const userSettings = user?.appSettings as AppSettings;
@@ -45,30 +44,29 @@ export const buildSettings = async (user: User, org?: Organization) => {
   } catch (error) {
     console.log('JiraSettingsError', error);
   }
-  // try {
-  //   const slackClient = new SlackClient(process.env.SLACK_TOKEN);
-  //   // Load all possible slack channels on every update
-  //   const channels = await slackClient.getChannels();
-  //   const channelsSettingsById =
-  //     (newSettings as any)?.slack?.channels?.reduce((acc: any, channel: SlackChannelSetting) => {
-  //       acc[channel.id] = channel;
-  //       return acc;
-  //     }, {}) || {};
-  //   newSettings.slack = {
-  //     ...(newSettings as any)?.slack,
-  //     channels: channels.map((channel) => ({
-  //       ...channel,
-  //       ...channelsSettingsById[channel.id]
-  //     }))
-  //   };
-  // } catch (error) {
-  //   console.log('SlackSettingsError', error);
-  // }
+  try {
+    // Load all possible slack channels on every update
+    const channels = await slackClient.getChannels();
+    const channelsSettingsById =
+      (newSettings as any)?.slack?.channels?.reduce((acc: any, channel: SlackChannelSetting) => {
+        acc[channel.id] = channel;
+        return acc;
+      }, {}) || {};
+    newSettings.slack = {
+      ...(newSettings as any)?.slack,
+      channels: channels.map((channel) => ({
+        ...channel,
+        ...channelsSettingsById[channel.id]
+      }))
+    };
+  } catch (error) {
+    console.log('SlackSettingsError', error);
+  }
 
   try {
     // Load all possible Confluence spaces on every update
     const { results: spaces } = await confluenceClient.getSpaces();
-    console.log('SPACES', spaces);
+
     const spacesById =
       (newSettings as any)?.confluence?.spaces?.reduce(
         (acc: any, space: ConfluenceSpaceSetting) => {
@@ -86,7 +84,7 @@ export const buildSettings = async (user: User, org?: Organization) => {
       }))
     };
   } catch (error) {
-    console.log('ConfluenceSettingsError', error);
+    // console.log('ConfluenceSettingsError', error);
   }
 
   try {
@@ -108,9 +106,8 @@ export const buildSettings = async (user: User, org?: Organization) => {
       domains: domainSettings
     };
   } catch (error) {
+    // TODO: Constant error
     // console.log('urlSettingsError', error);
   }
-  // console.log('NewSettings');
-  // console.log(newSettings);
   return newSettings;
 };

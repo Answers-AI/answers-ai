@@ -3,7 +3,7 @@ import SlackChannel from './models/channel';
 import SlackUser from './models/user';
 
 class SlackApiClient {
-  constructor(token) {
+  constructor({ accessToken: token }) {
     this.client = new WebClient(token);
     this.cache = {
       users: {},
