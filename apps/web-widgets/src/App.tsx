@@ -38,10 +38,7 @@ const App = ({ iframeSrc }: { iframeSrc: string }) => {
           flexGrow: 1,
           zIndex: 9999
         }}>
-        <iframe
-          src={`${iframeSrc}/widgets/chat`}
-          style={{ height: '100%', width: '100%', border: 'none' }}
-        />
+        <iframe src={`${iframeSrc}`} style={{ height: '100%', width: '100%', border: 'none' }} />
       </div>
 
       <div

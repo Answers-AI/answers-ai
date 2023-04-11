@@ -132,6 +132,10 @@ export interface Organization extends Omit<DB.Organization, 'appSettings'> {
   appSettings: AppSettings;
 }
 
+export interface ChatApp extends Omit<DB.ChatApp, 'appSettings'> {
+  appSettings: AppSettings;
+}
+
 export interface Organization extends Omit<DB.Organization, 'appSettings'> {
   appSettings: AppSettings;
 }
