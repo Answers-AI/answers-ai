@@ -2,14 +2,24 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
- output   = "../generated/prisma-client"
- referentialIntegrity = "prisma"
+  provider             = "prisma-client-js"
+  output               = "../generated/prisma-client"
+  referentialIntegrity = "prisma"
 }
 
 datasource db {
   provider = "postgres"
   url      = env("DATABASE_URL")
+}
+
+model ChatApp {
+  id             Int           @id @default(autoincrement())
+  apiKey         String        @unique
+  name           String?
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
 }
 
 model User {
@@ -22,59 +32,61 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  organization Organization? @relation(fields: [organizationId], references: [id])
+  organization   Organization? @relation(fields: [organizationId], references: [id])
   organizationId String?
 
   appSettings Json?
-  chats Chat[]
-  messages Message[]
-  
+  chats       Chat[]
+  messages    Message[]
+
   prompts Prompt[]
-  
+
   journeys Journey[]
 
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  ChatApp   ChatApp[]
 }
 
 model Organization {
-  id            String    @id @default(cuid())
-  name          String?
-  image         String?
-  users         User[]  
+  id    String  @id @default(cuid())
+  name  String?
+  image String?
+  users User[]
 
   appSettings Json?
 
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  ChatApp   ChatApp[]
 }
 
 model WebDocument {
-  id            String    @id @default(cuid())
-  url String @unique
-  domain String
-  content String?
-  pageTitle String?
-  pageLastUpdatedAt        DateTime?           @updatedAt
+  id                String    @id @default(cuid())
+  url               String    @unique
+  domain            String
+  content           String?
+  pageTitle         String?
+  pageLastUpdatedAt DateTime? @updatedAt
 
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
   refresh_token_expires_in Int?
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  access_token             String? @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -98,123 +110,120 @@ model VerificationToken {
 }
 
 model Chat {
-  id   String @id @default(uuid())
-  prompt Prompt? @relation(fields: promptId, references: id)
+  id       String  @id @default(uuid())
+  prompt   Prompt? @relation(fields: promptId, references: id)
   promptId String?
 
-  journey Journey? @relation(fields: journeyId, references: id)
+  journey   Journey? @relation(fields: journeyId, references: id)
   journeyId String?
 
-  users User[] 
+  users    User[]
   messages Message[]
-  
+
   filters Json
 
-  deleted Boolean @default(false)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
-
-model Journey { 
-  id   String @id @default(uuid())
+model Journey {
+  id    String  @id @default(uuid())
   title String?
 
   filters Json
 
   chats Chat[]
 
-  users User[] 
-  deleted Boolean @default(false)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+  users     User[]
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Prompt {
-  id   String @id @default(uuid())
-  title String?
+  id          String  @id @default(uuid())
+  title       String?
   description String?
 
   content String @unique
-  
-  chat Chat[] 
-  
-  usages Int @default(0)
-  likes Int @default(0)
+
+  chat Chat[]
+
+  usages   Int @default(0)
+  likes    Int @default(0)
   dislikes Int @default(0)
 
-  deleted Boolean @default(false)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   answers Message[]
 
   users User[]
 }
 
-
 model Message {
-  id   String @id @default(uuid())
-  role String @default("assistant")
+  id      String @id @default(uuid())
+  role    String @default("assistant")
   content String
 
-  prompt Prompt? @relation(fields: promptId, references: id)
+  prompt   Prompt? @relation(fields: promptId, references: id)
   promptId String?
 
-  user User? @relation(fields: userId, references: id) 
+  user   User?   @relation(fields: userId, references: id)
   userId String?
 
-  chat Chat @relation(fields: chatId, references: id)
+  chat   Chat   @relation(fields: chatId, references: id)
   chatId String
-  
-  likes Int @default(0)
+
+  likes    Int @default(0)
   dislikes Int @default(0)
 
-  deleted Boolean @default(false)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
-
 model AppSettings {
-  id   String @id @default(uuid())
+  id String @id @default(uuid())
 
   services       AppService[]
   jiraSettings   JiraSettings @relation(fields: [jiraSettingsId], references: [id])
   // User           User[]
   jiraSettingsId String
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
 }
 
 model AppService {
-  id   String @id @default(uuid())
+  id String @id @default(uuid())
 
   name          String
   enabled       Boolean
   AppSettings   AppSettings? @relation(fields: [appSettingsId], references: [id])
   appSettingsId String?
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @default(now()) @updatedAt
 }
 
 model JiraSettings {
-  id   String @id @default(uuid())
+  id String @id @default(uuid())
 
   projects    JiraProjectSetting[]
   AppSettings AppSettings[]
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @default(now()) @updatedAt
 }
 
 model JiraProjectSetting {
-  id   String @id @default(uuid())
+  id String @id @default(uuid())
 
   key            String
   enabled        Boolean
   JiraSettings   JiraSettings? @relation(fields: [jiraSettingsId], references: [id])
   jiraSettingsId String?
-  
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
