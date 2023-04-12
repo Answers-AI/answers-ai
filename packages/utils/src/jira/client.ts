@@ -23,9 +23,7 @@ class JiraClient {
     this.cacheExpireTime = cacheExpireTime;
     this.accessToken = accessToken;
     this.headers = {
-      Authorization: `Basic ${Buffer.from(`brad@lastrev.com:${process.env.JIRA_API}`).toString(
-        'base64'
-      )}`,
+      Authorization: `Bearer ${accessToken}`,
       Accept: 'application/json'
     };
     this.cloudId = this.getCloudId();
