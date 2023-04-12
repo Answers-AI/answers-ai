@@ -42,6 +42,38 @@ const ATLASSIAN_SCOPE = {
   'read:space:confluence': true
 };
 export const authOptions: AuthOptions = {
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'none',
+        path: '/',
+        domain: process.env.NEXT_PUBLIC_DOMAIN,
+        secure: true
+      }
+    },
+    callbackUrl: {
+      name: `next-auth.callback-url`,
+      options: {
+        httpOnly: true,
+        sameSite: 'none',
+        path: '/',
+        domain: process.env.NEXT_PUBLIC_DOMAIN,
+        secure: true
+      }
+    },
+    csrfToken: {
+      name: 'next-auth.csrf-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'none',
+        path: '/',
+        domain: process.env.NEXT_PUBLIC_DOMAIN,
+        secure: true
+      }
+    }
+  },
   session: {
     strategy: 'jwt'
   },
