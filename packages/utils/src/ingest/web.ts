@@ -238,8 +238,6 @@ const getWebPagesVectors = async (webPages: WebPage[]) => {
           return [];
         }
 
-        page.content = `# ${page.url}\n${page.content}`;
-
         const markdownChunks = await splitPageHtml(page);
 
         if (!markdownChunks?.length) return [];

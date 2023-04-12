@@ -23,6 +23,7 @@ const Chat = async ({ chatId, journeyId }: Params) => {
     .findMany({
       where: {
         usages: { gt: 1 }
+        // tags: { has: 'featured' }
       },
       orderBy: [
         {

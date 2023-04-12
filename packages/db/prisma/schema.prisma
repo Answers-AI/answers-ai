@@ -163,6 +163,8 @@ model Prompt {
   answers Message[]
 
   users User[]
+
+  tags String[]
 }
 
 model Message {
