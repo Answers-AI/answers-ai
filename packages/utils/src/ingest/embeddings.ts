@@ -18,6 +18,9 @@ export const processVectorsUpserted: EventVersionHandler<{ vectors: PineconeVect
     const { vectors } = event.data;
     // console.log(vectors);
 
+    // TODO: Extract all the parentIDs from the new vectors
+    // TODO: Fetch all the vectors with  parentIDs from pinecoone
+
     const vectorData = await Promise.all(
       vectors?.map((vector) =>
         openAi.createEmbedding({ input: vector.text }).then((embedding) => ({
@@ -29,5 +32,6 @@ export const processVectorsUpserted: EventVersionHandler<{ vectors: PineconeVect
     );
 
     if (!DISABLE_EMBEDDING) await pinecone.writeVectorsToIndex(vectorData);
+    // TODOO: DElete them
   }
 };

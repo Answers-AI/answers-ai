@@ -16,15 +16,14 @@ class OpenAI {
     });
     this.openai = new OpenAIApi(configuration);
     this.redis = new Redis(process.env.REDIS_URL as string);
-    this.loader = redisLoader<CreateEmbeddingRequestInput, number[]>({
+    this.loader = redisLoader<string, number[]>({
       keyPrefix: 'openai',
       redisConfig: process.env.REDIS_URL as string,
       disableCache: false,
       getValuesFn: (keys) =>
         this.openai
           .createEmbedding({
-            //@ts-expect-error
-            input: keys,
+            input: keys as string[],
             model: this.defaultModel
           })
           ?.then(async (res) => {

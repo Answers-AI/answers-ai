@@ -1,9 +1,6 @@
-// import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { getJiraProjects, JiraProject } from '@utils/jira';
 import { deepmerge } from '@utils/deepmerge';
-// import cors from '@ui/cors';
 import { prisma } from 'db/dist';
 
 import { authOptions } from '@ui/authOptions';
@@ -26,41 +23,20 @@ export async function POST(request: Request) {
   if (user) {
     const newSettings = await request.json();
 
-    // Add all possible jiraprojects on every update
-    const jiraProjects = await getJiraProjects().then((projects) =>
-      projects.map((project) => ({ name: project?.name, key: project?.key }))
-    );
-
-    // Keep the existing settings for the projects
-    const projectsSettingsByKey = newSettings?.jira?.projects?.reduce(
-      (acc: any, project: JiraProject) => {
-        acc[project.key] = { ...project };
-        return acc;
-      },
-      {}
-    );
-    const appSettings = deepmerge({}, user?.appSettings, newSettings, {
-      jira: {
-        projects: jiraProjects.map((project) => ({
-          ...project,
-          ...projectsSettingsByKey?.[project.key]
-        }))
-      }
-    });
+    const appSettings = deepmerge({}, user?.appSettings, newSettings);
     // TODO: Validate user has org update access
     // TODO: REMOVE THIS AFTER ENABLING USER SETTINGS
-    if (user.organization) {
-      await prisma.organization.update({
-        where: { id: user.organization.id },
-        data: { appSettings }
-      });
-    } else {
-      await prisma.user.update({
-        where: { email: session?.user?.email },
-        data: { appSettings }
-      });
-    }
+    // if (user.organization) {
+    //   await prisma.organization.update({
+    //     where: { id: user.organization.id },
+    //     data: { appSettings }
+    //   });
+    // } else {
+    await prisma.user.update({
+      where: { email: session?.user?.email },
+      data: { appSettings }
+    });
+    // }
+    return NextResponse.json({ appSettings });
   }
-
-  return NextResponse.json(user);
 }

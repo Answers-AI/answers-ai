@@ -12,12 +12,13 @@ import axios from 'axios';
 import { AppSettings, AppService } from 'types';
 import { useFlags } from 'flagsmith/react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandLess';
-const useSync = ({ onSync }: { onSync?: (a: AppService) => void }) => {
+
+const useSync = ({ onSync }: { onSync?: (a: string) => void }) => {
   const { filters } = useAnswers();
-  const handleSync = async (service: AppService) => {
+  const handleSync = async (serviceName: string) => {
     try {
-      await axios.post(`/api/sync/${service?.name}`, { filters });
-      if (onSync) onSync(service);
+      await axios.post(`/api/sync/${serviceName}`, { filters });
+      if (onSync) onSync(serviceName);
     } catch (error) {
       console.log(error);
     }
@@ -26,18 +27,20 @@ const useSync = ({ onSync }: { onSync?: (a: AppService) => void }) => {
 };
 
 const AppSyncToolbar = ({
+  expanded,
   appSettings,
   onSync
 }: {
-  appSettings: AppSettings;
-  onSync?: (s: AppService) => void;
+  expanded?: boolean;
+  appSettings?: AppSettings;
+  onSync?: (s: string) => void;
 }) => {
   const flags = useFlags(['sync']);
   const { handleSync } = useSync({ onSync });
-  if (!flags.sync.enabled) return null;
+  // if (!flags.sync.enabled) return null;
   return (
     <Accordion
-      defaultExpanded={false}
+      defaultExpanded={expanded}
       sx={{
         '&, .MuiAccordion-root ': {
           'width': '100%',
@@ -71,6 +74,16 @@ const AppSyncToolbar = ({
       </AccordionSummary>
       <AccordionDetails>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+          <Button
+            key={'Settings'}
+            sx={{
+              position: 'relative'
+            }}
+            variant="outlined"
+            color="primary"
+            onClick={() => handleSync('settings')}>
+            Settings
+          </Button>
           {appSettings?.services?.map((service) => (
             <Button
               key={service?.name}
@@ -80,7 +93,7 @@ const AppSyncToolbar = ({
               variant="outlined"
               color="primary"
               disabled={!service.enabled}
-              onClick={() => handleSync(service)}>
+              onClick={() => handleSync(service?.name)}>
               {service.name}
             </Button>
           ))}

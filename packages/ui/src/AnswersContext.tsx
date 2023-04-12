@@ -3,11 +3,12 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
-import { AnswersFilters, Chat, Journey, Message, Prompt } from 'types';
+import { AnswersFilters, AppSettings, Chat, Journey, Message, Prompt } from 'types';
 import { deepmerge } from '@utils/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
 
 interface AnswersContextType {
+  appSettings: AppSettings;
   error?: any;
   chat?: Chat | null;
   journey?: Journey | null;
@@ -36,6 +37,7 @@ interface AnswersContextType {
 }
 
 const AnswersContext = createContext<AnswersContextType>({
+  appSettings: {},
   error: null,
   messages: [],
   chats: [],
@@ -67,6 +69,7 @@ export function useAnswers() {
 
 interface AnswersProviderProps {
   children: React.ReactNode;
+  appSettings: AppSettings;
   apiUrl?: string;
   useStreaming?: boolean;
   chat?: Chat | null;
@@ -75,7 +78,19 @@ interface AnswersProviderProps {
   chats?: Chat[];
 }
 
+const parseFilters = (filters: AnswersFilters) => {
+  let parsedFilters = { ...filters };
+  if (parsedFilters?.datasources?.confluence?.spaces) {
+    parsedFilters.datasources.confluence.spaceId = parsedFilters.datasources.confluence.spaces.map(
+      (space) => space.id
+    );
+    delete parsedFilters.datasources.confluence.spaces;
+  }
+  return parsedFilters;
+};
+
 export function AnswersProvider({
+  appSettings,
   children,
   journey,
   prompts,
@@ -90,7 +105,7 @@ export function AnswersProvider({
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Array<Message>>(chat?.messages ?? []);
   const [filters, setFilters] = useState<AnswersFilters>(
-    deepmerge({}, journey?.filters, chat?.filters)
+    deepmerge({}, appSettings?.filters, journey?.filters, chat?.filters)
   );
   const [showFilters, setShowFilters] = useState(false);
   const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
@@ -108,7 +123,7 @@ export function AnswersProvider({
   const { generateResponse } = useStreamedResponse({
     journeyId,
     chatId,
-    filters,
+    filters: parseFilters(filters),
     messages,
     apiUrl,
     onChunk: (chunk: Message) => {
@@ -137,7 +152,7 @@ export function AnswersProvider({
             chatId,
             content,
             messages,
-            filters
+            filters: parseFilters(filters)
           });
 
           setChatId(data?.chat.id);
@@ -191,6 +206,7 @@ export function AnswersProvider({
     axios.patch(`${apiUrl}/messages`, message).then(() => router.refresh());
 
   const contextValue = {
+    appSettings,
     chat,
     chats,
     journey,

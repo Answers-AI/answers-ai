@@ -1,30 +1,30 @@
 import { Inngest } from 'inngest';
 import { serve } from 'inngest/next';
 import { createInngestFunctions } from '@utils/ingest/EventVersionHandler';
-import * as jiraFunctions from '@utils/ingest/jira';
+import * as algoliaFunctions from '@utils/ingest/algolia';
+import * as authFunctions from '@utils/ingest/auth';
+import * as confluenceFunctions from '@utils/ingest/confluence';
+import * as embeddingsFunctions from '@utils/ingest/embeddings';
+import * as messageFunctions from '@utils/ingest/message';
+import * as openApiFunctions from '@utils/ingest/openapi';
 import * as promptFunctions from '@utils/ingest/prompt';
 import * as slackFunctions from '@utils/ingest/slack';
-import * as embeddingsFunctions from '@utils/ingest/embeddings';
 import * as webFunctions from '@utils/ingest/web';
-import * as openApiFunctions from '@utils/ingest/openapi';
-import * as authFunctions from '@utils/ingest/auth';
-import * as messageFunctions from '@utils/ingest/message';
-import * as confluenceFunctions from '@utils/ingest/confluence';
-import * as algoliaFunctions from '@utils/ingest/algolia';
+import * as jiraFunctions from '@utils/ingest/jira';
 
 // Create a client to send and receive events
 
 const handlers = {
+  ...algoliaFunctions,
   ...authFunctions,
+  ...confluenceFunctions,
   ...embeddingsFunctions,
   ...messageFunctions,
-  ...webFunctions,
-  ...promptFunctions,
-  ...jiraFunctions,
-  ...slackFunctions,
   ...openApiFunctions,
-  ...confluenceFunctions,
-  ...algoliaFunctions
+  ...promptFunctions,
+  ...slackFunctions,
+  ...webFunctions,
+  ...jiraFunctions
 };
 
 const functions = Object.values(handlers);

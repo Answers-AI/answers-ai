@@ -9,6 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import { DefaultPrompts } from './DefaultPrompts';
+import { Filters } from './Filters';
 
 export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: boolean }) => {
   const {
@@ -41,14 +42,12 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
     setShowPrompts(false);
     setInputValue('');
   };
-  const handleInputFocus = () => {
-    if (!Object.keys(filters)?.length) setShowFilters(true);
-  };
+
   const handlePromptSelected = (prompt: string) => {
     setInputValue(prompt);
   };
-  const handleInputBlur = () => {
-    if (flags?.recommended_prompts_expand?.value == 'blur') setShowPrompts(true);
+  const handleInputFocus = () => {
+    if (flags?.recommended_prompts_expand?.value == 'blur') setShowPrompts(false);
   };
 
   const isNewJourney = !!Object.keys(filters)?.length && !journey && !chat;
@@ -61,6 +60,7 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
         handleChange={(_, value) => setShowPrompts(value)}
       />
 
+      {filters ? <Filters filters={filters} /> : null}
       <TextField
         inputRef={inputRef}
         sx={{ textarea: { minHeight: 23, paddingRight: 4, paddingBottom: 5 } }}
@@ -68,12 +68,11 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
         fullWidth
         placeholder="How can you help me accomplish my goal?"
         value={inputValue}
-        // onBlur={handleInputBlur}
+        // onBlur={handleInputFocus}
         multiline
-        onFocus={handleInputFocus}
         onKeyPress={(e) => (e.key === 'Enter' && !e.shiftKey ? handleSubmit() : null)}
         onChange={handleInputChange}
-        onBlur={handleInputBlur}
+        onFocus={handleInputFocus}
       />
 
       <Box

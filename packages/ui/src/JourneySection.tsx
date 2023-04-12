@@ -22,19 +22,7 @@ function JourneySection({ journeys, chats }: Props) {
       </Box>
     );
   }
-  return <ChatDrawer journeys={journeys} chats={chats} />;
+  return <ChatDrawer journeys={journeys} chats={chats} defaultOpen />;
 }
-
-const Filters = ({ filters, sx }: { filters: any; sx?: any }) => {
-  return filters ? (
-    <Box sx={{ display: 'flex', gap: 1, ...sx }}>
-      {Object.keys(filters)?.map((filter) =>
-        filters[filter]?.length ? (
-          <Chip key={`${filter}`} label={filters[filter]?.join(', ')} />
-        ) : null
-      )}
-    </Box>
-  ) : null;
-};
 
 export default JourneySection;

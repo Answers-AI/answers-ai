@@ -40,7 +40,7 @@
       "outputs": ["dist/**"]
     },
     "db#build": {
-      "cache": false,
+      "outputMode": "new-only",
       "dependsOn": [],
       "outputs": ["dist/**"]
     },

@@ -27,7 +27,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     return;
   }
 
-  let completionData;
+  let completionData, completionRequest;
 
   const messages: Message[] = req.body.messages;
 
@@ -73,14 +73,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       filters
     }));
     // console.log({ pineconeData, context, summary });
-  } catch (pineconeError) {
-    console.log('Pinecone error', pineconeError);
+  } catch (contextError) {
+    console.log('fetchContext', contextError);
+    throw contextError;
   }
 
   try {
-    console.time('[ChatCompletion]: ' + prompt);
+    const ts = Date.now();
+    console.time(`[${ts}] [ChatCompletion]: ` + prompt);
 
+    console.time(`[${ts}] [query createChatChain]: ` + prompt);
     const chatChain = createChatChain({ messages });
+    console.timeEnd(`[${ts}] [query createChatChain]: ` + prompt);
+    console.time(`[${ts}] [query chatChain.call]: ` + prompt);
     const response = await chatChain.call({
       context: summary,
       userName: user.name,
@@ -88,10 +93,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       history: messages,
       agent_scratchpad: ''
     });
+    console.timeEnd(`[${ts}] [query chatChain.call]: ` + prompt);
     const answer = response.text;
-    console.timeEnd('[ChatCompletion]: ' + prompt);
+    completionRequest = response.completionRequest;
+    console.timeEnd(`[${ts}] [ChatCompletion]: ` + prompt);
     let message;
     if (prompt && answer) {
+      console.time(`[${ts}] [query prisma.message.create]: ` + prompt);
       message = await prisma.message.create({
         data: {
           chat: { connect: { id: chat.id } },
@@ -99,6 +107,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
           content: answer
         }
       });
+      console.timeEnd(`[${ts}] [query prisma.message.create]: ` + prompt);
+
+      console.time(`[${ts}] [query prompt.answered]: ` + prompt);
       await inngest.send({
         v: '1',
         ts: new Date().valueOf(),
@@ -106,28 +117,33 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         user: user,
         data: { message, prompt }
       });
+      console.timeEnd(`[${ts}] [query prompt.answered]: ` + prompt);
     }
     res.status(200).json({
       ...message,
       chat,
       prompt,
+      role: 'assistant',
+      content: answer,
       context,
       summary,
       filters,
-      role: 'assistant',
-      content: answer,
       pineconeData,
-      completionData
+      completionData,
+      completionRequest
     });
   } catch (error: any) {
-    console.log('QueryError');
-    console.error(error);
-    if (error.response) {
-      const { data } = error.response;
-      res.status(500).json({ prompt, error } as any);
-    } else {
-      res.status(500).json({ prompt, error });
-    }
+    console.log('Error', error);
+    res.status(500).json({
+      prompt,
+      error,
+      context,
+      summary,
+      filters,
+      pineconeData,
+      completionData,
+      completionRequest
+    } as any);
   }
 };
 

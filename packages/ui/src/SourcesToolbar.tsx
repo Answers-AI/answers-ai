@@ -9,6 +9,7 @@ import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
 import { getUniqueUrls } from '@utils/utilities/getUniqueUrls';
 import axios from 'axios';
+import Image from 'next/image';
 
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const anchorRef = React.useRef<HTMLDivElement[]>([]);
@@ -54,20 +55,19 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
   const selectedService = enabledServices?.[open];
   return (
     <>
-      <AvatarGroup total={enabledServices?.length} spacing={-8}>
+      <AvatarGroup total={enabledServices?.length} max={10} spacing={-8}>
         {enabledServices
           ?.map((service, idx) => [
             <Avatar
+              sx={{ obejctFit: 'contain' }}
               key={service.name}
-              src={service.imageURL}
               alt={service.name}
               ref={(ref) => {
                 if (ref) anchorRef.current[idx] = ref;
               }}
-              onClick={() => setOpen(idx)}
-              // onMouseEnter={() => setOpen(idx)}
-              // onMouseLeave={() => setOpen(-1)}
-            />
+              onClick={() => setOpen(idx)}>
+              <Image src={service.imageURL} alt={`${service.name} logo`} width={40} height={40} />
+            </Avatar>
           ])
           .flat()}
       </AvatarGroup>
@@ -120,13 +120,17 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                 <>
                   <AutocompleteSelect
                     label="Confluence Space"
-                    options={
-                      appSettings?.confluence?.spaces?.filter((s) => s.enabled)?.map((s) => s.id) ||
-                      []
-                    }
-                    value={filters?.datasources?.confluence?.spaceId || []}
-                    onChange={(value: string[]) =>
-                      updateFilter({ datasources: { confluence: { spaceId: value } } })
+                    options={appSettings?.confluence?.spaces?.filter((s) => s.enabled) || []}
+                    getOptionLabel={(option) => {
+                      return option?.name;
+                    }}
+                    value={filters?.datasources?.confluence?.spaces || []}
+                    onChange={(value) =>
+                      updateFilter({
+                        datasources: {
+                          confluence: { spaces: value }
+                        }
+                      })
                     }
                   />
                 </>

@@ -3,6 +3,8 @@ import { authOptions } from '@ui/authOptions';
 import AppLayout from '@ui/AppLayout';
 import React from 'react';
 import flagsmith from 'flagsmith/isomorphic';
+import { getProviders } from 'next-auth/react';
+import { getAppSettings } from '@ui/getAppSettings';
 
 export default async function RootLayout({
   // Layouts must accept a children prop.
@@ -16,6 +18,8 @@ export default async function RootLayout({
   };
 }) {
   const session = await getServerSession(authOptions);
+
+  const providers = await getProviders();
   await flagsmith.init({
     // fetches flags on the server and passes them to the App
     environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
@@ -30,8 +34,15 @@ export default async function RootLayout({
 
   const flagsmithState = flagsmith.getState();
 
+  const appSettings = await getAppSettings();
+
   return (
-    <AppLayout session={session as Session} params={params} flagsmithState={flagsmithState}>
+    <AppLayout
+      appSettings={appSettings}
+      providers={providers}
+      session={session as Session}
+      params={params}
+      flagsmithState={flagsmithState}>
       {children}
     </AppLayout>
   );

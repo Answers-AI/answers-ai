@@ -17,6 +17,7 @@ import { Message, User } from 'types';
 import { useFlags } from 'flagsmith/react';
 import ReactMarkdown from 'react-markdown';
 import { useAnswers } from './AnswersContext';
+import { AxiosError } from 'axios';
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -58,8 +59,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   borderTop: '1px solid rgba(0, 0, 0, .125)'
 }));
 
-interface MessageCardProps extends Partial<Message> {
-  error?: object;
+interface MessageExtra {
   prompt?: string;
   extra?: object;
   pineconeData?: object;
@@ -68,8 +68,12 @@ interface MessageCardProps extends Partial<Message> {
   context?: string;
   summary?: string;
   completionData?: object;
+  completionRequest?: object;
   filters?: object;
   isWidget?: boolean;
+}
+interface MessageCardProps extends Partial<Message>, MessageExtra {
+  error?: AxiosError<MessageExtra>;
 }
 
 export const MessageCard = ({
@@ -86,6 +90,7 @@ export const MessageCard = ({
   context,
   summary,
   completionData,
+  completionRequest,
   filters,
   likes,
   dislikes,
@@ -96,6 +101,13 @@ export const MessageCard = ({
   const { updateMessage } = useAnswers();
   const [lastInteraction, setLastInteraction] = React.useState<string>('');
 
+  if (error) {
+    pineconeData = error?.response?.data.pineconeData;
+    summary = error?.response?.data.summary;
+    context = error?.response?.data.context;
+    filters = error?.response?.data.filters;
+    prompt = error?.response?.data.prompt;
+  }
   const handleLike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.stopPropagation();
     evt.preventDefault();
@@ -155,24 +167,6 @@ export const MessageCard = ({
               </Typography>
             </>
           ) : null}
-          {error ? (
-            <Accordion TransitionProps={{ unmountOnExit: true }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header">
-                <Typography variant="overline">Error</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <JsonViewer
-                  rootName="response"
-                  value={error}
-                  theme={'dark'}
-                  collapseStringsAfterLength={100}
-                />
-              </AccordionDetails>
-            </Accordion>
-          ) : null}
         </CardContent>
 
         <CardActions
@@ -199,6 +193,26 @@ export const MessageCard = ({
       </Box>
       {developer_mode?.enabled ? (
         <Box>
+          {error ? (
+            <>
+              <Accordion TransitionProps={{ unmountOnExit: true }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header">
+                  <Typography variant="overline">Error</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <JsonViewer
+                    rootName="error"
+                    value={error}
+                    theme={'dark'}
+                    collapseStringsAfterLength={100}
+                  />
+                </AccordionDetails>
+              </Accordion>
+            </>
+          ) : null}
           {summary ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
@@ -253,6 +267,25 @@ export const MessageCard = ({
                     filters,
                     pineconeData
                   }}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {completionRequest ? (
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Completion request</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <JsonViewer
+                  rootName=""
+                  value={completionRequest}
                   theme={'dark'}
                   // defaultInspectDepth={0}
                   collapseStringsAfterLength={100}

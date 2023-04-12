@@ -20,9 +20,21 @@ export type RecommendedPrompt = {
   views?: number;
 };
 export interface AppService {
+  id: string;
   name: string;
-  enabled: boolean;
+  description?: string;
+  providerId?: string;
+  enabled?: boolean;
   imageURL: string;
+}
+export interface ConfluenceSettings {
+  enabled: boolean;
+  accessToken?: string;
+  spaces?: ConfluenceSpaceSetting[];
+  pages?: {
+    key: string;
+    enabled: boolean;
+  }[];
 }
 export interface AppSettings {
   services?: AppService[];
@@ -32,13 +44,7 @@ export interface AppSettings {
       enabled: boolean;
     }[];
   };
-  confluence?: {
-    spaces?: ConfluenceSpaceSetting[];
-    pages?: {
-      key: string;
-      enabled: boolean;
-    }[];
-  };
+  confluence?: ConfluenceSettings;
   slack?: {
     channels?: SlackChannelSetting[];
   };
@@ -82,6 +88,7 @@ export interface OpenApiFilters {}
 
 export interface ConfluenceFilters {
   spaceId?: string[];
+  spaces?: ConfluenceSpaceSetting[];
 }
 
 export interface UserFilters {}
@@ -118,6 +125,10 @@ type Models = {
 };
 
 export interface User extends Omit<DB.User, 'appSettings'> {
+  appSettings: AppSettings;
+  accounts: DB.Account[] | null;
+}
+export interface Organization extends Omit<DB.Organization, 'appSettings'> {
   appSettings: AppSettings;
 }
 
@@ -160,7 +171,7 @@ export type ConfluenceSpace = {
   };
 };
 export interface ConfluenceSpaceSetting extends ConfluenceSpace {
-  enabled: boolean;
+  enabled?: boolean;
 }
 
 export interface Message extends Partial<DB.Message>, ChatCompletionRequestMessage {
@@ -254,7 +265,38 @@ export interface OpenApiProvider {
   };
 }
 
-export type ConfluencePage = { id: string; space: string; body: string };
+export type ConfluencePage = {
+  id: number;
+  status: string;
+  title: string;
+  spaceId: number;
+  parentId: number;
+  authorId: string;
+  createdAt: string;
+  version: {
+    createdAt: string;
+    message: string;
+    number: number;
+    minorEdit: boolean;
+    authorId: string;
+  };
+  content: string;
+  body: {
+    storage?: {
+      representation: string;
+      value: string;
+    };
+    atlas_doc_format?: {
+      representation: string;
+      value: string;
+    };
+  };
+};
+
 export interface ConfluenceSetting extends ConfluencePage {
   enabled: boolean;
 }
+
+export type JiraProject = { key: string; name: string; archived: any };
+export type JiraIssue = { key: string; self: string; id: string; fields: any; archived: any };
+export type JiraComment = { key: string; self: string; id: string; fields: any; archived: any };

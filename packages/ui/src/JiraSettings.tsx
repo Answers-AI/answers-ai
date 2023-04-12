@@ -8,22 +8,26 @@ import {
   Checkbox,
   Button,
   Typography,
-  Paper
+  Paper,
+  LinearProgress
 } from '@mui/material';
 import React, { useState } from 'react';
-import { AppSettings } from 'types';
+import { AnswersFilters, AppSettings } from 'types';
 import useAppSettings from './useAppSettings';
+import AutocompleteSelect from './AutocompleteSelect';
 export interface JiraSettingsProps {
   appSettings: AppSettings;
+  editable: boolean;
 }
-export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
+export const JiraSettings = ({ appSettings, editable }: JiraSettingsProps) => {
   const { isLoading, updateAppSettings } = useAppSettings();
+  const [filters, setFilters] = useState<AnswersFilters>(appSettings.filters ?? {});
   const [localSettings, setLocalSettings] = useState<AppSettings>(appSettings);
   React.useEffect(() => {
     setLocalSettings(appSettings);
   }, [appSettings]);
   const handleSave = () => {
-    updateAppSettings(localSettings);
+    updateAppSettings({ ...localSettings, filters });
   };
 
   const handleEnableProject = (project: { key: string; enabled: boolean }) => {
@@ -69,40 +73,80 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
 
         gap: 2
       }}>
-      <Typography variant="h5">Jira</Typography>
-      <Paper sx={{ p: 2 }}>
-        <FormControl sx={{}} component="fieldset" variant="standard">
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <FormLabel color="primary" component="legend">
-              <strong>Enabled Projects</strong>
-            </FormLabel>
-            <Button onClick={handleToggleAll}>
-              {allToggled ? 'Deselect' : 'Select'} All {localSettings?.jira?.projects?.length}
-            </Button>
-          </Box>
-          <FormGroup
-            sx={{
-              display: 'flex',
-              flexDirection: 'row'
-            }}>
-            {localSettings &&
-              localSettings?.jira?.projects?.map((project) => (
-                <FormControlLabel
-                  key={project.key}
-                  control={
-                    <Checkbox
-                      name={project.key}
-                      checked={!!project.enabled}
-                      onChange={() => handleEnableProject(project)}
-                    />
-                  }
-                  label={project.key}
-                />
-              ))}
-          </FormGroup>
-          {/* <FormHelperText>Be careful</FormHelperText> */}
-        </FormControl>
+      {isLoading ? (
+        <LinearProgress
+          variant="query"
+          sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%' }}
+        />
+      ) : null}
+      <FormControl sx={{}} component="fieldset" variant="standard">
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <FormLabel color="primary" component="legend">
+            <strong>Enabled Projects</strong>
+          </FormLabel>
+          <Button onClick={handleToggleAll}>
+            {allToggled ? 'Deselect' : 'Select'} All {localSettings?.jira?.projects?.length}
+          </Button>
+        </Box>
+        <FormGroup
+          sx={{
+            display: 'flex',
+            flexDirection: 'row'
+          }}>
+          {localSettings &&
+            localSettings?.jira?.projects?.map((project) => (
+              <FormControlLabel
+                key={project.key}
+                control={
+                  <Checkbox
+                    name={project.key}
+                    checked={!!project.enabled}
+                    onChange={() => handleEnableProject(project)}
+                  />
+                }
+                label={project.key}
+              />
+            ))}
+        </FormGroup>
+        {/* <FormHelperText>Be careful</FormHelperText> */}
+      </FormControl>
+      <Typography variant="overline">Default filters</Typography>
 
+      <AutocompleteSelect
+        label="Project"
+        options={appSettings?.jira?.projects?.filter((s) => s.enabled)?.map((s) => s.key) || []}
+        value={filters?.datasources?.jira?.project || []}
+        onChange={(value: string[]) => setFilters({ datasources: { jira: { project: value } } })}
+      />
+      <AutocompleteSelect
+        label={`Status`}
+        sx={{ textTransform: 'capitalize' }}
+        options={['to do', 'in progress', 'done']}
+        value={filters?.datasources?.jira?.status_category || []}
+        onChange={(value: string[]) =>
+          setFilters({ datasources: { jira: { status_category: value } } })
+        }
+      />
+      <AutocompleteSelect
+        label={`Assignee`}
+        sx={{ textTransform: 'capitalize' }}
+        options={[
+          'adam harris',
+          'brad taylor',
+          'camilo rios',
+          'cecilia widmer',
+          'dano alexander',
+          'jaime morales',
+          'justin whitley',
+          'maximiliano techera',
+          'tony leung',
+          'unassigned'
+        ]}
+        value={filters?.datasources?.jira?.assignee || []}
+        onChange={(value: string[]) => setFilters({ datasources: { jira: { assignee: value } } })}
+      />
+
+      {editable ? (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, py: 2 }}>
           <Button
             type="button"
@@ -116,7 +160,7 @@ export const JiraSettings = ({ appSettings }: JiraSettingsProps) => {
             Save
           </Button>
         </Box>
-      </Paper>
+      ) : null}
     </Box>
   );
 };

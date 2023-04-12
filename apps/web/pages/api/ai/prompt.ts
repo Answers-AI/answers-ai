@@ -21,8 +21,8 @@ export const openai = initializeOpenAI();
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await cors(req, res);
 
-  const { pineconeData, context } = await fetchContext(req.body);
-  res.status(200).json({ pineconeData, context });
+  const context = await fetchContext(req.body);
+  res.status(200).json(context);
 };
 
 export default handler;
