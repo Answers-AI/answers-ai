@@ -7,14 +7,13 @@
     <title>The Answer</title>
   </head>
   <body>
-    <script
-      src="https://answers-ai-web-ias.vercel.app/static/main.js"
-      type="application/javascript"
-    ></script>
+    <div id="the-answer"></div>
+    <script src="https://theanswer.ai/main.js" type="application/javascript"></script>
 
     <script>
       AnswersAI.init({
-        iframeSrc: 'https://answers-ai-web-ias.vercel.app/widgets/chat?apiKey=123'
+        iframeSrc: 'https://theanswer.ai/widgets/chat?apiKey=123',
+        targetId: 'the-answer'
       });
     </script>
   </body>
