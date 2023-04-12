@@ -195,7 +195,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                       updateFilter({ datasources: { jira: { status_category: value } } })
                     }
                   />
-                  <AutocompleteSelect
+                  {/* <AutocompleteSelect
                     label={`Assignee`}
                     sx={{ textTransform: 'capitalize' }}
                     options={[
@@ -214,7 +214,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                     onChange={(value: string[]) =>
                       updateFilter({ datasources: { jira: { assignee: value } } })
                     }
-                  />
+                  /> */}
                 </>
               ) : null}
             </Box>

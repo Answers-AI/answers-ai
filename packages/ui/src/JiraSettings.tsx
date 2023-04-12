@@ -127,7 +127,7 @@ export const JiraSettings = ({ appSettings, editable }: JiraSettingsProps) => {
           setFilters({ datasources: { jira: { status_category: value } } })
         }
       />
-      <AutocompleteSelect
+      {/* <AutocompleteSelect
         label={`Assignee`}
         sx={{ textTransform: 'capitalize' }}
         options={[
@@ -144,7 +144,7 @@ export const JiraSettings = ({ appSettings, editable }: JiraSettingsProps) => {
         ]}
         value={filters?.datasources?.jira?.assignee || []}
         onChange={(value: string[]) => setFilters({ datasources: { jira: { assignee: value } } })}
-      />
+      /> */}
 
       {editable ? (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, py: 2 }}>
