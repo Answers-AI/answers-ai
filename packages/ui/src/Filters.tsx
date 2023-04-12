@@ -5,7 +5,7 @@ import { AnswersFilters } from 'types';
 
 export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) => {
   return filters ? (
-    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', py: 1, ...sx }}>
+    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', ...sx }}>
       {filters?.datasources ? (
         <>
           <Typography variant="overline">Sources:</Typography>

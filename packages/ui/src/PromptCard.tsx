@@ -86,7 +86,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
       ) : null}
       <Box
         sx={{
-          // width: '100%',
+          width: '100%',
           flex: '1',
           display: 'flex'
         }}>
@@ -104,7 +104,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
           onClick={onClick}>
           <CardContent
             sx={{
-              // width: '100%',
+              width: '100%',
               display: 'flex',
               gap: 1
             }}>
