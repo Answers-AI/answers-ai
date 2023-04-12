@@ -139,9 +139,13 @@ export const fetchContext = async ({
   console.timeEnd(`[${ts}] Pineconedata`);
 
   return {
-    filteredData,
-    pineconeData,
     context: contextText,
-    summary
+    summary,
+    ...(process.env.NODE_ENV === 'development'
+      ? {
+          filteredData,
+          pineconeData
+        }
+      : {})
   };
 };
