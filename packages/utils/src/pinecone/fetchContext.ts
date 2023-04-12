@@ -58,7 +58,7 @@ export const fetchContext = async ({
   }
   if (datasources) {
     Object.entries(datasources).forEach(([source, sourceFilter]) => {
-      if (sourceFilter) {
+      if (sourceFilter && Object.keys(sourceFilter)?.length) {
         filter[source] = {
           ...(filter[source] ?? {}),
           ...Object.keys(sourceFilter).reduce(
