@@ -59,14 +59,21 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
         {enabledServices
           ?.map((service, idx) => [
             <Avatar
-              sx={{ obejctFit: 'contain' }}
+              // sx={{ obejctFit: 'contain' }}
+
               key={service.name}
               alt={service.name}
               ref={(ref) => {
                 if (ref) anchorRef.current[idx] = ref;
               }}
               onClick={() => setOpen(idx)}>
-              <Image src={service.imageURL} alt={`${service.name} logo`} width={40} height={40} />
+              <Image
+                style={{ background: 'white', padding: '8px' }}
+                src={service.imageURL}
+                alt={`${service.name} logo`}
+                width={40}
+                height={40}
+              />
             </Avatar>
           ])
           .flat()}
