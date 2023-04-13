@@ -37,7 +37,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ session, params }) => {
       router.refresh();
     };
     signInAsync();
-  }, [isAuthorized, Router, apiKey]);
+  }, [isAuthorized, router, apiKey]);
 
   console.log({ isAuthorized, session });
 
