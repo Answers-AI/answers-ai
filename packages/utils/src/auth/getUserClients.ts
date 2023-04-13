@@ -3,6 +3,11 @@ import ConfluenceClient from '../confluence/client';
 import JiraClient from '../jira/client';
 import SlackApiClient from '../slack/client';
 
+type UserClients = {
+  jiraClient: JiraClient;
+  confluenceClient: ConfluenceClient;
+  slackClient: SlackApiClient;
+};
 export async function getUserClients(user: { id: string }) {
   const accounts = await prisma.account.findMany({
     where: {
@@ -13,15 +18,21 @@ export async function getUserClients(user: { id: string }) {
     acc[account.provider] = account;
     return acc;
   }, {});
+
+  // @ts-expect-error
+  const clients: UserClients = {};
   // console.log('Accounts', accountsByProvider);
-  const confluenceClient = new ConfluenceClient({
-    accessToken: accountsByProvider?.atlassian?.access_token
-  });
-  const jiraClient = new JiraClient({
-    accessToken: accountsByProvider?.atlassian?.access_token
-  });
-  const slackClient = new SlackApiClient({
-    accessToken: accountsByProvider?.slack?.access_token
-  });
-  return { jiraClient, confluenceClient, slackClient };
+  if (accountsByProvider?.atlassian?.access_token)
+    clients.confluenceClient = new ConfluenceClient({
+      accessToken: accountsByProvider?.atlassian?.access_token
+    });
+  if (accountsByProvider?.atlassian?.access_token)
+    clients.jiraClient = new JiraClient({
+      accessToken: accountsByProvider?.atlassian?.access_token
+    });
+  if (accountsByProvider?.slack?.access_token)
+    clients.slackClient = new SlackApiClient({
+      accessToken: accountsByProvider?.slack?.access_token
+    });
+  return clients;
 }
