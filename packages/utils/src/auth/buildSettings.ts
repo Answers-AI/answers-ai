@@ -110,6 +110,6 @@ export const buildSettings = async (user: User, org?: Organization) => {
     // TODO: Constant error
     // console.log('urlSettingsError', error);
   }
-  console.log('NewSettings', newSettings);
+  // console.log('NewSettings', newSettings);
   return newSettings;
 };

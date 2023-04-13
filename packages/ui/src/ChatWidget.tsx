@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import ChatDetailWidget from './ChatDetailWidget';
 import { signIn } from 'next-auth/react';
 import { Session } from 'next-auth';
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 interface ChatWidgetProps {
   params: any;
@@ -13,14 +13,14 @@ interface ChatWidgetProps {
 const ChatWidget: React.FC<ChatWidgetProps> = ({ session, params }) => {
   const [isAuthorized, setIsAuthorized] = useState(!!session?.user);
   const Router = useRouter();
+  const searchParams = useSearchParams();
+
+  const apiKey = searchParams.get('apiKey');
+  //TODO: Show error if api key is not passed in
+  if (!apiKey) console.log('no api key');
 
   useEffect(() => {
     if (isAuthorized) return;
-    const searchParams = new URLSearchParams(location.search);
-    const apiKey = searchParams.get('apiKey');
-
-    //TODO: Show error if api key is not passed in
-    if (!apiKey) console.log('no api key');
 
     const signInAsync = async () => {
       const signInResponse = await signIn(
@@ -31,12 +31,14 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ session, params }) => {
         },
         {}
       );
-      // console.log('signInResponse', signInResponse);
+      console.log('signInResponse', signInResponse);
       setIsAuthorized(!!signInResponse?.ok);
       Router.refresh();
     };
     signInAsync();
-  }, [isAuthorized, Router]);
+  }, [isAuthorized, Router, apiKey]);
+
+  console.log({ isAuthorized, session });
 
   return isAuthorized && session?.user ? (
     <ChatDetailWidget user={session.user} appSettings={session.user.appSettings} {...params} />
