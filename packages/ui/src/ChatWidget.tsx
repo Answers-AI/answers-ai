@@ -15,7 +15,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ session, params }) => {
   const Router = useRouter();
   const searchParams = useSearchParams();
 
-  const apiKey = searchParams.get('apiKey');
+  const apiKey = searchParams?.get('apiKey');
   //TODO: Show error if api key is not passed in
   if (!apiKey) console.log('no api key');
 
