@@ -79,7 +79,7 @@ const getAlgoliaVectors = async (algoliaHits: AlgoliaHit[]) => {
           uid: `Algolia_${algoliaHit.url}_${i}`,
           text: headingChunk,
           metadata: {
-            source: 'web',
+            source: 'algolia',
             domain: algoliaHit?.domain?.toLowerCase(),
             url: algoliaHit?.url?.toLowerCase()
           }
@@ -131,6 +131,16 @@ export const processAlgoliaSearch: EventVersionHandler<{
   v: '1',
   handler: async ({ event }) => {
     console.time('processAlgoliaSearch');
+
+    // {
+    //   "name": "algolia/search.sync",
+    //   "data": {
+    //       "query":"*",
+    //       "domain":"https://helpcenter.integralads.com",
+    //       "index":"articles"
+    //   },
+    //   "user": {}
+    // }
 
     const data = event.data;
     const {

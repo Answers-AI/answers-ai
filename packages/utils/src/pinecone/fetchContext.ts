@@ -99,6 +99,12 @@ export const fetchContext = async ({
         },
         topK: 200
       });
+    }),
+    pineconeQuery(promptEmbedding, {
+      filter: {
+        source: 'algolia'
+      },
+      topK: 200
     })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
   console.timeEnd(`[${ts}] Pineconedata get`);
