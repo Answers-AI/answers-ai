@@ -12,10 +12,11 @@ interface ChatWidgetProps {
 
 const ChatWidget: React.FC<ChatWidgetProps> = ({ session, params }) => {
   const [isAuthorized, setIsAuthorized] = useState(!!session?.user);
-  const Router = useRouter();
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const apiKey = searchParams?.get('apiKey');
+  console.log({ apiKey });
   //TODO: Show error if api key is not passed in
   if (!apiKey) console.log('no api key');
 
@@ -33,7 +34,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ session, params }) => {
       );
       console.log('signInResponse', signInResponse);
       setIsAuthorized(!!signInResponse?.ok);
-      Router.refresh();
+      router.refresh();
     };
     signInAsync();
   }, [isAuthorized, Router, apiKey]);
