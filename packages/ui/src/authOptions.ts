@@ -44,33 +44,15 @@ const ATLASSIAN_SCOPE = {
 export const authOptions: AuthOptions = {
   cookies: {
     sessionToken: {
-      name: `next-auth.session-token`,
+      name:
+        process.env.NODE_ENV === 'production'
+          ? `__Secure-next-auth.session-token`
+          : `next-auth.session-token`,
       options: {
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: 'None',
         path: '/',
-        domain: process.env.NEXT_PUBLIC_DOMAIN,
-        secure: true
-      }
-    },
-    callbackUrl: {
-      name: `next-auth.callback-url`,
-      options: {
-        httpOnly: true,
-        sameSite: 'none',
-        path: '/',
-        domain: process.env.NEXT_PUBLIC_DOMAIN,
-        secure: true
-      }
-    },
-    csrfToken: {
-      name: 'next-auth.csrf-token',
-      options: {
-        httpOnly: true,
-        sameSite: 'none',
-        path: '/',
-        domain: process.env.NEXT_PUBLIC_DOMAIN,
-        secure: true
+        secure: process.env.NODE_ENV === 'production' ? true : false
       }
     }
   },
@@ -168,11 +150,21 @@ export const authOptions: AuthOptions = {
         session.user.id = token.id!;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      let finalUrl = baseUrl;
+      if (url.startsWith('/')) finalUrl = `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) finalUrl = url;
+      if (
+        ['http://localhost:3000', 'https://theanswer.ai', 'https://ias.theanswer.ai'].includes(
+          new URL(url).origin
+        )
+      )
+        finalUrl = url;
+      return finalUrl;
     }
-    // async redirect({ url, baseUrl }) {
-    //   console.log('Redirect', { url, baseUrl });
-    //   return url.startsWith(baseUrl) ? url : baseUrl;
-    // }
   },
   events: USER_EVENTS.reduce(
     (acc, event) => ({
