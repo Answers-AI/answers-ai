@@ -45,7 +45,7 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
   //   setExpanded(!expanded);
   // };
   const handleAuthIntegration = () => {
-    signIn(providerId, { callbackUrl: `/settings/integrations/${name}` });
+    signIn(providerId);
   };
 
   const Wrapper: ElementType = expanded ? Box : CardActionArea;

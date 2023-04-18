@@ -52,7 +52,7 @@ export const authOptions: AuthOptions = {
         httpOnly: true,
         sameSite: 'None',
         path: '/',
-        secure: process.env.NODE_ENV === 'production' ? true : false
+        secure: true
       }
     }
   },
@@ -152,17 +152,21 @@ export const authOptions: AuthOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
       let finalUrl = baseUrl;
-      if (url.startsWith('/')) finalUrl = `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) finalUrl = url;
-      if (
-        ['http://localhost:3000', 'https://theanswer.ai', 'https://ias.theanswer.ai'].includes(
-          new URL(url).origin
+      try {
+        // Allows relative callback URLs
+        if (url.startsWith('/')) finalUrl = `${baseUrl}${url}`;
+        // Allows callback URLs on the same origin
+        else if (new URL(url).origin === baseUrl) finalUrl = url;
+        if (
+          ['http://localhost:3000', 'https://theanswer.ai', 'https://ias.theanswer.ai'].includes(
+            new URL(url).origin
+          )
         )
-      )
-        finalUrl = url;
+          finalUrl = url;
+      } catch (err) {
+        console.log('Redirect error', { err, url, baseUrl });
+      }
       return finalUrl;
     }
   },
