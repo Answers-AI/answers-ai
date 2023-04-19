@@ -4,6 +4,9 @@ importers:
 
   .:
     dependencies:
+      docubot:
+        specifier: ^0.1.8
+        version: 0.1.8
       wait-on:
         specifier: ^7.0.1
         version: 7.0.1
@@ -2730,6 +2733,15 @@ packages:
     resolution: {integrity: sha512-003xWiCuvePbLaPHT+CRuaV4GlyCAVm6XYSbBZDHoWZGn1mNkVKFaDbGJjjxmEFvizUwlCoM6O18FCBMMky2zQ==}
     dev: false
 
+  /@pinecone-database/pinecone@0.0.12:
+    resolution: {integrity: sha512-YI9IQ7/0k6jI+NUyTD+I2BvwUGhOMRgMpx/qx/v5t5Cm31vSdnXEgGfh9jILUpi/+j59vtK+O5rB+pV5v1L15w==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      cross-fetch: 3.1.5
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
   /@pinecone-database/pinecone@0.0.5:
     resolution: {integrity: sha512-x5O/LTPHbhDxybECQ8yXa4A/ubaAhkocnraHA51mdZFsOD+/2l8WAQnX1cLp7j+EEAF5xiureK4ExkP6N9dG/g==}
     dependencies:
@@ -4988,6 +5000,20 @@ packages:
     engines: {node: '>=6.0.0'}
     dependencies:
       esutils: 2.0.3
+
+  /docubot@0.1.8:
+    resolution: {integrity: sha512-s6qxGpiRCxFcrygIwH3sCh4rVFX19FIO2PNld8968w///fJGo0ttci1VE2t3mRRRV2U1hS9P2okgt12hEcY5Vg==}
+    hasBin: true
+    dependencies:
+      '@pinecone-database/pinecone': 0.0.12
+      dotenv: 16.0.3
+      gpt3-tokenizer: 1.1.5
+      openai: 3.2.1
+      yargs: 17.7.1
+    transitivePeerDependencies:
+      - debug
+      - encoding
+    dev: false
 
   /dom-helpers@5.2.1:
     resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}
