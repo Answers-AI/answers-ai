@@ -3,26 +3,22 @@ import { prisma } from 'db/dist';
 export async function upsertChat({
   id,
   email = process.env.DEFAULT_USER_EMAIL!,
-  filters,
+  filters = {},
   prompt,
-  isNewJourney,
   journeyId
 }: {
-  id: string;
+  id?: string;
   email: string;
-  filters: object;
+  filters?: object;
   prompt: string;
-  isNewJourney?: boolean;
   journeyId?: string;
 }) {
-  const journey = await (isNewJourney
+  const journey = await (!journeyId
     ? prisma.journey.create({ data: { title: prompt, filters, users: { connect: { email } } } })
-    : journeyId
-    ? prisma.journey.update({
+    : prisma.journey.update({
         where: { id: journeyId },
         data: { filters, users: { connect: { email } } }
-      })
-    : null);
+      }));
 
   const chatProperties = {
     users: {
@@ -31,16 +27,6 @@ export async function upsertChat({
       }
     },
     filters: filters,
-    // prompt: {
-    //   connectOrCreate: {
-    //     create: {
-    //       content: prompt
-    //     },
-    //     where: {
-    //       content: prompt
-    //     }
-    //   }
-    // },
     ...(journey ? { journeyId: journey.id } : null)
   };
 

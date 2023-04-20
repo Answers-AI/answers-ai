@@ -8,7 +8,8 @@
     "paths": {
       "@utils/*": ["../../packages/utils/src/*"],
       "@ui": ["../../packages/ui/src"],
-      "@ui/*": ["../../packages/ui/src/*"]
+      "@ui/*": ["../../packages/ui/src/*"],
+      "@db/*": ["../../packages/db/src/*"]
     },
     "plugins": [
       {

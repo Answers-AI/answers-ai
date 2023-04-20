@@ -1,13 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth';
 
-import { Message } from 'types';
+import { AnswersFilters, Message } from 'types';
 import { prisma } from 'db/dist';
 import cors from '@ui/cors';
 import { inngest } from '@utils/ingest/client';
 import { authOptions } from '@ui/authOptions';
 import { createChatChain } from '@utils/llm/chains';
-import { upsertChat } from '@ui/chat/upsertChat';
+import { upsertChat } from '@utils/upsertChat';
 import { fetchContext } from '@utils/pinecone/fetchContext';
 
 type Data = {
@@ -16,12 +16,21 @@ type Data = {
   error?: any;
   [key: string]: any;
 };
-
+interface QueryRequest {
+  journeyId?: string;
+  chatId?: string;
+  content: string;
+  messages?: Message[];
+  filters?: AnswersFilters;
+}
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await cors(req, res);
   const session = await getServerSession(req, res, authOptions);
+
+  const { messages, journeyId, chatId, filters, content: prompt } = req.body as QueryRequest;
   // TODO: Extract into createCompletion
   const user = session?.user;
+
   if (!user?.email) {
     res.status(401);
     return;
@@ -29,16 +38,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
   let completionData, completionRequest;
 
-  const messages: Message[] = req.body.messages;
-
-  const { journeyId, chatId, filters, content: prompt, isNewJourney } = req.body;
   // console.log('Query', { journeyId, chatId, isNewJourney, filters, prompt, messages });
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({
     id: chatId,
     email: user?.email,
-    filters: filters,
-    isNewJourney,
+    filters,
     prompt,
     journeyId
   });
@@ -48,7 +53,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     ts: new Date().valueOf(),
     name: 'answers/message.sent',
     user: user,
-    data: { role: 'user', chat, content: prompt }
+    data: { role: 'user', chatId: chat.id, content: prompt }
   });
 
   if (user)
@@ -67,7 +72,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     summary = '';
   try {
     ({ pineconeData, context, summary } = await fetchContext({
-      chat,
+      // chat,
       prompt,
       messages,
       filters
@@ -90,7 +95,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       context: summary,
       userName: user.name,
       input: prompt,
-      history: messages,
+      messages,
       agent_scratchpad: ''
     });
     console.timeEnd(`[${ts}] [query chatChain.call]: ` + prompt);
