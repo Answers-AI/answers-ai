@@ -29,6 +29,7 @@ export default async function RootLayout({
   if (session?.user?.email)
     await flagsmith.identify(`user_${session.user.id}`, {
       env: process.env.NODE_ENV,
+      role: session.user.role,
       domain: session.user.email.split('@')[1]
     });
 
