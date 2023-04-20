@@ -1,6 +1,14 @@
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser';
+import { inngest } from './ingest/client';
 
-export async function OpenAIStream(payload: any, extra: any, onEnd: (answer: string) => void) {
+interface CompletionResponse {
+  text: string;
+}
+export async function OpenAIStream(
+  payload: any,
+  extra: any,
+  onEnd: (response: CompletionResponse) => void
+) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
@@ -15,6 +23,7 @@ export async function OpenAIStream(payload: any, extra: any, onEnd: (answer: str
     body: JSON.stringify(payload)
   });
 
+  let answer = '';
   const stream = new ReadableStream({
     async start(controller) {
       controller.enqueue(encoder.encode(JSON.stringify(extra) + 'JSON_END'));
@@ -33,6 +42,7 @@ export async function OpenAIStream(payload: any, extra: any, onEnd: (answer: str
             if (counter < 2 && (text?.match(/\n/) || []).length) {
               return;
             }
+            answer += text ?? '';
             const queue = encoder.encode(text);
             controller.enqueue(queue);
             counter++;
@@ -43,24 +53,14 @@ export async function OpenAIStream(payload: any, extra: any, onEnd: (answer: str
       }
 
       const parser = createParser(onParse);
-      let answer = '';
       for await (const chunk of res.body as any) {
         let decoded = decoder.decode(chunk);
-        answer += decoded;
+
         parser.feed(decoded);
       }
-      onEnd(answer);
-      // if (answer)
-      //   await prisma.prompt.update({
-      //     where: { id: savedPrompt.id },
-      //     data: {
-      //       answers: {
-      //         createMany: {
-      //           data: [{ text: answer }]
-      //         }
-      //       }
-      //     }
-      //   });
+      // TODO: Add tokens consumed in this completion
+      onEnd({ ...extra, text: answer });
+
       controller.close();
     }
   });

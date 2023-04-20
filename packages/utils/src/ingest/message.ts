@@ -4,9 +4,10 @@ import { AnswersFilters, User, Chat } from 'types';
 // import { inngest } from './client';
 import { EventVersionHandler } from './EventVersionHandler';
 import { openai } from '../openai/client';
+import { upsertChat } from '../upsertChat';
 
 export const answersMessageSent: EventVersionHandler<{
-  chat: Chat;
+  chatId: string;
   filters: AnswersFilters;
   user: User;
   role: string;
@@ -16,7 +17,7 @@ export const answersMessageSent: EventVersionHandler<{
   event: 'answers/message.sent',
   handler: async ({ event }) => {
     const { data, user } = event;
-    const { role, content, chat } = data;
+    const { role, content, chatId } = data;
     // if (filters?.datasources?.web?.url?.length) {
     //   console.log('web/page.sync', filters.datasources.web.url);
     //   await inngest.send({
@@ -42,7 +43,7 @@ export const answersMessageSent: EventVersionHandler<{
     //   });
 
     const messages = await prisma.message.findMany({
-      where: { chatId: chat.id },
+      where: { chatId: chatId },
       orderBy: { createdAt: 'asc' }
     });
     const history = messages?.map(({ role, content }) => `${role}: ${content}`).join('\n');
@@ -57,7 +58,7 @@ export const answersMessageSent: EventVersionHandler<{
     const title = res?.data?.choices?.[0]?.text!;
     console.log('AITitle', title);
     await prisma.chat.update({
-      where: { id: chat.id },
+      where: { id: chatId },
       data: {
         title
       }
@@ -66,7 +67,7 @@ export const answersMessageSent: EventVersionHandler<{
     return prisma.message.create({
       data: {
         ...(role == 'user' && user?.email ? { user: { connect: { email: user?.email } } } : {}),
-        chat: { connect: { id: chat.id } },
+        chat: { connect: { id: chatId } },
         role,
         content: content
       }

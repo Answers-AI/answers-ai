@@ -15,16 +15,14 @@ const SUMMARY_TOKEN_SIZE = 2_000; // (openai max_tokens) Controls the ouput toke
 const CONTEXT_PAGES = 1; // How many context pages we want to process for completion
 const PINECONE_THRESHOLD = 0.68;
 export const fetchContext = async ({
-  chat,
   prompt,
   messages = [],
   filters = {},
   threshold = PINECONE_THRESHOLD //TODO Calculate threshold based on input and pineconedata
 }: {
-  chat?: Chat;
   prompt: string;
-  messages: Message[];
-  filters: AnswersFilters;
+  messages?: Message[];
+  filters?: AnswersFilters;
   threshold?: number;
 }) => {
   const ts = Date.now();
