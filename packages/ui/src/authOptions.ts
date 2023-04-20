@@ -22,6 +22,7 @@ declare module 'next-auth' {
 declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
+    role: string;
   }
 }
 const ATLASSIAN_SCOPE = {
@@ -142,12 +143,14 @@ export const authOptions: AuthOptions = {
     async jwt({ token, user, account, profile, isNewUser }) {
       if (user) {
         token.id = user?.id;
+        token.role = user?.role;
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id!;
+        session.user.role = token.role!;
       }
       return session;
     },
