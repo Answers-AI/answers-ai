@@ -4,12 +4,12 @@ import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 export function getCompletionRequest({
   context,
   userName,
-  history,
+  messages,
   input
 }: {
   context: string;
   userName?: string | null | undefined;
-  history: Message[];
+  messages?: Message[];
   input: string;
 }) {
   return {
@@ -30,7 +30,7 @@ export function getCompletionRequest({
         content: userName ? 'My name is ' + userName : ''
       },
       // TODO: Summarize history when it gets too long
-      ...history?.slice(0, -10)?.map(({ role, content }) => ({ role, content })),
+      ...(messages ? messages?.slice(0, -10)?.map(({ role, content }) => ({ role, content })) : []),
       { role: ChatCompletionRequestMessageRoleEnum.User, content: input }
     ],
 
