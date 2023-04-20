@@ -9,7 +9,6 @@ import { fetchContext } from '@utils/pinecone/fetchContext';
 import { authOptions } from '@ui/authOptions';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { upsertChat } from '@utils/upsertChat';
-import { v4 } from 'uuid';
 
 interface QueryRequest {
   journeyId?: string;
