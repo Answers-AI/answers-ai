@@ -6,7 +6,7 @@ import { Document } from 'langchain/dist/document';
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const timeout = (ms: number) =>
   new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms));
-
+// TODO: Lets talk about how we use tokenizaion and embeddings.
 // const summarizeModel = 'text-embedding-ada-002'
 const finalSummaryModel = 'text-davinci-003';
 const summarizeModel = 'text-davinci-003';
