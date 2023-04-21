@@ -11,6 +11,7 @@ import * as promptFunctions from '@utils/ingest/prompt';
 import * as slackFunctions from '@utils/ingest/slack';
 import * as webFunctions from '@utils/ingest/web';
 import * as jiraFunctions from '@utils/ingest/jira';
+import * as airtableFunctions from '@utils/ingest/airtable';
 
 // Create a client to send and receive events
 
@@ -24,7 +25,8 @@ const handlers = {
   ...promptFunctions,
   ...slackFunctions,
   ...webFunctions,
-  ...jiraFunctions
+  ...jiraFunctions,
+  ...airtableFunctions
 };
 
 const functions = Object.values(handlers);

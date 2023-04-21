@@ -293,6 +293,11 @@ export type ConfluencePage = {
   };
 };
 
+export type AirtableRecord = {
+  id: number;
+  title: string;
+};
+
 export interface ConfluenceSetting extends ConfluencePage {
   enabled: boolean;
 }
