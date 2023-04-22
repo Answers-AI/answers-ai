@@ -74,7 +74,7 @@ export const buildSettings = async (user: User, org?: Organization) => {
       const { results: spaces } = await confluenceClient.getSpaces();
 
       const spacesById =
-        (newSettings as any)?.confluence?.spaces?.reduce(
+        (newSettings as AppSettings)?.confluence?.spaces?.reduce(
           (acc: any, space: ConfluenceSpaceSetting) => {
             acc[space.key] = space;
             return acc;

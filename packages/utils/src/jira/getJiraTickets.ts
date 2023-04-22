@@ -36,7 +36,7 @@ export const getJiraTickets = async ({
     let total = 0;
     // maxResults -= initialPullCount;
     // batchSize = Math.min(batchSize, maxResults);
-    let endpoint = `/search?jql=${jql}&maxResults=${initialPullCount}&startAt=${startAt}&fields=${JIRA_FIELDS.join(
+    let endpoint = `search?jql=${jql}&maxResults=${initialPullCount}&startAt=${startAt}&fields=${JIRA_FIELDS.join(
       ','
     )}`;
     // console.time(endpoint);

@@ -91,6 +91,7 @@ export const fetchContext = async ({
 
   const pineconeData = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
+      if (!filter[source]) return Promise.resolve(null);
       return pineconeQuery(promptEmbedding, {
         filter: {
           ...filter[source]

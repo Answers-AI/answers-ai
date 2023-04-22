@@ -27,7 +27,7 @@ declare module 'next-auth/jwt' {
 }
 const ATLASSIAN_SCOPE = {
   // 'write:jira-work': true,
-  // 'read:jira-work': true,
+  'read:jira-work': true,
   'offline_access': true,
   'read:confluence-content.all': true,
   'read:confluence-content.summary': true,

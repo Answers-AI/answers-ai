@@ -5,11 +5,12 @@ import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
-import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import { DefaultPrompts } from './DefaultPrompts';
 import { Filters } from './Filters';
+import { Tooltip } from '@mui/material';
 
 export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: boolean }) => {
   const {
@@ -63,7 +64,15 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
       {filters ? <Filters filters={filters} /> : null}
       <TextField
         inputRef={inputRef}
-        sx={{ textarea: { minHeight: 23, paddingRight: 4, paddingBottom: 5 } }}
+        sx={(theme) => ({
+          textarea: {
+            minHeight: 23,
+            paddingRight: 4,
+            paddingBottom: 5,
+            maxHeight: theme.spacing(8),
+            overflowY: 'auto'
+          }
+        })}
         variant="filled"
         fullWidth
         placeholder="How can you help me accomplish my goal?"
@@ -100,9 +109,11 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
           />
         ) : null}
         {!isWidget && messages?.length ? (
-          <Button variant="outlined" color="primary" onClick={clearMessages}>
-            <DeleteIcon />
-          </Button>
+          <Tooltip title="Start new chat">
+            <Button variant="outlined" color="primary" onClick={clearMessages}>
+              <AddIcon />
+            </Button>
+          </Tooltip>
         ) : null}
         {/* <Button variant="outlined" color="primary" onClick={() => setShowPrompts(true)}>
                   <AddIcon />

@@ -35,7 +35,6 @@ interface AnswersContextType {
   updatePrompt: (prompt: Partial<Prompt>) => Promise<void>;
   updateJourney: (journey: Partial<Journey>) => Promise<void>;
 }
-
 const AnswersContext = createContext<AnswersContextType>({
   appSettings: {},
   error: null,
@@ -183,11 +182,11 @@ export function AnswersProvider({
   const clearMessages = () => {
     setMessages([]);
     setChatId(undefined);
-    setJourneyId(undefined);
-    setFilters({});
     setError(null);
     setIsLoading(false);
-    router.push('/');
+    if (chatId) {
+      router.push('/');
+    }
   };
 
   const deleteChat = async (id: string) =>

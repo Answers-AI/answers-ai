@@ -22,7 +22,7 @@ export function getCompletionRequest({
       },
       {
         role: ChatCompletionRequestMessageRoleEnum.User,
-        content: `Reply based on the context provided. If you don't know the answers say you don't know and can't find. If the context is not enought to answer, ask me more questions. If you think you're absolutely right, say so. <CONTEXT>${context}<CONTEXT>`
+        content: `Reply based on the context provided. If you don't know the answers say you don't know and can't find. If the context is not enought to answer, ask the user more questions that would help you build the context. If you think you're absolutely right, say so. <CONTEXT>${context}<CONTEXT>`
       },
 
       {

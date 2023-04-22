@@ -10,20 +10,23 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
         <>
           <Typography variant="overline">Sources:</Typography>
           {filters?.datasources
-            ? Object.entries(filters.datasources)?.map(([source, filters]) => {
+            ? Object.entries(filters.datasources)?.map(([source, sourceFilters]) => {
+                if (!sourceFilters) return null;
                 return (
                   <>
-                    {Object.keys(filters)?.map((field) => (
+                    {Object.entries(sourceFilters)?.map(([field, values]) => (
                       <>
                         <Typography variant="overline">
                           {source} {field}
                         </Typography>
-                        {filters[field]?.map((value: any) => (
-                          <Chip
-                            key={`${field}`}
-                            label={value?.name ?? value?.id ?? JSON.stringify(value)}
-                          />
-                        ))}
+                        {!values
+                          ? null
+                          : values?.map((value: any) => (
+                              <Chip
+                                key={`${field}:${value?.name ?? value?.id ?? value}`}
+                                label={value?.name ?? value?.id ?? JSON.stringify(value)}
+                              />
+                            ))}
                       </>
                     ))}
                   </>

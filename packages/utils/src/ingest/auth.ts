@@ -34,6 +34,19 @@ export const authUserSignIn: EventVersionHandler<{
     await syncAppSettings({ userId: user.id });
   }
 };
+export const authUserLinkAccount: EventVersionHandler<{
+  chatId: number;
+  role: string;
+  content: string;
+}> = {
+  v: '1',
+  event: 'auth/user.linkAccount',
+  handler: async ({ event }) => {
+    const { data, user } = event;
+    if (!user) throw new Error('NO_USER_PROVIDED');
+    await syncAppSettings({ userId: user.id });
+  }
+};
 
 export const authCreateUser: EventVersionHandler<{
   chatId: number;

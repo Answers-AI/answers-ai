@@ -33,7 +33,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { journeyId, chatId, filters, prompt, messages } = req.body as QueryRequest;
   let completionData, completionRequest;
 
-  // console.log('Query', { journeyId, chatId, isNewJourney, filters, prompt, messages });
+  console.log('[AI][Stream]', { journeyId, chatId, filters, prompt, messages });
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({
     id: chatId,
@@ -123,6 +123,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     var string = new TextDecoder().decode(chunk);
     res.write(string);
   }
+  res.end();
 };
 
 export default handler;

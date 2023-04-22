@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import { Chip } from '@mui/material';
 
 interface Props<T> {
   sx?: any;
@@ -9,6 +10,7 @@ interface Props<T> {
   value: T[];
   onChange: (value: T[]) => void;
   getOptionLabel?: (value: T) => string;
+  getOptionValue?: (value: T) => string;
 }
 export default function AutocompleteSelect<T>({
   sx,
@@ -17,6 +19,7 @@ export default function AutocompleteSelect<T>({
   value,
   onChange,
   getOptionLabel,
+  getOptionValue,
   ...props
 }: Props<T>) {
   const handleChange = (event: any, newValue: any) => {
@@ -36,8 +39,17 @@ export default function AutocompleteSelect<T>({
       id={`${label}`}
       options={options}
       getOptionLabel={getOptionLabel as any}
-      value={value}
+      value={getOptionValue ? value?.map(getOptionValue) : value}
       onChange={handleChange}
+      renderTags={(tagValue, getTagProps) =>
+        tagValue.map((option, index) => (
+          <Chip
+            label={getOptionLabel ? getOptionLabel(options[index]) : option}
+            {...getTagProps({ index })}
+            // disabled={fixedOptions.indexOf(option) !== -1}
+          />
+        ))
+      }
       renderInput={(params) => (
         <TextField {...params} label={label} placeholder={`Enter ${label}`} />
       )}
