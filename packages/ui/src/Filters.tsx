@@ -21,7 +21,7 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
                         </Typography>
                         {!values
                           ? null
-                          : values?.map((value: any) => (
+                          : (values as any[])?.map((value: any) => (
                               <Chip
                                 key={`${field}:${value?.name ?? value?.id ?? value}`}
                                 label={value?.name ?? value?.id ?? JSON.stringify(value)}
