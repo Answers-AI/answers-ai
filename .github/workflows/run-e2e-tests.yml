@@ -1,11 +1,11 @@
 name: E2E Tests
 
 on:
-  # push:
-  #   branches: [main]
-  # pull_request:
-  #   types: [labeled, unlabeled, opened, edited, synchronize]
-  deployment_status:
+  push:
+    branches: [main]
+  pull_request:
+    types: [labeled, unlabeled, opened, edited, synchronize]
+  # deployment_status:
 
 jobs:
   # Nonce for re-runs: https://docs.percy.io/docs/parallel-test-suites#github-actions
@@ -66,7 +66,20 @@ jobs:
             turbo-${{ github.job }}-${{ github.ref_name }}-
 
       # report machine parameters
-      #- run: npx cypress info
+      - run: npx cypress info
+
+  wait-for-preview:
+    needs:
+      - install
+    runs-on: ubuntu-latest
+    outputs:
+      preview-url: steps.wait-for-vercel-preview.outputs.url }}
+    steps:
+      - name: ⏳ Wait for Vercel Preview
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
+        id: wait-for-vercel-preview
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   ui-chrome-tests:
     timeout-minutes: 15
@@ -77,6 +90,7 @@ jobs:
     needs:
       - install
       - nonce
+      - wait-for-preview
     strategy:
       # when one test fails, DO NOT cancel the other
       # containers, because this will kill Cypress processes
@@ -139,7 +153,7 @@ jobs:
           parallel: true
           group: 'UI - Chrome'
         env:
-          CYPRESS_BASE_URL: ${{ github.event.deployment_status.target_url }}
+          CYPRESS_BASE_URL: ${{ needs.wait-for-preview.outputs.preview-url }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
