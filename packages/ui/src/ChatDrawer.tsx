@@ -189,9 +189,9 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
                       {opened[idx] ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
                   ) : null}
-                  <IconButton onClick={() => handleAddChat({ journey })}>
+                  {/* <IconButton onClick={() => handleAddChat({ journey })}>
                     <Add />
-                  </IconButton>
+                  </IconButton> */}
                 </ListItemButton>
                 <Collapse
                   in={
