@@ -229,14 +229,14 @@ jobs:
           restore-keys: |
             turbo-${{ github.job }}-${{ github.ref_name }}-
 
-      - name: 'Website Tests - Chrome'
+      - name: 'Components Tests - Chrome'
         uses: cypress-io/github-action@v5
         with:
-          install: true
+          install: false
           browser: chrome
           record: true
           parallel: true
-          group: 'Component - Chrome'
+          group: 'Components - Chrome'
           component: true
         env:
           CYPRESS_BASE_URL: ${{ needs.wait-for-preview.outputs.preview-url }}
