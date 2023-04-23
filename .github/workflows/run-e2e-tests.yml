@@ -80,7 +80,7 @@ jobs:
         id: wait-for-vercel-preview
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 600
+          max_timeout: 6000
 
   ui-chrome-tests:
     timeout-minutes: 15
