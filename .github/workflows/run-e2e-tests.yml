@@ -8,8 +8,18 @@ on:
   # deployment_status:
 
 permissions:
+  actions: 'read'
+  checks: 'read'
   contents: 'read'
-  id-token: 'write'
+  deployments: 'read'
+  # issues: 'read'
+  # discussions: 'read'
+  # packages: 'read'
+  # pages: 'read'
+  # pull-requests: 'read'
+  # repository-projects: 'read'
+  # security-events: 'read'
+  # statuses: 'read'
 
 jobs:
   # Nonce for re-runs: https://docs.percy.io/docs/parallel-test-suites#github-actions
