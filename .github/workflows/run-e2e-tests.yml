@@ -69,9 +69,6 @@ jobs:
           restore-keys: |
             turbo-${{ github.job }}-${{ github.ref_name }}-
 
-      # report machine parameters
-      - run: npx cypress info
-
   wait-for-preview:
     needs:
       - install
