@@ -148,20 +148,17 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           install: false
-          # wait-on: http://localhost:5338/percy/healthcheck
-          # wait-on-timeout: 120
           browser: chrome
           record: true
           parallel: true
           group: 'UI - Chrome'
         env:
-          SITE: ${{ secrets.SITE }}
           CYPRESS_BASE_URL: ${{ needs.wait-for-preview.outputs.preview-url }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-          PERCY_PARALLEL_NONCE: ${{ needs.nonce.outputs.result }}
-          PERCY_PARALLEL_TOTAL: 5
+          # PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          # PERCY_PARALLEL_NONCE: ${{ needs.nonce.outputs.result }}
+          # PERCY_PARALLEL_TOTAL: 5
           COMMIT_INFO_BRANCH: ${{ github.head_ref }}
           # Recommended: pass the GitHub token lets this action correctly
           # determine the unique run id necessary to re-run the checks
