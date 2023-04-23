@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     types: [labeled, unlabeled, opened, edited, synchronize]
+  # deployment_status:
 
 jobs:
   # Nonce for re-runs: https://docs.percy.io/docs/parallel-test-suites#github-actions
@@ -18,24 +19,18 @@ jobs:
 
   install:
     runs-on: ubuntu-latest
-    container:
-      image: cypress/browsers:node16.14.0-slim-chrome99-ff97
-      options: --user 1001
+    # container:
+    #   image: cypress-io/browsers/node-18.16.0-chrome-112.0.5615.121-1-ff-112.0.1-edge-112.0.1722.48-1
+    #   options: --user 1001
     steps:
-      # Enforce label on PR to prevent unnecesary testing
-      - name: Enforce labels
-        uses: mheap/github-action-required-labels@v1
-        if: ${{ github.event_name == 'pull_request' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          mode: exactly
-          count: 1
-          labels: 'qa-ready'
-
       ## SETUP
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
@@ -71,7 +66,7 @@ jobs:
             turbo-${{ github.job }}-${{ github.ref_name }}-
 
       # report machine parameters
-      - run: npx cypress info
+      #- run: npx cypress info
 
   wait-for-preview:
     needs:
@@ -81,7 +76,7 @@ jobs:
       preview-url: steps.wait-for-vercel-preview.outputs.url }}
     steps:
       - name: ⏳ Wait for Vercel Preview
-        uses: patrickedqvist/wait-for-vercel-preview@c934e81c4b18ad59acbb866fb817ed586b17ecba
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
         id: wait-for-vercel-preview
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -89,9 +84,9 @@ jobs:
   ui-chrome-tests:
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    container:
-      image: cypress/browsers:node16.14.0-slim-chrome99-ff97
-      options: --user 1001
+    # container:
+    #   image: cypress-io/browsers/node-18.16.0-chrome-112.0.5615.121-1-ff-112.0.1-edge-112.0.1722.48-1
+    #   options: --user 1001
     needs:
       - install
       - nonce
@@ -110,6 +105,11 @@ jobs:
       ## SETUP
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
@@ -145,7 +145,7 @@ jobs:
             turbo-${{ github.job }}-${{ github.ref_name }}-
 
       - name: 'Website Tests - Chrome'
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v5
         with:
           install: false
           browser: chrome

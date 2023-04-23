@@ -1,6 +1,7 @@
 const { defineConfig } = require('cypress');
 
 module.exports = defineConfig({
+  projectId: 'pnbaom',
   // supportFolder: './support',
   e2e: {
     // specPattern: '../apps/**/*.cy.{js,jsx,ts,tsx}',
