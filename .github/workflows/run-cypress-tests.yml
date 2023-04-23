@@ -1,0 +1,207 @@
+name: Cypress Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [labeled, unlabeled, opened, edited, synchronize]
+  # deployment_status:
+
+permissions:
+  actions: 'read'
+  checks: 'read'
+  contents: 'read'
+  deployments: 'read'
+  issues: 'read'
+  discussions: 'read'
+  packages: 'read'
+  pages: 'read'
+  pull-requests: 'read'
+  repository-projects: 'read'
+  security-events: 'read'
+  statuses: 'read'
+
+jobs:
+  # Nonce for re-runs: https://docs.percy.io/docs/parallel-test-suites#github-actions
+  nonce:
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.nonce.outputs.result }}
+    steps:
+      - id: nonce
+        run: echo "::set-output name=result::${{ github.run_id }}-$(date +%s)"
+
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      ## SETUP ##
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 7
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: |
+            ~/.cache/Cypress
+            ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
+      ## SETUP ##
+      # component-tests:
+      #   timeout-minutes: 15
+      #   runs-on: ubuntu-latest
+      #   needs:
+      #     - install
+      #     - nonce
+      #   strategy:
+      #     fail-fast: false
+      #     matrix:
+      #       containers: [1]
+
+      #   steps:
+      #     ## SETUP ##
+      #     - name: Checkout
+      #       uses: actions/checkout@v2
+
+      #     - name: Install Node.js
+      #       uses: actions/setup-node@v3
+      #       with:
+      #         node-version: 16
+
+      #     - uses: pnpm/action-setup@v2
+      #       name: Install pnpm
+      #       id: pnpm-install
+      #       with:
+      #         version: 7
+      #         run_install: false
+
+      #     - name: Get pnpm store directory
+      #       id: pnpm-cache
+      #       shell: bash
+      #       run: |
+      #         echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      #     - uses: actions/cache@v3
+      #       name: Setup pnpm cache
+      #       with:
+      #         path: |
+
+      #           ~/.cache/Cypress
+      #           ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+      #         key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+      #         restore-keys: |
+      #           ${{ runner.os }}-pnpm-store-
+
+      #     - name: Install dependencies
+      #       run: pnpm install
+      #     ## SETUP ##
+
+      - name: Run Component Tests
+        run: pnpm cypress run --component --record
+        env:
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          COMMIT_INFO_BRANCH: ${{ github.head_ref }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # wait-for-preview:
+      #   needs:
+      #     - install
+      #     - component-tests
+      #   runs-on: ubuntu-latest
+      #   outputs:
+      #     preview-url: ${{ steps.wait-for-vercel-preview.outputs.url }}
+      #   steps:
+      - name: ⏳ Wait for Vercel Preview
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
+        id: wait-for-vercel-preview
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 6000
+
+      # e2e-chrome-tests:
+      #   timeout-minutes: 15
+      #   runs-on: ubuntu-latest
+      #   needs:
+      #     - install
+      #     - nonce
+      #     - wait-for-preview
+      #   strategy:
+      #     fail-fast: false
+      #     matrix:
+      #       containers: [1]
+
+      #   steps:
+      #     ## SETUP ##
+      #     - name: Checkout
+      #       uses: actions/checkout@v2
+
+      #     - name: Install Node.js
+      #       uses: actions/setup-node@v3
+      #       with:
+      #         node-version: 16
+
+      #     - uses: pnpm/action-setup@v2
+      #       name: Install pnpm
+      #       id: pnpm-install
+      #       with:
+      #         version: 7
+      #         run_install: false
+
+      #     - name: Get pnpm store directory
+      #       id: pnpm-cache
+      #       shell: bash
+      #       run: |
+      #         echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      #     - uses: actions/cache@v3
+      #       name: Setup pnpm cache
+      #       with:
+      #         path: |
+      #           ~/.cache/Cypress
+      #           ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+      #         key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+      #         restore-keys: |
+      #           ${{ runner.os }}-pnpm-store-
+
+      #     - name: Install dependencies
+      #       run: pnpm install
+      #     ## SETUP ##
+
+      - name: 'Website Tests - Chrome'
+        uses: cypress-io/github-action@v5
+        with:
+          install: true
+          browser: chrome
+          record: true
+          parallel: true
+          group: 'UI - Chrome'
+        env:
+          # CYPRESS_BASE_URL: ${{ needs.wait-for-preview.outputs.preview-url }}
+          CYPRESS_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          COMMIT_INFO_BRANCH: ${{ github.head_ref }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

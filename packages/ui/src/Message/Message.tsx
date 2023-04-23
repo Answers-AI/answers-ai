@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import { Message, User } from 'types';
 import { useFlags } from 'flagsmith/react';
 import ReactMarkdown from 'react-markdown';
-import { useAnswers } from './AnswersContext';
+import { useAnswers } from '@ui/AnswersContext';
 import { AxiosError } from 'axios';
 
 const Accordion = styled((props: AccordionProps) => (
@@ -130,6 +130,7 @@ export const MessageCard = ({
   };
   return (
     <Card
+      data-cy="message"
       sx={{
         borderRadius: 0,
         position: 'relative'
