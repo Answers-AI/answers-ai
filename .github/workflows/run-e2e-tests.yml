@@ -73,7 +73,7 @@ jobs:
       - install
     runs-on: ubuntu-latest
     outputs:
-      preview-url: steps.wait-for-vercel-preview.outputs.url }}
+      preview-url: ${{ steps.wait-for-vercel-preview.outputs.url }}
     steps:
       - name: ⏳ Wait for Vercel Preview
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
