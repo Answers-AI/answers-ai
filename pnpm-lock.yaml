@@ -8,9 +8,9 @@ importers:
         specifier: ^7.0.1
         version: 7.0.1
     devDependencies:
-      '@cypress/react':
-        specifier: ^7.0.3
-        version: 7.0.3(cypress@12.10.0)(react-dom@17.0.2)(react@17.0.2)
+      '@cypress/react18':
+        specifier: ^2.0.0
+        version: 2.0.0(@types/react-dom@18.0.11)(cypress@12.10.0)(react-dom@18.2.0)(react@18.2.0)
       cypress:
         specifier: ^12.10.0
         version: 12.10.0
@@ -1146,20 +1146,22 @@ packages:
       '@jridgewell/trace-mapping': 0.3.9
     dev: false
 
-  /@cypress/react@7.0.3(cypress@12.10.0)(react-dom@17.0.2)(react@17.0.2):
-    resolution: {integrity: sha512-YseqnMugTbdPV9YCYEMXVqIf+P7x+pfjXOdjv4dnDFqNCZeHaZfOZVFZ4XfEHVxMv0aDszxlaLiIp3QDPhr12w==}
+  /@cypress/react18@2.0.0(@types/react-dom@18.0.11)(cypress@12.10.0)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-I4iEzyPvSmADPUFT7fuihuo21zu5j5OdgB73KnuCI7VjFT6RaYnag8zBeSkXuwSBO1fbD4jeJWoDyPNLqwLspg==}
     peerDependencies:
-      '@types/react': ^16.9.16 || ^17.0.0
+      '@types/react': ^18
+      '@types/react-dom': ^18
       cypress: '*'
-      react: ^=16.x || ^=17.x
-      react-dom: ^=16.x || ^=17.x
+      react: ^18
+      react-dom: ^18
     peerDependenciesMeta:
       '@types/react':
         optional: true
     dependencies:
+      '@types/react-dom': 18.0.11
       cypress: 12.10.0
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: true
 
   /@cypress/request@2.88.11:
@@ -9844,17 +9846,6 @@ packages:
       safe-buffer: 5.2.1
     dev: true
 
-  /react-dom@17.0.2(react@17.0.2):
-    resolution: {integrity: sha512-s4h96KtLDUQlsENhMn1ar8t2bEa+q/YAtj8pPPdIjPDGBDIVNsrD9aXNWqspUe6AzKCIG0C1HZZLqLV7qpOBGA==}
-    peerDependencies:
-      react: 17.0.2
-    dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
-      react: 17.0.2
-      scheduler: 0.20.2
-    dev: true
-
   /react-dom@18.2.0(react@18.2.0):
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
     peerDependencies:
@@ -9863,7 +9854,6 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
-    dev: false
 
   /react-hook-form@7.43.9(react@18.2.0):
     resolution: {integrity: sha512-AUDN3Pz2NSeoxQ7Hs6OhQhDr6gtF9YRuutGDwPQqhSUAHJSgGl2VeY3qN19MG0SucpjgDiuMJ4iC5T5uB+eaNQ==}
@@ -9937,20 +9927,11 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /react@17.0.2:
-    resolution: {integrity: sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==}
-    engines: {node: '>=0.10.0'}
-    dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
-    dev: true
-
   /react@18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
 
   /read-pkg-up@7.0.1:
     resolution: {integrity: sha512-zK0TB7Xd6JpCLmlLmufqykGE+/TlOePD6qKClNW7hHDKFh/J7/7gCWGR7joEQEW1bKq3a3yUZSObOoWLFQ4ohg==}
@@ -10338,18 +10319,10 @@ packages:
       xmlchars: 2.2.0
     dev: false
 
-  /scheduler@0.20.2:
-    resolution: {integrity: sha512-2eWfGgAqqWFGqtdMmcL5zCMK1U8KlXv8SQFGglL3CEtd0aDVDWgeF/YoCmvln55m5zSk3J/20hTaSBeSObsQDQ==}
-    dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
-    dev: true
-
   /scheduler@0.23.0:
     resolution: {integrity: sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
 
   /schema-utils@3.1.1:
     resolution: {integrity: sha512-Y5PQxS4ITlC+EahLuXaY86TXfR7Dc5lw294alXOq86JAHCihAIZfqv8nNCWvaEJvaC51uN9hbLGeV0cFBdH+Fw==}

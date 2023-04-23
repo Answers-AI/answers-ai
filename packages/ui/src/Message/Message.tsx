@@ -130,6 +130,7 @@ export const MessageCard = ({
   };
   return (
     <Card
+      data-cy="message"
       sx={{
         borderRadius: 0,
         position: 'relative'

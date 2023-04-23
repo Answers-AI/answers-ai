@@ -1,12 +1,12 @@
 {
+  "extends": "../packages/tsconfig/react-library.json",
+  "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
     "lib": ["dom", "ES2015"],
-    "baseUrl": ".",
+    "baseUrl": "..",
     "paths": {
-      "@utils/*": ["../packages/utils/src/*"],
-      "@ui/*": ["../packages/ui/src/*"]
+      "@utils/*": ["packages/utils/src/*"],
+      "@ui/*": ["packages/ui/src/*"]
     }
-  },
-  "extends": "../packages/tsconfig/react-library.json",
-  "exclude": ["dist", "build", "node_modules"]
+  }
 }
