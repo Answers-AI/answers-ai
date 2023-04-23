@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "ES2015"],
+    "baseUrl": ".",
+    "paths": {
+      "@utils/*": ["../packages/utils/src/*"],
+      "@ui/*": ["../packages/ui/src/*"]
+    }
+  },
+  "extends": "../packages/tsconfig/react-library.json",
+  "exclude": ["dist", "build", "node_modules"]
+}

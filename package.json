@@ -23,6 +23,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@cypress/react": "^7.0.3",
+    "cypress": "^12.10.0",
     "dotenv-cli": "latest",
     "eslint-config-custom": "workspace:*",
     "inngest-cli": "^0.11.0",
