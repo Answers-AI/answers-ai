@@ -41,18 +41,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
           cache: 'pnpm'
           node-version: 16
-
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 7
-          run_install: false
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -119,18 +116,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
           cache: 'pnpm'
           node-version: 16
-
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 7
-          run_install: false
 
       # - name: Get pnpm store directory
       #   id: pnpm-cache
