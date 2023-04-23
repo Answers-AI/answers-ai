@@ -115,7 +115,7 @@ jobs:
         run: pnpm install
 
       - name: Run Component Tests
-        run: pnpm cypress run --component
+        run: pnpm cypress run --component --record
 
   wait-for-preview:
     needs:
