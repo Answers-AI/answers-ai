@@ -41,8 +41,6 @@ To execute the commond on a single file
 docubot start /path/to/file
 ```
 
- however if you want to force a full
-
 ## Commands
 
 Docubot has several commands that you can use to interact with it.
@@ -63,5 +61,27 @@ The `list` command allows you to list all of the files that you have saved.
 docubot list
 ```
 ## TODO
-- Fix the pricing per token so that it can be the estimated amount, then return the final amount from OpenAI
-- Enable automated syncing to pincone on code changes
+### CLI
+- Add husky job to save to autodocument the change, allow the user to change the comment then pinecone on commit
+- Add jest testing
+- Reafactor to use modules for
+    - fileprocessing (read/write ) based on the config - DONE
+    - creating the full prompt from templates - Done
+    - counting tokens - 
+    - sending to completion API
+    - Sending to embedding API
+        - Classify files based on the area of the site
+    - Creating pinecone metadata based on area of the app, send to pinecone (or answerai)
+    - User command flow
+- Enable automated syncing to pincone without embeddings on when a file changes
+- Change outputs to nest console statements trees
+- highlight the color of the tokens based on size and model used
+- handle files over 8k in tokens
+- Git action for pull requests that auto create the change log documentation based on the commit history and path file
+- 
+
+### UI
+- Add ability to select files to use in completion
+- Show the user how many tokens they can have in the completion based on what files, model, and prompt they have selected
+- add 
+- 

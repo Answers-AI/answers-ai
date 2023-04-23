@@ -241,7 +241,7 @@ const getWebPagesVectors = async (webPages: WebPage[]) => {
         const markdownChunks = await splitPageHtml(page);
 
         if (!markdownChunks?.length) return [];
-
+        console.log(`Extracted ${markdownChunks.length} chunks from ${page?.url?.toLowerCase()} with domain ${page?.domain?.toLowerCase()}`);
         return markdownChunks.map((headingChunk: string, i: any) => ({
           uid: `WebPage_${page.url}_${i}`,
           text: headingChunk,

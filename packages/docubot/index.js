@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const docubot = require("./src/docubot.js");
+const docubot = require("./src/docubot.old.js");
 const pinecone = require("./src/pinecone.js");
 const fs = require("fs");
 const path = require("path");
@@ -50,6 +50,16 @@ if (require.main === module) {
         const dirPath = argv.dir;
         console.log(`Saving code into pinecone memory at '${dirPath}'...`);
         await pinecone.main(dirPath); // Pass the directory path to main function
+      }
+    )
+    .command(
+      "husky",
+      "watch file changes",
+      {},
+      async () => {
+        // Save code into pinecone memory
+        console.log("Saving code into pinecone memory...");
+        await pinecone.save(); // Use the imported 'save' function
       }
     )
     .command("list", "List all saved files", {}, () => {

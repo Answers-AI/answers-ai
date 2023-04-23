@@ -25,6 +25,8 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
     setShowFilters
   } = useAnswers();
 
+  
+
   const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
   const [inputValue, setInputValue] = useState('');
 

@@ -191,7 +191,7 @@ export const MessageCard = ({
           </IconButton>
         </CardActions>
       </Box>
-      {developer_mode?.enabled ? (
+      {/* {developer_mode?.enabled ? (
         <Box>
           {error ? (
             <>
@@ -333,7 +333,7 @@ export const MessageCard = ({
             </Accordion>
           ) : null}
         </Box>
-      ) : null}
+      ) : null} */}
     </Card>
   );
 };

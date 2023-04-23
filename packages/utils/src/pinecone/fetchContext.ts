@@ -91,6 +91,9 @@ export const fetchContext = async ({
   console.time(`[${ts}] Pineconedata`);
   console.time(`[${ts}] Pineconedata get`);
 
+  
+
+
   const pineconeData = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
       return pineconeQuery(promptEmbedding, {
@@ -108,6 +111,7 @@ export const fetchContext = async ({
     })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
   console.timeEnd(`[${ts}] Pineconedata get`);
+  debugger;
 
   const filteredData = pineconeData?.filter((x) => x.score! > threshold);
   const context = [

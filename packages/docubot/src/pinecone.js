@@ -46,53 +46,53 @@ async function main(directory = null) {
   console.log("Initializing Pinecone client...");
   console.log("Directory: ", directory || "null")
   const markdownDirectory = directory || MARKDOWN_DIRECTORY;
-  console.log("MARKDOWN_DIRECTORY: ", markdownDirectory);
-  console.log("PINECONE_NAMESPACE: ", PINECONE_NAMESPACE);
-  try {
-    await client.init({
-      apiKey: process.env.PINECONE_API_KEY,
-      environment: process.env.PINECONE_ENVIRONMENT,
-    });
-    console.log("Pinecone client initialized successfully");
-    const { tokenCounts, totalTokens } = await countTokensRecursively(
-      markdownDirectory
-    );
+  // console.log("MARKDOWN_DIRECTORY: ", markdownDirectory);
+  // console.log("PINECONE_NAMESPACE: ", PINECONE_NAMESPACE);
+  // try {
+  //   await client.init({
+  //     apiKey: process.env.PINECONE_API_KEY,
+  //     environment: process.env.PINECONE_ENVIRONMENT,
+  //   });
+  //   console.log("Pinecone client initialized successfully");
+  //   const { tokenCounts, totalTokens } = await countTokensRecursively(
+  //     markdownDirectory
+  //   );
 
-    const indexName = PINECONE_INDEX_NAME;
-    const dimensions = 1536; // Dimension of the OpenAI embedding model
+  //   const indexName = PINECONE_INDEX_NAME;
+  //   const dimensions = 1536; // Dimension of the OpenAI embedding model
 
-    // Check if the index already exists
-    let index;
-    const existingIndexes = await client.listIndexes();
-    if (existingIndexes.includes(indexName)) {
-      console.log(`Index "${indexName}" already exists.`);
-      index = client.Index(indexName);
-    } else {
-      // Create a new index if it doesn't exist
-      index = await client.createIndex({
-        createRequest: {
-          name: indexName,
-          dimension: dimensions,
-          metric: "cosine",
-        },
-      });
-    }
+  //   // Check if the index already exists
+  //   let index;
+  //   const existingIndexes = await client.listIndexes();
+  //   if (existingIndexes.includes(indexName)) {
+  //     console.log(`Index "${indexName}" already exists.`);
+  //     index = client.Index(indexName);
+  //   } else {
+  //     // Create a new index if it doesn't exist
+  //     index = await client.createIndex({
+  //       createRequest: {
+  //         name: indexName,
+  //         dimension: dimensions,
+  //         metric: "cosine",
+  //       },
+  //     });
+  //   }
 
-    index = client.Index(indexName);
-    console.log("Index created successfully, Processing Markdown files...");
+  //   index = client.Index(indexName);
+  //   console.log("Index created successfully, Processing Markdown files...");
 
-    await processMarkdownFiles(MARKDOWN_DIRECTORY, index);
+  //   await processMarkdownFiles(MARKDOWN_DIRECTORY, index);
 
-    console.log("Total tokens:", totalTokens);
-    console.log(
-      "Total cost text-embedding-ada-002: $",
-      ((totalTokens / 1000) * 0.0004).toFixed(4)
-    );
-    console.log("Markdown files processed successfully");
-  } catch (err) {
-    console.error(err);
-    console.error(err.response.data);
-  }
+  //   console.log("Total tokens:", totalTokens);
+  //   console.log(
+  //     "Total cost text-embedding-ada-002: $",
+  //     ((totalTokens / 1000) * 0.0004).toFixed(4)
+  //   );
+  //   console.log("Markdown files processed successfully");
+  // } catch (err) {
+  //   console.error(err);
+  //   console.error(err.response.data);
+  // }
 }
 
 async function getAllFiles(folderPath, fileList = []) {
@@ -194,14 +194,15 @@ async function upsertEmbeddingsToPinecone(embeddings, index) {
 
 
 async function processMarkdownFiles(folderPath, index) {
-  const files = await getAllFiles(folderPath);
-  console.log(`Processing markdown files: ${files}`);
+  console.log("Processing markdown files...", folderPath);
+  // const files = await getAllFiles(folderPath);
+  // console.log(`Processing markdown files: ${files}`);
 
-  const embeddings = await processEmbeddings(files);
-  console.log("Embeddings processed successfully");
+  // const embeddings = await processEmbeddings(files);
+  // console.log("Embeddings processed successfully");
 
-  await upsertEmbeddingsToPinecone(embeddings, index);
-  console.log("Embeddings upserted to Pinecone successfully");
+  // await upsertEmbeddingsToPinecone(embeddings, index);
+  // console.log("Embeddings upserted to Pinecone successfully");
 }
 
 
@@ -213,4 +214,5 @@ if (require.main === module) {
 }
 module.exports = {
   main,
+  save: processMarkdownFiles,
 }
