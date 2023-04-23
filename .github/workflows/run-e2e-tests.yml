@@ -134,6 +134,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Install Cypress
+        run: pnpm cypress install
+
       - name: Turbo Cache
         id: turbo-cache
         uses: actions/cache@v2
