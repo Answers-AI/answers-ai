@@ -12,14 +12,14 @@ permissions:
   checks: 'read'
   contents: 'read'
   deployments: 'read'
-  # issues: 'read'
-  # discussions: 'read'
-  # packages: 'read'
-  # pages: 'read'
-  # pull-requests: 'read'
-  # repository-projects: 'read'
-  # security-events: 'read'
-  # statuses: 'read'
+  issues: 'read'
+  discussions: 'read'
+  packages: 'read'
+  pages: 'read'
+  pull-requests: 'read'
+  repository-projects: 'read'
+  security-events: 'read'
+  statuses: 'read'
 
 jobs:
   # Nonce for re-runs: https://docs.percy.io/docs/parallel-test-suites#github-actions
@@ -68,15 +68,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Turbo Cache
-        id: turbo-cache
-        uses: actions/cache@v2
-        with:
-          path: ./node_modules/.cache/turbo
-          key: turbo-${{ github.job }}-${{ github.ref_name }}-${{ github.sha }}
-          restore-keys: |
-            turbo-${{ github.job }}-${{ github.ref_name }}-
-
   wait-for-preview:
     needs:
       - install
@@ -89,7 +80,7 @@ jobs:
         id: wait-for-vercel-preview
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          timeout: 600
+          max_timeout: 600
 
   ui-chrome-tests:
     timeout-minutes: 15
