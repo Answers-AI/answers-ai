@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import { Message, User } from 'types';
 import { useFlags } from 'flagsmith/react';
 import ReactMarkdown from 'react-markdown';
-import { useAnswers } from '../AnswersContext';
+import { useAnswers } from '@ui/AnswersContext';
 import { AxiosError } from 'axios';
 
 const Accordion = styled((props: AccordionProps) => (
@@ -194,6 +194,125 @@ export const MessageCard = ({
       </Box>
       {developer_mode?.enabled ? (
         <Box>
+          {error ? (
+            <>
+              <Accordion TransitionProps={{ unmountOnExit: true }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header">
+                  <Typography variant="overline">Error</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <JsonViewer
+                    rootName="error"
+                    value={error}
+                    theme={'dark'}
+                    collapseStringsAfterLength={100}
+                  />
+                </AccordionDetails>
+              </Accordion>
+            </>
+          ) : null}
+          {summary ? (
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Summary ({summary?.length})</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography
+                  sx={{ whiteSpace: 'pre-line' }}
+                  variant="body1"
+                  color="text.secondary"
+                  component="div">
+                  {summary}
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {context ? (
+            // Use the @mui accordion component to wrap the context and response
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Context ({context?.length})</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography
+                  sx={{ whiteSpace: 'pre-line' }}
+                  variant="body1"
+                  color="text.secondary"
+                  component="div">
+                  {context}
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {pineconeData ? (
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Pinecone Data</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <JsonViewer
+                  rootName="pineconeData"
+                  value={{
+                    filters,
+                    pineconeData
+                  }}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {completionRequest ? (
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Completion request</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <JsonViewer
+                  rootName=""
+                  value={completionRequest}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {completionData ? (
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Completion</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <JsonViewer
+                  rootName=""
+                  value={completionData}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
           {Object.keys(other)?.length ? (
             // Use the @mui accordion component to wrap the extra and response
             <Accordion TransitionProps={{ unmountOnExit: true }}>
