@@ -22,7 +22,7 @@ function JourneySection({ journeys, chats }: Props) {
       </Box>
     );
   }
-  return <ChatDrawer journeys={journeys} chats={chats} defaultOpen />;
+  return <ChatDrawer journeys={journeys} chats={chats} />;
 }
 
 export default JourneySection;

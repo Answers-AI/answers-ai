@@ -184,6 +184,7 @@ export const processOpenApiUrl: EventVersionHandler<{ urls: string[] }> = {
               .toLowerCase()}`,
             text: `${heading[0]}${content}`,
             metadata: {
+              source: 'openapi',
               title: openApiSpec.info.title,
               version: openApiSpec.info.version
             }

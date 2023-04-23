@@ -77,6 +77,7 @@ const getConfluencePagesVectors = async (confluencePages: ConfluencePage[]) => {
           uid: `Confluence_${page.title}_${i}`,
           text: headingChunk,
           metadata: {
+            source: 'confluence',
             id: page.id,
             spaceId: page.spaceId.toString(),
             status: page.status,
@@ -123,16 +124,12 @@ export const processConfluencePages: EventVersionHandler<{ pageIds: string[] }> 
   event: 'confluence/app.sync',
   v: '1',
   handler: async ({ event }) => {
-    try {
-      const { user } = event;
-      if (!user) throw new Error('User is requierd');
-      const { confluenceClient } = await getUserClients(user);
-      const confluencePages = (await confluenceClient.getConfluencePages()) as ConfluencePage[];
-      const vectors = await getConfluencePagesVectors(confluencePages);
-      const embeddedVectors = await embedVectors(event, vectors);
-    } catch (error) {
-      console.error(`[confluence/app.sync] ${error}`);
-    }
+    const { user } = event;
+    if (!user) throw new Error('User is requierd');
+    const { confluenceClient } = await getUserClients(user);
+    const confluencePages = (await confluenceClient.getConfluencePages()) as ConfluencePage[];
+    const vectors = await getConfluencePagesVectors(confluencePages);
+    const embeddedVectors = await embedVectors(event, vectors);
   }
 };
 
@@ -140,19 +137,15 @@ export const processConfluencePage: EventVersionHandler<{ pageIds: string[] }> =
   event: 'confluence/page.sync',
   v: '1',
   handler: async ({ event }) => {
-    try {
-      const data = event.data;
-      const { pageIds } = data;
-      const { user } = event;
-      if (!user) throw new Error('User is requierd');
-      const { confluenceClient } = await getUserClients(user);
-      const confluencePages = (await confluenceClient.pageLoader.loadMany(
-        pageIds
-      )) as ConfluencePage[];
-      const vectors = await getConfluencePagesVectors(confluencePages);
-      const embeddedVectors = await embedVectors(event, vectors);
-    } catch (error) {
-      console.error(`[confluence/page.sync] ${error}`);
-    }
+    const data = event.data;
+    const { pageIds } = data;
+    const { user } = event;
+    if (!user) throw new Error('User is requierd');
+    const { confluenceClient } = await getUserClients(user);
+    const confluencePages = (await confluenceClient.pageLoader.loadMany(
+      pageIds
+    )) as ConfluencePage[];
+    const vectors = await getConfluencePagesVectors(confluencePages);
+    const embeddedVectors = await embedVectors(event, vectors);
   }
 };

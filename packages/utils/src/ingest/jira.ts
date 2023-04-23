@@ -175,7 +175,7 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
               reporter: issue?.fields.reporter?.displayName?.toLowerCase(),
               assignee_email: issue?.fields.assignee?.email?.toLowerCase(),
               parent_key: issue?.fields.parent?.key?.toLowerCase(),
-              link: `https://lastrev.atlassian.net/browse/${issue?.key}`?.toLowerCase(),
+              // link: `https://lastrev.atlassian.net/browse/${issue?.key}`?.toLowerCase(),
               description: (issue?.fields.description
                 ? jiraAdfToMarkdown(issue?.fields.description)?.replaceAll('\n', ' ')
                 : ''
@@ -192,6 +192,7 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
             return !!issue
               ? [
                   {
+                    source: 'jira',
                     uid: `JiraIssue_${issue?.key}`,
                     text,
                     metadata: ticketFields

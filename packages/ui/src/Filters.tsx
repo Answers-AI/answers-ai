@@ -4,34 +4,50 @@ import { Box, Chip, Typography } from '@mui/material';
 import { AnswersFilters } from 'types';
 
 export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) => {
+  const datasources = !filters?.datasources
+    ? null
+    : Object.entries(filters?.datasources)?.filter(([source, sourceFilters]) => {
+        return (
+          sourceFilters &&
+          Object.values(sourceFilters)?.some((values) => (values as any[])?.length !== 0)
+        );
+      });
+
   return filters ? (
-    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', ...sx }}>
-      {filters?.datasources ? (
+    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, ...sx }}>
+      {datasources?.length ? (
         <>
-          <Typography variant="overline">Sources:</Typography>
-          {filters?.datasources
-            ? Object.entries(filters.datasources)?.map(([source, filters]) => {
-                return (
+          <strong>
+            <Typography variant="overline">Sources:</Typography>
+          </strong>
+          {datasources.map(([source, sourceFilters]) => {
+            if (!sourceFilters || !Object.keys(sourceFilters).length) return null;
+            return (
+              <>
+                {Object.entries(sourceFilters)?.map(([field, values]) => (
                   <>
-                    {Object.keys(filters)?.map((field) => (
-                      <>
-                        <Typography variant="overline">
-                          {source} {field}
-                        </Typography>
-                        {filters[field]?.map((value: any) => (
+                    <Typography variant="overline">
+                      {source} {field}
+                    </Typography>
+                    {!values
+                      ? null
+                      : (values as any[])?.map((value: any) => (
                           <Chip
-                            key={`${field}`}
+                            key={`${field}:${value?.name ?? value?.id ?? value}`}
                             label={value?.name ?? value?.id ?? JSON.stringify(value)}
                           />
                         ))}
-                      </>
-                    ))}
                   </>
-                );
-              })
-            : null}
+                ))}
+              </>
+            );
+          })}
         </>
-      ) : null}
+      ) : (
+        <Typography variant="overline">
+          <strong> Add a source to your journey by clicking on a source above</strong>
+        </Typography>
+      )}
     </Box>
   ) : null;
 };

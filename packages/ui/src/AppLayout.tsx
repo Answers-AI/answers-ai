@@ -32,8 +32,10 @@ export default function AppLayout({
   };
   flagsmithState: any;
 }) {
+  console.log('flagsmithState', flagsmithState);
   return (
     // <SessionProvider session={session}>
+
     <FlagsmithProvider
       serverState={flagsmithState}
       options={{
@@ -47,10 +49,16 @@ export default function AppLayout({
           <body style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
             {session ? (
               <>
-                <AppDrawer params={params} session={session} />
-                <div style={{ flex: 1, width: 'calc(100% - 65px)', height: '100vh' }}>
-                  {children}
-                </div>
+                {flagsmithState?.flags?.access_enabled?.enabled ? (
+                  <>
+                    <AppDrawer params={params} session={session} />
+                    <div style={{ flex: 1, width: 'calc(100% - 65px)', height: '100vh' }}>
+                      {children}
+                    </div>
+                  </>
+                ) : (
+                  <></>
+                )}
               </>
             ) : (
               <Auth session={session} providers={providers} appSettings={appSettings} />
