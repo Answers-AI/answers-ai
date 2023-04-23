@@ -94,6 +94,7 @@ export const fetchContext = async ({
       if (!filter[source]) return Promise.resolve(null);
       return pineconeQuery(promptEmbedding, {
         filter: {
+          source,
           ...filter[source]
         },
         topK: 200

@@ -18,7 +18,7 @@ export async function syncAppSettings({
     return SYSTEM_SETTINGS;
   }
   const user = await prisma.user.findUnique({ where: { id: userId }, include: { accounts: true } });
-  console.log('[syncAppSettings] user', user);
+  console.log('[syncAppSettings] user', user?.id);
   // TODO: Verify user ownership or permisson scope
   // TODO: Enable user app settings
   if (user) {
@@ -50,7 +50,7 @@ const updateUserSettings = async (user: User) => {
   // TODO: Verify user ownership or permisson scope
   if (user) {
     const appSettings = await buildSettings(user);
-    console.log('Update User Settings', appSettings);
+
     await prisma.user.update({
       where: { id: user?.id },
       data: {

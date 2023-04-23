@@ -192,6 +192,7 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
             return !!issue
               ? [
                   {
+                    source: 'jira',
                     uid: `JiraIssue_${issue?.key}`,
                     text,
                     metadata: ticketFields

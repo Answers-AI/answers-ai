@@ -17,6 +17,18 @@ interface QueryRequest {
   messages: Message[];
   filters: AnswersFilters;
 }
+// TODO: find a more dynamic way to parse the filters into Pinecone
+const parseFilters = (filters: AnswersFilters) => {
+  let parsedFilters = { ...filters };
+  if (parsedFilters?.datasources?.confluence?.spaces) {
+    parsedFilters.datasources.confluence.spaceId = parsedFilters.datasources.confluence.spaces.map(
+      (space) => space.id
+    );
+    delete parsedFilters.datasources.confluence.spaces;
+  }
+  return parsedFilters;
+};
+
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await cors(req, res);
 
@@ -30,9 +42,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!user?.email) {
     return Response.redirect('/', 401);
   }
-  const { journeyId, chatId, filters, prompt, messages } = req.body as QueryRequest;
+  const { journeyId, chatId, filters: clientFilters, prompt, messages } = req.body as QueryRequest;
   let completionData, completionRequest;
 
+  const filters = parseFilters(clientFilters);
   console.log('[AI][Stream]', { journeyId, chatId, filters, prompt, messages });
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({

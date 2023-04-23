@@ -77,6 +77,7 @@ const getConfluencePagesVectors = async (confluencePages: ConfluencePage[]) => {
           uid: `Confluence_${page.title}_${i}`,
           text: headingChunk,
           metadata: {
+            source: 'confluence',
             id: page.id,
             spaceId: page.spaceId.toString(),
             status: page.status,
