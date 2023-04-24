@@ -1,54 +1,39 @@
-Template:
-
 Summary:
-This file contains functions for tokenizing text, compiling completion prompts, calculating estimated pricing, and generating a cost summary. It interacts with other files in the application to read and compile templates, and uses a third-party library for tokenization.
+This file contains functions related to compiling completion prompts for GPT-3 and calculating the estimated pricing for the completion request. It also includes a function to generate a cost summary for all the files processed.
 
 Import statements:
-- fs: a Node.js module for working with the file system
-- path: a Node.js module for working with file paths
-- GPT3Tokenizer: a third-party library for tokenizing text using the GPT-3 model
-- getTemplateFiles: a custom function for getting template files
-- Handlebars: a third-party library for compiling templates
+- fs: A built-in Node.js module for working with the file system.
+- path: A built-in Node.js module for working with file and directory paths.
+- GPT3Tokenizer: A third-party library for tokenizing text for GPT-3.
+- getTemplateFiles: A custom function for getting template files.
+- Handlebars: A third-party library for templating.
 
 Script Summary:
-This file exports several functions for working with text and calculating pricing. The functions include:
-- countTokens: a function that takes a string of text and returns the number of tokens in the text
-- compileCompletionPrompts: a function that compiles a completion prompt using a template and file contents
-- getCompletionModelBasedOnTokenSize: a function that determines which GPT model to use based on the number of tokens in the text
-- getEstimatedPricing: a function that calculates the estimated cost of a completion request based on the GPT model and number of tokens
-- generateCostSummary: a function that generates a summary of the cost of completion requests for a set of files
+This script exports several functions related to compiling completion prompts for GPT-3 and calculating the estimated pricing for the completion request. It also includes a function to generate a cost summary for all the files processed.
 
 Internal Functions:
-- templateCompiler: a function that takes a string of template content and returns a compiled Handlebars template
-  - Parameters: content (string)
-  - Returns: compiled template (function)
-- fileReader: an async function that reads a file and returns its contents as a string
-  - Parameters: filePath (string)
-  - Returns: file contents (string)
+- templateCompiler: A function that takes in a string of Handlebars template and returns a compiled function that can be used to render the template.
+- fileReader: An async function that reads a file and returns its contents as a string.
+- countTokens: An async function that takes in a string of text and returns the number of tokens in the text.
+- getCompletionModelBasedOnTokenSize: A function that takes in the number of tokens and returns the appropriate GPT-3 model to use.
+- getEstimatedPricing: A function that takes in the GPT-3 model and the number of tokens and returns the estimated cost of the completion request.
+- generateCostSummary: A function that takes in an array of files and returns a summary of the cost of the completion requests.
 
 External Functions:
-- countTokens: a function that takes a string of text and returns the number of tokens in the text
-  - Parameters: content (string)
-  - Returns: tokensInFile (number)
-- compileCompletionPrompts: a function that compiles a completion prompt using a template and file contents
-  - Parameters: filePath (string), prompt (string), skipCompletion (boolean), options (object)
-  - Returns: fullPrompt (string), fileContents (string)
-- getCompletionModelBasedOnTokenSize: a function that determines which GPT model to use based on the number of tokens in the text
-  - Parameters: tokens (number)
-  - Returns: model (string)
-- getEstimatedPricing: a function that calculates the estimated cost of a completion request based on the GPT model and number of tokens
-  - Parameters: model (string), tokens (number)
-  - Returns: cost (number)
-- generateCostSummary: a function that generates a summary of the cost of completion requests for a set of files
-  - Parameters: files (array of objects)
-  - Returns: cost summary (string)
+- compileCompletionPrompts: An async function that takes in a file path, a prompt, a flag to skip completion, and an object containing the paths to the template and prompts files. It returns an object containing the compiled prompt and the contents of the file.
 
 Interaction Summary:
-This file interacts with other files in the application to read and compile templates. It also uses a third-party library for tokenization. The functions in this file can be used by other parts of the application to tokenize text, compile completion prompts, calculate pricing, and generate cost summaries.
+This file is used in conjunction with other files in the application to compile completion prompts for GPT-3 and calculate the estimated pricing for the completion request. It may be used in a backend server to process user requests for completion prompts.
 
 Developer Questions:
-- What is the GPT-3 model and how does it work?
-- How can I configure this file to work with other models besides GPT-3?
+- How can I configure this to work with other models besides GPT-3?
 - How can I calculate the true token size based on the prompt and response tokens?
-- How can I calculate the cost of a completion request based on the response tokens?
-- How can I modify the generateCostSummary function to include more information?
+- How can I improve the accuracy of the estimated pricing calculation?
+- How can I optimize the performance of the fileReader function for large files?
+- How can I handle errors that occur during the completion request? 
+
+Known Issues and Todo Items:
+- The getEstimatedPricing function only calculates the cost based on the context tokens, not the response tokens. This needs to be addressed.
+- The fileReader function may not perform well for large files. This needs to be optimized.
+- The script only supports GPT-3 models. It needs to be configured to work with other models.
+- The estimated pricing calculation may not be accurate. This needs to be improved.

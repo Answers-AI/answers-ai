@@ -1,9 +1,10 @@
-- What is the Apache License and what are its terms and conditions?
-- What is the definition of "License", "Licensor", "Legal Entity", "You", "Source form", "Object form", "Work", "Derivative Works", "Contribution", and "Contributor" as per this license?
-- What is the grant of copyright license and patent license under this license?
-- What are the conditions for reproducing and distributing the Work or Derivative Works thereof?
-- What are the guidelines for adding copyright statement and license terms and conditions for modifications?
-- What are the guidelines for using the trade names, trademarks, service marks, or product names of the Licensor?
-- What is the disclaimer of warranty and limitation of liability under this license?
-- Can You offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License while redistributing the Work or Derivative Works thereof?
-- How to apply the Apache License to your work?
+README
+
+## TODO Items
+- None
+
+## Known Issues
+- None
+
+## Apache License
+This file is licensed under the Apache License, Version 2.0. For more information, please see the LICENSE file.

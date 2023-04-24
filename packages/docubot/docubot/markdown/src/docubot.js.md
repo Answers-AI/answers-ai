@@ -1,34 +1,33 @@
 Summary:
-This file is the main entry point for the application. It imports necessary dependencies and functions from other files and defines the main function that runs the application. The script prompts the user to confirm if they want to proceed with the operation and then processes files, generates a cost summary, splits files, sends files for documentation, and memorizes files.
+This file is responsible for processing files in a given folder, generating a cost summary, and prompting the user to proceed with the operation. If the user chooses to proceed, the script splits the files into two categories, sends one category directly to writeResponsesToFile, and sends the other category to batchCompletionProcessor to get OpenAI docs. It then processes the markdown folder and gets embeddings.
 
 Import statements:
 - dotenv: loads environment variables from a .env file
 - path: provides utilities for working with file and directory paths
-- readline: provides an interface for reading input from a readable stream (such as process.stdin) and writing output to a writable stream (such as process.stdout)
-- init: a function that initializes the application by loading configuration files and setting up necessary variables
-- fileProcessor, batchCompletionProcessor, batchEmbeddingsProcessor, splitFiles, writeResponsesToFile: functions that process files and send them to OpenAI for documentation and memorization
-- generateCostSummary: a function that generates a summary of the cost of processing files
+- readline: provides an interface for reading input from a readable stream (e.g. process.stdin) and writing output to a writable stream (e.g. process.stdout)
+- inititalize: a custom module that initializes the application with configuration settings
+- fileProcessor, batchCompletionProcessor, batchEmbeddingsProcessor, splitFiles, writeResponsesToFile: custom modules that process files and generate OpenAI docs
+- utils: a custom module that provides utility functions
 
 Script Summary:
-The main function initializes the application, processes files, generates a cost summary, prompts the user to confirm if they want to proceed, splits files, sends files for documentation, and memorizes files.
+The script initializes the application with configuration settings, processes files in a given folder, generates a cost summary, prompts the user to proceed with the operation, and sends files to writeResponsesToFile and batchCompletionProcessor to get OpenAI docs. It then processes the markdown folder and gets embeddings.
 
 Internal Functions:
-- main: the main function that runs the application. It initializes the application, processes files, generates a cost summary, prompts the user to confirm if they want to proceed, splits files, sends files for documentation, and memorizes files. It returns nothing.
+- main: the main function that processes files, generates a cost summary, prompts the user to proceed with the operation, and sends files to writeResponsesToFile and batchCompletionProcessor to get OpenAI docs. It then processes the markdown folder and gets embeddings.
 
 External Functions:
-- main: the only external function that is exported. It is the main entry point for the application.
+- main: exports the main function
 
 Interaction Summary:
-This file interacts with other files in the application by importing necessary functions and dependencies. It also interacts with the user by prompting them to confirm if they want to proceed with the operation.
+This file interacts with other custom modules to process files and generate OpenAI docs. It also interacts with the readline module to prompt the user to proceed with the operation.
 
 Developer Questions:
-- What is the purpose of the init function and what does it do?
-- What is the purpose of the fileProcessor function and what does it return?
-- What is the purpose of the batchCompletionProcessor function and what does it return?
-- What is the purpose of the batchEmbeddingsProcessor function and what does it return?
-- What is the purpose of the splitFiles function and what does it return?
-- What is the purpose of the writeResponsesToFile function and what does it return?
-- What is the format of the configuration file and what variables does it contain?
-- What is the format of the files that are processed and sent to OpenAI for documentation and memorization?
-- What is the cost of processing files and how is it calculated?
+- What is the purpose of the inititalize module and how does it work?
+- How are files processed and split into skipCompletionFiles and filesForDocumentation?
+- How does batchCompletionProcessor generate OpenAI docs?
+- How does batchEmbeddingsProcessor process the markdown folder and get embeddings?
+- What are the configuration settings used in this file and where are they defined?
+- How can I modify the prompt message in the readline module?
 - What happens if the user chooses not to proceed with the operation?
+- Are there any known issues or bugs with this file?
+- What are the todo items that need to be addressed in this file?

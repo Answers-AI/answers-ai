@@ -1,26 +1,30 @@
 Summary:
-This file contains functions to initialize and copy configuration files, prompts, and templates for a larger application.
+This file contains functions that initialize and configure the prompts and templates folders for a documentation bot. It also copies a default configuration file if one does not exist.
 
 Import statements:
-The file imports the built-in Node.js modules `fs` and `path`.
+The file imports the fs and path modules.
 
 Script Summary:
-The file exports four functions: `init`, `initConfigFile`, `initPromptsFolder`, and `initTemplatesFolder`. The `init` function calls the `initConfigFile`, `initPromptsFolder`, and `initTemplatesFolder` functions and returns a Promise that resolves with the configuration object. The `initConfigFile` function copies a default configuration file to the specified folder path if it does not exist and returns the configuration object. The `initPromptsFolder` and `initTemplatesFolder` functions copy the prompts and templates folders to the specified folder path if they do not exist.
+The file exports four functions: init, initConfigFile, initPromptsFolder, and initTemplatesFolder. The init function calls the other three functions to initialize the prompts and templates folders and return the configuration file.
 
 Internal Functions:
-- `copyFolderSync`: A helper function to copy a folder recursively. It takes two parameters, the source folder path and the destination folder path, and returns nothing.
+- initConfigFile: This function takes a folder path as a parameter and copies a default configuration file to the folder if one does not exist. It then returns the configuration file.
+- copyFolderSync: This is a helper function that takes a source and destination path as parameters and copies a folder recursively.
+- initPromptsFolder: This function takes a configuration object and folder path as parameters and copies the prompts folder to the folder path if it does not exist.
+- initTemplatesFolder: This function takes a configuration object and folder path as parameters and copies the templates folder to the folder path if it does not exist.
 
 External Functions:
-- `init`: Initializes the configuration, prompts, and templates folders for the application. It takes one parameter, the folder path, and returns a Promise that resolves with the configuration object.
-- `initConfigFile`: Initializes the configuration file for the application. It takes one parameter, the folder path, and returns the configuration object.
-- `initPromptsFolder`: Initializes the prompts folder for the application. It takes two parameters, the configuration object and the folder path, and returns nothing.
-- `initTemplatesFolder`: Initializes the templates folder for the application. It takes two parameters, the configuration object and the folder path, and returns nothing.
+- init: This function takes a folder path as a parameter and returns a Promise that resolves with the configuration object after initializing the prompts and templates folders.
 
 Interaction Summary:
-This file is used to initialize and copy configuration files, prompts, and templates for a larger application. It can be used in conjunction with other files to set up the application environment.
+This file interacts with the larger application by providing functions that initialize and configure the prompts and templates folders for a documentation bot. It also copies a default configuration file if one does not exist.
 
 Developer Questions:
 - What is the format of the configuration file?
-- What is the purpose of the prompts and templates folders?
-- How can I modify the default configuration file?
-- How can I add new prompts or templates to the application?
+- What happens if the prompts or templates folders already exist?
+- What happens if the default configuration file cannot be copied?
+- How can I customize the prompts and templates folders? 
+- How can I modify the configuration file? 
+
+Known Issues and Todo Items:
+There are no known issues or bugs with this component. However, a possible todo item could be to add more customization options for the prompts and templates folders.

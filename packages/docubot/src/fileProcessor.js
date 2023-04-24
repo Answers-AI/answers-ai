@@ -19,8 +19,6 @@ const fileProcessor = async (dirPath, config) => {
     const filePath = path.join(dirPath, file);
     const fileStats = await fs.stat(filePath);
 
-    // console.log('filePath', filePath);
-
     if (fileStats.isDirectory()) {
       if (!config.invalidPaths.some((invalidPath) => filePath.includes(invalidPath))) {
         filesData.push(...(await fileProcessor(filePath, config)));
@@ -56,6 +54,8 @@ const fileProcessor = async (dirPath, config) => {
           model,
           cost
         });
+      } else {
+        console.log(`Skipping file: ${filePath}`);
       }
     }
   }
@@ -66,14 +66,17 @@ const fileProcessor = async (dirPath, config) => {
 const isInvalidFile = (filePath, config) => {
   const ext = path.extname(filePath);
   const fileParentDir = path.dirname(filePath);
-
-  return (
-    config.invalidPaths.some(
-      (invalidPath) => fileParentDir === path.join(config.codeBasePath, invalidPath)
-    ) ||
-    config.invalidFileTypes.includes(ext) ||
-    config.invalidFileNames.includes(path.basename(filePath))
+  const cond1 = config.invalidPaths.some(
+    (invalidPath) => fileParentDir === path.join(config.codeBasePath, invalidPath)
   );
+  const cond2 = config.invalidFileTypes.includes(ext);
+  const cond3 = config.invalidFileNames.includes(path.basename(filePath));
+
+  if(cond1 || cond2 || cond3) {
+    console.log(`Skipping file: ${filePath}`, cond1, cond2, cond3);
+    return true;
+  }
+  return false;
 };
 
 const getFileContents = async (filePath) => {
@@ -159,6 +162,20 @@ const writeResponsesToFile = async (files, responses, config) => {
     );
     const fileDir = path.dirname(filePath);
     const fileContent = responses[i]?.data?.choices[0]?.message?.content || files[i]?.fileContents;
+    await fs.mkdir(fileDir, { recursive: true });
+    await fs.writeFile(`${filePath}.md`, fileContent);
+    console.log(`Documentation written to: ${filePath}`);
+  }
+};
+
+const writePreviewMarkdownToFile = async (files, config) => {
+  for (let i = 0; i < files.length; i++) {
+    const filePath = path.join(
+      config.markdownDirectory,
+      files[i].filePath.replace(config.codeBasePath, '')
+    );
+    const fileDir = path.dirname(filePath);
+    const fileContent = files[i]?.fullPrompt || files[i]?.fileContents;
     await fs.mkdir(fileDir, { recursive: true });
     await fs.writeFile(`${filePath}.md`, fileContent);
     console.log(`Documentation written to: ${filePath}`);
@@ -256,5 +273,6 @@ module.exports = {
   getFileType,
   isInvalidFile,
   splitFiles,
-  writeResponsesToFile
+  writeResponsesToFile,
+  writePreviewMarkdownToFile,
 };

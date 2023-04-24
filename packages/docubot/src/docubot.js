@@ -8,16 +8,19 @@ const {
   batchCompletionProcessor,
   batchEmbeddingsProcessor,
   splitFiles,
-  writeResponsesToFile
+  writeResponsesToFile,
+  writePreviewMarkdownToFile,
 } = require('./fileProcessor');
 const { generateCostSummary } = require('./utils');
 
 async function main() {
   const folderPath = process.env.CODE_BASE_PATH || process.cwd();
   const finalConfig = await init(folderPath);
-  // console.log("Initializing docubot...", JSON.stringify(finalConfig));
 
   const allFilesToProcess = await fileProcessor(folderPath, finalConfig);
+
+  // Write the final prompts as markdown files to the markdown directory so you can preview them
+  await writePreviewMarkdownToFile(allFilesToProcess, finalConfig);
   const summary = generateCostSummary(allFilesToProcess);
 
   console.log('\nSummary:');
@@ -28,7 +31,7 @@ async function main() {
     output: process.stdout
   });
 
-  rl.question('Do you want to proceed? (y/n): ', async (answer) => {
+  rl.question('I have created a preview of the prompts that will be used in your docubot folder. Do you want to proceed? (y/n): ', async (answer) => {
     if (answer.toLowerCase() === 'y') {
       // Add your code to proceed with the operation here
       console.log('Proceeding with magic...');
@@ -50,7 +53,7 @@ async function main() {
 
       console.log(`All files memorized!`);
     } else {
-      console.log('Operation canceled.');
+      console.log('Documenation canceled.');
     }
     rl.close();
   });

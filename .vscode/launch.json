@@ -12,7 +12,8 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/packages/docubot/src/docubot.js",
-            "cwd": "${workspaceFolder}/packages/docubot"
+            "cwd": "${workspaceFolder}/packages/docubot",
+            "args": ["sync"],
         }
     ]
 }

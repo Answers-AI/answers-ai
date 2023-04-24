@@ -21,8 +21,7 @@
     "dev-inngest": "npx inngest-cli@latest dev -u http://localhost:3000/api/inngest > /dev/null 2>&1",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "docubot": "docubot",
-    "docubot:husky": "docubot husky"
+    "docubot": "node ./packages/docubot/index.js"
   },
   "devDependencies": {
     "dotenv-cli": "latest",
@@ -36,14 +35,8 @@
   "engines": {
     "node": ">=14.0.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pnpm run docubot:save"
-    }
-  },
   "packageManager": "pnpm@7.12.2",
   "dependencies": {
-    "docubot": "^0.1.8",
     "wait-on": "^7.0.1"
   }
 }

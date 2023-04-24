@@ -1,9 +1,9 @@
 const fs = require('fs').promises;
 const path = require('path');
 const { fileProcessor, getFileType, isInvalidFile } = require('./fileProcessor');
-const getTemplateFiles = require('./getTemplateFiles');
+const getTemplateFilesModule = require('./getTemplateFiles');
 
-jest.mock('./getTemplateFiles', () => jest.fn());
+jest.mock('./getTemplateFiles');
 
 jest.mock('fs', () => {
   return {
@@ -14,6 +14,7 @@ jest.mock('fs', () => {
     }
   };
 });
+
 
 const config = {
   codeBasePath: '/test/codeBase',
@@ -40,7 +41,7 @@ describe('fileProcessor', () => {
   beforeEach(() => {
     // ...
     // Add the mock implementation for getTemplateFiles
-    getTemplateFiles.mockImplementation(() =>
+    getTemplateFilesModule.getTemplateFiles.mockImplementation(() =>
       Promise.resolve({
         'JavaScript Template': 'mocked JavaScript template content'
       })

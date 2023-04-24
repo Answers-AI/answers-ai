@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-const docubot = require("./src/docubot.old.js");
-const pinecone = require("./src/pinecone.js");
+const docubot = require("./src/docubot.js");
 const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
@@ -33,33 +32,6 @@ if (require.main === module) {
         const fullProcess = argv.full;
         console.log(`Documenting code from file '${filePath}' using magic...`);
         await docubot.main(filePath, fullProcess); // Pass the file path and fullProcess flag to the main function
-      }
-    )
-    .command(
-      "save [dir]",
-      "Save code into pinecone memory",
-      (yargs) => {
-        yargs.positional("dir", {
-          describe: "Path to the directory where files will be saved",
-          type: "string",
-          default: ".", // Default directory is the current working directory
-        });
-      },
-      async (argv) => {
-        // Save code into pinecone memory
-        const dirPath = argv.dir;
-        console.log(`Saving code into pinecone memory at '${dirPath}'...`);
-        await pinecone.main(dirPath); // Pass the directory path to main function
-      }
-    )
-    .command(
-      "husky",
-      "watch file changes",
-      {},
-      async () => {
-        // Save code into pinecone memory
-        console.log("Saving code into pinecone memory...");
-        await pinecone.save(); // Use the imported 'save' function
       }
     )
     .command("list", "List all saved files", {}, () => {

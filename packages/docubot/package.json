@@ -4,7 +4,7 @@
   "description": "A handy little documenting bot for your code",
   "main": "index.js",
   "scripts": {
-    "docubot": "node ./src/docubot.js",
+    "docubot": "node ./index.js",
     "test": "jest"
   },
   "bin": {
