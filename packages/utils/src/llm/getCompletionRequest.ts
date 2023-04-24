@@ -1,5 +1,5 @@
 import { Message } from 'types';
-import { ChatCompletionRequestMessageRoleEnum } from 'openai';
+import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
 
 export function getCompletionRequest({
   context,
@@ -30,7 +30,9 @@ export function getCompletionRequest({
         content: userName ? 'My name is ' + userName : ''
       },
       // TODO: Summarize history when it gets too long
-      ...(messages ? messages?.slice(0, -10)?.map(({ role, content }) => ({ role, content })) : []),
+      ...((messages
+        ? messages?.slice(0, -10)?.map(({ role, content }) => ({ role, content }))
+        : []) as ChatCompletionRequestMessage[]),
       { role: ChatCompletionRequestMessageRoleEnum.User, content: input }
     ],
 

@@ -93,7 +93,7 @@ export const ChatDetail = ({
               </Box>
             </>
           ) : null}
-          {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
+          {isLoading ? <MessageCard user={user} role="loading" content={'...'} /> : null}
           {!messages?.length ? (
             <MessageCard
               user={user}

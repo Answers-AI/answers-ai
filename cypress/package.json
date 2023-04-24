@@ -11,8 +11,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "next": "13.2.5-canary.34",
     "@cypress/react": "^7.0.3",
-    "cypress": "^12.10.0"
+    "cypress": "^12.10.0",
+    "next": "13.2.5-canary.34"
+  },
+  "devDependencies": {
+    "@testing-library/cypress": "^9.0.0",
+    "cypress-social-logins": "^1.14.0"
   }
 }

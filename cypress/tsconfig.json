@@ -7,6 +7,9 @@
     "paths": {
       "@utils/*": ["packages/utils/src/*"],
       "@ui/*": ["packages/ui/src/*"]
-    }
-  }
+    },
+    "types": ["cypress", "node"]
+  },
+
+  "include": ["**/*.ts"]
 }

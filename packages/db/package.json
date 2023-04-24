@@ -17,6 +17,9 @@
     "db:deploy": "prisma migrate deploy",
     "db:studio": "npx prisma studio"
   },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "dependencies": {
     "@prisma/client": "4.10.1",
     "prisma": "4.10.1"

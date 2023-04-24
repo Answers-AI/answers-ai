@@ -74,6 +74,7 @@ interface MessageExtra {
 }
 interface MessageCardProps extends Partial<Message>, MessageExtra {
   error?: AxiosError<MessageExtra>;
+  role: string;
 }
 
 export const MessageCard = ({
@@ -131,6 +132,7 @@ export const MessageCard = ({
   return (
     <Card
       data-cy="message"
+      data-role={role}
       sx={{
         borderRadius: 0,
         position: 'relative'

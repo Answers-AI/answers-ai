@@ -1,11 +1,14 @@
 const { defineConfig } = require('cypress');
 
+
 module.exports = defineConfig({
   projectId: 'pnbaom',
   // supportFolder: './support',
   e2e: {
+    experimentalStudio: true,
     // specPattern: '../apps/**/*.cy.{js,jsx,ts,tsx}',
     baseUrl: 'http://localhost:3000',
+    chromeWebSecurity: false,
     setupNodeEvents(on, config) {
       // implement node event listeners here
     }

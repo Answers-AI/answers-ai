@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "dotenv -- turbo run dev dev-inngest dev-langchain dev-docker",
+    "dev": "dotenv -- turbo run dev dev-inngest dev-docker",
     "dev-docker": "docker-compose up -d",
     "build": "dotenv -- turbo run build",
     "db": "dotenv -- pnpm  --filter db prisma",
@@ -16,6 +16,9 @@
     "db:deploy": "dotenv -- pnpm db migrate deploy",
     "db:reset": "dotenv -- pnpm db migrate reset",
     "db:studio": "dotenv -- pnpm db studio",
+    "db:seed": "dotenv -- pnpm db db seed",
+    "test:e2e": "pnpm cypress run",
+    "test:cmp": "pnpm cypress run --component",
     "start": "dotenv -- turbo run start",
     "logs": "docker-compose logs -f",
     "dev-inngest": "npx inngest-cli@latest dev -u http://localhost:3000/api/inngest > /dev/null 2>&1",
