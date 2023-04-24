@@ -41,7 +41,7 @@
     "db#build": {
       "outputMode": "new-only",
       "dependsOn": [],
-      "outputs": ["dist/**","generated/**"]
+      "outputs": ["dist/**", "generated/**"]
     },
     "db#dev": {
       "dependsOn": ["//#db:healthcheck", "build"],
@@ -63,7 +63,6 @@
     },
     "dev": {
       "dependsOn": ["^build"],
-      "persistent": true,
       "cache": false
     }
   }

@@ -174,9 +174,9 @@ export interface ConfluenceSpaceSetting extends ConfluenceSpace {
   enabled?: boolean;
 }
 
-export interface Message extends Partial<DB.Message>, ChatCompletionRequestMessage {
+export interface Message extends Partial<DB.Message> {
   user?: User | null;
-  role: ChatCompletionRequestMessageRoleEnum;
+  role: ChatCompletionRequestMessageRoleEnum | string;
   content: string;
 }
 

@@ -13,6 +13,7 @@ import { Filters } from './Filters';
 import { Tooltip } from '@mui/material';
 
 export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: boolean }) => {
+  const [inputValue, setInputValue] = useState('');
   const {
     chat,
     journey,
@@ -27,7 +28,6 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
   } = useAnswers();
 
   const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
-  const [inputValue, setInputValue] = useState('');
 
   const [showPrompts, setShowPrompts] = useState(
     !messages?.length && flags?.recommended_prompts_expand?.enabled
@@ -51,6 +51,10 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
     if (flags?.recommended_prompts_expand?.value == 'blur') setShowPrompts(false);
   };
 
+  const handleNewChat = () => {
+    setInputValue('');
+    clearMessages();
+  };
   const isNewJourney = !!Object.keys(filters)?.length && !journey && !chat;
 
   return (
@@ -63,6 +67,7 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
 
       {filters ? <Filters filters={filters} /> : null}
       <TextField
+        id="user-chat-input"
         inputRef={inputRef}
         sx={(theme) => ({
           textarea: {
@@ -110,7 +115,11 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
         ) : null}
         {!isWidget && messages?.length ? (
           <Tooltip title="Start new chat">
-            <Button variant="outlined" color="primary" onClick={clearMessages}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleNewChat}
+              data-test-id="new-chat-button">
               <AddIcon />
             </Button>
           </Tooltip>
