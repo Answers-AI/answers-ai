@@ -35,12 +35,11 @@ export const pineconeQuery = async (
       includeMetadata: true,
       namespace
     };
-    console.log('queryRequest', { queryRequest });
 
     const pinconeIndex = pinecone.Index(process.env.PINECONE_INDEX!);
     //@ts-ignore-next-line
-    const result = await pinconeIndex.query({ queryRequest });
-    console.log('========result', result);
+    const result = await pinconeIndex.query(queryRequest);
+    // console.log('========result', result);
     console.timeEnd('[PineconeQuery]' + JSON.stringify({ filter, topK, namespace }));
     console.log('[PineconeQuery]', process.env.PINECONE_INDEX, result);
     return result?.data;

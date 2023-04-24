@@ -26,11 +26,11 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
       { event: eventName },
       async ({ event, ...other }) => {
         const { v } = event;
-        const ts = Date.now();
+        const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
         console.log(`[${ts}] Received ${eventName}`);
         let handler;
         try {
-          console.time(`[${ts}] Processing  ${eventName}`);
+          console.time(`[${ts}] Processing ${eventName}`);
           if (!v) {
             console.warn(`No version for ${eventName} using v=1`);
             handler = eventHandlerMap[eventName][1];
@@ -45,7 +45,7 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
           }
 
           const result = await handler({ event, ...other } as any);
-          
+
           return result;
         } catch (error) {
           console.error(`[${ts}] Error processing ${eventName}`);

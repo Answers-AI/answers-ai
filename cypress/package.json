@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@cypress/react": "^7.0.3",
+    "@cypress/react18": "^2.0.0",
     "cypress": "^12.10.0",
     "next": "13.2.5-canary.34"
   },

@@ -70,7 +70,7 @@ export const fetchContext = async ({
   filters?: AnswersFilters;
   threshold?: number;
 }) => {
-  const ts = Date.now();
+  const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
   const filters = parseFilters(clientFilters);
   // const hasDefaultFilter = Object.keys(filters).length;

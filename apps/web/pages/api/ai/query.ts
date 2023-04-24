@@ -85,7 +85,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
 
   try {
-    const ts = Date.now();
+    const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     console.time(`[${ts}] [ChatCompletion]: ` + prompt);
 
     console.time(`[${ts}] [query createChatChain]: ` + prompt);
