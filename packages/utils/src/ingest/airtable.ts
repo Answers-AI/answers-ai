@@ -31,16 +31,25 @@ const getAirtablePineconeObject = async (airtableRecords: AirtableRecord[]) => {
 
         const nlpSummary = getNLPSummary(record);
 
-        return [{
-          uid: `Airtable_${record.id}`,
-          text: nlpSummary,
-          metadata: {
-            source: 'airtable',
-            url: `https://lastrev.atlassian.net/browse/${record.fields['Issue Key']}`,
-            text: nlpSummary
+        return [
+          {
+            uid: `Airtable_${record.id}`,
+            text: nlpSummary,
+            metadata: {
+              datasource: 'airtable',
+              url: `https://lastrev.atlassian.net/browse/${record.fields['Issue Key']}`,
+              text: nlpSummary,
+              summary: record.fields['Summary'],
+              description: record.fields['Description'],
+              reporter: record.fields['Reporter'],
+              assignee: record.fields['Assignee'],
+              qaPerson: record.fields['QA Person'] || 'Unknown',
+              linkedIssues: record.fields['Linked Issues'] || 'None',
+              lastComment: record.fields['Last Comment'] || 'None',
+              status: record.fields['Status']
+            }
           }
-        }]
-
+        ];
 
         // TODO: Chunk these by tokens
         // const markdownChunks = await splitPageHtml(algoliaHit);
@@ -80,6 +89,7 @@ const embedVectors = async (event: any, vectors: any[]) => {
     outVectors = await Promise.all(
       chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
         console.log('airtable' + ' batchVectors: ' + batchVectors.length);
+        // console.log(batchVectors);
         return inngest.send({
           v: '1',
           ts: new Date().valueOf(),
@@ -102,9 +112,9 @@ const embedVectors = async (event: any, vectors: any[]) => {
 const getAirtableRecords = (base: any) => {
   return new Promise((resolve, reject) => {
     const allRecords: any[] = [];
-    base('AIRTABLE: Customer - Sensor Tower')
+    base('AIRTABLE: Customer - Impossible Foods')
       .select({
-        view: 'Grid view'
+        view: 'All Support And Project'
       })
       .eachPage(
         (records: any, fetchNextPage: () => void) => {
@@ -124,7 +134,6 @@ const getAirtableRecords = (base: any) => {
   });
 };
 
-
 export const processAirtable: EventVersionHandler<{
   apiKey: string;
   baseId: string;
@@ -134,22 +143,19 @@ export const processAirtable: EventVersionHandler<{
   handler: async ({ event }) => {
     const { apiKey, baseId } = event.data;
     const base = new Airtable({
-      apiKey,
+      apiKey
     }).base(baseId);
 
     console.log('airtable' + ' event: ' + event);
     try {
-          const allRecords = await getAirtableRecords(base); 
-          console.log('airtable' + ' allRecords: ' + allRecords.length);
-        const pinconeObjs = await getAirtablePineconeObject(allRecords);
-        console.log('airtable' + ' pincasdfasdfsadfoneObjs: ' + pinconeObjs.length);
-        const embeddedVectors = await embedVectors(event, pinconeObjs);
-        console.log('airtable' + ' embeddedVectors: ' + embeddedVectors.length);
+      const allRecords = await getAirtableRecords(base);
+      console.log('airtable' + ' allRecords: ' + allRecords.length);
+      const pinconeObjs = await getAirtablePineconeObject(allRecords);
+      console.log('airtable' + ' pinecone: ' + pinconeObjs.length);
+      const embeddedVectors = await embedVectors(event, pinconeObjs);
+      console.log('airtable' + ' embeddedVectors: ' + embeddedVectors.length);
     } catch (error) {
       console.error(`[airtable/app.sync] ${error}`);
     }
-    
   }
-
- 
 };
