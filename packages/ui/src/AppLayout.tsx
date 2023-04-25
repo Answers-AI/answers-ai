@@ -1,11 +1,11 @@
 'use client';
 import React from 'react';
-import { Box, CssBaseline, Typography } from '@mui/material';
+import { Box, Button, CssBaseline, Typography } from '@mui/material';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { FlagsmithProvider } from 'flagsmith/react';
 import flagsmith from 'flagsmith/isomorphic';
 
-import { ClientSafeProvider, SessionProvider } from 'next-auth/react';
+import { ClientSafeProvider, SessionProvider, signOut } from 'next-auth/react';
 
 import { Session } from 'next-auth';
 import Auth from './Auth';
@@ -32,7 +32,6 @@ export default function AppLayout({
   };
   flagsmithState: any;
 }) {
-  console.log('flagsmithState', flagsmithState);
   return (
     <FlagsmithProvider
       serverState={flagsmithState}
@@ -60,16 +59,25 @@ export default function AppLayout({
                       sx={{
                         width: '100%',
                         display: 'flex',
-                        flexDirection: 'column',
                         justifyContent: 'center',
                         alignItems: 'center'
                       }}>
-                      <Box>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 1
+                        }}>
                         <Typography variant="h4">You are almost in!</Typography>
                         <Typography variant="h5">Answer AI is currently in closed beta.</Typography>
                         <Typography variant="h6">
                           Check your email for a confirmation soon!
                         </Typography>
+                        {session?.user ? (
+                          <Button variant="outlined" fullWidth onClick={() => signOut()}>
+                            Change account
+                          </Button>
+                        ) : null}
                       </Box>
                     </Box>
                   </>
