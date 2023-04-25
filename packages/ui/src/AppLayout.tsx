@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { CssBaseline } from '@mui/material';
+import { Box, CssBaseline, Typography } from '@mui/material';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { FlagsmithProvider } from 'flagsmith/react';
 import flagsmith from 'flagsmith/isomorphic';
@@ -34,8 +34,6 @@ export default function AppLayout({
 }) {
   console.log('flagsmithState', flagsmithState);
   return (
-    // <SessionProvider session={session}>
-
     <FlagsmithProvider
       serverState={flagsmithState}
       options={{
@@ -57,7 +55,24 @@ export default function AppLayout({
                     </div>
                   </>
                 ) : (
-                  <></>
+                  <>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}>
+                      <Box>
+                        <Typography variant="h4">You are almost in!</Typography>
+                        <Typography variant="h5">Answer AI is currently in closed beta.</Typography>
+                        <Typography variant="h6">
+                          Check your email for a confirmation soon!
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </>
                 )}
               </>
             ) : (
