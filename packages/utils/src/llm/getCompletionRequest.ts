@@ -31,7 +31,7 @@ export function getCompletionRequest({
       },
       // TODO: Summarize history when it gets too long
       ...((messages
-        ? messages?.slice(0, -10)?.map(({ role, content }) => ({ role, content }))
+        ? messages?.slice(-10)?.map(({ role, content }) => ({ role, content }))
         : []) as ChatCompletionRequestMessage[]),
       { role: ChatCompletionRequestMessageRoleEnum.User, content: input }
     ],
