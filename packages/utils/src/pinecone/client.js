@@ -91,7 +91,7 @@ class PineconeClient {
     if (errors?.length) {
       throw errors[0];
     }
-    console.timeEnd('writeVectorsToIndex');
+    // console.timeEnd('writeVectorsToIndex');
   }
 }
 

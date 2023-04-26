@@ -8,14 +8,13 @@ import { chunkArray } from '../utilities/utils';
 // import { TokenTextSplitter } from 'langchain/text_splitter';
 // import { encoding_for_model } from "@dqbd/tiktoken";
 
-const PINECONE_VECTORS_BATCH_SIZE = 100;
+const PINECONE_VECTORS_BATCH_SIZE = 20;
 // TODO: Move this to a config file from the settings
 const getNLPSummary = (record: object) => {
   const string = `${record.fields['Summary']} ${record.fields['Description']}
     reported by ${record.fields['Reporter']} and assigned to ${record.fields['Assignee']}
     QA/Quality Assurance by ${record.fields['QA Person'] || 'Unknown'}
     Linked to Issues: ${record.fields['Linked Issues'] || 'None'}
-    Last Comment: ${record.fields['Last Comment'] || 'None'}
     Status: ${record.fields['Status']}
     `;
   return string;
@@ -40,16 +39,23 @@ const getAirtablePineconeObject = async (airtableRecords: AirtableRecord[]) => {
               url: `https://lastrev.atlassian.net/browse/${record.fields['Issue Key']}`,
               text: nlpSummary,
               summary: record.fields['Summary'],
-              description: record.fields['Description'],
+              // description: record.fields['Description'],
               reporter: record.fields['Reporter'],
               assignee: record.fields['Assignee'],
               qaPerson: record.fields['QA Person'] || 'Unknown',
               linkedIssues: record.fields['Linked Issues'] || 'None',
-              lastComment: record.fields['Last Comment'] || 'None',
               status: record.fields['Status']
             }
           }
         ];
+        
+        // {
+        //   "name": "airtable/app.sync",
+        //   "data": {
+        //     "apiKey": "pat2S7arPMig4onSe.3c8508cf9e544b849456c95879bda2d254875cf34708ce4f494ac52b20d8e4f1",
+        //     "baseId": "appzQIkVDl2stu2zJ"
+        //   }
+        // }
 
         // TODO: Chunk these by tokens
         // const markdownChunks = await splitPageHtml(algoliaHit);
@@ -114,7 +120,7 @@ const getAirtableRecords = (base: any) => {
     const allRecords: any[] = [];
     base('AIRTABLE: Customer - Impossible Foods')
       .select({
-        view: 'All Support And Project'
+        view: 'Q12023'
       })
       .eachPage(
         (records: any, fetchNextPage: () => void) => {
