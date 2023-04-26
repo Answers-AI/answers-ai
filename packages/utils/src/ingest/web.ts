@@ -8,7 +8,7 @@ import { convertWebPageToMarkdown } from '../web/getWebPage';
 import { EventVersionHandler } from './EventVersionHandler';
 import { WebPage } from 'types';
 import { extractUrlsFromSitemap } from '../utilities/getSitemapUrls';
-import { getUniqueUrls, getUniqueUrl } from '../utilities/getUniqueUrls';
+import { getUniqueUrls, getUniqueUrl } from '@utils/getUniqueUrls';
 import { chunkArray } from '../utilities/utils';
 import { isAxiosError } from 'axios';
 

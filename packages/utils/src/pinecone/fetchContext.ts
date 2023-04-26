@@ -4,6 +4,7 @@ import { AnswersFilters, Message, User } from 'types';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import OpenAIClient from '../openai/openai';
 import { summarizeAI } from '../summarizeAI';
+import { getUniqueUrls } from '@utils/getUniqueUrls';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
@@ -17,6 +18,13 @@ const parseFilters = (filters: AnswersFilters) => {
     );
     delete parsedFilters.datasources.confluence.spaces;
   }
+
+  if (parsedFilters?.datasources?.web?.url?.length) {
+    parsedFilters.datasources.web.url = getUniqueUrls(
+      parsedFilters.datasources.web.url.map((url) => url.url)
+    );
+  }
+
   return parsedFilters;
 };
 
@@ -136,7 +144,7 @@ export const fetchContext = async ({
   console.time(`[${ts}] Pineconedata`);
   console.time(`[${ts}] Pineconedata get`);
 
-  const pineconeDataRaw = await Promise.all([
+  const pineconeData = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
       if (!filter[source]) return Promise.resolve(null);
       return pineconeQuery(promptEmbedding, {
@@ -148,17 +156,17 @@ export const fetchContext = async ({
         },
         topK: 200
       });
+    }),
+    pineconeQuery(promptEmbedding, {
+      filter: {
+        source: 'algolia'
+      },
+      topK: 200
     })
-    // pineconeQuery(promptEmbedding, {
-    //   filter: {
-    //     source: 'algolia'
-    //   },
-    //   topK: 200
-    // })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
   console.timeEnd(`[${ts}] Pineconedata get`);
 
-  const filteredData = pineconeDataRaw?.length ? processArray(pineconeDataRaw) : [];
+  const filteredData = pineconeData?.length ? processArray(pineconeData) : [];
   // pineconeData?.filter((x) => x.score! > threshold);
   const context = [
     // `${history}`,
@@ -194,16 +202,14 @@ export const fetchContext = async ({
   console.timeEnd(`[${ts}] Pineconedata summarize`);
   console.timeEnd(`[${ts}] Pineconedata`);
 
-  console.timeEnd('Pineconedata summarize');
-  console.timeEnd('Pineconedata');
-
   return {
     context: contextText,
     summary,
     ...(process.env.NODE_ENV === 'development'
       ? {
+          pineconeFilters: filters,
           filteredData,
-          pineconeDataRaw
+          pineconeData
         }
       : {})
   };

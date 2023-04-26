@@ -75,8 +75,8 @@ importers:
         specifier: ^1.4.0
         version: 1.4.1
       cohere-ai:
-        specifier: ^5.0.2
-        version: 5.1.0
+        specifier: ^6.1.0
+        version: 6.2.0
       cors:
         specifier: ^2.8.5
         version: 2.8.5
@@ -103,7 +103,7 @@ importers:
         version: 5.3.1
       langchain:
         specifier: 0.0.36
-        version: 0.0.36(@dqbd/tiktoken@1.0.6)(@huggingface/inference@1.8.0)(@pinecone-database/pinecone@0.0.5)(chromadb@1.4.1)(cohere-ai@5.1.0)(hnswlib-node@1.4.2)(serpapi@1.1.1)(typeorm@0.3.15)
+        version: 0.0.36(@dqbd/tiktoken@1.0.6)(@huggingface/inference@1.8.0)(@pinecone-database/pinecone@0.0.5)(chromadb@1.4.1)(cohere-ai@6.2.0)(hnswlib-node@1.4.2)(serpapi@1.1.1)(typeorm@0.3.15)
       next:
         specifier: 13.2.5-canary.34
         version: 13.2.5-canary.34(@babel/core@7.21.4)(react-dom@18.2.0)(react@18.2.0)
@@ -413,7 +413,7 @@ importers:
         specifier: 13.3.1
         version: 13.3.1(react-dom@18.2.0)(react@18.2.0)
       next-auth:
-        specifier: ^4.22.1
+        specifier: ^4.21.1
         version: 4.22.1(next@13.3.1)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: ^18.2.0
@@ -4506,8 +4506,8 @@ packages:
     engines: {iojs: '>= 1.0.0', node: '>= 0.12.0'}
     dev: true
 
-  /cohere-ai@5.1.0:
-    resolution: {integrity: sha512-7q3z3w6GSoPxQqRL9G6QTaQ0e513auVE1JlNDnqnoFEXGtDbkVfaTOliR5qrMoK//74Csb0NW669evqngwPx3g==}
+  /cohere-ai@6.2.0:
+    resolution: {integrity: sha512-nKUutFpbTQ1TJji3RAmKq9+UKQyf2MrI2qAeOPPZuGlch734XT5KltMUd/AXDY7IAdGHbB8v6VNIEO3qSVST5g==}
     dev: false
 
   /collect-v8-coverage@1.0.1:
@@ -7561,7 +7561,7 @@ packages:
     resolution: {integrity: sha512-ymToLHqL02udwVdbkowNpzjFd6UzozMtshPQKVi5k1EjKRqKqBrOnE9QbLEb0/pV76SAiIT13hdL8R6suc+f3g==}
     dev: true
 
-  /langchain@0.0.36(@dqbd/tiktoken@1.0.6)(@huggingface/inference@1.8.0)(@pinecone-database/pinecone@0.0.5)(chromadb@1.4.1)(cohere-ai@5.1.0)(hnswlib-node@1.4.2)(serpapi@1.1.1)(typeorm@0.3.15):
+  /langchain@0.0.36(@dqbd/tiktoken@1.0.6)(@huggingface/inference@1.8.0)(@pinecone-database/pinecone@0.0.5)(chromadb@1.4.1)(cohere-ai@6.2.0)(hnswlib-node@1.4.2)(serpapi@1.1.1)(typeorm@0.3.15):
     resolution: {integrity: sha512-wBucnmDSWm+Fkjum7DBrkyr7pil1L6RPgv1flF40yHKrcnCPxvbbH5AgqL4rRH3e6r0WKIri/1K9VjWWty676w==}
     peerDependencies:
       '@dqbd/tiktoken': ^1.0.2
@@ -7616,7 +7616,7 @@ packages:
       '@pinecone-database/pinecone': 0.0.5
       browser-or-node: 2.1.1
       chromadb: 1.4.1
-      cohere-ai: 5.1.0
+      cohere-ai: 6.2.0
       eventsource-parser: 0.1.0
       exponential-backoff: 3.1.1
       expr-eval: 2.0.2
