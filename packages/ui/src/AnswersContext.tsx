@@ -35,7 +35,6 @@ interface AnswersContextType {
   updatePrompt: (prompt: Partial<Prompt>) => Promise<void>;
   updateJourney: (journey: Partial<Journey>) => Promise<void>;
 }
-
 const AnswersContext = createContext<AnswersContextType>({
   appSettings: {},
   error: null,
@@ -78,17 +77,6 @@ interface AnswersProviderProps {
   chats?: Chat[];
 }
 
-const parseFilters = (filters: AnswersFilters) => {
-  let parsedFilters = { ...filters };
-  if (parsedFilters?.datasources?.confluence?.spaces) {
-    parsedFilters.datasources.confluence.spaceId = parsedFilters.datasources.confluence.spaces.map(
-      (space) => space.id
-    );
-    delete parsedFilters.datasources.confluence.spaces;
-  }
-  return parsedFilters;
-};
-
 export function AnswersProvider({
   appSettings,
   children,
@@ -123,7 +111,7 @@ export function AnswersProvider({
   const { generateResponse } = useStreamedResponse({
     journeyId,
     chatId,
-    filters: parseFilters(filters),
+    filters,
     messages,
     apiUrl,
     onChunk: (chunk: Message) => {
@@ -152,7 +140,7 @@ export function AnswersProvider({
             chatId,
             content,
             messages,
-            filters: parseFilters(filters)
+            filters
           });
 
           setChatId(data?.chat.id);
@@ -169,7 +157,10 @@ export function AnswersProvider({
   );
 
   const updateFilter = (newFilter: AnswersFilters) => {
-    setFilters(deepmerge({}, filters, newFilter));
+    const mergedSettings = deepmerge({}, filters, newFilter);
+
+    console.log('UpdateFilters');
+    setFilters(mergedSettings);
   };
 
   const regenerateAnswer = () => {
@@ -183,11 +174,11 @@ export function AnswersProvider({
   const clearMessages = () => {
     setMessages([]);
     setChatId(undefined);
-    setJourneyId(undefined);
-    setFilters({});
     setError(null);
     setIsLoading(false);
-    router.push('/');
+    if (chatId) {
+      router.push('/');
+    }
   };
 
   const deleteChat = async (id: string) =>

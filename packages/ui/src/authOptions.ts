@@ -27,7 +27,7 @@ declare module 'next-auth/jwt' {
 }
 const ATLASSIAN_SCOPE = {
   // 'write:jira-work': true,
-  // 'read:jira-work': true,
+  'read:jira-work': true,
   'offline_access': true,
   'read:confluence-content.all': true,
   'read:confluence-content.summary': true,
@@ -61,6 +61,43 @@ export const authOptions: AuthOptions = {
     strategy: 'jwt'
   },
   adapter: PrismaAdapter(prisma),
+  callbacks: {
+    async jwt({ token, user, account, profile, isNewUser }) {
+      if (user) {
+        token.id = user?.id;
+        token.role = user?.role;
+        token.invited = user?.invited;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id!;
+        session.user.role = token.role!;
+        // @ts-ignore
+        session.user.invited = token.invited ? new Date(token.invited as string) : token.invited;
+      }
+      return session;
+    },
+    async redirect({ url, baseUrl }) {
+      let finalUrl = baseUrl;
+      try {
+        // Allows relative callback URLs
+        if (url.startsWith('/')) finalUrl = `${baseUrl}${url}`;
+        // Allows callback URLs on the same origin
+        else if (new URL(url).origin === baseUrl) finalUrl = url;
+        if (
+          ['http://localhost:3000', 'https://theanswer.ai', 'https://ias.theanswer.ai'].includes(
+            new URL(url).origin
+          )
+        )
+          finalUrl = url;
+      } catch (err) {
+        console.log('Redirect error', { err, url, baseUrl });
+      }
+      return finalUrl;
+    }
+  },
   providers: [
     SlackProvider({
       clientId: process.env.SLACK_CLIENT_ID!,
@@ -130,49 +167,7 @@ export const authOptions: AuthOptions = {
       allowDangerousEmailAccountLinking: true
     })
   ],
-  // pages: {
-  //   signIn: '/auth/signin'
-  // },
-  callbacks: {
-    // async signIn({ user, account, profile, email, credentials }) {
-    //     return true
-    //   },
-    //   async redirect({ url, baseUrl }) {
-    //     return baseUrl
-    //   },
-    async jwt({ token, user, account, profile, isNewUser }) {
-      if (user) {
-        token.id = user?.id;
-        token.role = user?.role;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = token.id!;
-        session.user.role = token.role!;
-      }
-      return session;
-    },
-    async redirect({ url, baseUrl }) {
-      let finalUrl = baseUrl;
-      try {
-        // Allows relative callback URLs
-        if (url.startsWith('/')) finalUrl = `${baseUrl}${url}`;
-        // Allows callback URLs on the same origin
-        else if (new URL(url).origin === baseUrl) finalUrl = url;
-        if (
-          ['http://localhost:3000', 'https://theanswer.ai', 'https://ias.theanswer.ai'].includes(
-            new URL(url).origin
-          )
-        )
-          finalUrl = url;
-      } catch (err) {
-        console.log('Redirect error', { err, url, baseUrl });
-      }
-      return finalUrl;
-    }
-  },
+
   events: USER_EVENTS.reduce(
     (acc, event) => ({
       ...acc,

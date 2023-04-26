@@ -1,0 +1,22 @@
+{
+  "name": "cypress",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test:component": "cypress run --component",
+    "test:e2e": "cypress run --e2e"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@cypress/react": "^7.0.3",
+    "cypress": "^12.10.0",
+    "next": "13.2.5-canary.34"
+  },
+  "devDependencies": {
+    "@testing-library/cypress": "^9.0.0",
+    "cypress-social-logins": "^1.14.0"
+  }
+}

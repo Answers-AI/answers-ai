@@ -18,6 +18,7 @@ export async function syncAppSettings({
     return SYSTEM_SETTINGS;
   }
   const user = await prisma.user.findUnique({ where: { id: userId }, include: { accounts: true } });
+  console.log('[syncAppSettings] user', user?.id);
   // TODO: Verify user ownership or permisson scope
   // TODO: Enable user app settings
   if (user) {
@@ -27,6 +28,7 @@ export async function syncAppSettings({
       organization = await prisma.organization.findFirst({
         where: { OR: { id: organizationId, users: { some: { id: user.id } } } }
       });
+      return updateOrgSettings(user as User, organization as Organization);
     } else if (user?.organizationId) {
       organization = await prisma.organization.findFirst({
         where: { OR: { id: organizationId } }
@@ -36,11 +38,8 @@ export async function syncAppSettings({
         data: { users: { connect: { id: user.id } } }
       });
     }
-    if (organization) {
-      return updateOrgSettings(user as User, organization as Organization);
-    } else {
-      return updateUserSettings(user as User);
-    }
+
+    return updateUserSettings(user as User);
   }
   return SYSTEM_SETTINGS;
 }
@@ -51,6 +50,7 @@ const updateUserSettings = async (user: User) => {
   // TODO: Verify user ownership or permisson scope
   if (user) {
     const appSettings = await buildSettings(user);
+
     await prisma.user.update({
       where: { id: user?.id },
       data: {
@@ -67,8 +67,8 @@ const updateOrgSettings = async (user: User, org: Organization) => {
   // TODO: Verify role to update org settings
   if (user && org) {
     const appSettings = await buildSettings(user, org);
-    await prisma.organization.update({
-      where: { id: org.id },
+    await prisma.user.update({
+      where: { id: user.id },
       data: {
         appSettings: appSettings as object
       }

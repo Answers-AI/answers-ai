@@ -78,13 +78,15 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
   // const { chat } = useAnswers();
   const router = useRouter();
   const pathname = usePathname();
-  const [open, setOpen] = React.useState(defaultOpen);
+  const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen);
   const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({ chats: true });
   const handleDrawerOpen = () => {
+    window.localStorage.setItem('drawerOpen', 'true');
     setOpen(true);
   };
 
   const handleDrawerClose = () => {
+    window.localStorage.setItem('drawerOpen', 'false');
     setOpen(false);
   };
   const handleExpandJourney = (idx: string | number) => (evt: any) => {
@@ -101,6 +103,10 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
     setOpen(false);
     router.push('/');
   };
+
+  React.useEffect(() => {
+    setOpen(window.localStorage.getItem('drawerOpen') === 'true');
+  }, [setOpen]);
 
   return (
     <>
@@ -183,9 +189,9 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
                       {opened[idx] ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
                   ) : null}
-                  <IconButton onClick={() => handleAddChat({ journey })}>
+                  {/* <IconButton onClick={() => handleAddChat({ journey })}>
                     <Add />
-                  </IconButton>
+                  </IconButton> */}
                 </ListItemButton>
                 <Collapse
                   in={

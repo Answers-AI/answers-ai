@@ -33,17 +33,17 @@ class JiraClient {
       headers: this.headers
     });
 
-    console.log('Response', response.data);
     return response.data;
   }
 
   async getCloudId() {
     const appData = await this.getAppData();
-    console.log('APpData', appData);
-    const confluenceData = appData.find((app: any) =>
-      app.scopes?.some((scope: string) => scope.includes('confluence'))
+
+    const jiraData = appData.find((app: any) =>
+      app.scopes?.some((scope: string) => scope.includes('jira'))
     );
-    return confluenceData.id;
+    console.log('[CloudId]', jiraData.id);
+    return jiraData.id;
   }
   async handleRateLimit(response: AxiosResponse) {
     let retryAfter = response.headers['Retry-After'];
@@ -60,7 +60,8 @@ class JiraClient {
   }
 
   async fetchJiraData(endpoint: string, { cache = true }: { cache?: boolean } = {}) {
-    const url = `https://lastrev.atlassian.net/rest/api/3${endpoint}`;
+    const cloudId = await this.cloudId;
+    const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/${endpoint}`;
     let data;
     // console.time('FetchJiraData:' + endpoint);
     // Add cache around this call to Jira
@@ -99,7 +100,7 @@ class JiraClient {
     return getJiraTickets({ ...options, jiraClient: this });
   }
   async getJiraProjects() {
-    let projects: JiraProject[] = await this.fetchJiraData(`/project`);
+    let projects: JiraProject[] = await this.fetchJiraData(`project`);
     return projects.filter((project) => !project.archived);
   }
 
@@ -117,7 +118,7 @@ class JiraClient {
   }
 
   async getJiraComments(issueKey: any) {
-    let comments = await this.fetchJiraData(`/issue/${issueKey}/comment`);
+    let comments = await this.fetchJiraData(`issue/${issueKey}/comment`);
 
     if (!comments?.comments?.length) return null;
 

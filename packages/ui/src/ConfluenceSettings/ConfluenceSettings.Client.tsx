@@ -122,16 +122,15 @@ export const ConfluenceSettings = ({ appSettings, editable }: ConfluenceSettings
         </Box> */}
         <AutocompleteSelect
           label="Confluence Space"
-          options={localSettings?.spaces?.filter((s) => s.enabled) || []}
-          // limitTags={5}
+          options={appSettings?.confluence?.spaces?.filter((s) => s.enabled) || []}
           getOptionLabel={(option) => {
             return option?.name;
           }}
-          value={filters?.datasources?.confluence?.spaces || []}
+          value={filters?.datasources?.confluence?.spaces ?? []}
           onChange={(value) =>
             setFilters({
               datasources: {
-                confluence: { spaces: value }
+                confluence: { spaces: value || [] }
               }
             })
           }

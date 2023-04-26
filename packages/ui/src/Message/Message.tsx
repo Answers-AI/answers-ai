@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import { Message, User } from 'types';
 import { useFlags } from 'flagsmith/react';
 import ReactMarkdown from 'react-markdown';
-import { useAnswers } from './AnswersContext';
+import { useAnswers } from '@ui/AnswersContext';
 import { AxiosError } from 'axios';
 
 const Accordion = styled((props: AccordionProps) => (
@@ -74,6 +74,7 @@ interface MessageExtra {
 }
 interface MessageCardProps extends Partial<Message>, MessageExtra {
   error?: AxiosError<MessageExtra>;
+  role: string;
 }
 
 export const MessageCard = ({
@@ -130,6 +131,8 @@ export const MessageCard = ({
   };
   return (
     <Card
+      data-cy="message"
+      data-role={role}
       sx={{
         borderRadius: 0,
         position: 'relative'

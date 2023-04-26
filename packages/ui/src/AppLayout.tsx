@@ -1,11 +1,11 @@
 'use client';
 import React from 'react';
-import { CssBaseline } from '@mui/material';
+import { Box, Button, CssBaseline, Typography } from '@mui/material';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { FlagsmithProvider } from 'flagsmith/react';
 import flagsmith from 'flagsmith/isomorphic';
 
-import { ClientSafeProvider, SessionProvider } from 'next-auth/react';
+import { ClientSafeProvider, SessionProvider, signOut } from 'next-auth/react';
 
 import { Session } from 'next-auth';
 import Auth from './Auth';
@@ -33,7 +33,6 @@ export default function AppLayout({
   flagsmithState: any;
 }) {
   return (
-    // <SessionProvider session={session}>
     <FlagsmithProvider
       serverState={flagsmithState}
       options={{
@@ -47,10 +46,42 @@ export default function AppLayout({
           <body style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
             {session ? (
               <>
-                <AppDrawer params={params} session={session} />
-                <div style={{ flex: 1, width: 'calc(100% - 65px)', height: '100vh' }}>
-                  {children}
-                </div>
+                {flagsmithState?.flags?.access_enabled?.enabled ? (
+                  <>
+                    <AppDrawer params={params} session={session} />
+                    <div style={{ flex: 1, width: 'calc(100% - 65px)', height: '100vh' }}>
+                      {children}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 1
+                        }}>
+                        <Typography variant="h4">You are almost in!</Typography>
+                        <Typography variant="h5">Answer AI is currently in closed beta.</Typography>
+                        <Typography variant="h6">
+                          Check your email for a confirmation soon!
+                        </Typography>
+                        {session?.user ? (
+                          <Button variant="outlined" fullWidth onClick={() => signOut()}>
+                            Change account
+                          </Button>
+                        ) : null}
+                      </Box>
+                    </Box>
+                  </>
+                )}
               </>
             ) : (
               <Auth session={session} providers={providers} appSettings={appSettings} />

@@ -1,7 +1,7 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
 import { Chat } from 'db/generated/prisma-client';
-import { AnswersFilters, Message } from 'types';
+import { AnswersFilters, Message, User } from 'types';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import OpenAIClient from '../openai/openai';
 import { summarizeAI } from '../summarizeAI';
@@ -9,23 +9,39 @@ import { summarizeAI } from '../summarizeAI';
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
 
+// TODO: find a more dynamic way to parse the filters into Pinecone
+const parseFilters = (filters: AnswersFilters) => {
+  let parsedFilters = { ...filters };
+  if (parsedFilters?.datasources?.confluence?.spaces) {
+    parsedFilters.datasources.confluence.spaceId = parsedFilters.datasources.confluence.spaces.map(
+      (space) => space.id
+    );
+    delete parsedFilters.datasources.confluence.spaces;
+  }
+  return parsedFilters;
+};
+
 // const SUMMARY_CHUNK_SIZE = 10_000; // Maximum number of tokens to send to the summarization
 const SUMMARY_CHUNK_SIZE = 6_000; // Controls how many tokens will fit into each chunk sent to the summarization
 const SUMMARY_TOKEN_SIZE = 2_000; // (openai max_tokens) Controls the ouput tokens of the summarization
 const CONTEXT_PAGES = 1; // How many context pages we want to process for completion
 const PINECONE_THRESHOLD = 0.68;
 export const fetchContext = async ({
+  user,
   prompt,
   messages = [],
-  filters = {},
+  filters: clientFilters = {},
   threshold = PINECONE_THRESHOLD //TODO Calculate threshold based on input and pineconedata
 }: {
+  user: User;
   prompt: string;
   messages?: Message[];
   filters?: AnswersFilters;
   threshold?: number;
 }) => {
   const ts = Date.now();
+
+  const filters = parseFilters(clientFilters);
   // const hasDefaultFilter = Object.keys(filters).length;
   // const history = messages
   //   ?.filter((item: any) => item?.content)
@@ -91,8 +107,12 @@ export const fetchContext = async ({
 
   const pineconeData = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
+      if (!filter[source]) return Promise.resolve(null);
       return pineconeQuery(promptEmbedding, {
+        // TODO: Figure how to filter by namespace without having to re-index per user
+        // namespace: `org-${user?.organizationId}`,
         filter: {
+          source,
           ...filter[source]
         },
         topK: 200

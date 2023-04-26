@@ -1,5 +1,5 @@
 import { Message } from 'types';
-import { ChatCompletionRequestMessageRoleEnum } from 'openai';
+import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
 
 export function getCompletionRequest({
   context,
@@ -22,7 +22,7 @@ export function getCompletionRequest({
       },
       {
         role: ChatCompletionRequestMessageRoleEnum.User,
-        content: `Reply based on the context provided. If you don't know the answers say you don't know and can't find. If the context is not enought to answer, ask me more questions. If you think you're absolutely right, say so. <CONTEXT>${context}<CONTEXT>`
+        content: `Reply based on the context provided. If you don't know the answers say you don't know and can't find. If the context is not enought to answer, ask the user more questions that would help you build the context. If you think you're absolutely right, say so. <CONTEXT>${context}<CONTEXT>`
       },
 
       {
@@ -30,7 +30,9 @@ export function getCompletionRequest({
         content: userName ? 'My name is ' + userName : ''
       },
       // TODO: Summarize history when it gets too long
-      ...(messages ? messages?.slice(0, -10)?.map(({ role, content }) => ({ role, content })) : []),
+      ...((messages
+        ? messages?.slice(-10)?.map(({ role, content }) => ({ role, content }))
+        : []) as ChatCompletionRequestMessage[]),
       { role: ChatCompletionRequestMessageRoleEnum.User, content: input }
     ],
 

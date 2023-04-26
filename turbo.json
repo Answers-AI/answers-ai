@@ -11,8 +11,7 @@
     "INNGEST_EVENT_KEY",
     "INNGEST_SERVER_URL",
     "GITHUB_ID",
-    "GITHUB_SECRET",
-    "VERCEL_URL"
+    "GITHUB_SECRET"
   ],
   "pipeline": {
     "//#dev-docker": { "cache": false },
@@ -42,7 +41,7 @@
     "db#build": {
       "outputMode": "new-only",
       "dependsOn": [],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", "generated/**"]
     },
     "db#dev": {
       "dependsOn": ["//#db:healthcheck", "build"],
@@ -64,7 +63,6 @@
     },
     "dev": {
       "dependsOn": ["^build"],
-      "persistent": true,
       "cache": false
     }
   }

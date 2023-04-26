@@ -3,7 +3,7 @@ import * as React from 'react';
 // import Badge from '@mui/material/Badge';
 import Avatar from '@mui/material/Avatar';
 // import Stack from '@mui/material/Stack';
-import { AnswersFilters, AppSettings } from 'types';
+import { AppSettings, ConfluenceSpace } from 'types';
 import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
 import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
@@ -18,6 +18,18 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
   const [urls, setUrls] = React.useState<string[]>([]);
   const [domains, setDomains] = React.useState<string[]>([]);
   const { filters, updateFilter } = useAnswers();
+
+  const spacesById: Record<string, ConfluenceSpace> = React.useMemo(
+    () =>
+      appSettings?.confluence?.spaces?.reduce(
+        (accum, space) => ({
+          ...accum,
+          [space.id]: space
+        }),
+        {}
+      ) ?? {},
+    [appSettings?.confluence?.spaces]
+  );
 
   React.useEffect(() => {
     const getUrls = async () => {
@@ -128,14 +140,17 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                   <AutocompleteSelect
                     label="Confluence Space"
                     options={appSettings?.confluence?.spaces?.filter((s) => s.enabled) || []}
+                    // getOptionValue={(option) => {
+                    //   return option?.id;
+                    // }}
                     getOptionLabel={(option) => {
                       return option?.name;
                     }}
-                    value={filters?.datasources?.confluence?.spaces || []}
+                    value={filters?.datasources?.confluence?.spaces ?? []}
                     onChange={(value) =>
                       updateFilter({
                         datasources: {
-                          confluence: { spaces: value }
+                          confluence: { spaces: value || [] }
                         }
                       })
                     }
@@ -191,9 +206,9 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                     sx={{ textTransform: 'capitalize' }}
                     options={['to do', 'in progress', 'done']}
                     value={filters?.datasources?.jira?.status_category || []}
-                    onChange={(value: string[]) =>
-                      updateFilter({ datasources: { jira: { status_category: value } } })
-                    }
+                    onChange={(value: string[]) => {
+                      updateFilter({ datasources: { jira: { status_category: value } } });
+                    }}
                   />
                   {/* <AutocompleteSelect
                     label={`Assignee`}

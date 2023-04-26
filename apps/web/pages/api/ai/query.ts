@@ -73,6 +73,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   try {
     ({ pineconeData, context, summary } = await fetchContext({
       // chat,
+      user,
       prompt,
       messages,
       filters
