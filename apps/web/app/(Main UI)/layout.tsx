@@ -26,10 +26,12 @@ const MainUiLayout = async ({
     preventFetch: true
   });
 
+  console.log('session', session);
   if (session?.user?.email)
     await flagsmith.identify(`user_${session.user.id}`, {
       env: process.env.NODE_ENV,
       role: session.user.role,
+      invited: !!session.user.invited,
       domain: session.user.email.split('@')[1]
     });
 

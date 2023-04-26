@@ -57,6 +57,14 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
   };
   const isNewJourney = !!Object.keys(filters)?.length && !journey && !chat;
 
+  const handleKeyPress = (e: any) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      handleSubmit();
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  };
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column' }}>
       <DefaultPrompts
@@ -84,7 +92,7 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
         value={inputValue}
         // onBlur={handleInputFocus}
         multiline
-        onKeyPress={(e) => (e.key === 'Enter' && !e.shiftKey ? handleSubmit() : null)}
+        onKeyPress={handleKeyPress}
         onChange={handleInputChange}
         onFocus={handleInputFocus}
       />
