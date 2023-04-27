@@ -51,13 +51,6 @@ const getAirtablePineconeObject = async (airtableRecords: AirtableRecord[]) => {
           }
         ];
         
-        // {
-        //   "name": "airtable/app.sync",
-        //   "data": {
-        //     "apiKey": "pat2S7arPMig4onSe.3c8508cf9e544b849456c95879bda2d254875cf34708ce4f494ac52b20d8e4f1",
-        //     "baseId": "appzQIkVDl2stu2zJ"
-        //   }
-        // }
 
         // TODO: Chunk these by tokens
         // const markdownChunks = await splitPageHtml(algoliaHit);

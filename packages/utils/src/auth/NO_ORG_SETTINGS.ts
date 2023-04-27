@@ -19,6 +19,6 @@ export const NO_ORG_SETTINGS = {
 
       imageURL: '/static/images/contentful.png'
     },
-    { id: 'airtable', name: 'airtable', imageURL: '/static/images/github.png' },
+    { id: 'airtable', name: 'airtable', imageURL: '/static/images/airtable.png' },
   ]
 };

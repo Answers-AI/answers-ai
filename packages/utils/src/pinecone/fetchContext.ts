@@ -121,16 +121,10 @@ export const fetchContext = async ({
     }),
     pineconeQuery(promptEmbedding, {
       filter: {
-        source: 'transcripts'
+        source: 'transcript'
       },
       topK: 200
     }),
-    pineconeQuery(promptEmbedding, {
-      filter: {
-        source: 'documents'
-      },
-      topK: 200
-    })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
   console.timeEnd(`[${ts}] Pineconedata get`);
 

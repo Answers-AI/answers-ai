@@ -26,36 +26,15 @@ export const pineconeQuery = async (
       environment: process.env.PINECONE_ENVIRONMENT!,
       apiKey: process.env.PINECONE_API_KEY!
     });
-    let filterOverrides: any = {};
-    let namespaceOverrides: string;
-    
-    filterOverrides = {
-      source: 'airtable',
-    };
-    namespaceOverrides = 'airtable-if';
-
-
-    let namespaceOverride = namespace;
-    let filterOverride = filter;
-
-    namespaceOverride = 'impossiblefoods';
-    filterOverride = {
-      datasource: 'airtable',
-    }
-
-
-    let namespaceOverride = namespace;
-
-    namespaceOverride = 'docstesting';
 
     const result = await pinecone.Index(process.env.PINECONE_INDEX!).query({
       vector: embeddings,
       topK,
-      filter: filterOverride,
+      filter,
       includeMetadata: true,
-      namespace: namespaceOverride
+      namespace,
     });
-    console.timeEnd('[PineconeQuery]' + JSON.stringify({ filterOverride, topK, namespace }));
+    console.timeEnd('[PineconeQuery]' + JSON.stringify({ filter, topK, namespace }));
     console.log('[PineconeQuery]', result?.data?.matches?.length);
     return result?.data;
   } catch (error) {
