@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getServerSession } from 'next-auth/next';
+import { getServerSession } from 'next-auth';
 
 import { AnswersFilters, Message } from 'types';
 import { prisma } from 'db/dist';

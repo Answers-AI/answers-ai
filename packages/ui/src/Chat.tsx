@@ -1,5 +1,5 @@
 import React from 'react';
-import { getServerSession } from 'next-auth/next';
+import { getServerSession } from 'next-auth';
 import { AnswersProvider } from '@ui/AnswersContext';
 import DeveloperTools from '@ui/DeveloperTools';
 import { getAppSettings } from '@ui/getAppSettings';

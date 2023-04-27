@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth/next';
+import { getServerSession } from 'next-auth';
 import { deepmerge } from '@utils/deepmerge';
 import { authOptions } from './authOptions';
 import { NO_ORG_SETTINGS } from '@utils/auth/NO_ORG_SETTINGS';

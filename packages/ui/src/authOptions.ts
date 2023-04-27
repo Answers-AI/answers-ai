@@ -1,4 +1,4 @@
-import { AuthOptions, DefaultSession } from 'next-auth/core/types';
+import { AuthOptions, DefaultSession } from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 import AtlassianProvider from 'next-auth/providers/atlassian';

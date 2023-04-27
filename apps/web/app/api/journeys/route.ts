@@ -1,6 +1,6 @@
 // import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+import { getServerSession } from 'next-auth';
 import { prisma } from 'db/dist';
 import { authOptions } from '@ui/authOptions';
 
