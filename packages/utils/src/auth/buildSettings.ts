@@ -118,17 +118,37 @@ export const buildSettings = async (user: User, org?: Organization) => {
 
   try {
     newSettings.airtable = {
-      tables: [{
-        id: 'Table 1',
-        title: 'Table 1',
-        enabled: true,
-      }]
+      tables: [
+        {
+          id: 'Table 1',
+          title: 'Table 1',
+          enabled: true
+        }
+      ]
     };
-    
   } catch (error) {
     console.log('JiraSettingsError', error);
   }
-    
+
+  try {
+    newSettings.docubot = {
+      repos: [
+        {
+          id: 'docubot-v0.2.1',
+          name: 'docubot-v0.2.1',
+          enabled: true
+        },
+        {
+          id: 'answers-ai-v0.1.0',
+          name: 'answers-ai-v0.1.0',
+          enabled: true
+        }
+      ]
+    };
+  } catch (error) {
+    console.log('JiraSettingsError', error);
+  }
+
   console.log('NewSettings', newSettings);
   return newSettings;
 };

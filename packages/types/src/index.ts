@@ -66,6 +66,13 @@ export interface AppSettings {
       enabled: boolean;
     }[];
   };
+  docubot?: {
+    repos?: {
+      id: string;
+      name: string;
+      enabled: boolean;
+    }[];
+  };
   models?: Models;
   filters?: AnswersFilters;
 }
@@ -106,11 +113,17 @@ export type SourceFilters =
   | WebFilters
   | OpenApiFilters
   | ConfluenceFilters
-  | AirtableFilters;
+  | AirtableFilters
+  | DocubotFilters;
 
 export interface AirtableFilters {
   table?: string[];
   view?: string[];
+}
+
+export interface DocubotFilters {
+  repo?: string[];
+  path?: string[];
 }
 export interface DataSourcesFilters {
   user?: UserFilters;
@@ -120,6 +133,7 @@ export interface DataSourcesFilters {
   openapi?: OpenApiFilters;
   confluence?: ConfluenceFilters;
   airtable?: AirtableFilters;
+  docubot?: DocubotFilters;
 }
 export interface AnswersFilters {
   models?: {
@@ -234,6 +248,10 @@ export interface AirtableSetting extends AirtableRecord {
   enabled: boolean;
 }
 
+export interface DocubotSetting extends DocubotRecord {
+  enabled: boolean;
+}
+
 export interface OpenApiProvider {
   added: string;
   preferred: string;
@@ -315,6 +333,12 @@ export type AirtableRecord = {
   id: number;
   title: string;
 };
+
+export type DocubotRecord = {
+  id: number;
+  title: string;
+};
+
 
 export interface ConfluenceSetting extends ConfluencePage {
   enabled: boolean;

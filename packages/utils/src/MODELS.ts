@@ -7,4 +7,5 @@ export const MODELS = {
   openapi: ['1'],
   confluence: ['1'],
   airtable: ['1'],
+  docubot: ['1'],
 };

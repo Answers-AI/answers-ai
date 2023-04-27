@@ -8,11 +8,13 @@ import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
 import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
 import { getUniqueUrls } from '@utils/utilities/getUniqueUrls';
+import { useFlags } from 'flagsmith/react';
 import axios from 'axios';
 import Image from 'next/image';
 
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const anchorRef = React.useRef<HTMLDivElement[]>([]);
+  const flags = useFlags(['airtable', 'docubot']);
   const enabledServices = appSettings?.services?.filter((service) => service.enabled);
   const [open, setOpen] = React.useState(-1);
   const [urls, setUrls] = React.useState<string[]>([]);
@@ -135,7 +137,22 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                   />
                 </>
               ) : null}
-              {selectedService.name === 'airtable' ? (
+              {(flags?.docubot?.enabled && selectedService.name === 'docubot') ? (  
+                <>
+                  {console.log(appSettings)}
+                  <AutocompleteSelect
+                    label="Repository"
+                    options={
+                      appSettings?.docubot?.repos?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                    }
+                    value={filters?.datasources?.docubot?.repo || []}
+                    onChange={(value: string[]) =>
+                      updateFilter({ datasources: { docubot: { repo: value } } })
+                    }
+                  />
+                </>
+              ) : null}
+              {(flags?.airtable?.enabled && selectedService.name === 'airtable') ? (
                 <>
                   {console.log(appSettings)}
                   <AutocompleteSelect
