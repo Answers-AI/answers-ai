@@ -59,6 +59,13 @@ export interface AppSettings {
   openapi?: {
     urls?: OpenApiSetting[];
   };
+  airtable?: {
+    tables?: {
+      id: string;
+      title: string;
+      enabled: boolean;
+    }[];
+  };
   models?: Models;
   filters?: AnswersFilters;
 }
@@ -98,8 +105,13 @@ export type SourceFilters =
   | SlackFilters
   | WebFilters
   | OpenApiFilters
-  | ConfluenceFilters;
+  | ConfluenceFilters
+  | AirtableFilters;
 
+export interface AirtableFilters {
+  table?: string[];
+  view?: string[];
+}
 export interface DataSourcesFilters {
   user?: UserFilters;
   jira?: JiraFilters;
@@ -107,6 +119,7 @@ export interface DataSourcesFilters {
   web?: WebFilters;
   openapi?: OpenApiFilters;
   confluence?: ConfluenceFilters;
+  airtable?: AirtableFilters;
 }
 export interface AnswersFilters {
   models?: {
@@ -121,6 +134,7 @@ type Models = {
   web: string[];
   algolia: string[];
   openapi: string[];
+  airtable: string[];
   [key: string]: string[];
 };
 
@@ -213,6 +227,10 @@ export type OpenApi = {
 };
 
 export interface OpenApiSetting extends OpenApi {
+  enabled: boolean;
+}
+
+export interface AirtableSetting extends AirtableRecord {
   enabled: boolean;
 }
 

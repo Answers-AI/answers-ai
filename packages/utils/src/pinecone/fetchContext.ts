@@ -108,6 +108,7 @@ export const fetchContext = async ({
   const pineconeData = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
       if (!filter[source]) return Promise.resolve(null);
+    
       return pineconeQuery(promptEmbedding, {
         // TODO: Figure how to filter by namespace without having to re-index per user
         // namespace: `org-${user?.organizationId}`,
@@ -120,7 +121,13 @@ export const fetchContext = async ({
     }),
     pineconeQuery(promptEmbedding, {
       filter: {
-        source: 'algolia'
+        source: 'transcripts'
+      },
+      topK: 200
+    }),
+    pineconeQuery(promptEmbedding, {
+      filter: {
+        source: 'documents'
       },
       topK: 200
     })

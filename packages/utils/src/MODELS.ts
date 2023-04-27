@@ -5,5 +5,6 @@ export const MODELS = {
   slack: ['1'],
   web: ['1'],
   openapi: ['1'],
-  confluence: ['1']
+  confluence: ['1'],
+  airtable: ['1'],
 };

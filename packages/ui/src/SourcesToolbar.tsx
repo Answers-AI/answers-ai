@@ -135,6 +135,21 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                   />
                 </>
               ) : null}
+              {selectedService.name === 'airtable' ? (
+                <>
+                  {console.log(appSettings)}
+                  <AutocompleteSelect
+                    label="Table"
+                    options={
+                      appSettings?.airtable?.tables?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                    }
+                    value={filters?.datasources?.airtable?.table || []}
+                    onChange={(value: string[]) =>
+                      updateFilter({ datasources: { airtable: { table: value } } })
+                    }
+                  />
+                </>
+              ) : null}
               {selectedService.name === 'confluence' ? (
                 <>
                   <AutocompleteSelect

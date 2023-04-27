@@ -116,5 +116,19 @@ export const buildSettings = async (user: User, org?: Organization) => {
     // console.log('urlSettingsError', error);
   }
 
+  try {
+    newSettings.airtable = {
+      tables: [{
+        id: 'Table 1',
+        title: 'Table 1',
+        enabled: true,
+      }]
+    };
+    
+  } catch (error) {
+    console.log('JiraSettingsError', error);
+  }
+    
+  console.log('NewSettings', newSettings);
   return newSettings;
 };

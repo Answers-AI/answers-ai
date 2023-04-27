@@ -1,6 +1,6 @@
 import { inngest } from './client';
 import Airtable from 'airtable';
-import { Document } from 'langchain/document';
+// import { Document } from 'langchain/document';
 import { EventVersionHandler } from './EventVersionHandler';
 import { AirtableRecord } from 'types';
 import { chunkArray } from '../utilities/utils';
@@ -8,7 +8,7 @@ import { chunkArray } from '../utilities/utils';
 // import { TokenTextSplitter } from 'langchain/text_splitter';
 // import { encoding_for_model } from "@dqbd/tiktoken";
 
-const PINECONE_VECTORS_BATCH_SIZE = 20;
+const PINECONE_VECTORS_BATCH_SIZE = 2;
 // TODO: Move this to a config file from the settings
 const getNLPSummary = (record: object) => {
   const string = `${record.fields['Summary']} ${record.fields['Description']}
@@ -35,9 +35,11 @@ const getAirtablePineconeObject = async (airtableRecords: AirtableRecord[]) => {
             uid: `Airtable_${record.id}`,
             text: nlpSummary,
             metadata: {
-              datasource: 'airtable',
+              source: 'airtable',
               url: `https://lastrev.atlassian.net/browse/${record.fields['Issue Key']}`,
               text: nlpSummary,
+              table: 'Issues',
+              view: 'Grid view',
               summary: record.fields['Summary'],
               // description: record.fields['Description'],
               reporter: record.fields['Reporter'],
@@ -118,6 +120,8 @@ const embedVectors = async (event: any, vectors: any[]) => {
 const getAirtableRecords = (base: any) => {
   return new Promise((resolve, reject) => {
     const allRecords: any[] = [];
+    // TODO add optiosn in types index.js for DataSourcesFilter and AirtableFilterOptions
+    
     base('AIRTABLE: Customer - Impossible Foods')
       .select({
         view: 'Q12023'
@@ -159,7 +163,7 @@ export const processAirtable: EventVersionHandler<{
       const pinconeObjs = await getAirtablePineconeObject(allRecords);
       console.log('airtable' + ' pinecone: ' + pinconeObjs.length);
       const embeddedVectors = await embedVectors(event, pinconeObjs);
-      console.log('airtable' + ' embeddedVectors: ' + embeddedVectors.length);
+      // console.log('airtable' + ' embeddedVectors: ' + embeddedVectors.length);
     } catch (error) {
       console.error(`[airtable/app.sync] ${error}`);
     }

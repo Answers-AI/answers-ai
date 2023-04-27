@@ -26,6 +26,14 @@ export const pineconeQuery = async (
       environment: process.env.PINECONE_ENVIRONMENT!,
       apiKey: process.env.PINECONE_API_KEY!
     });
+    let filterOverrides: any = {};
+    let namespaceOverrides: string;
+    
+    filterOverrides = {
+      source: 'airtable',
+    };
+    namespaceOverrides = 'airtable-if';
+
 
     let namespaceOverride = namespace;
     let filterOverride = filter;
@@ -34,6 +42,11 @@ export const pineconeQuery = async (
     filterOverride = {
       datasource: 'airtable',
     }
+
+
+    let namespaceOverride = namespace;
+
+    namespaceOverride = 'docstesting';
 
     const result = await pinecone.Index(process.env.PINECONE_INDEX!).query({
       vector: embeddings,
