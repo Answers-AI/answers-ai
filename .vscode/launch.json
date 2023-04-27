@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
       {
-        "name": "AnswerAI: debug server-side",
+        "name": "AnswerAI: debug server-side", // Would like this to be just the ingest / microservices (not working yet)
         "type": "node-terminal",
         "request": "launch",
         "command": "pnpm run dev"
