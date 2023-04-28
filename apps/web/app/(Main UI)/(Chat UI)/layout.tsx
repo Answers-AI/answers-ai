@@ -1,8 +1,10 @@
 import React from 'react';
 import { getServerSession } from 'next-auth';
-import ChatDrawer from '@ui/ChatDrawer';
+import ChatLayout from '@ui/ChatLayout';
 import { authOptions } from '@ui/authOptions';
 import { prisma } from 'db/dist';
+import AppSyncToolbar from '@ui/AppSyncToolbar';
+import { ChatInput } from '@ui/ChatInput';
 
 export default async function ChatUILayout({
   // This will be populated with nested layouts or pages
@@ -15,43 +17,24 @@ export default async function ChatUILayout({
     return <a href={'/auth'}>Redirect</a>;
   }
 
-  const chatsPromise = prisma.chat
-    .findMany({
-      where: {
-        users: {
-          some: { email: session.user.email }
-        },
-        journeyId: null
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      include: {
-        prompt: true,
-        messages: { orderBy: { createdAt: 'desc' }, include: { user: true } }
-      }
-    })
-    .then((data: any) => JSON.parse(JSON.stringify(data)));
-
-  const journeysPromise = prisma.journey
-    .findMany({
-      where: {
-        users: {
-          some: { email: session.user.email }
-        }
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      include: { chats: { include: { prompt: true, messages: { include: { user: true } } } } }
-    })
-    .then((data: any) => JSON.parse(JSON.stringify(data)));
-
-  const [chats, journeys] = await Promise.all([chatsPromise, journeysPromise]);
   return (
-    <main style={{ display: 'flex', width: '100%', height: '100%' }}>
-      <ChatDrawer journeys={journeys} chats={chats} />
+    // @ts-expect-error
+    <ChatLayout>
       {children}
-    </main>
+      {/* <div
+        style={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          padding: 2,
+          paddingTop: 0,
+          paddingBottom: 3
+        }}> */}
+      {/* <AppSyncToolbar appSettings={session?.user?.appSettings} /> */}
+      {/* {journey ? <Filters filters={journey.filters} /> : null} */}
+      <ChatInput />
+      {/* </div> */}
+    </ChatLayout>
   );
 }

@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { Suspense } from 'react';
 import Button from '@mui/material/Button';
 import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material';
 import { AppSettings, User } from 'types';
@@ -14,23 +14,15 @@ import SourcesToolbar from './SourcesToolbar';
 import { Filters } from './Filters';
 export const ChatDetail = ({
   appSettings,
-  user,
+  // user,
   prompts
 }: {
   appSettings: AppSettings;
-  user: User;
+  // user: User;
   prompts?: any;
 }) => {
   const scrollRef = React.useRef<HTMLDivElement>(null);
-  const inputRef = React.useRef<HTMLInputElement>(null);
-
-  const { setInputValue, error, chat, journey, messages, isLoading, regenerateAnswer } =
-    useAnswers();
-  React.useEffect(() => {
-    if (messages?.length)
-      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-    inputRef.current?.focus();
-  }, [chat, journey, messages, error]);
+  const { error, chat, journey, messages, isLoading, regenerateAnswer } = useAnswers();
 
   return (
     <Box
@@ -64,66 +56,61 @@ export const ChatDetail = ({
         </Toolbar>
       </AppBar>
       <Box ref={scrollRef} sx={{ height: '100%', overflow: 'auto', px: 2, py: 3 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
+        <Suspense fallback={<div>Loading...</div>}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
 
-            gap: 2
-          }}>
-          {messages?.map((message, index) => (
-            <MessageCard {...message} key={`message_${index}`} />
-          ))}
-          {error ? (
-            <>
+              gap: 2
+            }}>
+            {messages?.map((message, index) => (
+              <MessageCard {...message} key={`message_${index}`} />
+            ))}
+            {error ? (
+              <>
+                <MessageCard
+                  // user={user}
+                  role="assistant"
+                  content={`There was an error completing your request, please try again`}
+                  error={error}
+                />
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    onClick={regenerateAnswer}
+                    variant="contained"
+                    color="primary"
+                    sx={{ margin: 'auto' }}>
+                    Retry
+                  </Button>
+                </Box>
+              </>
+            ) : null}
+            {isLoading ? (
               <MessageCard
-                user={user}
-                role="assistant"
-                content={`There was an error completing your request, please try again`}
-                error={error}
+                //  user={user}
+                role="loading"
+                content={'...'}
               />
-              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                <Button
-                  onClick={regenerateAnswer}
-                  variant="contained"
-                  color="primary"
-                  sx={{ margin: 'auto' }}>
-                  Retry
+            ) : null}
+            {!messages?.length ? (
+              <MessageCard
+                // user={user}
+                role="assistant"
+                content={
+                  'Welcome! Try asking me something below, or select your data sources on the top right!'
+                }
+              />
+            ) : null}
+            {messages?.length && !isLoading && !error ? (
+              <Box sx={{ py: 2, width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <Button onClick={regenerateAnswer} variant="outlined" color="primary">
+                  Regenerate answer
                 </Button>
               </Box>
-            </>
-          ) : null}
-          {isLoading ? <MessageCard user={user} role="loading" content={'...'} /> : null}
-          {!messages?.length ? (
-            <MessageCard
-              user={user}
-              role="assistant"
-              content={
-                'Welcome! Try asking me something below, or select your data sources on the top right!'
-              }
-            />
-          ) : null}
-          {messages?.length && !isLoading && !error ? (
-            <Box sx={{ py: 2, width: '100%', display: 'flex', justifyContent: 'center' }}>
-              <Button onClick={regenerateAnswer} variant="outlined" color="primary">
-                Regenerate answer
-              </Button>
-            </Box>
-          ) : null}
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          px: 2,
-          paddingBottom: 3
-        }}>
-        <AppSyncToolbar appSettings={appSettings} />
-        {/* {journey ? <Filters filters={journey.filters} /> : null} */}
-        <ChatInput inputRef={inputRef} />
+            ) : null}
+          </Box>
+        </Suspense>
       </Box>
     </Box>
   );

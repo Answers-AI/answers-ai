@@ -4,7 +4,7 @@ import { AnswersProvider } from '@ui/AnswersContext';
 import { getAppSettings } from '@ui/getAppSettings';
 import { authOptions } from '@ui/authOptions';
 import { prisma } from 'db/dist';
-import { Chat, Journey } from 'types';
+import { Chat } from 'types';
 import { ChatDetail } from './ChatDetail';
 
 export interface Params {
@@ -13,10 +13,6 @@ export interface Params {
 }
 
 const Chat = async ({ chatId, journeyId }: Params) => {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return <a href={'/auth'}>Redirect</a>;
-  }
   const appSettingsPromise = getAppSettings();
 
   const promptsPromise = prisma.prompt
@@ -57,19 +53,17 @@ const Chat = async ({ chatId, journeyId }: Params) => {
         })
         .then((data: any) => JSON.parse(JSON.stringify(data)))
     : null;
-  const id = Date.now();
 
-  const [appSettings, prompts, chat, chats] = await Promise.all([
+  const [appSettings, prompts, chat, journey] = await Promise.all([
     appSettingsPromise,
     promptsPromise,
     chatPromise,
-
     journeyPromise
   ]);
 
   return (
-    <AnswersProvider chat={chat as Chat} chats={chats as Chat[]} appSettings={appSettings}>
-      <ChatDetail appSettings={appSettings} user={session?.user} prompts={prompts} />
+    <AnswersProvider chat={chat as Chat} journey={journey} appSettings={appSettings}>
+      <ChatDetail appSettings={appSettings} prompts={prompts} />
     </AnswersProvider>
   );
 };

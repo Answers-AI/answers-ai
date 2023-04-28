@@ -27,8 +27,8 @@ importers:
         specifier: latest
         version: 2.8.7
       prisma:
-        specifier: 4.12.0
-        version: 4.12.0
+        specifier: ^4.13.0
+        version: 4.13.0
       turbo:
         specifier: ^1.9.3
         version: 1.9.3
@@ -61,7 +61,7 @@ importers:
         version: 0.0.5
       '@prisma/client':
         specifier: ^4.13.0
-        version: 4.13.0(prisma@4.12.0)
+        version: 4.13.0(prisma@4.13.0)
       '@textea/json-viewer':
         specifier: 2.14.1
         version: 2.14.1(@types/react@18.0.38)(react-dom@18.2.0)(react@18.2.0)
@@ -281,7 +281,7 @@ importers:
     dependencies:
       '@prisma/client':
         specifier: ^4.13.0
-        version: 4.13.0(prisma@4.12.0)
+        version: 4.13.0(prisma@4.13.0)
     devDependencies:
       '@types/jest':
         specifier: ^29.5.0
@@ -302,8 +302,8 @@ importers:
         specifier: ^29.5.0
         version: 29.5.0(@types/node@18.16.0)
       prisma:
-        specifier: 4.12.0
-        version: 4.12.0
+        specifier: ^4.13.0
+        version: 4.13.0
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -384,7 +384,7 @@ importers:
         version: 1.0.6(@prisma/client@4.13.0)(next-auth@4.22.1)
       '@prisma/client':
         specifier: ^4.13.0
-        version: 4.13.0(prisma@4.12.0)
+        version: 4.13.0(prisma@4.13.0)
       '@textea/json-viewer':
         specifier: 2.14.1
         version: 2.14.1(@types/react@18.0.38)(react-dom@18.2.0)(react@18.2.0)
@@ -487,7 +487,7 @@ importers:
         version: 0.0.5
       '@prisma/client':
         specifier: ^4.13.0
-        version: 4.13.0(prisma@4.12.0)
+        version: 4.13.0(prisma@4.13.0)
       '@slack/web-api':
         specifier: ^6.8.1
         version: 6.8.1
@@ -2563,7 +2563,7 @@ packages:
       '@prisma/client': '>=2.26.0 || >=3'
       next-auth: ^4
     dependencies:
-      '@prisma/client': 4.13.0(prisma@4.12.0)
+      '@prisma/client': 4.13.0(prisma@4.13.0)
       next-auth: 4.22.1(next@13.3.1)(react-dom@18.2.0)(react@18.2.0)
     dev: false
 
@@ -2810,7 +2810,7 @@ packages:
       - supports-color
     dev: true
 
-  /@prisma/client@4.13.0(prisma@4.12.0):
+  /@prisma/client@4.13.0(prisma@4.13.0):
     resolution: {integrity: sha512-YaiiICcRB2hatxsbnfB66uWXjcRw3jsZdlAVxmx0cFcTc/Ad/sKdHCcWSnqyDX47vAewkjRFwiLwrOUjswVvmA==}
     engines: {node: '>=14.17'}
     requiresBuild: true
@@ -2821,15 +2821,15 @@ packages:
         optional: true
     dependencies:
       '@prisma/engines-version': 4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a
-      prisma: 4.12.0
+      prisma: 4.13.0
     dev: false
 
   /@prisma/engines-version@4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a:
     resolution: {integrity: sha512-fsQlbkhPJf08JOzKoyoD9atdUijuGBekwoOPZC3YOygXEml1MTtgXVpnUNchQlRSY82OQ6pSGQ9PxUe4arcSLQ==}
     dev: false
 
-  /@prisma/engines@4.12.0:
-    resolution: {integrity: sha512-0alKtnxhNB5hYU+ymESBlGI4b9XrGGSdv7Ud+8TE/fBNOEhIud0XQsAR+TrvUZgS4na5czubiMsODw0TUrgkIA==}
+  /@prisma/engines@4.13.0:
+    resolution: {integrity: sha512-HrniowHRZXHuGT9XRgoXEaP2gJLXM5RMoItaY2PkjvuZ+iHc0Zjbm/302MB8YsPdWozAPHHn+jpFEcEn71OgPw==}
     requiresBuild: true
 
   /@puppeteer/browsers@0.5.0(typescript@4.9.5):
@@ -8953,13 +8953,13 @@ packages:
     resolution: {integrity: sha512-WuxUnVtlWL1OfZFQFuqvnvs6MiAGk9UNsBostyBOB0Is9wb5uRESevA6rnl/rkksXaGX3GzZhPup5d6Vp1nFew==}
     dev: false
 
-  /prisma@4.12.0:
-    resolution: {integrity: sha512-xqVper4mbwl32BWzLpdznHAYvYDWQQWK2tBfXjdUD397XaveRyAP7SkBZ6kFlIg8kKayF4hvuaVtYwXd9BodAg==}
+  /prisma@4.13.0:
+    resolution: {integrity: sha512-L9mqjnSmvWIRCYJ9mQkwCtj4+JDYYTdhoyo8hlsHNDXaZLh/b4hR0IoKIBbTKxZuyHQzLopb/+0Rvb69uGV7uA==}
     engines: {node: '>=14.17'}
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@prisma/engines': 4.12.0
+      '@prisma/engines': 4.13.0
 
   /prismjs@1.27.0:
     resolution: {integrity: sha512-t13BGPUlFDR7wRB5kQDG4jjl7XeuH6jbJGt11JHPL96qwsEHNX2+68tFXqc1/k+/jALsbSWJKUOT/hcYAZ5LkA==}

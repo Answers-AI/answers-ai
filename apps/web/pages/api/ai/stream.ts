@@ -120,6 +120,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   );
   res.setHeader('Content-Type', 'text/plain');
   res.setHeader('Transfer-Encoding', 'chunked');
+  res.setHeader('Content-Econding', 'none');
 
   //@ts-expect-error
   for await (const chunk of stream) {

@@ -16,20 +16,8 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
 
   const [serviceOpen, setServiceOpen] = React.useState<string>('');
   const { filters, updateFilter } = useAnswers();
-
-  const spacesById: Record<string, ConfluenceSpace> = React.useMemo(
-    () =>
-      appSettings?.confluence?.spaces?.reduce(
-        (accum, space) => ({
-          ...accum,
-          [space.id]: space
-        }),
-        {}
-      ) ?? {},
-    [appSettings?.confluence?.spaces]
-  );
-
   const selectedService = enabledServices?.find((service) => service.name === serviceOpen);
+
   return (
     <>
       <AvatarGroup total={enabledServices?.length} max={10} spacing={-8}>

@@ -80,7 +80,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
   // const { chat } = useAnswers();
   const router = useRouter();
   const pathname = usePathname();
-  const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen);
+  const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen || true);
   const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({ chats: true });
   const handleDrawerOpen = () => {
     window.localStorage.setItem('drawerOpen', 'true');
@@ -147,6 +147,10 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
             justifyContent: 'space-between',
             transition: '.2s',
             paddingLeft: 2,
+            position: 'sticky',
+            top: '0',
+            background: '#161616',
+            zIndex: '10',
             ...(open ? {} : { opacity: 0 })
           }}>
           <Typography variant="h5">Journeys</Typography>
