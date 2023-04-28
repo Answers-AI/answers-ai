@@ -108,8 +108,6 @@ const Chat = async ({ chatId, journeyId }: Params) => {
       chats={chats as Chat[]}
       appSettings={appSettings}>
       <DeveloperTools
-        chat={chat as Chat}
-        journey={journey}
         appSettings={appSettings}
         user={session?.user}
         prompts={prompts}

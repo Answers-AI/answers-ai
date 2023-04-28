@@ -1,6 +1,6 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
-import { AnswersFilters, Message, User } from 'types';
+import { AnswersFilters, Message, User, WebUrlType } from 'types';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import OpenAIClient from '../openai/openai';
 import { summarizeAI } from '../summarizeAI';
@@ -20,8 +20,10 @@ const parseFilters = (filters: AnswersFilters) => {
   }
 
   if (parsedFilters?.datasources?.web?.url?.length) {
+    // TODO: Define a type for the Pinecone filters which this function must return
+    // @ts-expect-error
     parsedFilters.datasources.web.url = getUniqueUrls(
-      parsedFilters.datasources.web.url.map((url) => url.url)
+      parsedFilters.datasources.web.url.map((url) => (url as WebUrlType)?.url)
     );
   }
 
