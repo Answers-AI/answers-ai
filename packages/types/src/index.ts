@@ -150,6 +150,7 @@ export interface Prompt extends DB.Prompt {
   content: string;
 }
 export interface Chat extends Omit<DB.Chat, 'filters'> {
+  journey: Journey | null;
   filters: AnswersFilters;
   prompt: Prompt | null;
   messages: Message[] | null;

@@ -78,8 +78,8 @@ const AnswersContext = createContext<AnswersContextType>({
 
 export function useAnswers({
   // chats,
-  chat,
-  journey,
+  // chat,
+  // journey,
   apiUrl = '/api'
 }: any = {}) {
   const router = useRouter();
@@ -232,13 +232,15 @@ interface AnswersProviderProps {
   appSettings: AppSettings;
   apiUrl?: string;
   useStreaming?: boolean;
-  chat?: Chat | null;
+  chat?: Chat;
   journey?: Journey;
   prompts?: Prompt[];
   // chats?: Chat[];
 }
 
 export function AnswersProvider({
+  chat: initialChat,
+  journey: initialJourney,
   appSettings,
   children,
   prompts,
@@ -246,8 +248,8 @@ export function AnswersProvider({
 }: AnswersProviderProps) {
   const [error, setError] = useState(null);
   const [inputValue, setInputValue] = useState('');
-  const [chat, setChat] = useState<Chat | undefined>();
-  const [journey, setJourney] = useState<Journey | undefined>();
+  const [chat, setChat] = useState<Chat | undefined>(initialChat);
+  const [journey, setJourney] = useState<Journey | undefined>(initialJourney);
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Array<Message>>(chat?.messages ?? []);
   const [filters, setFilters] = useState<AnswersFilters>(
