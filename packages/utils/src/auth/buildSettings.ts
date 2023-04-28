@@ -120,8 +120,18 @@ export const buildSettings = async (user: User, org?: Organization) => {
     newSettings.airtable = {
       tables: [
         {
-          id: 'Table 1',
-          title: 'Table 1',
+          id: 'My Tasks',
+          title: 'My Tasks',
+          enabled: true
+        },
+        {
+          id: 'Impossible Foods',
+          title: 'Last Rev Mission Control',
+          enabled: true
+        },
+        {
+          id: 'Dropbox',
+          title: 'Dropbox',
           enabled: true
         }
       ]
@@ -141,6 +151,11 @@ export const buildSettings = async (user: User, org?: Organization) => {
         {
           id: 'answers-ai-v0.1.0',
           name: 'answers-ai-v0.1.0',
+          enabled: true
+        },
+        {
+          id: 'lastrev-marketing-site-v0.1.0',
+          name: 'lastrev-marketing-site-v0.1.0',
           enabled: true
         }
       ]
