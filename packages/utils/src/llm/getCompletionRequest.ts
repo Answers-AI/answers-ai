@@ -18,7 +18,7 @@ export function getCompletionRequest({
       {
         role: ChatCompletionRequestMessageRoleEnum.System,
         content:
-          `You are a helpful assistant.Alaways let the user know your confidence level in your response.
+          `You are a helpful assistant. Always let the user know your confidence level in your response.
           Always follow up with a list of questions the user could ask that will help you understand their intention better.
           Never respond with a definitive answer. Always respond with a question.`
       },
@@ -31,7 +31,6 @@ export function getCompletionRequest({
         ###
         User Command: ${input}\n\n 
         Respond in markdown format.
-        ## Response:\n\n
         `
       },
       // TODO: Summarize history when it gets too long
