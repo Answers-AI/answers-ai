@@ -10,15 +10,15 @@ import { chunkArray } from '../utilities/utils';
 
 const PINECONE_VECTORS_BATCH_SIZE = 2;
 // TODO: Move this to a config file from the settings
-const getNLPSummary = (record: object) => {
-  const string = `${record.fields['Summary']} ${record.fields['Description']}
-    reported by ${record.fields['Reporter']} and assigned to ${record.fields['Assignee']}
-    QA/Quality Assurance by ${record.fields['QA Person'] || 'Unknown'}
-    Linked to Issues: ${record.fields['Linked Issues'] || 'None'}
-    Status: ${record.fields['Status']}
-    `;
-  return string;
-};
+// const getNLPSummary = (record: object) => {
+//   const string = `${record.fields['Summary']} ${record.fields['Description']}
+//     reported by ${record.fields['Reporter']} and assigned to ${record.fields['Assignee']}
+//     QA/Quality Assurance by ${record.fields['QA Person'] || 'Unknown'}
+//     Linked to Issues: ${record.fields['Linked Issues'] || 'None'}
+//     Status: ${record.fields['Status']}
+//     `;
+//   return string;
+// };
 
 const getAirtablePineconeObject = async (airtableRecords: AirtableRecord[]) => {
   const vectors = (
@@ -28,28 +28,30 @@ const getAirtablePineconeObject = async (airtableRecords: AirtableRecord[]) => {
           return [];
         }
 
-        const nlpSummary = getNLPSummary(record);
+        // const nlpSummary = getNLPSummary(record);
 
-        return [
-          {
-            uid: `Airtable_${record.id}`,
-            text: nlpSummary,
-            metadata: {
-              source: 'airtable',
-              url: `https://lastrev.atlassian.net/browse/${record.fields['Issue Key']}`,
-              text: nlpSummary,
-              table: 'Issues',
-              view: 'Grid view',
-              summary: record.fields['Summary'],
-              // description: record.fields['Description'],
-              reporter: record.fields['Reporter'],
-              assignee: record.fields['Assignee'],
-              qaPerson: record.fields['QA Person'] || 'Unknown',
-              linkedIssues: record.fields['Linked Issues'] || 'None',
-              status: record.fields['Status']
-            }
-          }
-        ];
+        // return [
+        //   {
+        //     uid: `Airtable_${record.id}`,
+        //     text: nlpSummary,
+        //     metadata: {
+        //       source: 'airtable',
+        //       url: `https://lastrev.atlassian.net/browse/${record.fields['Issue Key']}`,
+        //       text: nlpSummary,
+        //       table: 'Issues',
+        //       view: 'Grid view',
+        //       summary: record.fields['Summary'],
+        //       // description: record.fields['Description'],
+        //       reporter: record.fields['Reporter'],
+        //       assignee: record.fields['Assignee'],
+        //       qaPerson: record.fields['QA Person'] || 'Unknown',
+        //       linkedIssues: record.fields['Linked Issues'] || 'None',
+        //       status: record.fields['Status']
+        //     }
+        //   }
+        // ];
+
+        return [];
         
 
         // TODO: Chunk these by tokens
@@ -110,17 +112,16 @@ const embedVectors = async (event: any, vectors: any[]) => {
   return outVectors;
 };
 
-const getAirtableRecords = (base: any) => {
+const getAirtableRecords = (base: any): Promise<AirtableRecord[]> => {
   return new Promise((resolve, reject) => {
-    const allRecords: any[] = [];
-    // TODO add optiosn in types index.js for DataSourcesFilter and AirtableFilterOptions
+    const allRecords: AirtableRecord[] = [];
     
     base('AIRTABLE: Customer - Impossible Foods')
       .select({
         view: 'Q12023'
       })
       .eachPage(
-        (records: any, fetchNextPage: () => void) => {
+        (records: AirtableRecord[], fetchNextPage: () => void) => {
           console.log('airtable' + ' records: ' + records.length);
           allRecords.push(...records);
           fetchNextPage();
@@ -151,7 +152,7 @@ export const processAirtable: EventVersionHandler<{
 
     console.log('airtable' + ' event: ' + event);
     try {
-      const allRecords = await getAirtableRecords(base);
+      const allRecords: AirtableRecord[] = await getAirtableRecords(base);
       console.log('airtable' + ' allRecords: ' + allRecords.length);
       const pinconeObjs = await getAirtablePineconeObject(allRecords);
       console.log('airtable' + ' pinecone: ' + pinconeObjs.length);
