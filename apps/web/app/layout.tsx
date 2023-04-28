@@ -6,5 +6,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <html lang="en" style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
+      <body style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>{children}</body>
+    </html>
+  );
 }

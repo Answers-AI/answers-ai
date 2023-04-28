@@ -42,52 +42,42 @@ export default function AppLayout({
       <ThemeProvider theme={darkModeTheme}>
         <CssBaseline enableColorScheme />
         <GlobalStyles />
-        <html lang="en" style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
-          <body style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
-            {session ? (
-              <>
-                {flagsmithState?.flags?.access_enabled?.enabled ? (
-                  <>
-                    <AppDrawer params={params} session={session} />
-                    <div style={{ flex: 1, width: 'calc(100% - 65px)', height: '100vh' }}>
-                      {children}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                      }}>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: 1
-                        }}>
-                        <Typography variant="h4">You are almost in!</Typography>
-                        <Typography variant="h5">Answer AI is currently in closed beta.</Typography>
-                        <Typography variant="h6">
-                          Check your email for a confirmation soon!
-                        </Typography>
-                        {session?.user ? (
-                          <Button variant="outlined" fullWidth onClick={() => signOut()}>
-                            Change account
-                          </Button>
-                        ) : null}
-                      </Box>
-                    </Box>
-                  </>
-                )}
-              </>
-            ) : (
-              <Auth session={session} providers={providers} appSettings={appSettings} />
-            )}
-          </body>
-        </html>
+        {flagsmithState?.flags?.access_enabled?.enabled ? (
+          <>
+            <AppDrawer params={params} session={session} />
+            <div style={{ flex: 1, width: 'calc(100% - 65px)', height: '100vh' }}>{children}</div>
+          </>
+        ) : (
+          <>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1
+                }}>
+                <Typography variant="h4">You are almost in!</Typography>
+                <Typography variant="h5">Answer AI is currently in closed beta.</Typography>
+                <Typography variant="h6">Check your email for a confirmation soon!</Typography>
+                {session?.user ? (
+                  <Button variant="outlined" fullWidth onClick={() => signOut()}>
+                    Change account
+                  </Button>
+                ) : null}
+              </Box>
+            </Box>
+          </>
+        )}
+        {/* </>
+        ) : (
+          <Auth session={session} providers={providers} appSettings={appSettings} />
+        )} */}
       </ThemeProvider>
     </FlagsmithProvider>
     // </SessionProvider>

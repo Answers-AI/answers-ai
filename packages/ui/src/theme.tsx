@@ -72,17 +72,6 @@ export const darkModeTheme = createTheme({
         }
       }
     },
-    MuiModal: {
-      styleOverrides: {
-        root: {
-          pre: {
-            background: 'blue',
-            padding: '16px',
-            borderRadius: '2px'
-          }
-        }
-      }
-    },
     MuiDrawer: {
       styleOverrides: {
         paper: {

@@ -36,11 +36,7 @@ const AppWidgetLayout = ({
         <ThemeProvider theme={darkModeTheme}>
           <CssBaseline enableColorScheme />
           <GlobalStyles />
-          <html lang="en" style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
-            <body style={{ height: '100%', width: '100%', flex: 1, display: 'flex' }}>
-              {children}
-            </body>
-          </html>
+          {children}
         </ThemeProvider>
       </FlagsmithProvider>
     </SessionProvider>

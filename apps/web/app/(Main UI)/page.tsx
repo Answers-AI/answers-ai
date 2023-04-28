@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Chat from './Chat';
+import Chat from '@ui/Chat';
 
 export const metadata = {
   title: 'Answers AI',
@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 const Homepage = async ({ params }: any) => {
-  // @ts-expect-error
+  // @ts-expect-error Async Server Component
   return <Chat {...params} />;
 };
 

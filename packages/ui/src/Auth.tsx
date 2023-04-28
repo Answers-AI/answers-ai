@@ -67,7 +67,11 @@ const Auth = ({ session, providers }: AuthProps) => {
             gap: 2
           }}>
           {Object.values(providers ?? {}).map((provider) => (
-            <Button variant="contained" onClick={() => signIn(provider.id)} fullWidth>
+            <Button
+              key={provider.id}
+              variant="contained"
+              onClick={() => signIn(provider.id)}
+              fullWidth>
               Sign in with {provider.name}
             </Button>
           ))}

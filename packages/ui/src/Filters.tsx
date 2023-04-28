@@ -33,8 +33,8 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
                       ? null
                       : (values as any[])?.map((value: any) => (
                           <Chip
-                            key={`${field}:${value?.name ?? value?.id ?? value}`}
-                            label={value?.name ?? value?.id ?? JSON.stringify(value)}
+                            key={`${field}:${value?.name ?? value?.id ?? value.url ?? value}`}
+                            label={value?.name ?? value.url ?? value?.id ?? JSON.stringify(value)}
                           />
                         ))}
                   </>

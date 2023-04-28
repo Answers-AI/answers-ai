@@ -64,10 +64,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     });
   let pineconeData,
+    pineconeFilters,
     context = '',
     summary = '';
   try {
-    ({ pineconeData, context, summary } = await fetchContext({
+    ({ pineconeFilters, pineconeData, context, summary } = await fetchContext({
       user,
       prompt,
       messages,
@@ -79,7 +80,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     throw contextError;
   }
   const handleResponse = async (response: any) => {
-    console.log('handleResponse', response);
+    // console.log('handleResponse', response);
 
     const answer = response.text;
     completionRequest = response.completionRequest;
@@ -114,7 +115,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       ...completionRequest,
       stream: true
     },
-    { pineconeData, context, summary, completionRequest },
+    { filters: pineconeFilters, pineconeData, context, summary, completionRequest },
     handleResponse
   );
   res.setHeader('Content-Type', 'text/plain');

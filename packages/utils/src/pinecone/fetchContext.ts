@@ -1,10 +1,10 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
-import { Chat } from 'db/generated/prisma-client';
-import { AnswersFilters, Message, User } from 'types';
+import { AnswersFilters, Message, User, WebUrlType } from 'types';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import OpenAIClient from '../openai/openai';
 import { summarizeAI } from '../summarizeAI';
+import { getUniqueUrls } from '@utils/getUniqueUrls';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
@@ -18,11 +18,52 @@ const parseFilters = (filters: AnswersFilters) => {
     );
     delete parsedFilters.datasources.confluence.spaces;
   }
+
+  if (parsedFilters?.datasources?.web?.url?.length) {
+    // TODO: Define a type for the Pinecone filters which this function must return
+    // @ts-expect-error
+    parsedFilters.datasources.web.url = getUniqueUrls(
+      parsedFilters.datasources.web.url.map((url) => (url as WebUrlType)?.url)
+    );
+  }
+
   return parsedFilters;
 };
 
-// const SUMMARY_CHUNK_SIZE = 10_000; // Maximum number of tokens to send to the summarization
-const SUMMARY_CHUNK_SIZE = 6_000; // Controls how many tokens will fit into each chunk sent to the summarization
+const processArray = (arr: Array<any>) => {
+  console.time('Process Array');
+  const map = new Map();
+
+  for (const obj of arr) {
+    const key = obj.metadata.url || obj.metadata.key;
+
+    if (map.has(key)) {
+      const value = `${map.get(key)}\n${obj.metadata.text}`;
+
+      map.set(key, value);
+    } else {
+      map.set(key, obj.metadata.text);
+    }
+  }
+
+  const reducedArr = Array.from(map, ([key, text]) => {
+    const obj = arr.find((o) => o.metadata.key === key || o.metadata.url === key);
+    return { ...obj, metadata: { ...obj.metadata, text } };
+  });
+
+  const firstScore = reducedArr?.[0].score;
+
+  // filter out any items with a score less than 10% of the first item's score
+  const filteredArr = reducedArr.filter((obj) => obj.score > firstScore * 0.99);
+  console.log({ filteredArr });
+
+  console.timeEnd('Process Array');
+
+  return filteredArr;
+};
+
+// const SUMMARY_CHUNK_SIZE = 10_000; // Max
+const SUMMARY_CHUNK_SIZE = 3_000; // Controls how many tokens will fit into each chunk sent to the summarization
 const SUMMARY_TOKEN_SIZE = 2_000; // (openai max_tokens) Controls the ouput tokens of the summarization
 const CONTEXT_PAGES = 1; // How many context pages we want to process for completion
 const PINECONE_THRESHOLD = 0.68;
@@ -39,7 +80,7 @@ export const fetchContext = async ({
   filters?: AnswersFilters;
   threshold?: number;
 }) => {
-  const ts = Date.now();
+  const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
   const filters = parseFilters(clientFilters);
   // const hasDefaultFilter = Object.keys(filters).length;
@@ -100,7 +141,7 @@ export const fetchContext = async ({
     }
   });
 
-  console.log('[FetchContext]', JSON.stringify({ datasources, filters, filter }));
+  // console.log('[FetchContext]', JSON.stringify({ datasources, filters, filter }));
 
   console.time(`[${ts}] Pineconedata`);
   console.time(`[${ts}] Pineconedata get`);
@@ -127,7 +168,8 @@ export const fetchContext = async ({
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
   console.timeEnd(`[${ts}] Pineconedata get`);
 
-  const filteredData = pineconeData?.filter((x) => x.score! > threshold);
+  const filteredData = pineconeData?.length ? processArray(pineconeData) : [];
+  // pineconeData?.filter((x) => x.score! > threshold);
   const context = [
     // `${history}`,
     ...(!filteredData ? [] : filteredData?.map((item: any) => item?.metadata?.text))
@@ -167,6 +209,7 @@ export const fetchContext = async ({
     summary,
     ...(process.env.NODE_ENV === 'development'
       ? {
+          pineconeFilters: filters,
           filteredData,
           pineconeData
         }

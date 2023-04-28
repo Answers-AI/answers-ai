@@ -1,5 +1,5 @@
-import { prisma } from 'db/dist';
-import { Session } from 'next-auth/core/types';
+// import { prisma } from 'db/dist';
+// import { Session } from 'next-auth/core/types';
 import { syncAppSettings } from '../auth/syncAppSettings';
 
 import { EventVersionHandler } from './EventVersionHandler';

@@ -3,11 +3,15 @@ import { getServerSession } from 'next-auth';
 
 import cors from '@ui/cors';
 import { authOptions } from '@ui/authOptions';
-import getUrlList from '@ui/chat/getUrlList';
+import { getFullUrlList } from '@ui/chat/getFullUrlList';
 
-type Data = {
-  urls: string[];
+export type SourceUrl = {
+  id: string;
+  domain: string;
+  url: string;
 };
+
+type Data = SourceUrl[];
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await cors(req, res);
@@ -21,13 +25,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     return;
   }
 
-  const { domains } = req.body;
+  const urls = await getFullUrlList();
 
-  const params: { domains?: string[] } = {};
-  if (domains) params.domains = domains;
-  const urls = await getUrlList(params);
-
-  res.status(200).json({ urls: urls.map((u) => u.url) });
+  res.status(200).json(urls);
 };
 
 export default handler;
