@@ -22,21 +22,21 @@ module.exports = withBundleAnalyzer({
       transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}'
     }
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.externals = [...config.externals, 'db', 'puppeteer'];
 
     config.plugins = [
       ...config.plugins,
-      new PrismaPlugin(),
+      // new PrismaPlugin(),
       new webpack.IgnorePlugin({
         resourceRegExp: /canvas/,
         contextRegExp: /jsdom$/
       })
     ];
 
-    // if (isServer) {
-    //   config.plugins = [...config.plugins, new PrismaPlugin()];
-    // }
+    if (isServer) {
+      config.plugins = [...config.plugins, new PrismaPlugin()];
+    }
 
     return config;
   }

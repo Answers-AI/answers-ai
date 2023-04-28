@@ -1,11 +1,11 @@
 import React from 'react';
 import { getServerSession } from 'next-auth';
 import { AnswersProvider } from '@ui/AnswersContext';
-import DeveloperTools from '@ui/DeveloperTools';
 import { getAppSettings } from '@ui/getAppSettings';
 import { authOptions } from '@ui/authOptions';
 import { prisma } from 'db/dist';
 import { Chat, Journey } from 'types';
+import { ChatDetail } from './ChatDetail';
 
 export interface Params {
   chatId?: string;
@@ -47,38 +47,6 @@ const Chat = async ({ chatId, journeyId }: Params) => {
         .then((data: any) => JSON.parse(JSON.stringify(data)))
     : null;
 
-  const chatsPromise = prisma.chat
-    .findMany({
-      where: {
-        users: {
-          some: { email: session.user.email }
-        },
-        journeyId: null
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      include: {
-        prompt: true,
-        messages: { orderBy: { createdAt: 'desc' }, include: { user: true } }
-      }
-    })
-    .then((data: any) => JSON.parse(JSON.stringify(data)));
-
-  const journeysPromise = prisma.journey
-    .findMany({
-      where: {
-        users: {
-          some: { email: session.user.email }
-        }
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      include: { chats: { include: { prompt: true, messages: { include: { user: true } } } } }
-    })
-    .then((data: any) => JSON.parse(JSON.stringify(data)));
-
   const journeyPromise = journeyId
     ? prisma.journey
         .findUnique({
@@ -91,29 +59,17 @@ const Chat = async ({ chatId, journeyId }: Params) => {
     : null;
   const id = Date.now();
 
-  const [appSettings, prompts, chat, chats, journeys, journey] = await Promise.all([
+  const [appSettings, prompts, chat, chats] = await Promise.all([
     appSettingsPromise,
     promptsPromise,
     chatPromise,
-    chatsPromise,
-    journeysPromise,
+
     journeyPromise
   ]);
 
   return (
-    <AnswersProvider
-      chat={chat as Chat}
-      journey={journey}
-      prompts={prompts}
-      chats={chats as Chat[]}
-      appSettings={appSettings}>
-      <DeveloperTools
-        appSettings={appSettings}
-        user={session?.user}
-        prompts={prompts}
-        chats={chats as Chat[]}
-        journeys={journeys as Journey[]}
-      />
+    <AnswersProvider chat={chat as Chat} chats={chats as Chat[]} appSettings={appSettings}>
+      <ChatDetail appSettings={appSettings} user={session?.user} prompts={prompts} />
     </AnswersProvider>
   );
 };
