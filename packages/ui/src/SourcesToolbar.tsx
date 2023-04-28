@@ -15,7 +15,11 @@ import Image from 'next/image';
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const anchorRef = React.useRef<HTMLDivElement[]>([]);
   const flags = useFlags(['airtable', 'docubot']);
-  const enabledServices = appSettings?.services?.filter((service) => service.enabled);
+  const enabledServices = appSettings?.services?.filter((service) => {
+    const isServiceEnabledInFlags = flags?.[service.name]?.enabled;
+    return service.enabled && (isServiceEnabledInFlags === undefined || isServiceEnabledInFlags);
+  });
+  
   const [open, setOpen] = React.useState(-1);
   const [urls, setUrls] = React.useState<string[]>([]);
   const [domains, setDomains] = React.useState<string[]>([]);
