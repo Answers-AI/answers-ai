@@ -13,7 +13,7 @@
   "dependencies": {
     "@cypress/react18": "^2.0.0",
     "cypress": "^12.10.0",
-    "next": "13.2.5-canary.34"
+    "next": "13.3.1"
   },
   "devDependencies": {
     "@testing-library/cypress": "^9.0.0",

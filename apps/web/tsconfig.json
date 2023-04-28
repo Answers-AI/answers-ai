@@ -5,7 +5,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "../../packages/ui/src/**/*.ts"
+    "../../packages/ui/**/*.ts"
   ],
   "exclude": ["node_modules"],
   "compilerOptions": {

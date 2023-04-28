@@ -1,7 +1,7 @@
+import React from 'react';
 import { getServerSession, Session } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
 import AppLayout from '@ui/AppLayout';
-import React from 'react';
 import flagsmith from 'flagsmith/isomorphic';
 import { getProviders } from 'next-auth/react';
 import { getAppSettings } from '@ui/getAppSettings';
