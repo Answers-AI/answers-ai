@@ -13,24 +13,24 @@ export function getCompletionRequest({
   input: string;
 }) {
   return {
-    max_tokens: 6000,
+    max_tokens: 1000,
     messages: [
       {
         role: ChatCompletionRequestMessageRoleEnum.System,
         content:
-          'You are a teacher. You provide me with answers to my questions.'
+          `You are a helpful assistant. Always let the user know your confidence level in your response.
+          Always follow up with a list of questions the user could ask that will help you understand their intention better.
+          Never respond with a definitive answer. Always respond with a question.`
       },
       {
         role: ChatCompletionRequestMessageRoleEnum.User,
         content: `
-        You are a typescript teacher that can explain things in a way that is easy to understand.
-        The transcript might be in a a different order than it was in the original video.
-        I want you to explain the information in following transcript in a way that is easy to understand:
+        I want you to use the following context to respond to the users command:
         ###
         ${context}
         ###
-        Create a comprehensive documentation guide that provides step-by-step instructions to repeat the steps.
-        Create a guide for the following:
+        User Command: ${input}\n\n 
+        Respond in markdown format.
         `
       },
       // TODO: Summarize history when it gets too long
@@ -41,6 +41,6 @@ export function getCompletionRequest({
     ],
 
     temperature: 0.1,
-    model: 'gpt-4'
+    model: 'gpt-3.5-turbo'
   };
 }

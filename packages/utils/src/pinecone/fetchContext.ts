@@ -57,7 +57,9 @@ export const fetchContext = async ({
   // if (!hasDefaultFilter) {
   //   filters = await extractFilters(prompt, filters);
   // }
-
+  // TODO: Need to check Postgres for ID and organization
+  // TODO: We need to scrub the results of any items the user does not have access to
+  // 
   const filter: { [source: string]: { [field: string]: string[] } } = {};
   const { models, datasources = {} } = filters;
 
@@ -118,12 +120,6 @@ export const fetchContext = async ({
         },
         topK: 200
       });
-    }),
-    pineconeQuery(promptEmbedding, {
-      filter: {
-        source: 'transcript'
-      },
-      topK: 200
     }),
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
   console.timeEnd(`[${ts}] Pineconedata get`);

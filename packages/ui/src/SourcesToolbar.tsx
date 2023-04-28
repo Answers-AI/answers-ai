@@ -3,17 +3,23 @@ import * as React from 'react';
 // import Badge from '@mui/material/Badge';
 import Avatar from '@mui/material/Avatar';
 // import Stack from '@mui/material/Stack';
-import { AppSettings, ConfluenceSpace } from 'types';
+import { AppSettings, ConfluenceSpace, Flags } from 'types';
 import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
 import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
 import { getUniqueUrls } from '@utils/utilities/getUniqueUrls';
+import { useFlags } from 'flagsmith/react';
 import axios from 'axios';
 import Image from 'next/image';
 
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const anchorRef = React.useRef<HTMLDivElement[]>([]);
-  const enabledServices = appSettings?.services?.filter((service) => service.enabled);
+  const flags = useFlags(['airtable', 'docubot']) as Flags;
+  const enabledServices = appSettings?.services?.filter((service) => {
+    const isServiceEnabledInFlags = flags?.[service.name]?.enabled;
+    return service.enabled && (isServiceEnabledInFlags === undefined || isServiceEnabledInFlags);
+  });
+  
   const [open, setOpen] = React.useState(-1);
   const [urls, setUrls] = React.useState<string[]>([]);
   const [domains, setDomains] = React.useState<string[]>([]);
@@ -135,7 +141,22 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                   />
                 </>
               ) : null}
-              {selectedService.name === 'airtable' ? (
+              {(flags?.docubot?.enabled && selectedService.name === 'docubot') ? (  
+                <>
+                  {console.log(appSettings)}
+                  <AutocompleteSelect
+                    label="Repository"
+                    options={
+                      appSettings?.docubot?.repos?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                    }
+                    value={filters?.datasources?.docubot?.repo || []}
+                    onChange={(value: string[]) =>
+                      updateFilter({ datasources: { docubot: { repo: value } } })
+                    }
+                  />
+                </>
+              ) : null}
+              {(flags?.airtable?.enabled && selectedService.name === 'airtable') ? (
                 <>
                   {console.log(appSettings)}
                   <AutocompleteSelect
