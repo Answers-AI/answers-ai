@@ -42,7 +42,9 @@ export default function AppLayout({
       <ThemeProvider theme={darkModeTheme}>
         <CssBaseline enableColorScheme />
         <GlobalStyles />
-        {flagsmithState?.flags?.access_enabled?.enabled ? (
+        {!session?.user ? (
+          <Auth appSettings={appSettings} providers={providers} />
+        ) : flagsmithState?.flags?.access_enabled?.enabled ? (
           <>
             <AppDrawer params={params} session={session} />
             <div style={{ flex: 1, width: 'calc(100% - 65px)', height: '100vh' }}>{children}</div>
@@ -74,12 +76,7 @@ export default function AppLayout({
             </Box>
           </>
         )}
-        {/* </>
-        ) : (
-          <Auth session={session} providers={providers} appSettings={appSettings} />
-        )} */}
       </ThemeProvider>
     </FlagsmithProvider>
-    // </SessionProvider>
   );
 }

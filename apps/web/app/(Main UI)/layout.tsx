@@ -20,13 +20,13 @@ const MainUiLayout = async ({
   const session = await getServerSession(authOptions);
 
   const providers = await getProviders();
+
   await flagsmith.init({
     // fetches flags on the server and passes them to the App
     environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
     preventFetch: true
   });
 
-  console.log('session', session);
   if (session?.user?.email)
     await flagsmith.identify(`user_${session.user.id}`, {
       env: process.env.NODE_ENV,
