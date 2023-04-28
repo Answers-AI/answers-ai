@@ -1,7 +1,6 @@
 import { mount } from '@ui/mount';
 
 import { MessageCard } from '@ui/Message';
-import { User } from 'types';
 import { Message } from 'types';
 
 describe('Message', () => {

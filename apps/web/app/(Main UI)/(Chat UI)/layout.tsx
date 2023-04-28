@@ -2,9 +2,6 @@ import React from 'react';
 import { getServerSession } from 'next-auth';
 import ChatLayout from '@ui/ChatLayout';
 import { authOptions } from '@ui/authOptions';
-import { prisma } from 'db/dist';
-import AppSyncToolbar from '@ui/AppSyncToolbar';
-import { ChatInput } from '@ui/ChatInput';
 
 export default async function ChatUILayout({
   // This will be populated with nested layouts or pages
@@ -33,7 +30,7 @@ export default async function ChatUILayout({
         }}> */}
       {/* <AppSyncToolbar appSettings={session?.user?.appSettings} /> */}
       {/* {journey ? <Filters filters={journey.filters} /> : null} */}
-      <ChatInput />
+
       {/* </div> */}
     </ChatLayout>
   );

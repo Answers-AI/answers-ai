@@ -1,8 +1,9 @@
 'use client';
+import React from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-import { createContext, useCallback, useContext, useRef, useState } from 'react';
+import { SetStateAction, createContext, useCallback, useContext, useRef, useState } from 'react';
 import { AnswersFilters, AppSettings, Chat, Journey, Message, Prompt } from 'types';
 import { deepmerge } from '@utils/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
@@ -11,7 +12,9 @@ interface AnswersContextType {
   appSettings: AppSettings;
   error?: any;
   chat?: Chat | null;
+  setChat: (action: SetStateAction<Chat>) => void;
   journey?: Journey | null;
+  setJourney: (action: SetStateAction<Journey>) => void;
   messages?: Array<Message>;
   prompts?: Array<Prompt>;
   chats?: Array<Chat>;
@@ -20,6 +23,7 @@ interface AnswersContextType {
   regenerateAnswer: () => void;
   isLoading: boolean;
   filters: AnswersFilters;
+  setFilters: (filters: SetStateAction<AnswersFilters>) => void;
   updateFilter: (newFilter: AnswersFilters) => void;
   useStreaming: boolean;
   setUseStreaming: (useStreaming: boolean) => void;
@@ -34,7 +38,17 @@ interface AnswersContextType {
   updateChat: (chat: Partial<Chat>) => Promise<void>;
   updatePrompt: (prompt: Partial<Prompt>) => Promise<void>;
   updateJourney: (journey: Partial<Journey>) => Promise<void>;
+
+  messageIdx: any;
+  setMessages: (arg: SetStateAction<Message[]>) => void;
+  journeyId: any;
+  chatId: any;
+  setIsLoading: any;
+  setError: any;
+  setChatId: any;
+  setJourneyId: any;
 }
+// @ts-ignore
 const AnswersContext = createContext<AnswersContextType>({
   appSettings: {},
   error: null,
@@ -62,51 +76,51 @@ const AnswersContext = createContext<AnswersContextType>({
   updateJourney: async () => {}
 });
 
-export function useAnswers() {
-  return useContext(AnswersContext);
-}
-
-interface AnswersProviderProps {
-  children: React.ReactNode;
-  appSettings: AppSettings;
-  apiUrl?: string;
-  useStreaming?: boolean;
-  chat?: Chat | null;
-  journey?: Journey;
-  prompts?: Prompt[];
-  chats?: Chat[];
-}
-
-export function AnswersProvider({
-  appSettings,
-  children,
-  journey,
-  prompts,
+export function useAnswers({
+  // chats,
   chat,
-  chats,
-  apiUrl = '/api',
-  useStreaming: initialUseStreaming = true
-}: AnswersProviderProps) {
+  journey,
+  apiUrl = '/api'
+}: any = {}) {
   const router = useRouter();
-  const [error, setError] = useState(null);
-  const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Array<Message>>(chat?.messages ?? []);
-  const [filters, setFilters] = useState<AnswersFilters>(
-    deepmerge({}, appSettings?.filters, journey?.filters, chat?.filters)
-  );
-  const [showFilters, setShowFilters] = useState(false);
-  const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
-  const [chatId, setChatId] = useState<string | undefined>(chat?.id);
-  const [journeyId, setJourneyId] = useState<string | undefined>(journey?.id);
-  const messageIdx = useRef(0);
+  const context = useContext(AnswersContext);
+  const {
+    filters,
+    setFilters,
+    messages,
+    useStreaming,
+    messageIdx,
+    setMessages,
+    journeyId,
+    chatId,
+    setIsLoading,
+    setError,
+    setChatId,
+    setJourneyId,
+    setChat,
+    setJourney,
+    chat: contextChat,
+    journey: contextJourney
+  } = context;
+  // React.useEffect(() => {
+  //   if (chat?.id !== contextChat?.id) {
+  //     setMessages(chat?.messages);
+  //     setChat(chat);
+  //   }
+  //   if (journey?.id !== contextJourney?.id) {
+  //     setJourney(journey);
+  //   }
+  // }, [chat, journey, contextJourney, contextChat, setMessages, , setChat, setJourney]);
 
-  const addMessage = useCallback((message: Message) => {
-    setMessages((currentMessages) => {
-      messageIdx.current = currentMessages.length + 1;
-      return [...currentMessages, message];
-    });
-  }, []);
+  const addMessage = useCallback(
+    (message: Message) => {
+      setMessages((currentMessages) => {
+        messageIdx.current = currentMessages.length + 1;
+        return [...currentMessages, message];
+      });
+    },
+    [messageIdx, setMessages]
+  );
 
   const { generateResponse } = useStreamedResponse({
     journeyId,
@@ -164,7 +178,7 @@ export function AnswersProvider({
   };
 
   const regenerateAnswer = () => {
-    const [message] = messages.filter((m) => m.role === 'user').slice(-1);
+    const [message] = messages?.filter((m) => m.role === 'user').slice(-1) ?? [];
     // if (messages[messages.length - 1].role === ChatCompletionRequestMessageRoleEnum.Assistant) {
     //   setMessages(messages.slice(0, -1));
     // }
@@ -196,27 +210,13 @@ export function AnswersProvider({
   const updateMessage = async (message: Partial<Message>) =>
     axios.patch(`${apiUrl}/messages`, message).then(() => router.refresh());
 
-  const contextValue = {
-    appSettings,
-    chat,
-    chats,
-    journey,
-    messages,
-    prompts,
+  return {
+    ...context,
     sendMessage,
     clearMessages,
     regenerateAnswer,
-    filters,
     updateFilter,
     addMessage,
-    isLoading,
-    useStreaming,
-    setUseStreaming,
-    error,
-    showFilters,
-    setShowFilters,
-    inputValue,
-    setInputValue,
     deleteChat,
     deletePrompt,
     deleteJourney,
@@ -225,5 +225,68 @@ export function AnswersProvider({
     updateJourney,
     updateMessage
   };
+}
+
+interface AnswersProviderProps {
+  children: React.ReactNode;
+  appSettings: AppSettings;
+  apiUrl?: string;
+  useStreaming?: boolean;
+  chat?: Chat | null;
+  journey?: Journey;
+  prompts?: Prompt[];
+  // chats?: Chat[];
+}
+
+export function AnswersProvider({
+  appSettings,
+  children,
+  prompts,
+  useStreaming: initialUseStreaming = true
+}: AnswersProviderProps) {
+  const [error, setError] = useState(null);
+  const [inputValue, setInputValue] = useState('');
+  const [chat, setChat] = useState<Chat | undefined>();
+  const [journey, setJourney] = useState<Journey | undefined>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [messages, setMessages] = useState<Array<Message>>(chat?.messages ?? []);
+  const [filters, setFilters] = useState<AnswersFilters>(
+    deepmerge({}, appSettings?.filters, journey?.filters, chat?.filters)
+  );
+  const [showFilters, setShowFilters] = useState(false);
+  const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
+  const [chatId, setChatId] = useState<string | undefined>(chat?.id);
+  const [journeyId, setJourneyId] = useState<string | undefined>(journey?.id);
+  const messageIdx = useRef(0);
+
+  const contextValue = {
+    appSettings,
+    chat,
+    setChat,
+    // chats,
+    journey,
+    messages,
+    setJourney,
+    setMessages,
+    prompts,
+    filters,
+    setFilters,
+    isLoading,
+    setIsLoading,
+    useStreaming,
+    setUseStreaming,
+    error,
+    setError,
+    showFilters,
+    setShowFilters,
+    inputValue,
+    setInputValue,
+    chatId,
+    setChatId,
+    journeyId,
+    setJourneyId,
+    messageIdx
+  };
+  // @ts-ignore
   return <AnswersContext.Provider value={contextValue}>{children}</AnswersContext.Provider>;
 }

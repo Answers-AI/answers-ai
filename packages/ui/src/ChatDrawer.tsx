@@ -77,7 +77,6 @@ export interface ChatDrawerProps {
 }
 
 export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerProps) {
-  // const { chat } = useAnswers();
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen || true);

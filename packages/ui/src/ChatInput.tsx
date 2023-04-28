@@ -15,18 +15,7 @@ import { Tooltip } from '@mui/material';
 
 export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?: boolean }) => {
   const [inputValue, setInputValue] = useState('');
-  const {
-    chat,
-    journey,
-    filters,
-    messages,
-    sendMessage,
-    clearMessages,
-    isLoading,
-    useStreaming,
-    setUseStreaming,
-    setShowFilters
-  } = useAnswers();
+  const { chat, journey, filters, messages, sendMessage, clearMessages, isLoading } = useAnswers();
 
   const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
 
@@ -39,8 +28,8 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
   React.useEffect(() => {
     const debouncedScroll = debounce(() => {
       if (messages?.length)
-        scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-      inputRef.current?.focus();
+        scrollRef?.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+      inputRef?.current?.focus();
     }, 300);
     debouncedScroll();
   }, [chat, journey, messages, scrollRef]);

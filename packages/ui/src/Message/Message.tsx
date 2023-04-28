@@ -194,6 +194,26 @@ export const MessageCard = ({
           </IconButton>
         </CardActions>
       </Box>
+      {context ? (
+        // Use the @mui accordion component to wrap the context and response
+        <Accordion TransitionProps={{ unmountOnExit: true }}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header">
+            <Typography variant="overline">Context ({context?.length})</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography
+              sx={{ whiteSpace: 'pre-line' }}
+              variant="body1"
+              color="text.secondary"
+              component="div">
+              {context}
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+      ) : null}
       {developer_mode?.enabled ? (
         <Box>
           {error ? (
@@ -235,26 +255,7 @@ export const MessageCard = ({
               </AccordionDetails>
             </Accordion>
           ) : null}
-          {context ? (
-            // Use the @mui accordion component to wrap the context and response
-            <Accordion TransitionProps={{ unmountOnExit: true }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header">
-                <Typography variant="overline">Context ({context?.length})</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography
-                  sx={{ whiteSpace: 'pre-line' }}
-                  variant="body1"
-                  color="text.secondary"
-                  component="div">
-                  {context}
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
-          ) : null}
+
           {pineconeData ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary

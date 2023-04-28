@@ -1,15 +1,18 @@
 import React from 'react';
 
 import ChatDrawer from '@ui/ChatDrawer';
-import { Chat, Journey } from 'types';
+import { AppSettings, Chat, Journey } from 'types';
+import { AnswersProvider } from '@ui/AnswersContext';
 
 export default function ChatUILayout({
   // This will be populated with nested layouts or pages
+  appSettings,
   children,
   chats,
   journeys
 }: {
   children: React.ReactNode;
+  appSettings: AppSettings;
   chats?: Chat[];
   journeys?: Journey[];
 }) {
