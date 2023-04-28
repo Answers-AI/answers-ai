@@ -152,6 +152,14 @@ type Models = {
   [key: string]: string[];
 };
 
+type FeatureFlag = {
+  enabled?: boolean;
+};
+
+export type Flags = {
+  [key: string]: FeatureFlag;
+};
+
 export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
   accounts: DB.Account[] | null;

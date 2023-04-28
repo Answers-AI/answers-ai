@@ -3,7 +3,7 @@ import * as React from 'react';
 // import Badge from '@mui/material/Badge';
 import Avatar from '@mui/material/Avatar';
 // import Stack from '@mui/material/Stack';
-import { AppSettings, ConfluenceSpace } from 'types';
+import { AppSettings, ConfluenceSpace, Flags } from 'types';
 import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
 import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
@@ -14,7 +14,7 @@ import Image from 'next/image';
 
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const anchorRef = React.useRef<HTMLDivElement[]>([]);
-  const flags = useFlags(['airtable', 'docubot']);
+  const flags = useFlags(['airtable', 'docubot']) as Flags;
   const enabledServices = appSettings?.services?.filter((service) => {
     const isServiceEnabledInFlags = flags?.[service.name]?.enabled;
     return service.enabled && (isServiceEnabledInFlags === undefined || isServiceEnabledInFlags);
