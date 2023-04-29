@@ -1,10 +1,4 @@
-'use client';
-import React, { useCallback } from 'react';
-import { Box } from '@mui/material';
 import { AppSettings, Chat, Journey, User } from 'types';
-
-import JourneySection from './JourneySection';
-
 import { ChatDetail } from './ChatDetail';
 
 const DeveloperTools = ({
@@ -22,14 +16,13 @@ const DeveloperTools = ({
 }) => {
   return (
     <>
-      <Box
-        sx={{
+      <div
+        style={{
           display: 'flex',
           height: '100%'
         }}>
-        <JourneySection journeys={journeys} chats={chats} />
         <ChatDetail appSettings={appSettings} user={user} prompts={prompts} />
-      </Box>
+      </div>
     </>
   );
 };

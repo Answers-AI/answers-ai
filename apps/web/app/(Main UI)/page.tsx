@@ -1,6 +1,7 @@
 import React from 'react';
 
-import Chat from './Chat';
+import Chat from '@ui/Chat';
+import { redirect } from 'next/navigation';
 
 export const metadata = {
   title: 'Answers AI',
@@ -8,8 +9,7 @@ export const metadata = {
 };
 
 const Homepage = async ({ params }: any) => {
-  // @ts-expect-error
-  return <Chat {...params} />;
+  return redirect('/chat');
 };
 
 export default Homepage;

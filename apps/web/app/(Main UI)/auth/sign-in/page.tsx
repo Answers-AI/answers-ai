@@ -1,14 +1,13 @@
 import React from 'react';
 import Auth from '@ui/Auth';
-// export const revalidate = 1; // revalidate every minute
 
 export const metadata = {
-  title: 'Chat | Answers AI',
-  description: 'Your chat'
+  title: 'Sign In | Answers AI',
+  description: 'Sign in to Answers AI'
 };
 
-const Homepage = async ({ params }: any) => {
+const SignInPage = async ({ params }: any) => {
   return <Auth {...params} />;
 };
 
-export default Homepage;
+export default SignInPage;

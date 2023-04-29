@@ -87,9 +87,15 @@ export interface JiraFilters {
 export interface SlackFilters {
   channelId?: string[];
 }
+
+export interface WebUrlType {
+  inputValue?: string;
+  url: string;
+  entireDomain?: boolean;
+}
 export interface WebFilters {
   cleanedUrl?: string[];
-  url?: string[];
+  url?: WebUrlType[];
   domain?: string[];
 }
 

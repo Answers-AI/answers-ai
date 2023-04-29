@@ -1,7 +1,7 @@
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { randomUUID } from 'crypto';
 import { openai } from './openai/client';
-import { Document } from 'langchain/dist/document';
+import { Document } from 'langchain/document';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const timeout = (ms: number) =>

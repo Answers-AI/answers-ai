@@ -1,6 +1,6 @@
 import { Configuration, OpenAIApi } from 'openai';
 import { AnswersFilters } from 'types';
-import { PineconeClient } from '@pinecone-database/pinecone';
+import { PineconeClient, QueryRequest } from '@pinecone-database/pinecone';
 export const pinecone = new PineconeClient();
 const initializeOpenAI = () => {
   const configuration = new Configuration({
@@ -27,15 +27,21 @@ export const pineconeQuery = async (
       apiKey: process.env.PINECONE_API_KEY!
     });
 
-    const result = await pinecone.Index(process.env.PINECONE_INDEX!).query({
+    const queryRequest: QueryRequest = {
       vector: embeddings,
       topK,
       filter,
+      includeValues: true,
       includeMetadata: true,
-      namespace,
-    });
+      namespace
+    };
+
+    const pinconeIndex = pinecone.Index(process.env.PINECONE_INDEX!);
+    //@ts-ignore-next-line
+    const result = await pinconeIndex.query(queryRequest);
+    // console.log('========result', result);
     console.timeEnd('[PineconeQuery]' + JSON.stringify({ filter, topK, namespace }));
-    console.log('[PineconeQuery]', result?.data?.matches?.length);
+    // console.log('[PineconeQuery]', process.env.PINECONE_INDEX, result);
     return result?.data;
   } catch (error) {
     console.timeEnd('[PineconeQuery]' + JSON.stringify({ filter, topK, namespace }));

@@ -3,10 +3,8 @@ import React from 'react';
 
 import { IntegrationsSettings } from '@ui/IntegrationsSettings';
 
-const Settings = async ({ children, params, ...other }: any) => {
+const SettingsIntegrationsAppLayout = async ({ children, params, ...other }: any) => {
   const appSettings = await getAppSettings();
-
-  console.log('settings/integrations ', { params, other });
 
   const [activeApp] = params?.app || [];
   return (
@@ -17,4 +15,4 @@ const Settings = async ({ children, params, ...other }: any) => {
   );
 };
 
-export default Settings;
+export default SettingsIntegrationsAppLayout;

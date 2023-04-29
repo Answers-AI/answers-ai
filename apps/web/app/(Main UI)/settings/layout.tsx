@@ -3,7 +3,7 @@ import React from 'react';
 
 import SettingsDrawer from '@ui/SettingsDrawer';
 
-const Settings = async ({ children, params }: any) => {
+const SettingsLayout = async ({ children, params }: any) => {
   return (
     <div style={{ display: 'flex', width: '100%', height: '100%' }}>
       <SettingsDrawer />
@@ -14,4 +14,4 @@ const Settings = async ({ children, params }: any) => {
   );
 };
 
-export default Settings;
+export default SettingsLayout;
