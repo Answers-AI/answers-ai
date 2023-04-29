@@ -1,13 +1,11 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
-import { AppSettings, ConfluenceSpace, AppService, WebUrlType, Flags } from 'types';
+import { AppSettings, ConfluenceSpace, AppService, Flags } from 'types';
 
-import { AvatarGroup, Box, Popover, Typography, TextField } from '@mui/material';
+import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
 import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
-import { getUniqueUrls } from '@utils/utilities/getUniqueUrls';
 import { useFlags } from 'flagsmith/react';
-import axios from 'axios';
 import Image from 'next/image';
 import SourcesWeb from './SourcesWeb';
 

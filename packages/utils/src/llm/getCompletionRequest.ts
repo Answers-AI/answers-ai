@@ -19,8 +19,7 @@ export function getCompletionRequest({
         role: ChatCompletionRequestMessageRoleEnum.System,
         content:
           `You are a helpful assistant. Always let the user know your confidence level in your response.
-          Always follow up with a list of questions the user could ask that will help you understand their intention better.
-          Never respond with a definitive answer. Always respond with a question.`
+          Always follow up with a list of questions the user could ask that will help you understand their intention better.`
       },
       {
         role: ChatCompletionRequestMessageRoleEnum.User,
