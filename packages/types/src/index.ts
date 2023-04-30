@@ -355,3 +355,20 @@ export interface ConfluenceSetting extends ConfluencePage {
 export type JiraProject = { key: string; name: string; archived: any };
 export type JiraIssue = { key: string; self: string; id: string; fields: any; archived: any };
 export type JiraComment = { key: string; self: string; id: string; fields: any; archived: any };
+
+// Replace the Sidekick interface with the following type
+export type Sidekick = {
+  label: string;
+  value: string;
+  placeholder: string;
+  getSystemPromptTemplate?: (query: string, context: any) => string;
+  getUserPromptTemplate: (query: string, context: any) => string;
+  contextStringRender: (
+    item: any,
+  ) => string;
+};
+
+// Add the Sidekicks type
+export type Sidekicks = Sidekick[];
+
+

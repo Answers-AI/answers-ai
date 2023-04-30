@@ -4,16 +4,20 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { Select, MenuItem } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import { DefaultPrompts } from './DefaultPrompts';
+import { SidekickSelect } from './SidekickSelect';
 import { Filters } from './Filters';
 import { Tooltip } from '@mui/material';
 
 export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: boolean }) => {
   const [inputValue, setInputValue] = useState('');
+  const [sidekick, setSidekick] = useState('coding');
+  const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
   const {
     chat,
     journey,
@@ -39,14 +43,26 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
 
   const handleSubmit = () => {
     if (!inputValue) return;
-    sendMessage({ content: inputValue, isNewJourney });
+    sendMessage(inputValue, isNewJourney, sidekick, gptModel);
     setShowPrompts(false);
     setInputValue('');
   };
 
-  const handlePromptSelected = (prompt: string) => {
-    setInputValue(prompt);
+  const handleSidekickSelected = (
+    event: React.ChangeEvent<{ name?: string; value: unknown }>
+  ) => {
+    setSidekick(event.target.value as string);
+    console.log("sidekick selected", event.target.value);
   };
+  
+  const handleGptModelSelected = (
+    event: React.ChangeEvent<{ name?: string; value: unknown }>
+  ) => {
+    setGptModel(event.target.value as string);
+    console.log("gpt model selected", event.target.value);
+  };
+  
+
   const handleInputFocus = () => {
     if (flags?.recommended_prompts_expand?.value == 'blur') setShowPrompts(false);
   };
@@ -67,12 +83,20 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
   };
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column' }}>
-      <DefaultPrompts
-        onPromptSelected={handlePromptSelected}
-        expanded={showPrompts}
-        handleChange={(_, value) => setShowPrompts(value)}
+      <SidekickSelect
+        onSidekickSelected={handleSidekickSelected}
+        selectedSidekick={sidekick}
       />
-
+      
+      <Select
+      labelId="demo-simple-select-label"
+      id="demo-simple-select"
+      label="Sidekick"
+      value={gptModel}
+      onChange={handleGptModelSelected}>
+        <MenuItem key="gpt3" value="gpt-3.5-turbo">GPT 3.5</MenuItem>
+        <MenuItem key="gpt4" value="gpt-4">GPT 4</MenuItem>
+    </Select>
       {filters ? <Filters filters={filters} /> : null}
       <TextField
         id="user-chat-input"
