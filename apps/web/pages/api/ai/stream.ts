@@ -122,7 +122,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     gptModel
   });
 
-  debugger;
   const stream = await OpenAIStream(
     {
       ...completionRequest,

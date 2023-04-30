@@ -27,7 +27,6 @@ const research: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    debugger;
     return`filePath: ${context.filePath}\n${context.code}\n\n`;
   },
 };
