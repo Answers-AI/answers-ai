@@ -361,7 +361,7 @@ export type Sidekick = {
   label: string;
   value: string;
   placeholder: string;
-  getSystemPromptTemplate?: (query: string, context: any) => string;
+  getSystemPromptTemplate: (user?: User) => string;
   getUserPromptTemplate: (query: string, context: any) => string;
   contextStringRender: (
     item: any,

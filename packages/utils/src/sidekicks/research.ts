@@ -1,17 +1,14 @@
-import { Sidekick } from "../types";
+import { Sidekick } from "types";
 const research: Sidekick = {
   label: "Research Assistant",
   value: "research",
   placeholder: "I can help you research topics and provide insights",
-  prePrompt: "",
-  getSystemPromptTemplate: (query, context) => {
+  getSystemPromptTemplate: () => {
     return `You are a helpful assistant.You specialize in helping people find answers to questions.
       I will ask you a series of questions and your goal is to help me find the answer.`;
   },
   getUserPromptTemplate: (query, context) => {
     return `
-    You are a helpful assistant.You specialize in helping people find answers to questions.
-    I will ask you a series of questions and your goal is to help me find the answer.
     I have this question I want to ask you:\n\n"${query}".\n\n
     please provide an appropriate response in markdown based on the following context:
     \n\n${context}\n\n
@@ -30,7 +27,8 @@ const research: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return`filePath: ${context.metadata.filePath}\n${context.metadata.text}\n\n`;
+    debugger;
+    return`filePath: ${context.filePath}\n${context.code}\n\n`;
   },
 };
 

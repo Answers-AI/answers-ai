@@ -3,7 +3,7 @@ const promptCreator: Sidekick = {
   label: "Prompt Assistant",
   value: "promptCreator",
   placeholder: "I can help you craft the perfect prompt",
-  getSystemPromptTemplate: (query, context) => {
+  getSystemPromptTemplate: () => {
     return `You are a helpful assistant.You specialize in helping people find answers to questions.
       I will ask you a series of questions and your goal is to help me find the answer.`;
   },

@@ -1,5 +1,5 @@
 import { getServerSession } from 'next-auth';
-import { AnswersFilters, Message, User } from 'types';
+import { AnswersFilters, Message, User, Sidekicks } from 'types';
 import { prisma } from '@db/client';
 import { OpenAIStream } from '@utils/OpenAIStream';
 import cors from '@ui/cors';
@@ -9,6 +9,7 @@ import { fetchContext } from '@utils/pinecone/fetchContext';
 import { authOptions } from '@ui/authOptions';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { upsertChat } from '@utils/upsertChat';
+import { sidekicks } from '@utils/sidekicks';
 
 interface QueryRequest {
   journeyId?: string;
@@ -16,6 +17,8 @@ interface QueryRequest {
   prompt: string;
   messages: Message[];
   filters: AnswersFilters;
+  sidekick?: string;
+  gptModel: string;
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -31,10 +34,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!user?.email) {
     return Response.redirect('/', 401);
   }
-  const { journeyId, chatId, filters, prompt, messages } = req.body as QueryRequest;
+
+  const { journeyId, chatId, filters, prompt, messages, sidekick, gptModel } =
+    req.body as QueryRequest;
+
   let completionData, completionRequest;
 
-  console.log('[AI][Stream]', { journeyId, chatId, filters, prompt, messages });
+  console.log('[AI][Stream]', { journeyId, chatId, filters, prompt, messages, sidekick, gptModel });
+
+  // Get the chosen sidekick and its getContextFunction
+  const sidekicksArray: Sidekicks = sidekicks;
+  const sidekickValue = sidekick || 'default';
+  const sidekickObject = sidekicksArray.find((sidekick) => sidekick.value === sidekickValue);
+
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({
     id: chatId,
@@ -49,7 +61,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     ts: new Date().valueOf(),
     name: 'answers/message.sent',
     user: user,
-    data: { role: 'user', chatId: chat.id, content: prompt }
+    data: { role: 'user', chatId: chat.id, content: prompt, sidekick, gptModel }
   });
 
   if (user)
@@ -67,19 +79,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     context = '',
     summary = '';
   try {
-    ({ pineconeData, context, summary } = await fetchContext({
+    ({ pineconeData, context } = await fetchContext({
       user,
       prompt,
       messages,
-      filters
+      filters,
+      sidekick: sidekickObject
     }));
-    // console.log({ pineconeData, context, summary });
   } catch (contextError) {
     console.log('fetchContext', contextError);
     throw contextError;
   }
   const handleResponse = async (response: any) => {
-
     const answer = response.text;
     completionRequest = response.completionRequest;
 
@@ -102,12 +113,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   };
 
-  completionRequest = getCompletionRequest({
-    context: summary,
+  completionRequest = await getCompletionRequest({
+    context,
+    user, // Add this line
     input: prompt,
-    messages
+    messages,
+    sidekick: sidekickObject,
+    gptModel
   });
 
+  debugger;
   const stream = await OpenAIStream(
     {
       ...completionRequest,

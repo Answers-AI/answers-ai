@@ -21,8 +21,10 @@ export async function OpenAIStream(
     },
     method: 'POST',
     body: JSON.stringify(payload)
+  }).catch((e) => {
+    console.log('OpenAIStream', e);
+    throw e;
   });
-
   let answer = '';
   const stream = new ReadableStream({
     async start(controller) {

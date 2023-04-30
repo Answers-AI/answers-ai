@@ -51,7 +51,6 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
   };
 
   const handleSidekickSelected = (sidekick: string) => {
-    debugger;
     setSidekick(sidekick);
     console.log('sidekick selected', sidekick);
   };

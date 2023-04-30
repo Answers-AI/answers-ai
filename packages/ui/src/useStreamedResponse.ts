@@ -1,4 +1,4 @@
-'use client';
+// useStreamedResponse.ts
 import { useState } from 'react';
 import { Message } from 'types';
 
@@ -9,7 +9,9 @@ export const useStreamedResponse = ({
   filters,
   apiUrl,
   onChunk,
-  onEnd
+  onEnd,
+  sidekick,
+  gptModel,
 }: {
   journeyId?: string;
   chatId?: string;
@@ -18,13 +20,16 @@ export const useStreamedResponse = ({
   apiUrl: string;
   onChunk: (chunk: Message) => void;
   onEnd: () => void;
+  sidekick?: string;
+  gptModel?: string;
 }) => {
   const [isStreaming, setIsStreaming] = useState(false);
 
   const [generatedResponse, setGeneratedResponse] = useState<any>({});
-  const generateResponse = async (aPrompt: string) => {
+  const generateResponse = async (aPrompt: string, sidekick?: string, gptModel?: string) => {
     setGeneratedResponse('');
     setIsStreaming(true);
+    console.log('[AI][Stream] Starting: ', { journeyId, chatId, filters, sidekick, gptModel })
     const response = await fetch(`${apiUrl || '/api'}/ai/stream`, {
       method: 'POST',
       headers: {
@@ -35,7 +40,9 @@ export const useStreamedResponse = ({
         chatId,
         prompt: aPrompt,
         filters,
-        messages
+        messages,
+        sidekick, // Add sidekick parameter
+        gptModel, // Add gptModel parameter
       })
     });
 
@@ -51,7 +58,6 @@ export const useStreamedResponse = ({
     const reader = data.getReader();
     const decoder = new TextDecoder();
     let done = false;
-    // let curr = '';
     let extra: any;
     let content = '';
 

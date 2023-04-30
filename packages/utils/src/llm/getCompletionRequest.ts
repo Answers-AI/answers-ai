@@ -1,46 +1,80 @@
-import { Message } from 'types';
+import { Message, Sidekick, User } from 'types';
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
+import { countTokens } from '../utilities/countTokens';
 
-export function getCompletionRequest({
+export async function getCompletionRequest({
   context,
-  userName,
+  user,
   messages,
-  input
+  input,
+  sidekick = {
+    value: 'default',
+    getSystemPromptTemplate: () => '',
+    getUserPromptTemplate: () => '',
+    label: 'Default',
+    placeholder: 'Default Sidekick',
+    contextStringRender: () => ''
+  },
+  gptModel
 }: {
   context: string;
-  userName?: string | null | undefined;
+  user: User;
   messages?: Message[];
   input: string;
+  sidekick?: Sidekick;
+  gptModel: string;
 }) {
+  const systemPrompt = sidekick.getSystemPromptTemplate(user);
+  const userPrompt = sidekick.getUserPromptTemplate(input, context);
+
+  const systemPromptTokens = await countTokens(systemPrompt);
+  const userPromptTokens = await countTokens(userPrompt);
+  const contextTokens = await countTokens(context);
+
+  const maxTokens = getMaxTokensByModel(gptModel);
+  let filteredMessages: Message[] = [];
+  let currentTokenCount = systemPromptTokens + userPromptTokens;
+
+  if (messages) {
+    for (const message of messages) {
+      const contentTokens = await countTokens(message.content);
+      if (currentTokenCount + contentTokens <= maxTokens) {
+        filteredMessages.push(message);
+        currentTokenCount += contentTokens;
+      } else {
+        break;
+      }
+    }
+  }
+
   return {
-    max_tokens: 1000,
+    max_tokens: 500,
     messages: [
       {
         role: ChatCompletionRequestMessageRoleEnum.System,
-        content:
-          `You are a helpful assistant. Always let the user know your confidence level in your response.
-          Always follow up with a list of questions the user could ask that will help you understand their intention better.
-          Never respond with a definitive answer. Always respond with a question.`
+        content: systemPrompt
       },
       {
         role: ChatCompletionRequestMessageRoleEnum.User,
-        content: `
-        I want you to use the following context to respond to the users command:
-        ###
-        ${context}
-        ###
-        User Command: ${input}\n\n 
-        Respond in markdown format.
-        `
+        content: userPrompt
       },
       // TODO: Summarize history when it gets too long
-      ...((messages
-        ? messages?.slice(-10)?.map(({ role, content }) => ({ role, content }))
-        : []) as ChatCompletionRequestMessage[]),
+      ...filteredMessages.map(({ role, content }) => ({ role, content })),
       { role: ChatCompletionRequestMessageRoleEnum.User, content: input }
     ],
 
     temperature: 0.1,
-    model: 'gpt-3.5-turbo'
+    model: gptModel || 'gpt-3.5-turbo'
   };
 }
+
+const getMaxTokensByModel = (gptModel: string) => {
+  switch (gptModel) {
+    case 'gpt-3.5-turbo':
+      return 4000;
+    case 'gpt-4':
+      return 8192;
+    default:
+      return 4096;
+  }
+};

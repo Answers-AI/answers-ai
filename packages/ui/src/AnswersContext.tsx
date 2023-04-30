@@ -15,7 +15,7 @@ interface AnswersContextType {
   messages?: Array<Message>;
   prompts?: Array<Prompt>;
   chats?: Array<Chat>;
-  sendMessage: (args: { content: string; isNewJourney?: boolean }) => void;
+  sendMessage: (content: string, isNewJourney?: boolean, sidekick?: string, gptModel?: string) => void;
   clearMessages: () => void;
   regenerateAnswer: () => void;
   isLoading: boolean;
@@ -126,13 +126,13 @@ export function AnswersProvider({
   });
 
   const sendMessage = useCallback(
-    async ({ content, isNewJourney }: { content: string; isNewJourney?: boolean }) => {
+    async (content: string, isNewJourney?: boolean, sidekick?: string, gptModel?: string) => {
       setIsLoading(true);
       setError(null);
       addMessage({ role: 'user', content: content } as Message);
       try {
         if (useStreaming) {
-          generateResponse(content);
+          generateResponse(content, sidekick, gptModel); // Pass sidekick and gptModel here
         } else {
           const { data } = await axios.post(`${apiUrl}/ai/query`, {
             isNewJourney,
@@ -140,9 +140,11 @@ export function AnswersProvider({
             chatId,
             content,
             messages,
-            filters
+            filters,
+            sidekick,
+            gptModel
           });
-
+  
           setChatId(data?.chat.id);
           setJourneyId(data?.chat.journeyId);
           addMessage(data);
@@ -154,7 +156,7 @@ export function AnswersProvider({
       }
     },
     [addMessage, useStreaming, generateResponse, apiUrl, journeyId, chatId, messages, filters]
-  );
+  );  
 
   const updateFilter = (newFilter: AnswersFilters) => {
     const mergedSettings = deepmerge({}, filters, newFilter);
