@@ -11,6 +11,8 @@ import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import { DefaultPrompts } from './DefaultPrompts';
 import { SidekickSelect } from './SidekickSelect';
+import { GptModelSelect } from './GptModelSelect';
+
 import { Filters } from './Filters';
 import { Tooltip } from '@mui/material';
 
@@ -48,20 +50,16 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
     setInputValue('');
   };
 
-  const handleSidekickSelected = (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>
-  ) => {
-    setSidekick(event.target.value as string);
-    console.log("sidekick selected", event.target.value);
+  const handleSidekickSelected = (sidekick: string) => {
+    debugger;
+    setSidekick(sidekick);
+    console.log('sidekick selected', sidekick);
   };
-  
-  const handleGptModelSelected = (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>
-  ) => {
-    setGptModel(event.target.value as string);
-    console.log("gpt model selected", event.target.value);
+
+  const handleGptModelSelected = (gptModel: string) => {
+    setGptModel(gptModel);
+    console.log('gpt model selected', gptModel);
   };
-  
 
   const handleInputFocus = () => {
     if (flags?.recommended_prompts_expand?.value == 'blur') setShowPrompts(false);
@@ -83,20 +81,8 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
   };
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column' }}>
-      <SidekickSelect
-        onSidekickSelected={handleSidekickSelected}
-        selectedSidekick={sidekick}
-      />
-      
-      <Select
-      labelId="demo-simple-select-label"
-      id="demo-simple-select"
-      label="Sidekick"
-      value={gptModel}
-      onChange={handleGptModelSelected}>
-        <MenuItem key="gpt3" value="gpt-3.5-turbo">GPT 3.5</MenuItem>
-        <MenuItem key="gpt4" value="gpt-4">GPT 4</MenuItem>
-    </Select>
+      <SidekickSelect onSidekickSelected={handleSidekickSelected} selectedSidekick={sidekick} />
+      <GptModelSelect onGptModelSelected={handleGptModelSelected} selectedGptModel={gptModel} />
       {filters ? <Filters filters={filters} /> : null}
       <TextField
         id="user-chat-input"
