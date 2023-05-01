@@ -39,10 +39,13 @@ const config = (CODE_BASE_PATH) => {
       'generated',
       '.yarn',
       'patches',
-      DOCUBOT_DIRECTORY
+      "docubot/templates",
+      "docubot/markdown",
+      "docubot/prompts",
     ],
     invalidFileTypes: [
       '.prompt',
+      '.hbs',
       '.csv',
       '.tsv',
       '.log',
@@ -94,6 +97,7 @@ const config = (CODE_BASE_PATH) => {
       '.eslintignore', '.eslintrc', '.eslintrc.js',
       'vite-env.d.ts', 'vite.config.ts',
       'pnpm-workspace.yaml', '.prettierrc',
+      '.nvmrc' 
     ],
     fileTypes: {
       docs: {
@@ -121,18 +125,8 @@ const config = (CODE_BASE_PATH) => {
           '.env.example',
           '.docubotrc'
         ],
-        prompt: 'config.prompt',
-        template: 'config.md'
-      },
-      script: {
-        fileTypes: ['.js', '.ts'],
-        prompt: 'script.prompt',
-        template: 'script.md'
-      },
-      contentModel: {
-        pathIncludes: ['content_types'],
-        prompt: 'contentModel.prompt',
-        template: 'contentModel.md'
+        prompt: 'default.prompt',
+        template: 'default.md'
       },
       default: {
         prompt: 'default.prompt',
