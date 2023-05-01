@@ -18,7 +18,7 @@ import { Tooltip } from '@mui/material';
 
 export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: boolean }) => {
   const [inputValue, setInputValue] = useState('');
-  const [sidekick, setSidekick] = useState('coding');
+  const [sidekick, setSidekick] = useState('defaultPrompt');
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
   const {
     chat,
@@ -80,8 +80,13 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
   };
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column' }}>
-      <SidekickSelect onSidekickSelected={handleSidekickSelected} selectedSidekick={sidekick} />
-      <GptModelSelect onGptModelSelected={handleGptModelSelected} selectedGptModel={gptModel} />
+
+      {flags?.sidekicks?.enabled ? (
+        <SidekickSelect onSidekickSelected={handleSidekickSelected} selectedSidekick={sidekick} />
+      ) : null}
+      {flags?.gpt_models?.enabled ? (
+          <GptModelSelect onGptModelSelected={handleGptModelSelected} selectedGptModel={gptModel} />
+      ) : null}
       {filters ? <Filters filters={filters} /> : null}
       <TextField
         id="user-chat-input"
