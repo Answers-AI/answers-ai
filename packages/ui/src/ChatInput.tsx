@@ -33,7 +33,7 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
     setShowFilters
   } = useAnswers();
 
-  const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
+  const flags = useFlags(['settings_stream', 'recommended_prompts_expand', 'sidekicks', 'gpt_models']);
 
   const [showPrompts, setShowPrompts] = useState(
     !messages?.length && flags?.recommended_prompts_expand?.enabled

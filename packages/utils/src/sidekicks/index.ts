@@ -4,6 +4,7 @@ import blog from "./blog";
 import coding from "./coding";
 import contentful from "./contentful";
 import debugging from "./debugging";
+import defaultPrompt from "./defaultPrompt";
 import docs from "./docs";
 import gptraw from "./gptraw";
 import legal from "./legal";
@@ -23,6 +24,7 @@ export const sidekicks: Sidekick[] = [
   coding,
   contentful,
   debugging,
+  defaultPrompt,
   docs,
   gptraw,
   legal,

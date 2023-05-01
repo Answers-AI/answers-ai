@@ -59,6 +59,9 @@ export const fetchContext = async ({
 }) => {
   const ts = Date.now();
 
+  
+
+
   const filters = parseFilters(clientFilters);
   const promptEmbedding = await openai.createEmbedding({
     input: prompt?.toLowerCase(),
@@ -149,7 +152,7 @@ export const fetchContext = async ({
   
     if (totalTokens + tokenCount <= maxContextTokens) {
       console.log('[FetchContext] using file: ', item.metadata.filePath, tokenCount);
-      contextSourceFilesUsed.push(item?.metadata?.filepath || item.metadata?.url); // TODO: standardize teh canonical location of the file
+      contextSourceFilesUsed.push(item?.metadata?.filePath || item.metadata?.url); // TODO: standardize teh canonical location of the file
       totalTokens += tokenCount;
       return renderedContext;
     } else {
@@ -159,11 +162,14 @@ export const fetchContext = async ({
   
   const filteredData = await Promise.all(contextPromises);
   const context = filteredData.filter(result => result !== null).join(' ');
+
+  debugger;
   
 
   return {
     context,
     summary: context,
+    contextSourceFilesUsed,
     ...(process.env.NODE_ENV === 'development'
       ? {
           filteredData,

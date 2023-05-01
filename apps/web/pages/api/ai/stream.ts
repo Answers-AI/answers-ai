@@ -77,9 +77,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   let pineconeData,
     context = '',
-    summary = '';
+    summary = '',
+    contextSourceFilesUsed: string[] = [];
   try {
-    ({ pineconeData, context } = await fetchContext({
+    ({ pineconeData, context, summary, contextSourceFilesUsed } = await fetchContext({
       user,
       prompt,
       messages,
@@ -91,6 +92,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     throw contextError;
   }
   const handleResponse = async (response: any) => {
+    debugger;
     const answer = response.text;
     completionRequest = response.completionRequest;
 
@@ -100,7 +102,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         data: {
           chat: { connect: { id: chat.id } },
           role: 'assistant',
-          content: answer
+          content: answer,
+          contextSourceFilesUsed,
         }
       });
       await inngest.send({
@@ -127,7 +130,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       ...completionRequest,
       stream: true
     },
-    { pineconeData, context, summary, completionRequest },
+    { pineconeData, context, summary, completionRequest, contextSourceFilesUsed },
     handleResponse
   );
   res.setHeader('Content-Type', 'text/plain');
