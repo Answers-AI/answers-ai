@@ -149,8 +149,8 @@ export const buildSettings = async (user: User, org?: Organization) => {
           enabled: true
         },
         {
-          id: 'answers-ai-v0.1.0',
-          name: 'answers-ai-v0.1.0',
+          id: 'answers-ai-v0.1.1',
+          name: 'answers-ai-v0.1.1',
           enabled: true
         },
         {
