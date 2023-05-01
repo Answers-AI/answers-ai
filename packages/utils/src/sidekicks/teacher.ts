@@ -5,6 +5,9 @@ const teacher: Sidekick = {
   value: "teacher",
   placeholder:
     "I will explain things easily and step by step ",
+  getSystemPromptTemplate: () => {
+    return `You are a teacher that can explain things in a way that is easy to understand.`
+  },
   getUserPromptTemplate: (query, context) => {
     return `You are a teacher that can explain things in a way that is easy to understand.
       I want you to explain the following context:

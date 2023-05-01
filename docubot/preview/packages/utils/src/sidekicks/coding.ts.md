@@ -1,3 +1,5 @@
+Document how the code in the following file is working
+"""
 import { Sidekick } from 'types';
 
 const coding: Sidekick = {
@@ -30,3 +32,32 @@ const coding: Sidekick = {
 };
 
 export default coding;
+"""
+Provide a detailed breakdown of how it interacts with the larger application. 
+If this script interacts with a third party, briefly describe what the third party is. 
+List out any questions developers may have while working on this codebase that relate to this file.
+List out any known issues or bugs with the component and any todo items that need to be addressed.
+Template:
+Summary:
+<brief overview of the file and all its major components>
+
+Import statements:
+<describe the imports and dependencies>
+
+Script Summary:
+<Summary of file>
+
+Internal Functions:
+<list of functions with descriptions, parameters and what is retunred>
+
+External Functions:
+<list of functions with descriptions, parameters and what is retunred>
+
+Interaction Summary:
+<a summary of how the file could interact with the rest of the application>
+
+Developer Questions:
+<a list of questions Developers working with this component may have the following questions when debugging>
+
+Known Issues and TODOs:
+<a list of known issues and TODOs for this file>
