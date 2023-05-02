@@ -80,7 +80,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     throw contextError;
   }
   const handleResponse = async (response: any) => {
-    // console.log('handleResponse', response);
 
     const answer = response.text;
     completionRequest = response.completionRequest;

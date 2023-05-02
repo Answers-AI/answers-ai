@@ -1,18 +1,24 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
-import { AppSettings, ConfluenceSpace, AppService, WebUrlType } from 'types';
+import { AppSettings, ConfluenceSpace, AppService, Flags } from 'types';
 
-import { AvatarGroup, Box, Popover, Typography, TextField } from '@mui/material';
+import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
 import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
+import { useFlags } from 'flagsmith/react';
 import Image from 'next/image';
 import SourcesWeb from './SourcesWeb';
 
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
+  const flags = useFlags(['airtable', 'docubot']) as Flags;
   const enabledServices: AppService[] | undefined = appSettings?.services?.filter(
-    (service) => service.enabled
+    (service) => {
+    const isServiceEnabledInFlags = flags?.[service.name]?.enabled;
+    return service.enabled && (isServiceEnabledInFlags === undefined || isServiceEnabledInFlags);
+  }
   );
+  
 
   const [serviceOpen, setServiceOpen] = React.useState<string>('');
   const { filters, updateFilter } = useAnswers();
@@ -98,8 +104,37 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                   />
                 </>
               ) : null}
-
-              {serviceOpen === 'confluence' ? (
+              {(flags?.docubot?.enabled && selectedService.name === 'docubot') ? (  
+                <>
+                  {console.log(appSettings)}
+                  <AutocompleteSelect
+                    label="Repository"
+                    options={
+                      appSettings?.docubot?.repos?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                    }
+                    value={filters?.datasources?.docubot?.repo || []}
+                    onChange={(value: string[]) =>
+                      updateFilter({ datasources: { docubot: { repo: value } } })
+                    }
+                  />
+                </>
+              ) : null}
+              {(flags?.airtable?.enabled && selectedService.name === 'airtable') ? (
+                <>
+                  {console.log(appSettings)}
+                  <AutocompleteSelect
+                    label="Table"
+                    options={
+                      appSettings?.airtable?.tables?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                    }
+                    value={filters?.datasources?.airtable?.table || []}
+                    onChange={(value: string[]) =>
+                      updateFilter({ datasources: { airtable: { table: value } } })
+                    }
+                  />
+                </>
+              ) : null}
+              {selectedService.name === 'confluence' ? (
                 <>
                   <AutocompleteSelect
                     label="Confluence Space"

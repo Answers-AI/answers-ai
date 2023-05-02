@@ -11,6 +11,7 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
   activeTabId = activeInfo.tabId;
 });
 
+
 async function getActiveTab() {
   //@ts-ignore
 
