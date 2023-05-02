@@ -1,12 +1,12 @@
+import React from 'react';
 import { getServerSession, Session } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
 import AppLayout from '@ui/AppLayout';
-import React from 'react';
 import flagsmith from 'flagsmith/isomorphic';
 import { getProviders } from 'next-auth/react';
 import { getAppSettings } from '@ui/getAppSettings';
 
-export default async function RootLayout({
+const MainUiLayout = async ({
   // Layouts must accept a children prop.
   params,
   // This will be populated with nested layouts or pages
@@ -16,17 +16,17 @@ export default async function RootLayout({
   params: {
     slug: string;
   };
-}) {
+}) => {
   const session = await getServerSession(authOptions);
 
   const providers = await getProviders();
+
   await flagsmith.init({
     // fetches flags on the server and passes them to the App
     environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
     preventFetch: true
   });
 
-  console.log('session', session);
   if (session?.user?.email)
     await flagsmith.identify(`user_${session.user.id}`, {
       env: process.env.NODE_ENV,
@@ -49,4 +49,6 @@ export default async function RootLayout({
       {children}
     </AppLayout>
   );
-}
+};
+
+export default MainUiLayout;

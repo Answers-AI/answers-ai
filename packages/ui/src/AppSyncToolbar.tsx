@@ -7,9 +7,10 @@ import {
   Button,
   Typography
 } from '@mui/material';
+
 import { useAnswers } from './AnswersContext';
 import axios from 'axios';
-import { AppSettings, AppService } from 'types';
+import { AppSettings } from 'types';
 import { useFlags } from 'flagsmith/react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandLess';
 

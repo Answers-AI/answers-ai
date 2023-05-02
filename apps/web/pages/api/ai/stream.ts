@@ -76,17 +76,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     });
   let pineconeData,
+    pineconeFilters,
     context = '',
     summary = '',
     contextSourceFilesUsed: string[] = [];
   try {
-    ({ pineconeData, context, summary, contextSourceFilesUsed } = await fetchContext({
-      user,
-      prompt,
-      messages,
-      filters,
-      sidekick: sidekickObject
-    }));
+    ({ pineconeFilters, pineconeData, context, summary, contextSourceFilesUsed } =
+      await fetchContext({
+        user,
+        prompt,
+        messages,
+        filters,
+        sidekick: sidekickObject
+      }));
   } catch (contextError) {
     console.log('fetchContext', contextError);
     throw contextError;
@@ -103,7 +105,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           chat: { connect: { id: chat.id } },
           role: 'assistant',
           content: answer,
-          contextSourceFilesUsed,
+          contextSourceFilesUsed
         }
       });
       await inngest.send({
@@ -130,7 +132,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       ...completionRequest,
       stream: true
     },
-    { pineconeData, context, summary, completionRequest, contextSourceFilesUsed },
+    {
+      filters: pineconeFilters,
+      pineconeData,
+      context,
+      summary,
+      completionRequest,
+      contextSourceFilesUsed
+    },
     handleResponse
   );
   res.setHeader('Content-Type', 'text/plain');

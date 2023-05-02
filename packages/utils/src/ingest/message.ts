@@ -4,7 +4,7 @@ import { AnswersFilters, User, Chat } from 'types';
 // import { inngest } from './client';
 import { EventVersionHandler } from './EventVersionHandler';
 import { openai } from '../openai/client';
-import { upsertChat } from '../upsertChat';
+// import { upsertChat } from '../upsertChat';
 
 export const answersMessageSent: EventVersionHandler<{
   chatId: string;

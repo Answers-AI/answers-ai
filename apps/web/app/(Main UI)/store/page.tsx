@@ -15,4 +15,5 @@ const DB_STUDIO = () => {
     </>
   );
 };
+
 export default DB_STUDIO;

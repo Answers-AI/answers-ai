@@ -85,7 +85,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
 
   try {
-    const ts = Date.now();
+    const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     console.time(`[${ts}] [ChatCompletion]: ` + prompt);
 
     console.time(`[${ts}] [query createChatChain]: ` + prompt);
@@ -104,6 +104,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     completionRequest = response.completionRequest;
     console.timeEnd(`[${ts}] [ChatCompletion]: ` + prompt);
     let message;
+
     if (prompt && answer) {
       console.time(`[${ts}] [query prisma.message.create]: ` + prompt);
       message = await prisma.message.create({
@@ -125,6 +126,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       });
       console.timeEnd(`[${ts}] [query prompt.answered]: ` + prompt);
     }
+
     res.status(200).json({
       ...message,
       chat,
@@ -139,7 +141,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       completionRequest
     });
   } catch (error: any) {
-    console.log('Error', error);
+    console.log('apps/web/pages/api/ai/query.ts Error', error);
     res.status(500).json({
       prompt,
       error,

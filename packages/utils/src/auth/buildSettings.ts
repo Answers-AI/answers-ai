@@ -1,6 +1,6 @@
 import { deepmerge } from '../deepmerge';
 import { JiraProject } from 'types';
-import SlackClient from '../slack/client';
+// import SlackClient from '../slack/client';
 
 import {
   User,
@@ -115,7 +115,6 @@ export const buildSettings = async (user: User, org?: Organization) => {
     // TODO: Constant error
     // console.log('urlSettingsError', error);
   }
-
   try {
     newSettings.airtable = {
       tables: [
