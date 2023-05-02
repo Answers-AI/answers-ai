@@ -9,13 +9,14 @@ export const answersPromptUpserted: EventVersionHandler<{ prompt: string; chat: 
   event: 'answers/prompt.upserted',
   handler: async ({ event }) => {
     const { data, user, ts } = event;
-    const { prompt } = data;
+
+    const { prompt, chat } = data;
     if (!user?.email) throw new Error('No user');
-    const savedPrompt = await prisma.prompt.findUnique({ where: { content: data?.prompt } });
+    const savedPrompt = await prisma.prompt.findUnique({ where: { content: prompt } });
     await prisma.prompt.upsert({
-      where: { content: data?.prompt },
+      where: { content: prompt },
       create: {
-        chat: { connect: { id: data?.chat?.id } },
+        chat: { connect: { id: chat?.id } },
         users: { connect: { email: user?.email } },
         title: prompt,
         content: prompt,
@@ -24,7 +25,7 @@ export const answersPromptUpserted: EventVersionHandler<{ prompt: string; chat: 
         createdAt: new Date(ts)
       },
       update: {
-        chat: { connect: { id: data?.chat?.id } },
+        chat: { connect: { id: chat.id } },
         users: { connect: { email: user?.email } },
         usages: (savedPrompt?.usages || 0) + 1
       }

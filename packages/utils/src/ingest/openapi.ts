@@ -53,7 +53,8 @@ const getXOriginUrls = (json: OpenApiProvider, options: GuruListOptions = {}): s
             ? info['x-origin']
                 .filter(
                   ({ format: originFormat, version: originVersion }) =>
-                    (!format || originFormat === format) && parseFloat(originVersion!) >= version
+                    (!format || originFormat === format) &&
+                    parseFloat(originVersion!) >= parseFloat(version.toString())
                 )
                 .map(({ url }: { url?: string }) => url!)
             : []
@@ -183,6 +184,7 @@ export const processOpenApiUrl: EventVersionHandler<{ urls: string[] }> = {
               .toLowerCase()}`,
             text: `${heading[0]}${content}`,
             metadata: {
+              source: 'openapi',
               title: openApiSpec.info.title,
               version: openApiSpec.info.version
             }

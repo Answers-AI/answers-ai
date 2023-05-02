@@ -21,7 +21,6 @@ export const useStreamedResponse = ({ answers, addAnswer }: any) => {
     });
 
     if (!response.ok) {
-      console.log(response);
       throw new Error(response.statusText);
     }
 

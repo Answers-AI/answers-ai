@@ -1,32 +1,88 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
-import { Chat } from 'db/generated/prisma-client';
-import { AnswersFilters, Message } from 'types';
+import { AnswersFilters, Message, User, WebUrlType } from 'types';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import OpenAIClient from '../openai/openai';
 import { summarizeAI } from '../summarizeAI';
+import { getUniqueUrls } from '@utils/getUniqueUrls';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
 
+// TODO: find a more dynamic way to parse the filters into Pinecone
+const parseFilters = (filters: AnswersFilters) => {
+  let parsedFilters = { ...filters };
+  if (parsedFilters?.datasources?.confluence?.spaces) {
+    parsedFilters.datasources.confluence.spaceId = parsedFilters.datasources.confluence.spaces.map(
+      (space) => space.id
+    );
+    delete parsedFilters.datasources.confluence.spaces;
+  }
+
+  if (parsedFilters?.datasources?.web?.url?.length) {
+    // TODO: Define a type for the Pinecone filters which this function must return
+    // @ts-expect-error
+    parsedFilters.datasources.web.url = getUniqueUrls(
+      parsedFilters.datasources.web.url.map((url) => (url as WebUrlType)?.url)
+    );
+  }
+
+  return parsedFilters;
+};
+
+const processArray = (arr: Array<any>) => {
+  console.time('Process Array');
+  const map = new Map();
+
+  for (const obj of arr) {
+    const key = obj.metadata.url || obj.metadata.key;
+
+    if (map.has(key)) {
+      const value = `${map.get(key)}\n${obj.metadata.text}`;
+
+      map.set(key, value);
+    } else {
+      map.set(key, obj.metadata.text);
+    }
+  }
+
+  const reducedArr = Array.from(map, ([key, text]) => {
+    const obj = arr.find((o) => o.metadata.key === key || o.metadata.url === key);
+    return { ...obj, metadata: { ...obj.metadata, text } };
+  });
+
+  const firstScore = reducedArr?.[0].score;
+
+  // filter out any items with a score less than 10% of the first item's score
+  const filteredArr = reducedArr.filter((obj) => obj.score > firstScore * 0.99);
+  console.log({ filteredArr });
+
+  console.timeEnd('Process Array');
+
+  return filteredArr;
+};
+
 // const SUMMARY_CHUNK_SIZE = 10_000; // Max
 const SUMMARY_CHUNK_SIZE = 3_000; // Controls how many tokens will fit into each chunk sent to the summarization
 const SUMMARY_TOKEN_SIZE = 2_000; // (openai max_tokens) Controls the ouput tokens of the summarization
-const CONTEXT_PAGES = 2; // How many context pages we want to process for completion
+const CONTEXT_PAGES = 1; // How many context pages we want to process for completion
 const PINECONE_THRESHOLD = 0.68;
 export const fetchContext = async ({
-  chat,
+  user,
   prompt,
   messages = [],
-  filters = {},
+  filters: clientFilters = {},
   threshold = PINECONE_THRESHOLD //TODO Calculate threshold based on input and pineconedata
 }: {
-  chat?: Chat;
+  user: User;
   prompt: string;
-  messages: Message[];
-  filters: AnswersFilters;
+  messages?: Message[];
+  filters?: AnswersFilters;
   threshold?: number;
 }) => {
+  const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+  const filters = parseFilters(clientFilters);
   // const hasDefaultFilter = Object.keys(filters).length;
   // const history = messages
   //   ?.filter((item: any) => item?.content)
@@ -57,7 +113,7 @@ export const fetchContext = async ({
   }
   if (datasources) {
     Object.entries(datasources).forEach(([source, sourceFilter]) => {
-      if (sourceFilter) {
+      if (sourceFilter && Object.keys(sourceFilter)?.length) {
         filter[source] = {
           ...(filter[source] ?? {}),
           ...Object.keys(sourceFilter).reduce(
@@ -85,29 +141,41 @@ export const fetchContext = async ({
     }
   });
 
-  console.log('[FetchContext]', JSON.stringify({ datasources, filters, filter }));
+  // console.log('[FetchContext]', JSON.stringify({ datasources, filters, filter }));
+
+  console.time(`[${ts}] Pineconedata`);
+  console.time(`[${ts}] Pineconedata get`);
 
   const pineconeData = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
+      if (!filter[source]) return Promise.resolve(null);
       return pineconeQuery(promptEmbedding, {
+        // TODO: Figure how to filter by namespace without having to re-index per user
+        // namespace: `org-${user?.organizationId}`,
         filter: {
+          source,
           ...filter[source]
         },
-        topK: 100
+        topK: 200
       });
     }),
     pineconeQuery(promptEmbedding, {
-      topK: 100
+      filter: {
+        source: 'algolia'
+      },
+      topK: 200
     })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
+  console.timeEnd(`[${ts}] Pineconedata get`);
 
+  const filteredData = pineconeData?.length ? processArray(pineconeData) : [];
+  // pineconeData?.filter((x) => x.score! > threshold);
   const context = [
     // `${history}`,
-    ...(!pineconeData
-      ? []
-      : pineconeData?.filter((x) => x.score! > threshold)?.map((item: any) => item?.metadata?.text))
+    ...(!filteredData ? [] : filteredData?.map((item: any) => item?.metadata?.text))
   ].join(' <SEP> ');
 
+  console.time(`[${ts}] Pineconedata split`);
   const textSplitter = new RecursiveCharacterTextSplitter({
     chunkSize: SUMMARY_CHUNK_SIZE * CONTEXT_PAGES
   });
@@ -116,17 +184,35 @@ export const fetchContext = async ({
     const contextChunks = await textSplitter.createDocuments([context]);
 
     contextText = contextChunks[0]?.pageContent;
-  } catch (err) {}
-  let summary = await summarizeAI({
-    input: contextText,
-    prompt,
-    chunkSize: SUMMARY_CHUNK_SIZE,
-    maxTokens: SUMMARY_TOKEN_SIZE
-  });
+  } catch (err) {
+    console.log('Error creating documents with pinecone data', err);
+  }
+  console.timeEnd(`[${ts}] Pineconedata split`);
+  console.time(`[${ts}] Pineconedata summarize`);
+  let summary = '';
+  try {
+    summary = await summarizeAI({
+      input: contextText,
+      prompt,
+      chunkSize: SUMMARY_CHUNK_SIZE,
+      maxTokens: SUMMARY_TOKEN_SIZE
+    });
+  } catch (error: any) {
+    console.log(`[${ts}] Pineconedata summarize error`, error.message);
+  }
+
+  console.timeEnd(`[${ts}] Pineconedata summarize`);
+  console.timeEnd(`[${ts}] Pineconedata`);
 
   return {
-    pineconeData,
     context: contextText,
-    summary
+    summary,
+    ...(process.env.NODE_ENV === 'development'
+      ? {
+          pineconeFilters: filters,
+          filteredData,
+          pineconeData
+        }
+      : {})
   };
 };

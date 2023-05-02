@@ -11,7 +11,7 @@ import { DefaultPrompts } from './DefaultPrompts';
 import { ChatInput } from './ChatInput';
 import MenuIcon from '@mui/icons-material/Menu';
 import SourcesToolbar from './SourcesToolbar';
-
+import { Filters } from './Filters';
 export const ChatDetail = ({
   appSettings,
   user,
@@ -41,7 +41,8 @@ export const ChatDetail = ({
         width: '100%',
         height: '100%',
         flex: 1,
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        borderLeft: '1px solid rgba(255, 255, 255, 0.12)'
       }}>
       <AppBar
         position="static"
@@ -51,7 +52,7 @@ export const ChatDetail = ({
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {journey ? journey?.title : null}
-            {chat ? chat?.id : null}
+            {chat ? chat?.title ?? chat.id : null}
           </Typography>
 
           <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
@@ -92,7 +93,7 @@ export const ChatDetail = ({
               </Box>
             </>
           ) : null}
-          {isLoading ? <MessageCard user={user} role="assistant" content={'...'} /> : null}
+          {isLoading ? <MessageCard user={user} role="loading" content={'...'} /> : null}
           {!messages?.length ? (
             <MessageCard
               user={user}
@@ -121,6 +122,7 @@ export const ChatDetail = ({
           paddingBottom: 3
         }}>
         <AppSyncToolbar appSettings={appSettings} />
+        {/* {journey ? <Filters filters={journey.filters} /> : null} */}
         <ChatInput inputRef={inputRef} />
       </Box>
     </Box>

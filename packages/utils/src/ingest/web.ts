@@ -1,20 +1,18 @@
 import { URL } from 'url';
-import { inngest } from './client';
-import { webPageLoader } from '../web';
-import { EventVersionHandler } from './EventVersionHandler';
-import { chunkArray } from '../utilities/utils';
-import { WebPage } from 'types';
-import { extractUrlsFromSitemap } from '../utilities/getSitemapUrls';
-import { getUniqueUrls, getUniqueUrl } from '../utilities/getUniqueUrls';
+import cheerio from 'cheerio';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { prisma } from 'db/dist';
+import { inngest } from './client';
+import { webPageLoader } from '../web';
+import { convertWebPageToMarkdown } from '../web/getWebPage';
+import { EventVersionHandler } from './EventVersionHandler';
+import { WebPage } from 'types';
+import { extractUrlsFromSitemap } from '../utilities/getSitemapUrls';
+import { getUniqueUrls, getUniqueUrl } from '@utils/getUniqueUrls';
+import { chunkArray } from '../utilities/utils';
+import { isAxiosError } from 'axios';
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
-
-import cheerio from 'cheerio';
-import { convertWebPageToMarkdown } from '../web/getWebPage';
-
-const visitedUrls = new Set<string>();
 
 const prefixHeaders = (markdown: string): string => {
   const lines = markdown.split('\n');
@@ -38,12 +36,14 @@ const prefixHeaders = (markdown: string): string => {
 };
 
 const recursiveCharacterTextSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 3000 });
+
 const splitPageHtmlChunkMore = async (markdownChunk: string) => {
   const contextChunks = await recursiveCharacterTextSplitter.createDocuments([markdownChunk]);
   const smallerChunks = contextChunks.map((chunk) => `${chunk.pageContent}`);
 
   return smallerChunks;
 };
+
 const splitPageHtml = async (iPage: WebPage) => {
   const page = await convertWebPageToMarkdown(iPage.url, iPage.content);
 
@@ -58,13 +58,18 @@ const splitPageHtml = async (iPage: WebPage) => {
     markdownChunks.map(async (chunk) => {
       const header = chunk.match(/(#+\s+.+)\n/)?.[1] ?? '';
       const content = chunk.replace(header, '');
+      if (!content.trim().length || !header.trim().length) {
+        return [''];
+      }
       const chunkMore = await splitPageHtmlChunkMore(content);
-      const chunksWithHeader = chunkMore.map((chunk) => `${header}\n${chunk}`);
+      const chunksWithHeader = chunkMore.map((chunk) => `${header.replace('#####', '')}\n${chunk}`);
       return chunksWithHeader;
     })
   );
-  return contextChunks.flat();
+  return contextChunks.flat().filter((x) => x.trim() !== '');
 };
+
+const visitedUrls = new Set<string>();
 
 async function* scrapePage(
   iUrl: string,
@@ -149,6 +154,97 @@ const getUniqueDomains = (urls: string[]) =>
     return `https://${parsedUrl.hostname.replace(/^www\./i, '')}`;
   });
 
+const getWebPagesVectors = async (webPages: WebPage[]) => {
+  const vectors = (
+    await Promise.all(
+      webPages.map(async (page) => {
+        if (!page?.content) {
+          return [];
+        }
+
+        const markdownChunks = await splitPageHtml(page);
+
+        if (!markdownChunks?.length) return [];
+
+        return markdownChunks.map((headingChunk: string, i: any) => ({
+          uid: `WebPage_${page.url}_${i}`,
+          text: headingChunk,
+          metadata: {
+            source: 'web',
+            domain: page?.domain?.toLowerCase(),
+            url: page?.url?.toLowerCase()
+          }
+        }));
+      })
+    )
+  )
+    .flat()
+    .filter(Boolean);
+
+  return vectors;
+};
+
+const embedVectors = async (event: any, vectors: any[]) => {
+  let outVectors: any[] = [];
+
+  if (vectors?.length && vectors?.every((x: any) => !!x)) {
+    try {
+      outVectors = await Promise.all(
+        chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map(async (batchVectors, i) => {
+          try {
+            const vectorSends = await inngest.send({
+              v: '1',
+              ts: new Date().valueOf(),
+              name: 'pinecone/vectors.upserted',
+              data: {
+                _page: i,
+                _total: vectors.length,
+                _batchSize: PINECONE_VECTORS_BATCH_SIZE,
+                vectors: batchVectors
+              },
+              user: event.user
+            });
+            return vectorSends;
+          } catch (error: unknown) {
+            let message = '';
+            if (isAxiosError(error)) {
+              message = error.response?.data;
+            } else if (typeof error === 'string' || typeof error === 'number') {
+              message = error.toString();
+            } else if (error instanceof Error) {
+              message = error.message;
+            } else if (error) {
+              message = JSON.stringify(error);
+            }
+            return { error: `[Error in embedVectors] ${message}` };
+          }
+        })
+      );
+
+      const errors = outVectors.filter((result) => !!result?.error);
+
+      if (errors?.length) {
+        // TODO - handle errors
+        throw errors[0];
+      }
+    } catch (error: unknown) {
+      let message = '';
+      if (isAxiosError(error)) {
+        message = error.response?.data;
+      } else if (typeof error === 'string' || typeof error === 'number') {
+        message = error.toString();
+      } else if (error instanceof Error) {
+        message = error.message;
+      } else if (error) {
+        message = JSON.stringify(error);
+      }
+      return { error: `[Error in writeVectorsToIndex] ${message}` };
+    }
+  }
+
+  return outVectors;
+};
+
 export const processWebUrlScrape: EventVersionHandler<{ urls: string[]; byDomain: boolean }> = {
   event: 'web/urls.sync',
   v: '1',
@@ -214,77 +310,29 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
       } catch (error) {}
     } else {
       const uniqueUrls = getUniqueUrls(urls);
+      console.time('processWebDomainScrape:sendWebPageSync');
       try {
-        await inngest.send({
-          v: event.v,
-          ts: new Date().valueOf(),
-          name: 'web/page.sync',
-          data: {
-            urls: uniqueUrls
-          },
-          user: event.user
-        });
-      } catch (error) {}
+        const webPages = await Promise.all(
+          uniqueUrls.map(async (url) => {
+            await inngest.send({
+              v: event.v,
+              ts: new Date().valueOf(),
+              name: 'web/page.sync',
+              data: {
+                urls: [url]
+              },
+              user: event.user
+            });
+          })
+        );
+      } catch (error) {
+        console.log(error);
+      } finally {
+        console.timeEnd('processWebDomainScrape:sendWebPageSync');
+      }
     }
     console.timeEnd('processWebDomainScrape');
   }
-};
-
-const getWebPagesVectors = async (webPages: WebPage[]) => {
-  const vectors = (
-    await Promise.all(
-      webPages.map(async (page) => {
-        if (!page?.content) {
-          return [];
-        }
-
-        page.content = `# ${page.url}\n${page.content}`;
-
-        const markdownChunks = await splitPageHtml(page);
-
-        if (!markdownChunks?.length) return [];
-
-        return markdownChunks.map((headingChunk: string, i: any) => ({
-          uid: `WebPage_${page.url}_${i}`,
-          text: headingChunk,
-          metadata: {
-            source: 'web',
-            domain: page?.domain?.toLowerCase(),
-            url: page?.url?.toLowerCase()
-          }
-        }));
-      })
-    )
-  )
-    .flat()
-    .filter(Boolean);
-
-  return vectors;
-};
-
-const embedVectors = async (event: any, vectors: any[]) => {
-  let outVectors: void[] = [];
-
-  if (vectors?.length && vectors?.every((x: any) => !!x)) {
-    outVectors = await Promise.all(
-      chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
-        return inngest.send({
-          v: '1',
-          ts: new Date().valueOf(),
-          name: 'pinecone/vectors.upserted',
-          data: {
-            _page: i,
-            _total: vectors.length,
-            _batchSize: PINECONE_VECTORS_BATCH_SIZE,
-            vectors: batchVectors
-          },
-          user: event.user
-        });
-      })
-    );
-  }
-
-  return outVectors;
 };
 
 export const processWebDeepScrape: EventVersionHandler<{ domain: string }> = {
@@ -303,25 +351,56 @@ export const processWebDeepScrape: EventVersionHandler<{ domain: string }> = {
       }
 
       const uniqueUrls = getUniqueUrls(Array.from(urls));
-      const webPagesHtml = (await webPageLoader.loadMany(uniqueUrls)) as string[];
 
-      const webPages = uniqueUrls
-        .map((url, index) => {
-          const content = webPagesHtml[index];
-          const domain = new URL(url).origin;
-
-          return {
-            url,
-            domain,
-            content
-          };
+      const allWebPages = await Promise.all(
+        uniqueUrls.map(async (url) => {
+          console.time(`processWebDeepScrape:sendWebPageSync for URL: ${url}`);
+          try {
+            const webPages = await inngest.send({
+              v: event.v,
+              ts: new Date().valueOf(),
+              name: 'web/page.sync',
+              data: {
+                urls: [url]
+              },
+              user: event.user
+            });
+          } catch (error: unknown) {
+            let message = '';
+            if (isAxiosError(error)) {
+              message = error.response?.data;
+            } else if (typeof error === 'string' || typeof error === 'number') {
+              message = error.toString();
+            } else if (error instanceof Error) {
+              message = error.message;
+            } else if (error) {
+              message = JSON.stringify(error);
+            }
+            return { error: `[Error in writeVectorsToIndex] ${message}` };
+          } finally {
+            console.timeEnd(`processWebDeepScrape:sendWebPageSync for URL: ${url}`);
+          }
         })
-        .filter((x) => !!x?.content);
-      const vectors = await getWebPagesVectors(webPages);
+      );
 
-      const embeddedVectors = await embedVectors(event, vectors);
-    } catch (error) {
-      console.error(`Web Deep Vector upset Error: ${error}`);
+      const errors = allWebPages.filter((result) => !!result?.error);
+
+      if (errors?.length) {
+        // TODO - handle errors
+        throw errors[0];
+      }
+    } catch (error: unknown) {
+      let message = '';
+      if (isAxiosError(error)) {
+        message = error.response?.data;
+      } else if (typeof error === 'string' || typeof error === 'number') {
+        message = error.toString();
+      } else if (error instanceof Error) {
+        message = error.message;
+      } else if (error) {
+        message = JSON.stringify(error);
+      }
+      return { error: `[Error in writeVectorsToIndex] ${message}` };
     }
   }
 };
@@ -331,15 +410,14 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
   v: '1',
   handler: async ({ event }) => {
     try {
-      const data = event.data;
-      if (!data?.urls) {
+      const { urls } = event?.data;
+      if (!urls) {
         throw new Error('Invalid input data: missing "urls" property');
       }
-
-      const { urls } = data;
+      // TODO: Validate if the URL exists in database
+      // TODO: Verify how long it passed since it was synced
 
       const uniqueUrls = getUniqueUrls(Array.from(urls));
-      const uniqueDomains = getUniqueDomains(Array.from(urls));
       const webPagesHtml = (await webPageLoader.loadMany(uniqueUrls)) as string[];
 
       const webPages = await Promise.all(
@@ -366,9 +444,11 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
       );
 
       const filteredPages = webPages.filter((x) => !!x?.content);
+
       const vectors = await getWebPagesVectors(filteredPages);
 
       const embeddedVectors = await embedVectors(event, vectors);
+      // TODO: Update webData with syncedAt
     } catch (error) {
       console.error(`[web/page.sync] ${error}`);
     }

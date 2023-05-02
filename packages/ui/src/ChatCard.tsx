@@ -40,7 +40,7 @@ const ChatCard: React.FC<ChatCardProps> = ({ id, prompt, filters, messages }) =>
         position: 'relative'
       }}>
       <CardHeader
-        sx={{ position: 'absolute', top: 0, right: 0, zIndex: 999999 }}
+        sx={{ position: 'absolute', top: 0, right: 0, zIndex: 1 }}
         action={
           <MenuButton
             aria-label="menu"

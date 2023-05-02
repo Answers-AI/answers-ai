@@ -5,6 +5,8 @@ declare global {
 }
 
 export const prisma = global.prisma || new PrismaClient();
+if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
+
 const SOFT_DELETE_MODELS = ['Chat', 'Message', 'Prompt', 'Journey'];
 
 prisma.$use(async (params, next) => {
@@ -75,4 +77,3 @@ prisma.$use(async (params, next) => {
   }
   return next(params);
 });
-if (process.env.NODE_ENV !== 'production') global.prisma = prisma;

@@ -1,0 +1,342 @@
+'use client';
+import React from 'react';
+import { Avatar, Box, Card, CardActions, CardContent, IconButton } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { JsonViewer } from '@textea/json-viewer';
+// import { deepOrange, deepPurple } from '@mui/material/colors';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+
+import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
+import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
+import MuiAccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import { Message, User } from 'types';
+import { useFlags } from 'flagsmith/react';
+import ReactMarkdown from 'react-markdown';
+import { useAnswers } from '@ui/AnswersContext';
+import { AxiosError } from 'axios';
+
+const Accordion = styled((props: AccordionProps) => (
+  <MuiAccordion disableGutters elevation={0} square {...props} />
+))(({ theme }) => ({
+  'border': `none`,
+  // 'border': `1px solid ${theme.palette.divider}`,
+  '&:not(:last-child)': {
+    borderBottom: 0
+  },
+  '&:before': {
+    display: 'none'
+  },
+  '.MuiAccordionDetails-root': {
+    padding: theme.spacing(2),
+    background: 'rgba(24,24,24)'
+  }
+}));
+const AccordionSummary = styled((props: AccordionSummaryProps) => (
+  <MuiAccordionSummary
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+    {...props}
+  />
+))(({ theme }) => ({
+  'backgroundColor': 'transparent',
+  'padding': theme.spacing(0, 2),
+  // 'backgroundColor':
+  //   theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, .05)' : 'rgba(0, 0, 0, .03)',
+
+  'flexDirection': 'row-reverse',
+  '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+    transform: 'rotate(180deg)'
+  },
+  '& .MuiAccordionSummary-content': {
+    marginLeft: theme.spacing(0)
+  }
+}));
+const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderTop: '1px solid rgba(0, 0, 0, .125)'
+}));
+
+interface MessageExtra {
+  prompt?: string;
+  extra?: object;
+  pineconeData?: object;
+  filteredData?: object;
+  unfilteredData?: object;
+  context?: string;
+  summary?: string;
+  completionData?: object;
+  completionRequest?: object;
+  filters?: object;
+  isWidget?: boolean;
+}
+interface MessageCardProps extends Partial<Message>, MessageExtra {
+  error?: AxiosError<MessageExtra>;
+  role: string;
+}
+
+export const MessageCard = ({
+  id,
+  content,
+  role,
+  user,
+  error,
+  prompt,
+  extra,
+  pineconeData,
+  filteredData,
+  unfilteredData,
+  context,
+  summary,
+  completionData,
+  completionRequest,
+  filters,
+  likes,
+  dislikes,
+  isWidget,
+  ...other
+}: MessageCardProps) => {
+  const { developer_mode } = useFlags(['developer_mode']); // only causes re-render if specified flag values / traits change
+  const { updateMessage } = useAnswers();
+  const [lastInteraction, setLastInteraction] = React.useState<string>('');
+
+  if (error) {
+    pineconeData = error?.response?.data.pineconeData;
+    summary = error?.response?.data.summary;
+    context = error?.response?.data.context;
+    filters = error?.response?.data.filters;
+    prompt = error?.response?.data.prompt;
+  }
+  const handleLike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
+    evt.stopPropagation();
+    evt.preventDefault();
+    setLastInteraction('like');
+    if (id)
+      await updateMessage({
+        id: id,
+        likes: (likes ?? 0) + 1
+      });
+  };
+  const handleDislike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
+    evt.stopPropagation();
+    evt.preventDefault();
+    setLastInteraction('dislike');
+    if (id)
+      await updateMessage({
+        id,
+        dislikes: (dislikes ?? 0) + 1
+      });
+  };
+  return (
+    <Card
+      data-cy="message"
+      data-role={role}
+      sx={{
+        borderRadius: 0,
+        position: 'relative'
+      }}>
+      <Box
+        sx={{
+          position: 'relative',
+          display: 'flex',
+          px: isWidget ? 1 : 2,
+          py: isWidget ? 1 : 2,
+          width: '100%',
+          flexDirection: isWidget ? 'column' : 'row'
+        }}>
+        <Avatar
+          sx={{
+            bgcolor: role == 'user' ? 'secondary.main' : 'primary.main',
+            height: isWidget ? '24px' : '32px',
+            width: isWidget ? '24px' : '32px'
+          }}>
+          {role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
+        </Avatar>
+        <CardContent
+          sx={{
+            position: 'relative',
+            py: 0,
+            px: isWidget ? 1 : 2,
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+          {content ? (
+            <>
+              <Typography variant="body1" color="text.secondary" component="div">
+                <ReactMarkdown>{content}</ReactMarkdown>
+              </Typography>
+            </>
+          ) : null}
+        </CardContent>
+
+        <CardActions
+          sx={{
+            position: 'absolute',
+            bottom: isWidget ? 'auto' : 0,
+            top: isWidget ? 0 : 'auto',
+            right: 0
+          }}>
+          <IconButton
+            color={lastInteraction === 'like' ? 'secondary' : 'default'}
+            sx={{}}
+            size="small"
+            onClick={handleLike}>
+            <ThumbUpIcon sx={{ fontSize: 16 }} />
+          </IconButton>
+          <IconButton
+            size="small"
+            color={lastInteraction === 'dislike' ? 'secondary' : 'default'}
+            onClick={handleDislike}>
+            <ThumbDownIcon sx={{ fontSize: 16 }} />
+          </IconButton>
+        </CardActions>
+      </Box>
+      {developer_mode?.enabled ? (
+        <Box>
+          {error ? (
+            <>
+              <Accordion TransitionProps={{ unmountOnExit: true }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header">
+                  <Typography variant="overline">Error</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <JsonViewer
+                    rootName="error"
+                    value={error}
+                    theme={'dark'}
+                    collapseStringsAfterLength={100}
+                  />
+                </AccordionDetails>
+              </Accordion>
+            </>
+          ) : null}
+          {summary ? (
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Summary ({summary?.length})</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography
+                  sx={{ whiteSpace: 'pre-line' }}
+                  variant="body1"
+                  color="text.secondary"
+                  component="div">
+                  {summary}
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {context ? (
+            // Use the @mui accordion component to wrap the context and response
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Context ({context?.length})</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography
+                  sx={{ whiteSpace: 'pre-line' }}
+                  variant="body1"
+                  color="text.secondary"
+                  component="div">
+                  {context}
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {pineconeData ? (
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Pinecone Data</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <JsonViewer
+                  rootName="pineconeData"
+                  value={{
+                    filters,
+                    pineconeData
+                  }}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {completionRequest ? (
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Completion request</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <JsonViewer
+                  rootName=""
+                  value={completionRequest}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {completionData ? (
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">Completion</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <JsonViewer
+                  rootName=""
+                  value={completionData}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+          {Object.keys(other)?.length ? (
+            // Use the @mui accordion component to wrap the extra and response
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">
+                <Typography variant="overline">extra</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <JsonViewer
+                  rootName=""
+                  value={other}
+                  theme={'dark'}
+                  // defaultInspectDepth={0}
+                  collapseStringsAfterLength={100}
+                />
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
+        </Box>
+      ) : null}
+    </Card>
+  );
+};

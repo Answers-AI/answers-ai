@@ -1,11 +1,11 @@
 'use client';
 import { PaletteMode } from '@mui/material';
 import createTheme from '@mui/material/styles/createTheme';
-import { amber, grey } from '@mui/material/colors';
+import { teal, grey, deepOrange } from '@mui/material/colors';
 
 const getDesignTokens = (mode: PaletteMode) => ({
   shape: {
-    borderRadius: 2
+    borderRadius: 12
   },
   breakpoints: {
     values: {
@@ -20,17 +20,22 @@ const getDesignTokens = (mode: PaletteMode) => ({
   palette: {
     mode,
     primary: {
-      ...amber,
+      ...teal,
       ...(mode === 'dark' && {
-        main: amber[300]
+        main: teal[300]
       })
     },
-    // ...(mode === 'dark' && {
-    //   background: {
-    //     default: deepOrange[900],
-    //     paper: deepOrange[900]
-    //   }
-    // }),
+    secondary: {
+      ...deepOrange,
+      main: deepOrange[200]
+    },
+
+    ...(mode === 'dark' && {
+      background: {
+        default: '#0b0b0b',
+        paper: '#161616'
+      }
+    }),
     text: {
       ...(mode === 'light'
         ? {
@@ -49,6 +54,10 @@ declare module '@mui/material/styles' {
     xxl: true;
   }
 }
+const theme = createTheme({
+  ...getDesignTokens('dark')
+});
+
 export const darkModeTheme = createTheme({
   ...getDesignTokens('dark'),
   components: {
@@ -63,15 +72,71 @@ export const darkModeTheme = createTheme({
         }
       }
     },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          border: 'none'
+        }
+      }
+    },
+    MuiBackdrop: {
+      styleOverrides: {
+        root: {
+          background: 'rgba(0, 0, 0, 0.75)'
+        }
+      }
+    },
     MuiButton: {
-      defaultProps: {}
+      defaultProps: {},
+      styleOverrides: {
+        root: {
+          // borderRadius: theme.spacing(0),
+          padding: theme.spacing(0.5, 1)
+        }
+      }
     },
     MuiContainer: {
       defaultProps: { maxWidth: 'xxl' }
     },
+    MuiList: {
+      styleOverrides: {
+        root: {
+          display: 'flex',
+          flexDirection: 'column',
+          padding: theme.spacing(1),
+          gap: theme.spacing(1)
+        }
+      }
+    },
+    MuiListSubheader: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'transparent',
+          paddingLeft: theme.spacing(0)
+        }
+      }
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          padding: theme.spacing(0.5, 1)
+        }
+      }
+    },
+    MuiListItemIcon: {
+      styleOverrides: {
+        root: {}
+      }
+    },
     MuiListItemText: {
       styleOverrides: {
         primary: {
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap'
+        },
+        secondary: {
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap'

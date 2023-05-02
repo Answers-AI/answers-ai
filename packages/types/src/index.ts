@@ -1,4 +1,5 @@
 import * as DB from 'db/generated/prisma-client';
+import { Hit } from '@algolia/client-search';
 
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
 export type PineconeObject = {
@@ -19,9 +20,21 @@ export type RecommendedPrompt = {
   views?: number;
 };
 export interface AppService {
+  id: string;
   name: string;
-  enabled: boolean;
+  description?: string;
+  providerId?: string;
+  enabled?: boolean;
   imageURL: string;
+}
+export interface ConfluenceSettings {
+  enabled: boolean;
+  accessToken?: string;
+  spaces?: ConfluenceSpaceSetting[];
+  pages?: {
+    key: string;
+    enabled: boolean;
+  }[];
 }
 export interface AppSettings {
   services?: AppService[];
@@ -31,13 +44,7 @@ export interface AppSettings {
       enabled: boolean;
     }[];
   };
-  confluence?: {
-    spaces?: ConfluenceSpaceSetting[];
-    pages?: {
-      key: string;
-      enabled: boolean;
-    }[];
-  };
+  confluence?: ConfluenceSettings;
   slack?: {
     channels?: SlackChannelSetting[];
   };
@@ -45,11 +52,15 @@ export interface AppSettings {
     urls?: WebSetting[];
     domains?: WebSetting[];
   };
+  algolia?: {
+    index?: string[];
+    preview?: boolean;
+  };
   openapi?: {
     urls?: OpenApiSetting[];
   };
   models?: Models;
-  filters?: AnswersFilters
+  filters?: AnswersFilters;
 }
 
 export interface JiraFilters {
@@ -62,22 +73,39 @@ export interface JiraFilters {
 export interface SlackFilters {
   channelId?: string[];
 }
+
+export interface WebUrlType {
+  inputValue?: string;
+  url: string;
+  entireDomain?: boolean;
+}
 export interface WebFilters {
   cleanedUrl?: string[];
-  url?: string[];
+  url?: WebUrlType[];
   domain?: string[];
 }
+
+export interface AlgoliaFilters {
+  index?: string[];
+  preview?: string[];
+}
+
 export interface OpenApiFilters {}
+
 export interface ConfluenceFilters {
   spaceId?: string[];
+  spaces?: ConfluenceSpaceSetting[];
 }
+
 export interface UserFilters {}
+
 export type SourceFilters =
   | JiraFilters
   | SlackFilters
   | WebFilters
   | OpenApiFilters
   | ConfluenceFilters;
+
 export interface DataSourcesFilters {
   user?: UserFilters;
   jira?: JiraFilters;
@@ -97,13 +125,23 @@ type Models = {
   jira: string[];
   slack: string[];
   web: string[];
+  algolia: string[];
   openapi: string[];
   [key: string]: string[];
 };
 
 export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
+  accounts: DB.Account[] | null;
 }
+export interface Organization extends Omit<DB.Organization, 'appSettings'> {
+  appSettings: AppSettings;
+}
+
+export interface ChatApp extends Omit<DB.ChatApp, 'appSettings'> {
+  appSettings: AppSettings;
+}
+
 export interface Organization extends Omit<DB.Organization, 'appSettings'> {
   appSettings: AppSettings;
 }
@@ -139,13 +177,26 @@ export type ConfluenceSpace = {
   };
 };
 export interface ConfluenceSpaceSetting extends ConfluenceSpace {
-  enabled: boolean;
+  enabled?: boolean;
 }
 
-export interface Message extends Partial<DB.Message>, ChatCompletionRequestMessage {
+export interface Message extends Partial<DB.Message> {
   user?: User | null;
-  role: ChatCompletionRequestMessageRoleEnum;
+  role: ChatCompletionRequestMessageRoleEnum | string;
   content: string;
+}
+
+export type AlgoliaHit = Hit<{
+  path: string;
+  title: string;
+  contentBody: string;
+  summary: string;
+  locale: string;
+  url?: string;
+  domain?: string;
+}>;
+export interface AlgoliaSetting extends AlgoliaHit {
+  enabled: boolean;
 }
 
 export type WebPage = {
@@ -220,7 +271,38 @@ export interface OpenApiProvider {
   };
 }
 
-export type ConfluencePage = { id: string; space: string; body: string };
+export type ConfluencePage = {
+  id: number;
+  status: string;
+  title: string;
+  spaceId: number;
+  parentId: number;
+  authorId: string;
+  createdAt: string;
+  version: {
+    createdAt: string;
+    message: string;
+    number: number;
+    minorEdit: boolean;
+    authorId: string;
+  };
+  content: string;
+  body: {
+    storage?: {
+      representation: string;
+      value: string;
+    };
+    atlas_doc_format?: {
+      representation: string;
+      value: string;
+    };
+  };
+};
+
 export interface ConfluenceSetting extends ConfluencePage {
   enabled: boolean;
 }
+
+export type JiraProject = { key: string; name: string; archived: any };
+export type JiraIssue = { key: string; self: string; id: string; fields: any; archived: any };
+export type JiraComment = { key: string; self: string; id: string; fields: any; archived: any };

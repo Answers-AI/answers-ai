@@ -1,19 +1,16 @@
-import { getJiraComments, getJiraProjects, JiraIssue, JiraProject } from '../jira';
-import { getJiraTickets } from '../jira/getJiraTickets';
-import { jiraIssueLoader } from '../jira';
-
+import { JiraIssue, JiraProject } from 'types';
 import { chunkArray } from '../utilities/utils';
 
 import { EventVersionHandler } from './EventVersionHandler';
 import { AnswersFilters, AppSettings } from 'types';
 import { jiraAdfToMarkdown } from '../utilities/jiraAdfToMarkdown';
-// import { summarizeChain } from '../llm/chains';
-// import OpenAI from '../openai/openai';
-// import { openApiClient } from '../openapi';
+
 import { Configuration, OpenAIApi } from 'openai';
 import { MODELS } from '../MODELS';
 import { inngest } from './client';
 import { summarizeAI } from '../summarizeAI';
+import { getUserClients } from '../auth/getUserClients';
+
 const initializeOpenAI = () => {
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY
@@ -34,15 +31,20 @@ export const processJiraUpdated: EventVersionHandler<{
   event: 'jira/app.sync',
   v: '1',
   handler: async ({ event, step }) => {
-    const { filters, appSettings } = event.data;
+    const {
+      user,
+      data: { filters, appSettings }
+    } = event;
+    if (!user) throw new Error('User is requierd');
+    const { jiraClient } = await getUserClients(user);
+
     const { datasources: { jira: { project } = { project: [] } } = {} } = filters;
     const projectKeysFilter = appSettings?.jira?.projects
       ?.filter((p) => (project?.length ? project?.includes(p.key) : p.enabled))
       ?.map((p) => p.key);
-    const projects = await getJiraProjects();
+    const projects = await jiraClient.getJiraProjects();
 
     // Fetch all Jira issues in the configured projects
-    console.log({ project, projectKeysFilter });
     await Promise.all(
       chunkArray(
         projects?.filter((project) => projectKeysFilter?.includes(project.key)),
@@ -76,15 +78,18 @@ export const procesProjectUpdated: EventVersionHandler<{ projectKeys: string[]; 
   v: '1',
   handler: async ({ event, step }) => {
     const { projectKeys, model } = event.data;
+    const { user } = event;
+    if (!user) throw new Error('User is requierd');
+    const { jiraClient } = await getUserClients(user);
 
     // Chunk projects into batches of 10
-    const issues = await getJiraTickets({
+    const issues = await jiraClient.getJiraTickets({
       jql: `project in (${projectKeys?.join(',')})`
     });
 
     try {
       // @ts-ignore
-      await jiraIssueLoader.primeAll(issues.map((issue) => [issue.key, issue]));
+      await jiraClient.issueLoader.primeAll(issues.map((issue) => [issue.key, issue]));
     } catch (error) {
       console.log('Error priming loader', error);
     }
@@ -118,15 +123,21 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
   v: '1',
   handler: async ({ event, step }) => {
     try {
-      const { issuesKeys } = event.data;
+      const {
+        user,
+        data: { issuesKeys }
+      } = event;
+      if (!user) throw new Error('User is requierd');
+      const { jiraClient } = await getUserClients(user);
 
-      const issues = (await jiraIssueLoader.loadMany(issuesKeys)) as JiraIssue[];
+      const issues = (await jiraClient.issueLoader.loadMany(issuesKeys)) as JiraIssue[];
 
       // TODO: Create a JiraIssueCommentsLoader
       // or TODO: Pull issue and comments from Prisma
       const jiraIssueComments = await Promise.all(
         issues?.map(async (issue) =>
-          getJiraComments(issue?.id)
+          jiraClient
+            .getJiraComments(issue?.id)
             .then((comments) => ({ ...issue, comments }))
             .catch((err) => null)
         )
@@ -163,7 +174,7 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
               reporter: issue?.fields.reporter?.displayName?.toLowerCase(),
               assignee_email: issue?.fields.assignee?.email?.toLowerCase(),
               parent_key: issue?.fields.parent?.key?.toLowerCase(),
-              link: `https://lastrev.atlassian.net/browse/${issue?.key}`?.toLowerCase(),
+              // link: `https://lastrev.atlassian.net/browse/${issue?.key}`?.toLowerCase(),
               description: (issue?.fields.description
                 ? jiraAdfToMarkdown(issue?.fields.description)?.replaceAll('\n', ' ')
                 : ''
@@ -180,6 +191,7 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
             return !!issue
               ? [
                   {
+                    source: 'jira',
                     uid: `JiraIssue_${issue?.key}`,
                     text,
                     metadata: ticketFields

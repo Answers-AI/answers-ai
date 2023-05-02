@@ -16,7 +16,7 @@ const DISABLE_EMBEDDING = true;
 import SlackMessageModel from '../slack/models/message';
 import { prepareAllForEmbedding } from '../prepareAllForEmbedding';
 import SlackClient from '../slack/client';
-const slackClient = new SlackClient(process.env.SLACK_TOKEN);
+import { getUserClients } from '../auth/getUserClients';
 
 // slackClient.initDataLookups();
 
@@ -24,6 +24,9 @@ export const processSlackUpdated: EventVersionHandler<{ appSettings: AppSettings
   event: 'slack/app.sync',
   v: '1',
   handler: async ({ event }) => {
+    const { user } = event;
+    if (!user) throw new Error('No user');
+    const { slackClient } = await getUserClients(user);
     const { appSettings } = event.data;
     const selectedChannels = appSettings?.slack?.channels
       ?.filter((p) => p.enabled)
@@ -61,7 +64,9 @@ export const procesChannelUpdated: EventVersionHandler<{
   v: '1',
   handler: async ({ event }) => {
     const { channels } = event.data;
-
+    const { user } = event;
+    if (!user) throw new Error('No user');
+    const { slackClient } = await getUserClients(user);
     const channelMessages = await Promise.all(
       channels?.map(async ({ id }) => {
         const channel = await slackClient.getChannel(id);
@@ -69,7 +74,8 @@ export const procesChannelUpdated: EventVersionHandler<{
           return Promise.resolve([]);
         }
         let messages: SlackMessage[] = await channel.getMessages();
-        return Promise.all(messages.map((m) => new SlackMessageModel(m)));
+        const allPromises = await Promise.all(messages.map((m) => new SlackMessageModel(m)));
+        return allPromises;
       })
     ).then((messages) => messages.flat());
 

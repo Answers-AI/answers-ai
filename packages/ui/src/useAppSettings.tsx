@@ -16,7 +16,7 @@ const saveAppSettings = async (data: AppSettings): Promise<AppSettings> => {
 const useAppSettings = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const updateAppSettings = async (newSettings: AppSettings) => {
+  const updateAppSettings = async (newSettings: Partial<AppSettings>) => {
     setIsLoading(true);
     setError(null);
     try {

@@ -1,3 +1,4 @@
 packages:
+  - 'cypress'
   - 'apps/*'
   - 'packages/*'

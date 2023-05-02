@@ -10,9 +10,8 @@ answerSession.initPinecone({
   indexName: 'adam-test-jira-2023-02-08-01'
 });
 
-const slackClient = new SlackClient(process.env.SLACK_TOKEN);
-
 export const indexSingleSlackChannel = async (channelId) => {
+  const slackClient = new SlackClient({ accessToken: process.env.SLACK_TOKEN });
   console.time('indexSingleSlackChannel');
   // console.log(slackClient.cache.channels);
   const channel = await slackClient.getChannel(channelId);
@@ -28,7 +27,8 @@ export const indexSingleSlackChannel = async (channelId) => {
   //   const data = await Promise.all(promises);
 
   messages.map(async (m) => {
-    return await m.getTidiedInfo();
+    const tidiedInfo = await m.getTidiedInfo();
+    return tidiedInfo;
   });
 
   //   const vectorData = await answerSession.prepareAllForEmbedding(data);

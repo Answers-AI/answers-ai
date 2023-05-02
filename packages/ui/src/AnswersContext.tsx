@@ -3,11 +3,12 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
-import { AnswersFilters, Chat, Journey, Message, Prompt } from 'types';
+import { AnswersFilters, AppSettings, Chat, Journey, Message, Prompt } from 'types';
 import { deepmerge } from '@utils/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
 
 interface AnswersContextType {
+  appSettings: AppSettings;
   error?: any;
   chat?: Chat | null;
   journey?: Journey | null;
@@ -34,8 +35,8 @@ interface AnswersContextType {
   updatePrompt: (prompt: Partial<Prompt>) => Promise<void>;
   updateJourney: (journey: Partial<Journey>) => Promise<void>;
 }
-
 const AnswersContext = createContext<AnswersContextType>({
+  appSettings: {},
   error: null,
   messages: [],
   chats: [],
@@ -67,6 +68,7 @@ export function useAnswers() {
 
 interface AnswersProviderProps {
   children: React.ReactNode;
+  appSettings: AppSettings;
   apiUrl?: string;
   useStreaming?: boolean;
   chat?: Chat | null;
@@ -76,13 +78,14 @@ interface AnswersProviderProps {
 }
 
 export function AnswersProvider({
+  appSettings,
   children,
   journey,
   prompts,
   chat,
   chats,
   apiUrl = '/api',
-  useStreaming: initialUseStreaming = false
+  useStreaming: initialUseStreaming = true
 }: AnswersProviderProps) {
   const router = useRouter();
   const [error, setError] = useState(null);
@@ -90,7 +93,7 @@ export function AnswersProvider({
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Array<Message>>(chat?.messages ?? []);
   const [filters, setFilters] = useState<AnswersFilters>(
-    deepmerge({}, journey?.filters, chat?.filters)
+    deepmerge({}, appSettings?.filters, journey?.filters, chat?.filters)
   );
   const [showFilters, setShowFilters] = useState(false);
   const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
@@ -154,7 +157,10 @@ export function AnswersProvider({
   );
 
   const updateFilter = (newFilter: AnswersFilters) => {
-    setFilters(deepmerge({}, filters, newFilter));
+    const mergedSettings = deepmerge({}, filters, newFilter);
+
+    console.log('UpdateFilters');
+    setFilters(mergedSettings);
   };
 
   const regenerateAnswer = () => {
@@ -168,11 +174,11 @@ export function AnswersProvider({
   const clearMessages = () => {
     setMessages([]);
     setChatId(undefined);
-    setJourneyId(undefined);
-    setFilters({});
     setError(null);
     setIsLoading(false);
-    router.push('/');
+    if (chatId) {
+      router.push('/');
+    }
   };
 
   const deleteChat = async (id: string) =>
@@ -191,6 +197,7 @@ export function AnswersProvider({
     axios.patch(`${apiUrl}/messages`, message).then(() => router.refresh());
 
   const contextValue = {
+    appSettings,
     chat,
     chats,
     journey,

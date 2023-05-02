@@ -26,11 +26,11 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
       { event: eventName },
       async ({ event, ...other }) => {
         const { v } = event;
-        const ts = new Date(event.ts!).toDateString();
-        console.log(`[${new Date(ts)}] Received ${eventName}`);
+        const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        console.log(`[${ts}] Received ${eventName}`);
         let handler;
         try {
-          console.time(`[${new Date(ts)}] Processing  ${eventName}`);
+          console.time(`[${ts}] Processing ${eventName}`);
           if (!v) {
             console.warn(`No version for ${eventName} using v=1`);
             handler = eventHandlerMap[eventName][1];
@@ -39,17 +39,21 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
               handler = eventHandlerMap[eventName][v];
             }
           }
+
           if (!handler) {
             throw new Error(`No handler for ${eventName}:${v}`);
           }
+
           const result = await handler({ event, ...other } as any);
-          console.timeEnd(`[${new Date(ts)}] Processing  ${eventName}`);
+
           return result;
         } catch (error) {
-          console.timeEnd(`[${new Date(ts)}] Processing  ${eventName}`);
-          console.error(`[${new Date(ts)}] Error processing ${eventName}`);
-          console.log({ eventHandlerMap, handler, error });
+          console.error(`[${ts}] Error processing ${eventName}`);
+          // console.log({ eventHandlerMap, handler, error });
+          console.log({ error });
           throw error;
+        } finally {
+          console.timeEnd(`[${ts}] Processing ${eventName}`);
         }
       }
     );

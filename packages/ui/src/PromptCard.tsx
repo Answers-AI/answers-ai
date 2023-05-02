@@ -70,7 +70,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
       }}>
       {flags?.delete_prompt?.enabled ? (
         <CardHeader
-          sx={{ position: 'absolute', top: 0, right: 0, zIndex: 999999 }}
+          sx={{ position: 'absolute', top: 0, right: 0, zIndex: 1 }}
           action={
             <MenuButton
               aria-label="menu"
@@ -105,7 +105,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
           <CardContent
             sx={{
               width: '100%',
-
+              display: 'flex',
               gap: 1
             }}>
             {title || content ? (

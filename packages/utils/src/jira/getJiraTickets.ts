@@ -1,10 +1,5 @@
-import JiraIssueModel from './models/issue';
-import { JiraIssue, jiraClient } from './index';
-
-// const getJiraStatuses = async () => {
-//   let statuses = await jiraClient.fetchJiraData(`/status`);
-//   return statuses.map((status) => new JiraStatus(status));
-// };
+import { JiraIssue } from 'types';
+import JiraClient from './client';
 
 const JIRA_FIELDS = [
   'uid',
@@ -24,10 +19,12 @@ const JIRA_FIELDS = [
   'updated'
 ];
 export const getJiraTickets = async ({
+  jiraClient,
   jql,
   startAt = 0,
   maxResults = 100
 }: {
+  jiraClient: JiraClient;
   jql: string;
   startAt?: number | undefined;
   maxResults?: number | undefined;
@@ -39,7 +36,7 @@ export const getJiraTickets = async ({
     let total = 0;
     // maxResults -= initialPullCount;
     // batchSize = Math.min(batchSize, maxResults);
-    let endpoint = `/search?jql=${jql}&maxResults=${initialPullCount}&startAt=${startAt}&fields=${JIRA_FIELDS.join(
+    let endpoint = `search?jql=${jql}&maxResults=${initialPullCount}&startAt=${startAt}&fields=${JIRA_FIELDS.join(
       ','
     )}`;
     // console.time(endpoint);

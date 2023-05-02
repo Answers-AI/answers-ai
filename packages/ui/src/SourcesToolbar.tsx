@@ -1,72 +1,55 @@
 import * as React from 'react';
-// import { styled } from '@mui/material/styles';
-// import Badge from '@mui/material/Badge';
 import Avatar from '@mui/material/Avatar';
-// import Stack from '@mui/material/Stack';
-import { AnswersFilters, AppSettings } from 'types';
-import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
+import { AppSettings, ConfluenceSpace, AppService, WebUrlType } from 'types';
+
+import { AvatarGroup, Box, Popover, Typography, TextField } from '@mui/material';
 import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
-import { getUniqueUrls } from '@utils/utilities/getUniqueUrls';
-import axios from 'axios';
+import Image from 'next/image';
+import SourcesWeb from './SourcesWeb';
 
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
-  const anchorRef = React.useRef<HTMLDivElement[]>([]);
-  const enabledServices = appSettings?.services?.filter((service) => service.enabled);
-  const [open, setOpen] = React.useState(-1);
-  const [urls, setUrls] = React.useState<string[]>([]);
-  const [domains, setDomains] = React.useState<string[]>([]);
+  const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
+  const enabledServices: AppService[] | undefined = appSettings?.services?.filter(
+    (service) => service.enabled
+  );
+
+  const [serviceOpen, setServiceOpen] = React.useState<string>('');
   const { filters, updateFilter } = useAnswers();
 
-  React.useEffect(() => {
-    const getUrls = async () => {
-      try {
-        const webUrls = await axios.post(`/api/ai/getUrlList`);
+  const spacesById: Record<string, ConfluenceSpace> = React.useMemo(
+    () =>
+      appSettings?.confluence?.spaces?.reduce(
+        (accum, space) => ({
+          ...accum,
+          [space.id]: space
+        }),
+        {}
+      ) ?? {},
+    [appSettings?.confluence?.spaces]
+  );
 
-        if (webUrls?.data?.urls && webUrls?.data?.urls?.length > 0) {
-          setUrls(webUrls.data.urls);
-        } else {
-          setUrls([]);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getUrls();
-
-    const getDomains = async () => {
-      try {
-        const webDomains = await axios.post(`/api/ai/getDomainList`);
-
-        if (webDomains?.data?.domains && webDomains?.data?.domains?.length > 0) {
-          setDomains(webDomains.data.domains);
-        } else {
-          setDomains([]);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getDomains();
-  }, []);
-
-  const selectedService = enabledServices?.[open];
+  const selectedService = enabledServices?.find((service) => service.name === serviceOpen);
   return (
     <>
-      <AvatarGroup total={enabledServices?.length} spacing={-8}>
+      <AvatarGroup total={enabledServices?.length} max={10} spacing={-8}>
         {enabledServices
           ?.map((service, idx) => [
             <Avatar
               key={service.name}
-              src={service.imageURL}
               alt={service.name}
               ref={(ref) => {
-                if (ref) anchorRef.current[idx] = ref;
+                if (ref) serviceRefs.current[service.name] = ref;
               }}
-              onClick={() => setOpen(idx)}
-              // onMouseEnter={() => setOpen(idx)}
-              // onMouseLeave={() => setOpen(-1)}
-            />
+              onClick={() => setServiceOpen(service.name)}>
+              <Image
+                style={{ background: 'white', padding: '8px' }}
+                src={service.imageURL}
+                alt={`${service.name} logo`}
+                width={40}
+                height={40}
+              />
+            </Avatar>
           ])
           .flat()}
       </AvatarGroup>
@@ -74,8 +57,8 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
         <Popover
           key={selectedService?.name}
           open
-          anchorEl={anchorRef.current[open]}
-          onClose={() => setOpen(-1)}
+          anchorEl={serviceRefs.current[serviceOpen]}
+          onClose={() => setServiceOpen('')}
           PaperProps={{
             sx: {
               marginLeft: '-2px',
@@ -92,7 +75,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
           }}>
           <Box sx={{ width: 320, px: 2, py: 2 }}>
             <Typography variant="overline" sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}>
-              {selectedService.name} filters
+              {serviceOpen} filters
             </Typography>
             <Box
               sx={{
@@ -100,7 +83,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                 gap: 2,
                 flexDirection: 'column'
               }}>
-              {selectedService.name === 'slack' ? (
+              {serviceOpen === 'slack' ? (
                 <>
                   <AutocompleteSelect
                     label="Channel"
@@ -115,54 +98,33 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                   />
                 </>
               ) : null}
-              {selectedService.name === 'confluence' ? (
+
+              {serviceOpen === 'confluence' ? (
                 <>
                   <AutocompleteSelect
                     label="Confluence Space"
-                    options={
-                      appSettings?.confluence?.spaces?.filter((s) => s.enabled)?.map((s) => s.id) ||
-                      []
-                    }
-                    value={filters?.datasources?.confluence?.spaceId || []}
-                    onChange={(value: string[]) =>
-                      updateFilter({ datasources: { confluence: { spaceId: value } } })
+                    options={appSettings?.confluence?.spaces?.filter((s) => s.enabled) || []}
+                    // getOptionValue={(option) => {
+                    //   return option?.id;
+                    // }}
+                    getOptionLabel={(option) => {
+                      return option?.name;
+                    }}
+                    value={filters?.datasources?.confluence?.spaces ?? []}
+                    onChange={(value) =>
+                      updateFilter({
+                        datasources: {
+                          confluence: { spaces: value || [] }
+                        }
+                      })
                     }
                   />
                 </>
               ) : null}
-              {selectedService.name === 'web' ? (
-                <>
-                  <AutocompleteSelect
-                    label="Web Page"
-                    options={urls}
-                    // options={appSettings?.web?.urls?.map((s) => s.url) || []}
-                    value={filters?.datasources?.web?.url || []}
-                    onChange={async (value: string[]) => {
-                      const currentUrls = filters?.datasources?.web?.url || [];
-                      const newUrls = value.filter((v) => !currentUrls.includes(v));
-                      updateFilter({ datasources: { web: { url: value } } });
-                      if (!newUrls?.length) return;
-                      const uniqueUrls = getUniqueUrls(newUrls);
-                      await axios.post(`/api/sync/web`, { urls: uniqueUrls, byDomain: false });
-                    }}
-                  />
-                  <AutocompleteSelect
-                    label="Web Site"
-                    options={domains}
-                    // options={appSettings?.web?.urls?.map((s) => s.url) || []}
-                    value={filters?.datasources?.web?.domain || []}
-                    onChange={async (value: string[]) => {
-                      // const currentUrls = filters?.datasources?.web?.domain || [];
-                      // const newUrls = value.filter((v) => !currentUrls.includes(v));
-                      updateFilter({ datasources: { web: { domain: value } } });
-                      // if (!newUrls?.length) return;
-                      // const uniqueUrls = getUniqueUrls(newUrls);
-                      // await axios.post(`/api/sync/web`, { urls: uniqueUrls, byDomain: true });
-                    }}
-                  />
-                </>
-              ) : null}
-              {selectedService.name === 'jira' ? (
+
+              {serviceOpen === 'web' ? <SourcesWeb /> : null}
+
+              {serviceOpen === 'jira' ? (
                 <>
                   <AutocompleteSelect
                     label="Project"
@@ -179,11 +141,11 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                     sx={{ textTransform: 'capitalize' }}
                     options={['to do', 'in progress', 'done']}
                     value={filters?.datasources?.jira?.status_category || []}
-                    onChange={(value: string[]) =>
-                      updateFilter({ datasources: { jira: { status_category: value } } })
-                    }
+                    onChange={(value: string[]) => {
+                      updateFilter({ datasources: { jira: { status_category: value } } });
+                    }}
                   />
-                  <AutocompleteSelect
+                  {/* <AutocompleteSelect
                     label={`Assignee`}
                     sx={{ textTransform: 'capitalize' }}
                     options={[
@@ -202,7 +164,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                     onChange={(value: string[]) =>
                       updateFilter({ datasources: { jira: { assignee: value } } })
                     }
-                  />
+                  /> */}
                 </>
               ) : null}
             </Box>

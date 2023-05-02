@@ -1,9 +1,10 @@
+'use client';
 import * as React from 'react';
+import NextLink from 'next/link';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -11,17 +12,19 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { Chat, Journey } from 'types';
-import { useAnswers } from './AnswersContext';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Add from '@mui/icons-material/Add';
 import { Button, Collapse } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
-const drawerWidth = 320;
+const drawerWidth = 400;
 
 const openedMixin = (theme: Theme): CSSObject => ({
-  width: drawerWidth,
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    width: drawerWidth
+  },
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen
@@ -70,17 +73,22 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export interface ChatDrawerProps {
   journeys?: Journey[];
   chats?: Chat[];
+  defaultOpen?: boolean;
 }
-export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
+
+export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerProps) {
   // const { chat } = useAnswers();
   const router = useRouter();
-  const [open, setOpen] = React.useState(false);
-  const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({});
+  const pathname = usePathname();
+  const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen);
+  const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({ chats: true });
   const handleDrawerOpen = () => {
+    window.localStorage.setItem('drawerOpen', 'true');
     setOpen(true);
   };
 
   const handleDrawerClose = () => {
+    window.localStorage.setItem('drawerOpen', 'false');
     setOpen(false);
   };
   const handleExpandJourney = (idx: string | number) => (evt: any) => {
@@ -98,12 +106,16 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
     router.push('/');
   };
 
+  // React.useEffect(() => {
+  //   setOpen(window.localStorage.getItem('drawerOpen') === 'true');
+  // }, [setOpen]);
+
   return (
     <>
       <DrawerHeader
         sx={{
           position: 'absolute',
-          zIndex: 9999,
+          zIndex: 10,
           transition: '.2s',
           ...(open ? { opacity: 0 } : { opacity: 1, transitionDelay: '.25s' })
         }}>
@@ -114,6 +126,8 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
       <Drawer
         sx={{
           'flexShrink': 0,
+          'position': { md: 'relative', xs: 'absolute' },
+          'zIndex': 1,
           '& .MuiDrawer-paper': {
             position: 'absolute',
             boxSizing: 'border-box'
@@ -142,7 +156,8 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
         </DrawerHeader>
         <ListItem sx={{ flexDirection: 'column' }} disablePadding>
           <Button
-            href={`/`}
+            href={`/chat`}
+            component={NextLink}
             sx={{ px: 2, width: '100%', textTransform: 'capitalize' }}
             onClick={handleNewJourney}
             color="primary">
@@ -169,26 +184,37 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
                 }}>
                 <ListItemButton
                   href={`/journey/${journey.id}`}
+                  component={NextLink}
+                  selected={pathname === `/journey/${journey.id}`}
                   sx={{ width: '100%', py: 2, paddingRight: 1 }}>
-                  <ListItemText primary={`${journey.title}`} />
+                  <ListItemText primary={<strong>{journey.title}</strong>} />
                   {journey?.chats?.length ? (
                     <IconButton onClick={handleExpandJourney(idx)}>
                       {opened[idx] ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
                   ) : null}
-                  <IconButton onClick={() => handleAddChat({ journey })}>
+                  {/* <IconButton onClick={() => handleAddChat({ journey })}>
                     <Add />
-                  </IconButton>
+                  </IconButton> */}
                 </ListItemButton>
-                <Collapse in={opened[idx]} timeout="auto" unmountOnExit sx={{ width: '100%' }}>
+                <Collapse
+                  in={
+                    pathname === `/journey/${journey.id}` ||
+                    opened[idx] ||
+                    !!journey?.chats?.find((c) => pathname?.includes(c.id))
+                  }
+                  timeout="auto"
+                  unmountOnExit
+                  sx={{ width: '100%' }}>
                   <List disablePadding>
                     {journey?.chats?.map((chat) => (
                       <ListItem key={chat.id} disablePadding>
                         <ListItemButton
-                          sx={{ px: 4, background: '#6c6c6c1a' }}
-                          href={`/chat/${chat.id}`}>
+                          selected={pathname === `/chat/${chat.id}`}
+                          href={`/chat/${chat.id}`}
+                          component={NextLink}>
                           <ListItemText
-                            primary={chat.id}
+                            primary={chat.title}
                             secondary={chat?.messages?.[0]?.content}
                           />
                         </ListItemButton>
@@ -204,11 +230,11 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
               sx={{ width: '100%', py: 2, paddingRight: 1 }}
               onClick={handleExpandJourney('chats')}>
               <ListItemText primary={`Chats`} />
-              <IconButton onClick={handleAddChat}>
-                <Add />
-              </IconButton>
               <IconButton onClick={handleExpandJourney('chats')}>
                 {opened['chats'] ? <ExpandLess /> : <ExpandMore />}
+              </IconButton>{' '}
+              <IconButton onClick={handleAddChat}>
+                <Add />
               </IconButton>
             </ListItemButton>
             <Collapse in={opened['chats']} timeout="auto" unmountOnExit sx={{ width: '100%' }}>
@@ -216,8 +242,9 @@ export default function ChatDrawer({ journeys, chats }: ChatDrawerProps) {
                 {chats?.map((chat) => (
                   <ListItem key={chat.id} disablePadding>
                     <ListItemButton
-                      sx={{ px: 4, background: '#6c6c6c1a' }}
-                      href={`/chat/${chat.id}`}>
+                      selected={pathname === `/chat/${chat.id}`}
+                      href={`/chat/${chat.id}`}
+                      component={NextLink}>
                       <ListItemText primary={chat.id} secondary={chat?.messages?.[0]?.content} />
                     </ListItemButton>
                   </ListItem>

@@ -1,13 +1,12 @@
 import { inngest } from './client';
-import { confluencePageLoader, confluencePagesLoader } from '../confluence';
 import { EventVersionHandler } from './EventVersionHandler';
 import { chunkArray } from '../utilities/utils';
-import { ConfluencePage } from '../confluence';
-import { getConfluencePages } from '../confluence/getConfluencePages';
+import { ConfluencePage } from 'types';
 import { jiraAdfToMarkdown } from '../utilities/jiraAdfToMarkdown';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { getUserClients } from '../auth/getUserClients';
 
-const PINECONE_VECTORS_BATCH_SIZE = 10;
+const PINECONE_VECTORS_BATCH_SIZE = 50;
 
 const prefixHeaders = (markdown: string): string => {
   const lines = markdown.split('\n');
@@ -33,7 +32,9 @@ const prefixHeaders = (markdown: string): string => {
 const recursiveCharacterTextSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 6000 });
 const splitPageHtmlChunkMore = async (markdownChunk: string) => {
   const contextChunks = await recursiveCharacterTextSplitter.createDocuments([markdownChunk]);
-  const smallerChunks = contextChunks.map((chunk) => `${chunk.pageContent}`);
+  const smallerChunks: string[] = contextChunks.map(
+    (chunk: { pageContent: any }) => `${chunk.pageContent}`
+  );
 
   return smallerChunks;
 };
@@ -55,7 +56,7 @@ const splitPageAdf = async (page: ConfluencePage) => {
       const header = chunk.match(/(#+\s+.+)\n/)?.[1] ?? '';
       const content = chunk.replace(header, '');
       const chunkMore = await splitPageHtmlChunkMore(content);
-      const chunksWithHeader = chunkMore.map((chunk) => `${header}\n${chunk}`);
+      const chunksWithHeader = chunkMore.map((chunk: any) => `${header}\n${chunk}`);
       return chunksWithHeader;
     })
   );
@@ -75,9 +76,10 @@ const getConfluencePagesVectors = async (confluencePages: ConfluencePage[]) => {
         if (!markdownChunks?.length) return [];
 
         return markdownChunks.map((headingChunk: string, i: any) => ({
-          uid: `WebPage_${page.title}_${i}`,
+          uid: `Confluence_${page.title}_${i}`,
           text: headingChunk,
           metadata: {
+            source: 'confluence',
             id: page.id,
             spaceId: page.spaceId.toString(),
             status: page.status,
@@ -124,13 +126,12 @@ export const processConfluencePages: EventVersionHandler<{ pageIds: string[] }> 
   event: 'confluence/app.sync',
   v: '1',
   handler: async ({ event }) => {
-    try {
-      const confluencePages = (await getConfluencePages()) as ConfluencePage[];
-      const vectors = await getConfluencePagesVectors(confluencePages);
-      const embeddedVectors = await embedVectors(event, vectors);
-    } catch (error) {
-      console.error(`[confluence/app.sync] ${error}`);
-    }
+    const { user } = event;
+    if (!user) throw new Error('User is requierd');
+    const { confluenceClient } = await getUserClients(user);
+    const confluencePages = (await confluenceClient.getConfluencePages()) as ConfluencePage[];
+    const vectors = await getConfluencePagesVectors(confluencePages);
+    const embeddedVectors = await embedVectors(event, vectors);
   }
 };
 
@@ -138,15 +139,15 @@ export const processConfluencePage: EventVersionHandler<{ pageIds: string[] }> =
   event: 'confluence/page.sync',
   v: '1',
   handler: async ({ event }) => {
-    try {
-      const data = event.data;
-      const { pageIds } = data;
-
-      const confluencePages = (await confluencePageLoader.loadMany(pageIds)) as ConfluencePage[];
-      const vectors = await getConfluencePagesVectors(confluencePages);
-      const embeddedVectors = await embedVectors(event, vectors);
-    } catch (error) {
-      console.error(`[confluence/page.sync] ${error}`);
-    }
+    const data = event.data;
+    const { pageIds } = data;
+    const { user } = event;
+    if (!user) throw new Error('User is requierd');
+    const { confluenceClient } = await getUserClients(user);
+    const confluencePages = (await confluenceClient.pageLoader.loadMany(
+      pageIds
+    )) as ConfluencePage[];
+    const vectors = await getConfluencePagesVectors(confluencePages);
+    const embeddedVectors = await embedVectors(event, vectors);
   }
 };
