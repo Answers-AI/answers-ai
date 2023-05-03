@@ -81,22 +81,24 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     }
   };
   return (
-    <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column' }}>
-      <SidekickSelect onSidekickSelected={handleSidekickSelected} selectedSidekick={sidekick} />
+    <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <SidekickSelect onSidekickSelected={handleSidekickSelected} selectedSidekick={sidekick} />
 
-      <Select
-        labelId="demo-simple-select-label"
-        id="demo-simple-select"
-        label="Sidekick"
-        value={gptModel}
-        onChange={handleGptModelSelected}>
-        <MenuItem key="gpt3" value="gpt-3.5-turbo">
-          GPT 3.5
-        </MenuItem>
-        <MenuItem key="gpt4" value="gpt-4">
-          GPT 4
-        </MenuItem>
-      </Select>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          label="Sidekick"
+          value={gptModel}
+          onChange={handleGptModelSelected}>
+          <MenuItem key="gpt3" value="gpt-3.5-turbo">
+            GPT 3.5
+          </MenuItem>
+          <MenuItem key="gpt4" value="gpt-4">
+            GPT 4
+          </MenuItem>
+        </Select>
+      </Box>
       {filters ? <Filters filters={filters} /> : null}
       <TextField
         id="user-chat-input"
@@ -128,8 +130,8 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
           justifyContent: 'flex-end',
           position: 'absolute',
           gap: 1,
-          bottom: 24,
-          right: 24
+          bottom: 28,
+          right: 28
         }}>
         {/* Toggle component that updates when using query or streaming */}
 
