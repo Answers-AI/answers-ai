@@ -218,7 +218,7 @@ export interface ConfluenceSpaceSetting extends ConfluenceSpace {
 }
 
 export interface Message extends Partial<DB.Message> {
-  chat: Chat | null;
+  chat?: Chat | null;
   user?: User | null;
   role: ChatCompletionRequestMessageRoleEnum | string;
   content: string;
