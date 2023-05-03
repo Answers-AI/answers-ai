@@ -76,12 +76,7 @@ const AnswersContext = createContext<AnswersContextType>({
   updateJourney: async () => {}
 });
 
-export function useAnswers({
-  // chats,
-  // chat,
-  // journey,
-  apiUrl = '/api'
-}: any = {}) {
+export function useAnswers({ apiUrl = '/api' }: any = {}) {
   const router = useRouter();
   const context = useContext(AnswersContext);
   const {
@@ -96,21 +91,8 @@ export function useAnswers({
     setIsLoading,
     setError,
     setChatId,
-    setJourneyId,
-    setChat,
-    setJourney,
-    chat: contextChat,
-    journey: contextJourney
+    setJourneyId
   } = context;
-  // React.useEffect(() => {
-  //   if (chat?.id !== contextChat?.id) {
-  //     setMessages(chat?.messages);
-  //     setChat(chat);
-  //   }
-  //   if (journey?.id !== contextJourney?.id) {
-  //     setJourney(journey);
-  //   }
-  // }, [chat, journey, contextJourney, contextChat, setMessages, , setChat, setJourney]);
 
   const addMessage = useCallback(
     (message: Message) => {
@@ -167,7 +149,20 @@ export function useAnswers({
         setIsLoading(false);
       }
     },
-    [addMessage, useStreaming, generateResponse, apiUrl, journeyId, chatId, messages, filters]
+    [
+      addMessage,
+      useStreaming,
+      generateResponse,
+      apiUrl,
+      journeyId,
+      chatId,
+      messages,
+      filters,
+      setChatId,
+      setJourneyId,
+      setError,
+      setIsLoading
+    ]
   );
 
   const updateFilter = (newFilter: AnswersFilters) => {
