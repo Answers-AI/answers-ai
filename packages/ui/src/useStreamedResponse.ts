@@ -17,7 +17,7 @@ export const useStreamedResponse = ({
   filters?: any;
   apiUrl: string;
   onChunk: (chunk: Message) => void;
-  onEnd: () => void;
+  onEnd: (chunk: Message) => void;
 }) => {
   const [isStreaming, setIsStreaming] = useState(false);
 
@@ -81,7 +81,7 @@ export const useStreamedResponse = ({
     }
     setGeneratedResponse({});
     setIsStreaming(false);
-    onEnd();
+    onEnd({ role: 'assistant', content, ...extra });
   };
   return { isLoading: isStreaming, generatedResponse, generateResponse };
 };

@@ -80,7 +80,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     throw contextError;
   }
   const handleResponse = async (response: any) => {
-
     const answer = response.text;
     completionRequest = response.completionRequest;
 
@@ -114,7 +113,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       ...completionRequest,
       stream: true
     },
-    { filters: pineconeFilters, pineconeData, context, summary, completionRequest },
+    {
+      chat,
+      filters: pineconeFilters,
+      ...(process.env.NODE_ENV === 'development' && {
+        pineconeData,
+        context,
+        summary,
+        completionRequest
+      })
+    },
     handleResponse
   );
   res.setHeader('Content-Type', 'text/plain');

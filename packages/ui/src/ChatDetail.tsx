@@ -45,11 +45,10 @@ export const ChatDetail = ({
           color={'transparent'}
           elevation={0}>
           <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              {journey ? journey?.title : null}
-              {chat ? chat?.title ?? chat.id : null}
-            </Typography>
-
+            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+              {chat ? <Typography variant="body1">{chat?.title ?? chat.id}</Typography> : null}
+              {journey ? <Typography variant="body2">{journey?.title}</Typography> : null}
+            </Box>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
               <SourcesToolbar appSettings={appSettings} />
               {/* <IconButton size="large" edge="start" color="inherit" aria-label="menu">

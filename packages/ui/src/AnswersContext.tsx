@@ -115,10 +115,21 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
       setMessages((currentMessages) => {
         const newMessages = [...currentMessages];
         newMessages[messageIdx.current] = chunk;
+        if (chunk?.chat) {
+          if (chunk.chat?.id !== chatId) {
+            setChatId(chunk.chat.id);
+          }
+          if (chunk.chat?.journeyId !== journeyId) {
+            setJourneyId(chunk.chat.journeyId);
+          }
+        }
         return newMessages;
       });
     },
-    onEnd: () => setIsLoading(false)
+    onEnd: () => {
+      // Check if the current route is the chat
+      setIsLoading(false);
+    }
   });
 
   const sendMessage = useCallback(
@@ -168,7 +179,6 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
   const updateFilter = (newFilter: AnswersFilters) => {
     const mergedSettings = deepmerge({}, filters, newFilter);
 
-    console.log('UpdateFilters');
     setFilters(mergedSettings);
   };
 
@@ -186,7 +196,7 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
     setError(null);
     setIsLoading(false);
     if (chatId) {
-      router.push('/');
+      router.push('/journey/' + journeyId);
     }
   };
 
