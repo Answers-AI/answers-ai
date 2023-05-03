@@ -1,6 +1,12 @@
 # Answers AI
 
-This is the official Answers AI monorepo
+AnswerAI is an innovative platform that harnesses the power of generative AI to assist engineers in their coding endeavors. It's the world's first platform of its kind, and it's designed to make your life easier. By syncing datasources from popular tools like Jira, Confluence, Airtable, and Github, as well as the public web, AnswerAI provides a wealth of information at your fingertips.
+
+One of the key features of AnswerAI is the Docubot npm package, an open-source tool that enables you to take advantage of generative AI to write code. With Docubot, you can easily create high-quality code and streamline your coding process.
+
+Additionally, AnswerAI includes the Sidekick Studio, a powerful tool that allows you to create custom sidekicks with expertise in a wide range of fields. Whether you're in marketing, engineering, legal, human resources, customer success, or support, AnswerAI has something for you.
+
+Overall, AnswerAI is a versatile platform that can help you increase your productivity and efficiency in a variety of tasks. With its cutting-edge technology and user-friendly design, AnswerAI is a valuable tool for any engineer looking to optimize their workflow.
 
 ## What's inside?
 

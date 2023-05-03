@@ -36,6 +36,8 @@ export const SYSTEM_SETTINGS: AppSettings = {
     { id: 'notion', name: 'notion', imageURL: '/static/images/logo-notion.svg' },
     { id: 'slack', providerId: 'slack', name: 'slack', imageURL: '/static/images/logo-slack.svg' },
 
-    { id: 'web', name: 'web', imageURL: '/static/images/logo-web.svg', enabled: true }
+    { id: 'web', name: 'web', imageURL: '/static/images/logo-web.svg', enabled: true },
+    { id: 'airtable', name: 'airtable', imageURL: '/static/images/airtable.png', enabled: true },
+    { id: 'docubot', name: 'docubot', imageURL: '/static/images/docubot.png', enabled: true }
   ]
 };

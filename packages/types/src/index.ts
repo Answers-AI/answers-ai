@@ -59,6 +59,20 @@ export interface AppSettings {
   openapi?: {
     urls?: OpenApiSetting[];
   };
+  airtable?: {
+    tables?: {
+      id: string;
+      title: string;
+      enabled: boolean;
+    }[];
+  };
+  docubot?: {
+    repos?: {
+      id: string;
+      name: string;
+      enabled: boolean;
+    }[];
+  };
   models?: Models;
   filters?: AnswersFilters;
 }
@@ -104,8 +118,19 @@ export type SourceFilters =
   | SlackFilters
   | WebFilters
   | OpenApiFilters
-  | ConfluenceFilters;
+  | ConfluenceFilters
+  | AirtableFilters
+  | DocubotFilters;
 
+export interface AirtableFilters {
+  table?: string[];
+  view?: string[];
+}
+
+export interface DocubotFilters {
+  repo?: string[];
+  path?: string[];
+}
 export interface DataSourcesFilters {
   user?: UserFilters;
   jira?: JiraFilters;
@@ -113,6 +138,8 @@ export interface DataSourcesFilters {
   web?: WebFilters;
   openapi?: OpenApiFilters;
   confluence?: ConfluenceFilters;
+  airtable?: AirtableFilters;
+  docubot?: DocubotFilters;
 }
 export interface AnswersFilters {
   models?: {
@@ -127,7 +154,16 @@ type Models = {
   web: string[];
   algolia: string[];
   openapi: string[];
+  airtable: string[];
   [key: string]: string[];
+};
+
+type FeatureFlag = {
+  enabled?: boolean;
+};
+
+export type Flags = {
+  [key: string]: FeatureFlag;
 };
 
 export interface User extends Omit<DB.User, 'appSettings'> {
@@ -223,6 +259,14 @@ export interface OpenApiSetting extends OpenApi {
   enabled: boolean;
 }
 
+export interface AirtableSetting extends AirtableRecord {
+  enabled: boolean;
+}
+
+export interface DocubotSetting extends DocubotRecord {
+  enabled: boolean;
+}
+
 export interface OpenApiProvider {
   added: string;
   preferred: string;
@@ -299,6 +343,17 @@ export type ConfluencePage = {
     };
   };
 };
+
+export type AirtableRecord = {
+  id: number;
+  title: string;
+};
+
+export type DocubotRecord = {
+  id: number;
+  title: string;
+};
+
 
 export interface ConfluenceSetting extends ConfluencePage {
   enabled: boolean;

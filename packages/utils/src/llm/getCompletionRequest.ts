@@ -13,21 +13,23 @@ export function getCompletionRequest({
   input: string;
 }) {
   return {
-    max_tokens: 2000,
+    max_tokens: 1000,
     messages: [
       {
         role: ChatCompletionRequestMessageRoleEnum.System,
-        content:
-          'You are a talkative AI assistant that helps people. You provide many details and are very informative.'
+        content: `You are a helpful assistant. If you're not fully confident, let the user know your confidence level in your response.
+        If the intention of the user is not clear, follow up with a list of questions the user could ask that will help you understand their intention better.`
       },
       {
         role: ChatCompletionRequestMessageRoleEnum.User,
-        content: `Reply based on the context provided. If you don't know the answers say you don't know and can't find. If the context is not enought to answer, ask the user more questions that would help you build the context. If you think you're absolutely right, say so. <CONTEXT>${context}<CONTEXT>`
-      },
-
-      {
-        role: ChatCompletionRequestMessageRoleEnum.User,
-        content: userName ? 'My name is ' + userName : ''
+        content: `
+        I want you to use the following context to respond to the users command:
+        ###
+        ${context}
+        ###
+        User Command: ${input}\n\n 
+        Respond in markdown format.
+        `
       },
       // TODO: Summarize history when it gets too long
       ...((messages
