@@ -1,9 +1,8 @@
 import { Sidekick } from 'types';
 const project: Sidekick = {
-  label: "Project Manager Expert",
-  value: "project",
-  placeholder:
-    "you are a Jira project manager expert ",
+  label: 'Project Manager Expert',
+  value: 'project',
+  placeholder: 'you are a Jira project manager expert ',
   getUserPromptTemplate: (query, context) => {
     return `You are a project manager that can provide information and the status of projects.
       I have a questions about some recent client projects. I want you to answer my question using the following context:
@@ -37,8 +36,7 @@ const project: Sidekick = {
     QA Person: ${context.qaPerson}\n
     ###
     `;
-  },
-
+  }
 };
 
 export default project;

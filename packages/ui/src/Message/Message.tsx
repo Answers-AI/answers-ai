@@ -165,7 +165,15 @@ export const MessageCard = ({
           }}>
           {content ? (
             <>
-              <Typography variant="body1" color="text.secondary" component="div">
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                component="div"
+                sx={{
+                  p: {
+                    whiteSpace: 'pre-wrap'
+                  }
+                }}>
                 <ReactMarkdown>{content}</ReactMarkdown>
               </Typography>
             </>

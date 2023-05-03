@@ -1,10 +1,10 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
 import { Chat } from 'db/generated/prisma-client';
-import { AnswersFilters, Message, User, Sidekicks, Sidekick } from 'types';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { AnswersFilters, Message, User, Sidekicks, Sidekick, WebUrlType } from 'types';
 import OpenAIClient from '../openai/openai';
 import { countTokens } from '../utilities/countTokens';
+import { getUniqueUrls } from '../getUniqueUrls';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
@@ -21,9 +21,8 @@ const parseFilters = (filters: AnswersFilters) => {
 
   if (parsedFilters?.datasources?.web?.url?.length) {
     // TODO: Define a type for the Pinecone filters which this function must return
-    // @ts-expect-error
-    parsedFilters.datasources.web.url = getUniqueUrls(
-      parsedFilters.datasources.web.url.map((url) => (url as WebUrlType)?.url)
+    (parsedFilters.datasources.web.url as any) = getUniqueUrls(
+      parsedFilters?.datasources?.web?.url.map((url) => (url as WebUrlType)?.url)
     );
   }
 
@@ -149,24 +148,26 @@ export const fetchContext = async ({
   let totalTokens = 0;
   const contextSourceFilesUsed: string[] = [];
   const maxContextTokens = getMaxContextTokens(gptModel);
-  const contextPromises = relevantData.map(async (item) => {
-    const renderedContext = sidekick?.contextStringRender(item.metadata); // TODO: get this from the database to give us more flexibility
-    const tokenCount = await countTokens(renderedContext || '');
 
-    if (totalTokens + tokenCount <= maxContextTokens) {
-      console.log('[FetchContext] using file: ', item.metadata.filePath, tokenCount);
-      contextSourceFilesUsed.push(item?.metadata?.filePath || item.metadata?.url); // TODO: standardize teh canonical location of the file
-      totalTokens += tokenCount;
-      return renderedContext;
-    } else {
-      return null;
+  console.log('RelevantData', { pineconeData, relevantData });
+  const contextPromises = relevantData.map((item) => {
+    if (sidekick?.contextStringRender) {
+      const renderedContext = sidekick?.contextStringRender(item.metadata); // TODO: get this from the database to give us more flexibility
+      const tokenCount = countTokens(renderedContext || '');
+
+      if (totalTokens + tokenCount <= maxContextTokens) {
+        console.log('[FetchContext] using file: ', item.metadata.filePath, tokenCount);
+        contextSourceFilesUsed.push(item?.metadata?.filePath || item.metadata?.url); // TODO: standardize teh canonical location (UUID) of the file
+        totalTokens += tokenCount;
+        return renderedContext;
+      } else {
+        return null;
+      }
     }
   });
 
-  const filteredData = await Promise.all(contextPromises);
+  const filteredData = contextPromises;
   const context = filteredData.filter((result) => result !== null).join(' ');
-
-  debugger;
 
   return {
     context,

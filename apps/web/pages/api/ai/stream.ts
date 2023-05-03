@@ -94,7 +94,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     throw contextError;
   }
   const handleResponse = async (response: any) => {
-    debugger;
     const answer = response.text;
     completionRequest = response.completionRequest;
 

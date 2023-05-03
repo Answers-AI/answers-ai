@@ -24,12 +24,15 @@ export async function getCompletionRequest({
   sidekick?: Sidekick;
   gptModel: string;
 }) {
-  const systemPrompt = sidekick.getSystemPromptTemplate(user);
-  const userPrompt = sidekick.getUserPromptTemplate(input, context);
+  const systemPrompt = sidekick.getSystemPromptTemplate
+    ? sidekick.getSystemPromptTemplate(user)
+    : '';
+  const userPrompt = sidekick.getUserPromptTemplate
+    ? sidekick.getUserPromptTemplate(input, context)
+    : input;
 
   const systemPromptTokens = await countTokens(systemPrompt);
   const userPromptTokens = await countTokens(userPrompt);
-  const contextTokens = await countTokens(context);
 
   const maxTokens = getMaxTokensByModel(gptModel);
   let filteredMessages: Message[] = [];

@@ -353,7 +353,6 @@ export type DocubotRecord = {
   title: string;
 };
 
-
 export interface ConfluenceSetting extends ConfluencePage {
   enabled: boolean;
 }
@@ -367,14 +366,10 @@ export type Sidekick = {
   label: string;
   value: string;
   placeholder: string;
-  getSystemPromptTemplate: (user?: User) => string;
-  getUserPromptTemplate: (query: string, context: any) => string;
-  contextStringRender: (
-    item: any,
-  ) => string;
+  getSystemPromptTemplate?: (user?: User) => string;
+  getUserPromptTemplate?: (query: string, context: any) => string;
+  contextStringRender?: (item: any) => string;
 };
 
 // Add the Sidekicks type
 export type Sidekicks = Sidekick[];
-
-

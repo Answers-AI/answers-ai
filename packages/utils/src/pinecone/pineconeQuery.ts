@@ -31,7 +31,7 @@ export const pineconeQuery = async (
       vector: embeddings,
       topK,
       filter,
-      includeValues: true,
+      // includeValues: true,
       includeMetadata: true,
       namespace
     };

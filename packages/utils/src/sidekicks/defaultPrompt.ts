@@ -1,8 +1,8 @@
-import { Sidekick } from "types";
+import { Sidekick } from 'types';
 const defaultPrompt: Sidekick = {
-  label: "Default Assistant",
-  value: "defaultPrompt",
-  placeholder: "I can help with general questions",
+  label: 'Default Assistant',
+  value: 'defaultPrompt',
+  placeholder: 'I can help with general questions',
   getSystemPromptTemplate: () => {
     return `You are a helpful and friendly assistant.You specialize in helping people find answers to questions.`;
   },
@@ -22,8 +22,8 @@ const defaultPrompt: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return`source: ${context?.filePath || context?.url}\n${context.text}\n\n`;
-  },
+    return `source: ${context?.filePath || context?.url}\n${context.text}\n\n`;
+  }
 };
 
 export default defaultPrompt;
