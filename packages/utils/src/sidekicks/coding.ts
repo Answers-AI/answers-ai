@@ -5,24 +5,23 @@ const coding: Sidekick = {
   value: "coding",
   placeholder: "I can create code for you",
   getSystemPromptTemplate: (user) => {
-    return `You are a code assistant. You specialize in building [javascript] applications with OpenAI.`
+    return `You are a code assistant. You specialize in building Typescript applications with NextJS and React.`
   },
   getUserPromptTemplate: (query, context) => {
     return `
-      I want you to use the code in the following context to help with the users command:\n\n
+      I want you to use the code in the following code to help with the users command:\n\n
       """
       ${context}
       """
       User Commmand: ${query}\n\n
+      Your response should be in the form of code snippets and markdown.
       The first response should break the problem down into smaller pieces and provide a high-level overview of the solution.
       Then Create code snippets where the user needs to make updates in the same code style and format as the context.
       Outline the use cases for which end-to-end tests need to be created.
-      Always let the user know how confident you are in your response.
-      - Confidence: 0-100
-      Ask the user what they are trying to do. Ask the user to share files that might be helpful as context.
-      - Suggested Questions: <list of questions>
-      Always end your response with citing your sources in a list. Cite ALL Sources used in the context in the format of a markdown link. 
-      - Source: [http://example.com](My Example Site)\n`;
+      Give me your confidence level in your answer 0-100
+      Where there may be incomplete context, explain how that impacts your answer.
+      Explain to me where you are not confident.
+      Suggest followup information the user can ask to make you more confident in your reponse.\n\n`
   },
   contextStringRender: (context) => {
     return `Source: [${context.filePath}](${context.filePath})\n Javascript:\n${context.code}\n\n`;

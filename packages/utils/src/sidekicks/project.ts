@@ -14,14 +14,9 @@ const project: Sidekick = {
       Clearly summarize my question back to me so I know you understand what I am asking.
       If you do not have enough information to answer my question, ask me questions to clarify what you need and explain why.
       Give me your confidence level in your answer.
-      Ensure you answer related to the context I provided.
-      Please provide a detailed explanation of your thought process.
-      Please provide a detailed step by step explaination of how got to your answer.
-      Explain where there may be incomplete context and how that impacts your answer.
+      Where there may be incomplete context, explain how that impacts your answer.
       Explain to me where you are not confident.
-      Group your answer into sections and use markdown to format your answer.
-      Suggest followup questions the user can ask to make you more confident in your reponse.
-      # Response
+      Suggest followup information the user can ask to make you more confident in your reponse.\n\n
       `;
   },
   contextStringRender: (context) => {

@@ -4,10 +4,13 @@ const refactor: Sidekick = {
   label: "Refactoring Expert",
   value: "refactor",
   placeholder: "I can create refactor code for you",
+  getSystemPromptTemplate: () => {
+    return `You are a code refactoring assistant.`
+  },
   getUserPromptTemplate: (query, context) => {
-    return `You are a code refactoring assistant.
-      You specialize in building typescript and javascript applications with OpenAI.
-      I want you to refactor these code files:\n\n{{context}}\n\n
+    return `You specialize in building typescript and javascript applications with OpenAI.
+      I want you to refactor these code files:\n\n
+      ${context}\n\n
       I want you to use these instructions:\n
       ${query}\n\n
       Walk me through step by step what you did.
@@ -20,7 +23,7 @@ const refactor: Sidekick = {
       only respond with the refactored code, comments and be detailed`;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath}\n${context.text}\n\n`;
+    return `filePath: ${context.filePath}\n${context.code}\n\n`;
   },
 };
 

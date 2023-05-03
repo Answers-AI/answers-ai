@@ -6,7 +6,7 @@ const legal: Sidekick = {
   getUserPromptTemplate: (query, context) => {
     return `You are a legal assistant. You specialize in California business law.
     You represent AnswerAI. I have this question "${query}".
-    Based on the following relevant context:\n\n {{context}}, please provide an legal response in markdown.
+    Based on the following relevant context:\n\n ${context}, please provide an legal response in markdown.
     Cite legal cases and statutes if they are relevant ot the question.
     Explain your answer in detail and step by step.`;
   },

@@ -15,8 +15,10 @@ const research: Sidekick = {
       check to make sure that your answer is based on the context provided.
       Explain your answer in detail and step by step.
       Show me where you found the answer.
+      Give me your confidence level in your answer. 0-100
+      Where there may be incomplete context, explain how that impacts your answer.
       Explain to me where you are not confident.
-      Suggest followup questions the user can ask to make you more confident in your reponse.
+      Suggest followup information the user can ask to make you more confident in your reponse.
       Resonse Template: \n\n
       ## Summary\n\n
       <detailed summary based on the context>\n\n

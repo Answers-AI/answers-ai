@@ -4,32 +4,21 @@ const accountManager: Sidekick = {
   value: "accountManager",
   placeholder:
     "I wont use any of my memory and will answer your questions using ",
+  getSystemPromptTemplate: () => {
+    return `You are a helpful and friendly assistant.You specialize in helping people find answers to questions.`;
+  },
   getUserPromptTemplate: (query, context) => {
-    return `You are a client account manager that can provide cleint information and the status of projects.
-      I have a questions about a client named Sensortower. I want you to answer my question using the following context:
+    return `
+      I am going to ask you a series of questions. I want you to answer my questions using the following context:
       ${context}\n\n
       This is my question:
       ${query}\n\n
       If you do not have enough information to answer my question, ask me questions to clarify what you need.
       If you do not have enough information to answer my question, explain why.
       Give me your confidence level in your answer.
-      Please provide a detailed explanation of your thought process.
-      Please provide a detailed step by step explaination of how got to your answer.
-      Response Template:
-      ## Response
-      <answer to the question>
-      ## Confidence
-      <represent your confidence level as a percentage and explain your reasoning>
-      ## Explanation of thought process
-      - Step 1
-      - Step 2 etc..
-      ## Follow Up Questions
-      - suggested follow up question 1
-      - suggested follow up question 2
-      - suggested follow up question 3
-      ## Actions
-      - [http://example.com](Create Content)
-      - [http://example.com](Publish Content)
+      Where there may be incomplete context, explain how that impacts your answer.
+      Explain to me where you are not confident.
+      Suggest followup information the user can ask to make you more confident in your reponse.
       `;
   },
   contextStringRender: (context) => {

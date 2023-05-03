@@ -106,6 +106,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
               ) : null}
               {(flags?.docubot?.enabled && selectedService.name === 'docubot') ? (  
                 <>
+                <AutocompleteSelect
                     label="Repository"
                     options={
                       appSettings?.docubot?.repos?.filter((s) => s.enabled)?.map((s) => s.id) || []

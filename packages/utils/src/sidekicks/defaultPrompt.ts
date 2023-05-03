@@ -4,21 +4,21 @@ const defaultPrompt: Sidekick = {
   value: 'defaultPrompt',
   placeholder: 'I can help with general questions',
   getSystemPromptTemplate: () => {
-    return `You are a helpful and friendly assistant.You specialize in helping people find answers to questions.`;
+    return `You are a helpful and friendly assistant.You specialize in helping people ask better questions`;
   },
   getUserPromptTemplate: (query, context) => {
     return `
-    I want you to use only the following context to help with the users command:\n\n
+    Use following context to help with the users request:\n\n
     """
     ${context}
     """
-    User Command:\n\n"${query}".\n\n
-    If you are not sure of your answer please let the user know.
-    Start every response with a summary of your answer before you go into detail.
-    Show me where you found the answer.
+    User Request:\n\n"${query}".\n\n
+    If the context is empty, tell the user they can add datasources from the Web, Jira, Docubot, Airtable, or Confleunce.
+    Proceed to help the user find the answer to their question  
+    Give me your confidence level in your answer. 0-100
+    Where there may be incomplete context, explain how that impacts your answer.
     Explain to me where you are not confident.
-    Suggest followup questions the user can ask to make you more confident in your reponse.
-    please provide an appropriate response in markdown.
+    Suggest information or data sources the user can ask to make you more confident in your reponse.
     `;
   },
   contextStringRender: (context) => {
