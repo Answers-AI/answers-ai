@@ -108,7 +108,7 @@ const ChatDetailWidget = ({
           px: 1,
           paddingBottom: 1
         }}>
-        <ChatInput inputRef={inputRef} isWidget />
+        <ChatInput isWidget />
       </Box>
     </Box>
   );

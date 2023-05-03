@@ -186,6 +186,7 @@ export interface Prompt extends DB.Prompt {
   content: string;
 }
 export interface Chat extends Omit<DB.Chat, 'filters'> {
+  journey: Journey | null;
   filters: AnswersFilters;
   prompt: Prompt | null;
   messages: Message[] | null;
@@ -217,6 +218,7 @@ export interface ConfluenceSpaceSetting extends ConfluenceSpace {
 }
 
 export interface Message extends Partial<DB.Message> {
+  chat?: Chat | null;
   user?: User | null;
   role: ChatCompletionRequestMessageRoleEnum | string;
   content: string;

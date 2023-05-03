@@ -13,6 +13,7 @@ import { AppDrawer } from './AppDrawer';
 import { darkModeTheme } from './theme';
 import GlobalStyles from './GlobalStyles';
 import { AppSettings } from 'types';
+
 export default function AppLayout({
   session,
   appSettings,

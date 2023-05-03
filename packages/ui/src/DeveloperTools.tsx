@@ -21,7 +21,7 @@ const DeveloperTools = ({
           display: 'flex',
           height: '100%'
         }}>
-        <ChatDetail appSettings={appSettings} user={user} prompts={prompts} />
+        <ChatDetail appSettings={appSettings} prompts={prompts} />
       </div>
     </>
   );

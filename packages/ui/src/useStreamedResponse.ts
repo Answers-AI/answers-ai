@@ -2,7 +2,11 @@
 // useStreamedResponse.ts
 import { useState } from 'react';
 import { Message } from 'types';
-
+interface GenerateResponseArgs {
+  content: string;
+  sidekick?: string;
+  gptModel?: string;
+}
 export const useStreamedResponse = ({
   chatId,
   journeyId,
@@ -20,18 +24,14 @@ export const useStreamedResponse = ({
   filters?: any;
   apiUrl: string;
   onChunk: (chunk: Message) => void;
-  onEnd: () => void;
   sidekick?: string;
   gptModel?: string;
+  onEnd: (chunk: Message) => void;
 }) => {
   const [isStreaming, setIsStreaming] = useState(false);
 
   const [generatedResponse, setGeneratedResponse] = useState<any>({});
-  interface GenerateResponseArgs {
-    content: string;
-    sidekick?: string;
-    gptModel?: string;
-  }
+
   const generateResponse = async ({ content, sidekick, gptModel }: GenerateResponseArgs) => {
     setGeneratedResponse('');
     setIsStreaming(true);
@@ -89,7 +89,7 @@ export const useStreamedResponse = ({
     }
     setGeneratedResponse({});
     setIsStreaming(false);
-    onEnd();
+    onEnd({ role: 'assistant', content, ...extra });
   };
   return { isLoading: isStreaming, generatedResponse, generateResponse };
 };

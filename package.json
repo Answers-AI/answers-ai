@@ -32,7 +32,7 @@
     "eslint-config-custom": "workspace:*",
     "inngest-cli": "^0.11.0",
     "prettier": "latest",
-    "prisma": "4.12.0",
+    "prisma": "^4.13.0",
     "turbo": "^1.9.3",
     "typescript": "^4.8.4"
   },

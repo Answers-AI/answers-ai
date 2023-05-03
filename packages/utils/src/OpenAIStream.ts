@@ -40,7 +40,7 @@ export async function OpenAIStream(
           try {
             const json = JSON.parse(data);
             const text = json.choices[0].delta.content;
-            // console.log('StreamChunk', text);
+
             if (counter < 2 && (text?.match(/\n/) || []).length) {
               return;
             }

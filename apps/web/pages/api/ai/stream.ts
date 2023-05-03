@@ -132,17 +132,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       stream: true
     },
     {
+      chat,
+      contextSourceFilesUsed,
       filters: pineconeFilters,
-      pineconeData,
-      context,
-      summary,
-      completionRequest,
-      contextSourceFilesUsed
+      ...(process.env.NODE_ENV === 'development' && {
+        pineconeData,
+        context,
+        summary,
+        completionRequest
+      })
     },
     handleResponse
   );
   res.setHeader('Content-Type', 'text/plain');
   res.setHeader('Transfer-Encoding', 'chunked');
+  res.setHeader('Content-Econding', 'none');
 
   //@ts-expect-error
   for await (const chunk of stream) {

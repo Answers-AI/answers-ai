@@ -4,41 +4,40 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { Select, MenuItem } from '@mui/material';
+import { Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
+import { debounce } from '@utils/debounce';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import { DefaultPrompts } from './DefaultPrompts';
 import { SidekickSelect } from './SidekickSelect';
-import { GptModelSelect } from './GptModelSelect';
-
 import { Filters } from './Filters';
 import { Tooltip } from '@mui/material';
 
-export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: boolean }) => {
+export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?: boolean }) => {
   const [inputValue, setInputValue] = useState('');
-  const [sidekick, setSidekick] = useState('defaultPrompt');
+  const [sidekick, setSidekick] = useState('coding');
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
-  const {
-    chat,
-    journey,
-    filters,
-    messages,
-    sendMessage,
-    clearMessages,
-    isLoading,
-    useStreaming,
-    setUseStreaming,
-    setShowFilters
-  } = useAnswers();
+  const { chat, journey, filters, messages, sendMessage, clearMessages, isLoading } = useAnswers();
 
-  const flags = useFlags(['settings_stream', 'recommended_prompts_expand', 'sidekicks', 'gpt_models']);
+  const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
 
   const [showPrompts, setShowPrompts] = useState(
     !messages?.length && flags?.recommended_prompts_expand?.enabled
   );
   React.useEffect(() => {}, []);
+
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  React.useEffect(() => {
+    const debouncedScroll = debounce(() => {
+      if (messages?.length)
+        scrollRef?.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+      inputRef?.current?.focus();
+    }, 300);
+    debouncedScroll();
+  }, [chat, journey, messages, scrollRef]);
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
@@ -50,12 +49,14 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
     setInputValue('');
   };
 
-  const handleSidekickSelected = (sidekick: string) => {
-    setSidekick(sidekick);
+  const handleSidekickSelected = (value: string) => {
+    setSidekick(value);
+    console.log('sidekick selected', value);
   };
 
-  const handleGptModelSelected = (gptModel: string) => {
-    setGptModel(gptModel);
+  const handleGptModelSelected = (event: SelectChangeEvent<string>) => {
+    setGptModel(event.target.value as string);
+    console.log('gpt model selected', event.target.value);
   };
 
   const handleInputFocus = () => {
@@ -81,13 +82,21 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
   };
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column' }}>
+      <SidekickSelect onSidekickSelected={handleSidekickSelected} selectedSidekick={sidekick} />
 
-      {flags?.sidekicks?.enabled ? (
-        <SidekickSelect onSidekickSelected={handleSidekickSelected} selectedSidekick={sidekick} />
-      ) : null}
-      {flags?.gpt_models?.enabled ? (
-          <GptModelSelect onGptModelSelected={handleGptModelSelected} selectedGptModel={gptModel} />
-      ) : null}
+      <Select
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
+        label="Sidekick"
+        value={gptModel}
+        onChange={handleGptModelSelected}>
+        <MenuItem key="gpt3" value="gpt-3.5-turbo">
+          GPT 3.5
+        </MenuItem>
+        <MenuItem key="gpt4" value="gpt-4">
+          GPT 4
+        </MenuItem>
+      </Select>
       {filters ? <Filters filters={filters} /> : null}
       <TextField
         id="user-chat-input"
@@ -119,12 +128,12 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
           justifyContent: 'flex-end',
           position: 'absolute',
           gap: 1,
-          right: 16,
-          bottom: 16
+          bottom: 24,
+          right: 24
         }}>
         {/* Toggle component that updates when using query or streaming */}
 
-        {flags.settings_stream.enabled ? (
+        {/* {flags.settings_stream.enabled ? (
           <FormControlLabel
             control={
               <Switch
@@ -136,7 +145,7 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
             }
             label={'Stream'}
           />
-        ) : null}
+        ) : null} */}
         {!isWidget && messages?.length ? (
           <Tooltip title="Start new chat">
             <Button

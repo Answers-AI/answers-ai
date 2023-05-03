@@ -13,7 +13,7 @@ interface SidekickSelectProps {
 
 export const SidekickSelect = ({ onSidekickSelected, selectedSidekick }: SidekickSelectProps) => {
   const handleSidekickChange = (event: SelectChangeEvent<string>) => {
-    onSidekickSelected(event.target.value as string);
+    onSidekickSelected(event.target.value);
   };
 
   return sidekicks?.length ? (
