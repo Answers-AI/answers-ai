@@ -17,9 +17,8 @@ export function getCompletionRequest({
     messages: [
       {
         role: ChatCompletionRequestMessageRoleEnum.System,
-        content:
-          `You are a helpful assistant. Always let the user know your confidence level in your response.
-          Always follow up with a list of questions the user could ask that will help you understand their intention better.`
+        content: `You are a helpful assistant. If you're not fully confident, let the user know your confidence level in your response.
+        If the intention of the user is not clear, follow up with a list of questions the user could ask that will help you understand their intention better.`
       },
       {
         role: ChatCompletionRequestMessageRoleEnum.User,
