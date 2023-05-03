@@ -26,7 +26,7 @@ export async function OpenAIStream(
   let answer = '';
   const stream = new ReadableStream({
     async start(controller) {
-      // controller.enqueue(encoder.encode(JSON.stringify(extra) + 'JSON_END')); // TODO: Need to get this back in. Was breaking the response when code was added to the prompt
+      controller.enqueue(encoder.encode(JSON.stringify(extra) + 'JSON_END'));
 
       function onParse(event: ParsedEvent | ReconnectInterval) {
         if (event.type === 'event') {
@@ -38,7 +38,7 @@ export async function OpenAIStream(
           try {
             const json = JSON.parse(data);
             const text = json.choices[0].delta.content;
-            // console.log('StreamChunk', text);
+
             if (counter < 2 && (text?.match(/\n/) || []).length) {
               return;
             }

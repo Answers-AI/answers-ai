@@ -218,6 +218,7 @@ export interface ConfluenceSpaceSetting extends ConfluenceSpace {
 }
 
 export interface Message extends Partial<DB.Message> {
+  chat?: Chat | null;
   user?: User | null;
   role: ChatCompletionRequestMessageRoleEnum | string;
   content: string;
@@ -353,7 +354,6 @@ export type DocubotRecord = {
   id: number;
   title: string;
 };
-
 
 export interface ConfluenceSetting extends ConfluencePage {
   enabled: boolean;
