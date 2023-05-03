@@ -35,7 +35,10 @@ export function getCompletionRequest({
       ...((messages
         ? messages?.slice(-10)?.map(({ role, content }) => ({ role, content }))
         : []) as ChatCompletionRequestMessage[]),
-      { role: ChatCompletionRequestMessageRoleEnum.User, content: input }
+      {
+        role: ChatCompletionRequestMessageRoleEnum.User,
+        content: input
+      }
     ],
 
     temperature: 0.1,
