@@ -45,7 +45,6 @@ export const processJiraUpdated: EventVersionHandler<{
     const projects = await jiraClient.getJiraProjects();
 
     // Fetch all Jira issues in the configured projects
-    console.log({ project, projectKeysFilter });
     await Promise.all(
       chunkArray(
         projects?.filter((project) => projectKeysFilter?.includes(project.key)),

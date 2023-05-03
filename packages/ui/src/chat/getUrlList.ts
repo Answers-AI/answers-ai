@@ -1,6 +1,6 @@
 import { prisma } from 'db/dist';
 
-export async function getUrlList({ domains }: { domains?: string[] }) {
+const getUrlList = async ({ domains }: { domains?: string[] }) => {
   const urlsPromise = await prisma.webDocument.findMany({
     select: {
       url: true
@@ -9,5 +9,8 @@ export async function getUrlList({ domains }: { domains?: string[] }) {
       domain: { in: domains }
     }
   });
+
   return urlsPromise;
-}
+};
+
+export default getUrlList;

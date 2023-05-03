@@ -6,7 +6,7 @@ import NextLink from 'next/link';
 import { AnswersFilters, Chat, Journey } from 'types';
 import TreeView from '@mui/lab/TreeView';
 import TreeItem from '@mui/lab/TreeItem';
-import ChatDrawer from './ChatDrawer';
+// import ChatDrawer from './ChatDrawer';
 
 interface Props {
   journeys?: Journey[];
@@ -22,7 +22,6 @@ function JourneySection({ journeys, chats }: Props) {
       </Box>
     );
   }
-  return <ChatDrawer journeys={journeys} chats={chats} />;
 }
 
 export default JourneySection;

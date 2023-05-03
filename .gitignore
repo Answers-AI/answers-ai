@@ -39,5 +39,5 @@ yarn-error.log*
 **/cypress/screenshots
 **/cypress/videos
 
-docubot/markdown
-docubot/preview
+# docubot
+**/docubot

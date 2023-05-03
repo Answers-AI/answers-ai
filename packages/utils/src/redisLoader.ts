@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader';
-import Redis, { RedisOptions } from 'ioredis';
+import Redis from 'ioredis';
 import { createHash } from 'crypto';
 
 const primeAll = async <K, V>(
@@ -37,21 +37,28 @@ const redisLoader = <K, V>({
   disableCache?: boolean;
 }) => {
   const redis = new Redis(redisConfig);
+
   const hashKey = (key: K) =>
     `v1:${keyPrefix || 'default'}:redisLoader:` +
     createHash('sha1').update(JSON.stringify(key)).digest('base64');
 
   const batchLoadFn = async (cacheKeys: readonly K[]) => {
     if (disableCache) return getValuesFn(cacheKeys);
-    const cacheKeyStrings = cacheKeys.map(hashKey);
-    // console.log('Loading from redis', cacheKeyStrings?.length);
-    // console.time('Loading from redis:' + cacheKeyStrings?.length);
 
-    const cachedValues = await redis.mget(...cacheKeyStrings).catch((err) => {
-      console.log('Redis error: ', err);
+    const cacheKeyStrings = cacheKeys.map(hashKey);
+    const cacheKeyStringLength = cacheKeyStrings?.length;
+
+    let cachedValues: (string | null)[] = [];
+    const timerName = `Loading ${cacheKeyStringLength} items from redis @ ${Date.now()}`;
+    try {
+      console.time(timerName);
+      cachedValues = await redis.mget(...cacheKeyStrings);
+    } catch (err) {
+      console.log('[Error in redisLoader] ', err);
       return cacheKeyStrings?.map(() => null);
-    });
-    console.timeEnd('Loading from redis:' + cacheKeyStrings?.length);
+    } finally {
+      console.timeEnd(timerName);
+    }
 
     const cacheMissKeys: K[] = [];
     const results: (V | null)[] = [];
@@ -59,6 +66,7 @@ const redisLoader = <K, V>({
     for (let i = 0; i < cacheKeys.length; i++) {
       const cacheKey = cacheKeys[i];
       const cachedValue = cachedValues[i];
+
       if (cachedValue) {
         try {
           const parsedValue = JSON.parse(cachedValue);
@@ -78,18 +86,23 @@ const redisLoader = <K, V>({
     }
 
     if (cacheMissKeys.length > 0) {
-      console.log('Cache miss', {
-        cacheMissKey: hashKey(cacheMissKeys[0]),
-        count: cacheMissKeys.length
-      });
+      console.log(
+        `[redisLoader] Cache miss: { cacheMissKey: ${hashKey(cacheMissKeys[0])}, count: ${
+          cacheMissKeys.length
+        } }`
+      );
+
       const nonCachedValues = await getValuesFn(cacheMissKeys);
+
       const nonCachedKeyValues: [K, V | null][] = nonCachedValues.map((value, index) => [
         cacheMissKeys[index],
         value
       ]);
+
       await redis.mset(
         ...nonCachedKeyValues.flatMap(([key, value]) => [hashKey(key), JSON.stringify(value)])
       );
+
       // Set the expiration time for the cache key
       if (cacheExpirationInSeconds)
         await Promise.all(

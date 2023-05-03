@@ -52,15 +52,16 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
 
   const handleSidekickSelected = (sidekick: string) => {
     setSidekick(sidekick);
-    console.log('sidekick selected', sidekick);
   };
 
   const handleGptModelSelected = (gptModel: string) => {
     setGptModel(gptModel);
-    console.log('gpt model selected', gptModel);
   };
 
   const handleInputFocus = () => {
+    if (flags?.recommended_prompts_expand?.value == 'blur') setShowPrompts(true);
+  };
+  const handleInputBlur = () => {
     if (flags?.recommended_prompts_expand?.value == 'blur') setShowPrompts(false);
   };
 
@@ -97,7 +98,7 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
             paddingRight: 4,
             paddingBottom: 5,
             maxHeight: theme.spacing(8),
-            overflowY: 'auto'
+            overflowY: 'auto!important'
           }
         })}
         variant="filled"
@@ -109,6 +110,7 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
         onKeyPress={handleKeyPress}
         onChange={handleInputChange}
         onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
       />
 
       <Box

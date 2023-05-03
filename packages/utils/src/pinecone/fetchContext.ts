@@ -1,14 +1,13 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
 import { Chat } from 'db/generated/prisma-client';
-import { AnswersFilters, Message, User, Sidekicks, Sidekick } from 'types';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { AnswersFilters, Message, User, Sidekicks, Sidekick, WebUrlType } from 'types';
 import OpenAIClient from '../openai/openai';
 import { countTokens } from '../utilities/countTokens';
+import { getUniqueUrls } from '../getUniqueUrls';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
-
 
 // TODO: find a more dynamic way to parse the filters into Pinecone
 const parseFilters = (filters: AnswersFilters) => {
@@ -19,13 +18,21 @@ const parseFilters = (filters: AnswersFilters) => {
     );
     delete parsedFilters.datasources.confluence.spaces;
   }
+
+  if (parsedFilters?.datasources?.web?.url?.length) {
+    // TODO: Define a type for the Pinecone filters which this function must return
+    (parsedFilters.datasources.web.url as any) = getUniqueUrls(
+      parsedFilters?.datasources?.web?.url.map((url) => (url as WebUrlType)?.url)
+    );
+  }
+
   return parsedFilters;
 };
 
 const filterPineconeDataRelevanceThreshhold = (data: any[], threshold: number) => {
   const sortedData = data
-    .filter((x: { score: number; }) => x.score > threshold)
-    .sort((a: { score: number; }, b: { score: number; }) => b.score - a.score);
+    .filter((x: { score: number }) => x.score > threshold)
+    .sort((a: { score: number }, b: { score: number }) => b.score - a.score);
 
   return sortedData;
 };
@@ -40,7 +47,6 @@ const getMaxContextTokens = (gptModel: string) => {
       return 3500;
   }
 };
-
 
 export const fetchContext = async ({
   user,
@@ -57,10 +63,7 @@ export const fetchContext = async ({
   sidekick?: Sidekick;
   gptModel?: string;
 }) => {
-  const ts = Date.now();
-
-  
-
+  const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
   const filters = parseFilters(clientFilters);
   const promptEmbedding = await openai.createEmbedding({
@@ -141,30 +144,29 @@ export const fetchContext = async ({
   // Filter out any results that are above the relavance threshold, sort by score and retunr the max number based on gptModel
   let relevantData = filterPineconeDataRelevanceThreshhold(pineconeData, 0.68);
 
-
   // Render the context string based on the sidekick and number of tokens
   let totalTokens = 0;
   const contextSourceFilesUsed: string[] = [];
   const maxContextTokens = getMaxContextTokens(gptModel);
-  const contextPromises = relevantData.map(async (item) => {
-    const renderedContext = sidekick?.contextStringRender(item.metadata); // TODO: get this from the database to give us more flexibility 
-    const tokenCount = await countTokens(renderedContext || '');
-  
-    if (totalTokens + tokenCount <= maxContextTokens) {
-      console.log('[FetchContext] using file: ', item.metadata.filePath, tokenCount);
-      contextSourceFilesUsed.push(item?.metadata?.filePath || item.metadata?.url); // TODO: standardize teh canonical location of the file
-      totalTokens += tokenCount;
-      return renderedContext;
-    } else {
-      return null;
+
+  const contextPromises = relevantData.map((item) => {
+    if (sidekick?.contextStringRender) {
+      const renderedContext = sidekick?.contextStringRender(item.metadata); // TODO: get this from the database to give us more flexibility
+      const tokenCount = countTokens(renderedContext || '');
+
+      if (totalTokens + tokenCount <= maxContextTokens) {
+        console.log('[FetchContext] using file: ', item.metadata.filePath, tokenCount);
+        contextSourceFilesUsed.push(item?.metadata?.filePath || item.metadata?.url); // TODO: standardize teh canonical location (UUID) of the file
+        totalTokens += tokenCount;
+        return renderedContext;
+      } else {
+        return null;
+      }
     }
   });
-  
-  const filteredData = await Promise.all(contextPromises);
-  const context = filteredData.filter(result => result !== null).join(' ');
 
-  debugger;
-  
+  const filteredData = contextPromises;
+  const context = filteredData.filter((result) => result !== null).join(' ');
 
   return {
     context,
@@ -172,6 +174,7 @@ export const fetchContext = async ({
     contextSourceFilesUsed,
     ...(process.env.NODE_ENV === 'development'
       ? {
+          pineconeFilters: filters,
           filteredData,
           pineconeData
         }

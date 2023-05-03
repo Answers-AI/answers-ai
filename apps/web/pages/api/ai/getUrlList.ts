@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 
 import cors from '@ui/cors';
 import { authOptions } from '@ui/authOptions';
-import { getUrlList } from '@ui/chat/getUrlList';
+import getUrlList from '@ui/chat/getUrlList';
 
 type Data = {
   urls: string[];

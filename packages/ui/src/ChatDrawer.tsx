@@ -1,4 +1,6 @@
+'use client';
 import * as React from 'react';
+import NextLink from 'next/link';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -104,9 +106,9 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
     router.push('/');
   };
 
-  React.useEffect(() => {
-    setOpen(window.localStorage.getItem('drawerOpen') === 'true');
-  }, [setOpen]);
+  // React.useEffect(() => {
+  //   setOpen(window.localStorage.getItem('drawerOpen') === 'true');
+  // }, [setOpen]);
 
   return (
     <>
@@ -154,7 +156,8 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
         </DrawerHeader>
         <ListItem sx={{ flexDirection: 'column' }} disablePadding>
           <Button
-            href={`/`}
+            href={`/chat`}
+            component={NextLink}
             sx={{ px: 2, width: '100%', textTransform: 'capitalize' }}
             onClick={handleNewJourney}
             color="primary">
@@ -181,6 +184,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
                 }}>
                 <ListItemButton
                   href={`/journey/${journey.id}`}
+                  component={NextLink}
                   selected={pathname === `/journey/${journey.id}`}
                   sx={{ width: '100%', py: 2, paddingRight: 1 }}>
                   <ListItemText primary={<strong>{journey.title}</strong>} />
@@ -207,7 +211,8 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
                       <ListItem key={chat.id} disablePadding>
                         <ListItemButton
                           selected={pathname === `/chat/${chat.id}`}
-                          href={`/chat/${chat.id}`}>
+                          href={`/chat/${chat.id}`}
+                          component={NextLink}>
                           <ListItemText
                             primary={chat.title}
                             secondary={chat?.messages?.[0]?.content}
@@ -238,7 +243,8 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
                   <ListItem key={chat.id} disablePadding>
                     <ListItemButton
                       selected={pathname === `/chat/${chat.id}`}
-                      href={`/chat/${chat.id}`}>
+                      href={`/chat/${chat.id}`}
+                      component={NextLink}>
                       <ListItemText primary={chat.id} secondary={chat?.messages?.[0]?.content} />
                     </ListItemButton>
                   </ListItem>

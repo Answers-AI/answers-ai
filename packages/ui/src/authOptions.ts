@@ -8,8 +8,6 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from 'db/dist';
 import { inngest } from '@utils/ingest/client';
 import { User as AnswersUser } from 'types';
-
-// import { USER_EVENTS } from '@utils/ingest/auth';
 export const USER_EVENTS = ['signIn', 'signOut', 'createUser', 'updateUser', 'linkAccount'];
 
 declare module 'next-auth' {

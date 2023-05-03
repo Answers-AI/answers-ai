@@ -119,7 +119,7 @@ jobs:
       #     ## SETUP ##
 
       - name: Run Component Tests
-        run: pnpm cypress run --component --record
+        run: pnpm cypress run --component --record --group 'UI - Chrome'
         env:
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}

@@ -15,7 +15,12 @@ interface AnswersContextType {
   messages?: Array<Message>;
   prompts?: Array<Prompt>;
   chats?: Array<Chat>;
-  sendMessage: (content: string, isNewJourney?: boolean, sidekick?: string, gptModel?: string) => void;
+  sendMessage: (
+    content: string,
+    isNewJourney?: boolean,
+    sidekick?: string,
+    gptModel?: string
+  ) => void;
   clearMessages: () => void;
   regenerateAnswer: () => void;
   isLoading: boolean;
@@ -132,7 +137,7 @@ export function AnswersProvider({
       addMessage({ role: 'user', content: content } as Message);
       try {
         if (useStreaming) {
-          generateResponse(content, sidekick, gptModel); // Pass sidekick and gptModel here
+          generateResponse({ content, sidekick, gptModel }); // Pass sidekick and gptModel here
         } else {
           const { data } = await axios.post(`${apiUrl}/ai/query`, {
             isNewJourney,
@@ -144,7 +149,7 @@ export function AnswersProvider({
             sidekick,
             gptModel
           });
-  
+
           setChatId(data?.chat.id);
           setJourneyId(data?.chat.journeyId);
           addMessage(data);
@@ -156,12 +161,11 @@ export function AnswersProvider({
       }
     },
     [addMessage, useStreaming, generateResponse, apiUrl, journeyId, chatId, messages, filters]
-  );  
+  );
 
   const updateFilter = (newFilter: AnswersFilters) => {
     const mergedSettings = deepmerge({}, filters, newFilter);
 
-    console.log('UpdateFilters');
     setFilters(mergedSettings);
   };
 
@@ -170,7 +174,7 @@ export function AnswersProvider({
     // if (messages[messages.length - 1].role === ChatCompletionRequestMessageRoleEnum.Assistant) {
     //   setMessages(messages.slice(0, -1));
     // }
-    sendMessage(message);
+    sendMessage(message.content);
   };
 
   const clearMessages = () => {

@@ -20,6 +20,7 @@ describe('Message', () => {
       updatedAt: new Date(''),
       emailVerified: new Date(),
       organizationId: 'test-org-id',
+      invited: new Date(),
       image: null
     },
     likes: 0,
