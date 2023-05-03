@@ -29,7 +29,6 @@ export default function AutocompleteSelect<T>({
 }: Props<T>) {
   const handleChange = (event: any, newValue: any) => {
     const { target } = event;
-    console.log('Values', { event, newValue, options });
     onChange(
       // On autofill we get a stringified value.
 

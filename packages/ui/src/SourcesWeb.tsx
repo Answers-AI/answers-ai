@@ -38,7 +38,6 @@ const groupByDomain = (data: string[]) => {
 
 const SourcesWeb: React.FC<{}> = () => {
   const { filters, updateFilter } = useAnswers();
-  console.log('filters', filters?.datasources?.web?.url);
 
   const activeUrls = filters?.datasources?.web?.url?.map((webUrl) => webUrl.url) || [];
   // const [activeDomains, setActiveDomains] = useState<string[]>([]);

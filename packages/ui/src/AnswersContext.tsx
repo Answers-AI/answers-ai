@@ -166,7 +166,6 @@ export function AnswersProvider({
   const updateFilter = (newFilter: AnswersFilters) => {
     const mergedSettings = deepmerge({}, filters, newFilter);
 
-    console.log('UpdateFilters');
     setFilters(mergedSettings);
   };
 

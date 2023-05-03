@@ -35,14 +35,7 @@ export const useStreamedResponse = ({
   const generateResponse = async ({ content, sidekick, gptModel }: GenerateResponseArgs) => {
     setGeneratedResponse('');
     setIsStreaming(true);
-    console.log('[AI][Stream] Starting: ', {
-      content,
-      journeyId,
-      chatId,
-      filters,
-      sidekick,
-      gptModel
-    });
+
     const response = await fetch(`${apiUrl || '/api'}/ai/stream`, {
       method: 'POST',
       headers: {
@@ -60,7 +53,6 @@ export const useStreamedResponse = ({
     });
 
     if (!response.ok) {
-      console.log(response);
       throw new Error(response.statusText);
     }
 
@@ -85,7 +77,6 @@ export const useStreamedResponse = ({
         if (jsonData && rest?.length) {
           try {
             extra = JSON.parse(jsonData);
-            console.log('ParsedExtra', extra);
           } catch (e) {
             console.log('ParseError', e);
           }

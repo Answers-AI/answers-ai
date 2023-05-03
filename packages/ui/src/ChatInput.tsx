@@ -52,12 +52,10 @@ export const ChatInput = ({ inputRef, isWidget }: { inputRef: any; isWidget?: bo
 
   const handleSidekickSelected = (sidekick: string) => {
     setSidekick(sidekick);
-    console.log('sidekick selected', sidekick);
   };
 
   const handleGptModelSelected = (gptModel: string) => {
     setGptModel(gptModel);
-    console.log('gpt model selected', gptModel);
   };
 
   const handleInputFocus = () => {

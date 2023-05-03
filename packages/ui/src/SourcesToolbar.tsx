@@ -106,8 +106,6 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
               ) : null}
               {(flags?.docubot?.enabled && selectedService.name === 'docubot') ? (  
                 <>
-                  {console.log(appSettings)}
-                  <AutocompleteSelect
                     label="Repository"
                     options={
                       appSettings?.docubot?.repos?.filter((s) => s.enabled)?.map((s) => s.id) || []
@@ -121,7 +119,6 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
               ) : null}
               {(flags?.airtable?.enabled && selectedService.name === 'airtable') ? (
                 <>
-                  {console.log(appSettings)}
                   <AutocompleteSelect
                     label="Table"
                     options={

@@ -149,7 +149,6 @@ export const fetchContext = async ({
   const contextSourceFilesUsed: string[] = [];
   const maxContextTokens = getMaxContextTokens(gptModel);
 
-  console.log('RelevantData', { pineconeData, relevantData });
   const contextPromises = relevantData.map((item) => {
     if (sidekick?.contextStringRender) {
       const renderedContext = sidekick?.contextStringRender(item.metadata); // TODO: get this from the database to give us more flexibility
