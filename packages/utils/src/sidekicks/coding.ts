@@ -15,12 +15,11 @@ const coding: Sidekick = {
       """
       User Commmand: ${query}\n\n
       Your response should be in the form of code snippets and markdown.
-      The first response should break the problem down into smaller pieces and provide a high-level overview of the solution.
+      The first response should break the problem down into smaller pieces.
       Then Create code snippets where the user needs to make updates in the same code style and format as the context.
       Outline the use cases for which end-to-end tests need to be created.
       Give me your confidence level in your answer 0-100
       Where there may be incomplete context, explain how that impacts your answer.
-      Explain to me where you are not confident.
       Suggest followup information the user can ask to make you more confident in your reponse.\n\n`
   },
   contextStringRender: (context) => {

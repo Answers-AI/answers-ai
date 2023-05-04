@@ -17,7 +17,8 @@ import { Tooltip } from '@mui/material';
 
 export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?: boolean }) => {
   const [inputValue, setInputValue] = useState('');
-  const [sidekick, setSidekick] = useState('coding');
+  
+  const [sidekick, setSidekick] = useState('defaultPrompt');
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
   const { chat, journey, filters, messages, sendMessage, clearMessages, isLoading } = useAnswers();
 
