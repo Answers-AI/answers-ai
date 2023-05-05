@@ -1,17 +1,12 @@
 import { LLMChain } from 'langchain';
 import { ChatOpenAI } from 'langchain/chat_models';
 import { OpenAI } from 'langchain/llms';
-import {
-  ChatPromptTemplate,
-  HumanMessagePromptTemplate,
-  SystemMessagePromptTemplate
-} from 'langchain/prompts';
-import { Message } from 'types';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+
+import { Message, User } from 'types';
 
 import { Configuration, OpenAIApi } from 'openai';
 
-import { assistantPrompt, chatPrompt, intentionPrompt, rawPrompt } from './chatPrompt';
+import { rawPrompt } from './chatPrompt';
 import { summarizeQAPrompt, summarizePrompt } from './summarizePrompt';
 import { getCompletionRequest } from './getCompletionRequest';
 
@@ -45,19 +40,19 @@ export const createChatChain = ({ messages }: { messages?: Message[] }) => {
   const chain = {
     call: async ({
       context,
-      userName,
+      user,
       input,
       messages
     }: {
       context: string;
-      userName?: string | null;
+      user?: User;
       input: string;
       messages?: Message[];
       agent_scratchpad: string;
     }) => {
       console.log('[ChatChain] context', context?.length);
-      const completionRequest = getCompletionRequest({ context, userName, messages, input });
-      const response = await openai.createChatCompletion(completionRequest);
+      const completionRequest = await getCompletionRequest({ context, user, messages, input });
+      const response = await openai.createChatCompletion(completionRequest as any);
       const text = response.data.choices[0].message?.content;
       return { completionRequest, text };
     }

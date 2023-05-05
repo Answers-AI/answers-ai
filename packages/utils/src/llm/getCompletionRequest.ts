@@ -18,11 +18,11 @@ export async function getCompletionRequest({
   gptModel
 }: {
   context: string;
-  user: User;
+  user?: User;
   messages?: Message[];
   input: string;
   sidekick?: Sidekick;
-  gptModel: string;
+  gptModel?: string;
 }) {
   const systemPrompt = sidekick.getSystemPromptTemplate
     ? sidekick.getSystemPromptTemplate(user)
@@ -71,7 +71,7 @@ export async function getCompletionRequest({
   };
 }
 
-const getMaxTokensByModel = (gptModel: string) => {
+const getMaxTokensByModel = (gptModel?: string) => {
   switch (gptModel) {
     case 'gpt-3.5-turbo':
       return 4000;
