@@ -11,14 +11,13 @@ import SourcesWeb from './SourcesWeb';
 
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
-  const flags = useFlags(['airtable', 'docubot']) as Flags;
-  const enabledServices: AppService[] | undefined = appSettings?.services?.filter(
-    (service) => {
-    const isServiceEnabledInFlags = flags?.[service.name]?.enabled;
-    return service.enabled && (isServiceEnabledInFlags === undefined || isServiceEnabledInFlags);
-  }
-  );
-  
+
+  const flags = useFlags(['airtable', 'docubot']);
+
+  const enabledServices: AppService[] | undefined = appSettings?.services?.filter((service) => {
+    const isServiceEnabledInFlags = (flags?.[service.name] as any)?.enabled;
+    return isServiceEnabledInFlags || service.enabled;
+  });
 
   const [serviceOpen, setServiceOpen] = React.useState<string>('');
   const { filters, updateFilter } = useAnswers();
@@ -92,9 +91,8 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                   />
                 </>
               ) : null}
-              {(flags?.docubot?.enabled && selectedService.name === 'docubot') ? (  
+              {flags?.docubot?.enabled && selectedService.name === 'docubot' ? (
                 <>
-                  {console.log(appSettings)}
                   <AutocompleteSelect
                     label="Repository"
                     options={
@@ -107,13 +105,13 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                   />
                 </>
               ) : null}
-              {(flags?.airtable?.enabled && selectedService.name === 'airtable') ? (
+              {flags?.airtable?.enabled && selectedService.name === 'airtable' ? (
                 <>
-                  {console.log(appSettings)}
                   <AutocompleteSelect
                     label="Table"
                     options={
-                      appSettings?.airtable?.tables?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                      appSettings?.airtable?.tables?.filter((s) => s.enabled)?.map((s) => s.id) ||
+                      []
                     }
                     value={filters?.datasources?.airtable?.table || []}
                     onChange={(value: string[]) =>

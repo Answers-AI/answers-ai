@@ -94,7 +94,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     console.time(`[${ts}] [query chatChain.call]: ` + prompt);
     const response = await chatChain.call({
       context: summary,
-      userName: user.name,
+      user,
       input: prompt,
       messages,
       agent_scratchpad: ''

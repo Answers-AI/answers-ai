@@ -1,10 +1,10 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
-import { AnswersFilters, Message, User, WebUrlType } from 'types';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { Chat } from 'db/generated/prisma-client';
+import { AnswersFilters, Message, User, Sidekicks, Sidekick, WebUrlType } from 'types';
 import OpenAIClient from '../openai/openai';
-import { summarizeAI } from '../summarizeAI';
-import { getUniqueUrls } from '@utils/getUniqueUrls';
+import { countTokens } from '../utilities/countTokens';
+import { getUniqueUrls } from '../getUniqueUrls';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
@@ -21,75 +21,51 @@ const parseFilters = (filters: AnswersFilters) => {
 
   if (parsedFilters?.datasources?.web?.url?.length) {
     // TODO: Define a type for the Pinecone filters which this function must return
-    // @ts-expect-error
-    parsedFilters.datasources.web.url = getUniqueUrls(
-      parsedFilters.datasources.web.url.map((url) => (url as WebUrlType)?.url)
+    (parsedFilters.datasources.web.url as any) = getUniqueUrls(
+      parsedFilters?.datasources?.web?.url.map((url) => (url as WebUrlType)?.url)
     );
   }
 
   return parsedFilters;
 };
 
-const processArray = (arr: Array<any>) => {
-  console.time('Process Array');
-  const map = new Map();
+const filterPineconeDataRelevanceThreshhold = (data: any[], threshold: number) => {
+  const sortedData = data
+    .filter((x: { score: number }) => x.score > threshold)
+    .sort((a: { score: number }, b: { score: number }) => b.score - a.score);
 
-  for (const obj of arr) {
-    const key = obj.metadata.url || obj.metadata.key;
-
-    if (map.has(key)) {
-      const value = `${map.get(key)}\n${obj.metadata.text}`;
-
-      map.set(key, value);
-    } else {
-      map.set(key, obj.metadata.text);
-    }
-  }
-
-  const reducedArr = Array.from(map, ([key, text]) => {
-    const obj = arr.find((o) => o.metadata.key === key || o.metadata.url === key);
-    return { ...obj, metadata: { ...obj.metadata, text } };
-  });
-
-  const firstScore = reducedArr?.[0].score;
-
-  // filter out any items with a score less than 10% of the first item's score
-  const filteredArr = reducedArr.filter((obj) => obj.score > firstScore * 0.99);
-  console.log({ filteredArr });
-
-  console.timeEnd('Process Array');
-
-  return filteredArr;
+  return sortedData;
 };
 
-// const SUMMARY_CHUNK_SIZE = 10_000; // Max
-const SUMMARY_CHUNK_SIZE = 3_000; // Controls how many tokens will fit into each chunk sent to the summarization
-const SUMMARY_TOKEN_SIZE = 2_000; // (openai max_tokens) Controls the ouput tokens of the summarization
-const CONTEXT_PAGES = 1; // How many context pages we want to process for completion
-const PINECONE_THRESHOLD = 0.68;
+const getMaxContextTokens = (gptModel: string) => {
+  switch (gptModel) {
+    case 'gpt-3.5-turbo':
+      return 3500;
+    case 'gpt-4':
+      return 7000;
+    default:
+      return 3500;
+  }
+};
+
 export const fetchContext = async ({
   user,
   prompt,
   messages = [],
   filters: clientFilters = {},
-  threshold = PINECONE_THRESHOLD //TODO Calculate threshold based on input and pineconedata
+  sidekick, // added default value
+  gptModel = 'gpt-3.5-turbo'
 }: {
   user: User;
   prompt: string;
   messages?: Message[];
   filters?: AnswersFilters;
-  threshold?: number;
+  sidekick?: Sidekick;
+  gptModel?: string;
 }) => {
   const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
   const filters = parseFilters(clientFilters);
-  // const hasDefaultFilter = Object.keys(filters).length;
-  // const history = messages
-  //   ?.filter((item: any) => item?.content)
-  //   ?.map((item: any) => `${item?.content}`)
-  //   ?.join('\n');
-
-  // TODO: Use history to generate a more accurate question to search for vectors
   const promptEmbedding = await openai.createEmbedding({
     input: prompt?.toLowerCase(),
     model: 'text-embedding-ada-002'
@@ -100,7 +76,7 @@ export const fetchContext = async ({
   // }
   // TODO: Need to check Postgres for ID and organization
   // TODO: We need to scrub the results of any items the user does not have access to
-  // 
+  //
   const filter: { [source: string]: { [field: string]: string[] } } = {};
   const { models, datasources = {} } = filters;
 
@@ -151,7 +127,7 @@ export const fetchContext = async ({
   const pineconeData = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
       if (!filter[source]) return Promise.resolve(null);
-    
+
       return pineconeQuery(promptEmbedding, {
         // TODO: Figure how to filter by namespace without having to re-index per user
         // namespace: `org-${user?.organizationId}`,
@@ -161,49 +137,41 @@ export const fetchContext = async ({
         },
         topK: 200
       });
-    }),
+    })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
   console.timeEnd(`[${ts}] Pineconedata get`);
 
-  const filteredData = pineconeData?.length ? processArray(pineconeData) : [];
-  // pineconeData?.filter((x) => x.score! > threshold);
-  const context = [
-    // `${history}`,
-    ...(!filteredData ? [] : filteredData?.map((item: any) => item?.metadata?.text))
-  ].join(' <SEP> ');
+  // Filter out any results that are above the relavance threshold, sort by score and retunr the max number based on gptModel
+  let relevantData = filterPineconeDataRelevanceThreshhold(pineconeData, 0.68);
 
-  console.time(`[${ts}] Pineconedata split`);
-  const textSplitter = new RecursiveCharacterTextSplitter({
-    chunkSize: SUMMARY_CHUNK_SIZE * CONTEXT_PAGES
+  // Render the context string based on the sidekick and number of tokens
+  let totalTokens = 0;
+  const contextSourceFilesUsed: string[] = [];
+  const maxContextTokens = getMaxContextTokens(gptModel);
+
+  const contextPromises = relevantData.map((item) => {
+    if (sidekick?.contextStringRender) {
+      const renderedContext = sidekick?.contextStringRender(item.metadata); // TODO: get this from the database to give us more flexibility
+      const tokenCount = countTokens(renderedContext || '');
+
+      if (totalTokens + tokenCount <= maxContextTokens) {
+        console.log('[FetchContext] using file: ', item.metadata.filePath, tokenCount);
+        contextSourceFilesUsed.push(item?.metadata?.filePath || item.metadata?.url); // TODO: standardize teh canonical location (UUID) of the file
+        totalTokens += tokenCount;
+        return renderedContext;
+      } else {
+        return null;
+      }
+    }
   });
-  let contextText = context;
-  try {
-    const contextChunks = await textSplitter.createDocuments([context]);
 
-    contextText = contextChunks[0]?.pageContent;
-  } catch (err) {
-    console.log('Error creating documents with pinecone data', err);
-  }
-  console.timeEnd(`[${ts}] Pineconedata split`);
-  console.time(`[${ts}] Pineconedata summarize`);
-  let summary = '';
-  try {
-    summary = await summarizeAI({
-      input: contextText,
-      prompt,
-      chunkSize: SUMMARY_CHUNK_SIZE,
-      maxTokens: SUMMARY_TOKEN_SIZE
-    });
-  } catch (error: any) {
-    console.log(`[${ts}] Pineconedata summarize error`, error.message);
-  }
-
-  console.timeEnd(`[${ts}] Pineconedata summarize`);
-  console.timeEnd(`[${ts}] Pineconedata`);
+  const filteredData = contextPromises;
+  const context = filteredData.filter((result) => result !== null).join(' ');
 
   return {
-    context: contextText,
-    summary,
+    context,
+    summary: context,
+    contextSourceFilesUsed,
     ...(process.env.NODE_ENV === 'development'
       ? {
           pineconeFilters: filters,

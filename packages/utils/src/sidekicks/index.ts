@@ -1,0 +1,41 @@
+import { Sidekick } from 'types';
+import accountManager from "./accountManager";
+import blog from "./blog";
+import coding from "./coding";
+import contentful from "./contentful";
+import debugging from "./debugging";
+import defaultPrompt from "./defaultPrompt";
+import docs from "./docs";
+import gptraw from "./gptraw";
+import legal from "./legal";
+import marketing from "./marketing";
+import productmanager from "./productmanager";
+import project from "./project";
+import promptCreator from "./promptCreator";
+import refactor from "./refactor";
+import research from "./research";
+import sales from "./sales";
+import support from "./support";
+import teacher from "./teacher";
+
+export const sidekicks: Sidekick[] = [
+  accountManager,
+  blog,
+  coding,
+  contentful,
+  debugging,
+  defaultPrompt,
+  docs,
+  gptraw,
+  legal,
+  marketing,
+  productmanager,
+  project,
+  promptCreator,
+  refactor,
+  research,
+  sales,
+  support,
+  teacher,
+  // Add more prompts here
+];

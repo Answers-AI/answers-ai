@@ -1,28 +1,36 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "name": "AnswerAI: debug server-side", // Would like this to be just the ingest / microservices (not working yet)
-        "type": "node-terminal",
-        "request": "launch",
-        "command": "pnpm run dev"
-      },
-      {
-        "name": "AnswerAI: debug client-side",
-        "type": "chrome",
-        "request": "launch",
-        "url": "http://localhost:3000"
-      },
-      {
-        "name": "AnswerAI: debug full stack",
-        "type": "node-terminal",
-        "request": "launch",
-        "command": "pnpm run dev",
-        "serverReadyAction": {
-          "pattern": "started server on .+, url: (https?://.+)",
-          "uriFormat": "%s",
-          "action": "debugWithChrome"
-        }
+  "version": "0.2.0",
+  "tasks": {
+    "clearNextFolder": {
+      "label": "Clear .next folder",
+      "type": "shell",
+      "command": "rm -rf apps/web/.next"
+    }
+  },
+  "configurations": [
+    {
+      "name": "AnswerAI: debug server-side",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm run dev"
+    },
+    {
+      "name": "AnswerAI: debug client-side",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000"
+    },
+    {
+      "name": "AnswerAI: debug full stack",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm run dev",
+      "preLaunchTask": "Clear .next folder",
+      "serverReadyAction": {
+        "pattern": "started server on .+, url: (https?://.+)",
+        "uriFormat": "%s",
+        "action": "debugWithChrome"
       }
-    ]
-  }
+    }
+  ]
+}

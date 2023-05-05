@@ -21,12 +21,14 @@ export async function OpenAIStream(
     },
     method: 'POST',
     body: JSON.stringify(payload)
+  }).catch((e) => {
+    console.log('OpenAIStream', e);
+    throw e;
   });
-
   let answer = '';
   const stream = new ReadableStream({
     async start(controller) {
-      controller.enqueue(encoder.encode(JSON.stringify(extra) + 'JSON_END'));
+      controller.enqueue(encoder.encode(JSON.stringify(extra) + 'JSON_END')); // TODO: Need to get this back in. Was breaking the response when code was added to the prompt
 
       function onParse(event: ParsedEvent | ReconnectInterval) {
         if (event.type === 'event') {

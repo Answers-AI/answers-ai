@@ -1,0 +1,25 @@
+import React from 'react';
+import { Select, MenuItem, SelectChangeEvent } from '@mui/material';
+
+interface GptModelSelectProps {
+  onGptModelSelected: (value: string) => void;
+  selectedGptModel: string;
+}
+
+export const GptModelSelect = ({ onGptModelSelected, selectedGptModel }: GptModelSelectProps) => {
+  const handleGptModelChange = (event: SelectChangeEvent<string>) => {
+    onGptModelSelected(event.target.value as string);
+  };
+
+  return (
+    <Select
+      labelId="gpt-model-select-label"
+      id="gpt-model-select"
+      label="GPT Model"
+      value={selectedGptModel}
+      onChange={handleGptModelChange}>
+      <MenuItem key="gpt3" value="gpt-3.5-turbo">GPT 3.5</MenuItem>
+      <MenuItem key="gpt4" value="gpt-4">GPT 4</MenuItem>
+    </Select>
+  );
+};

@@ -4,17 +4,22 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { debounce } from '@utils/debounce';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import { DefaultPrompts } from './DefaultPrompts';
+import { SidekickSelect } from './SidekickSelect';
 import { Filters } from './Filters';
 import { Tooltip } from '@mui/material';
 
 export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?: boolean }) => {
   const [inputValue, setInputValue] = useState('');
+  
+  const [sidekick, setSidekick] = useState('defaultPrompt');
+  const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
   const { chat, journey, filters, messages, sendMessage, clearMessages, isLoading } = useAnswers();
 
   const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
@@ -40,14 +45,21 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
 
   const handleSubmit = () => {
     if (!inputValue) return;
-    sendMessage({ content: inputValue, isNewJourney });
+    sendMessage(inputValue, isNewJourney, sidekick, gptModel);
     setShowPrompts(false);
     setInputValue('');
   };
 
-  const handlePromptSelected = (prompt: string) => {
-    setInputValue(prompt);
+  const handleSidekickSelected = (value: string) => {
+    setSidekick(value);
+    console.log('sidekick selected', value);
   };
+
+  const handleGptModelSelected = (event: SelectChangeEvent<string>) => {
+    setGptModel(event.target.value as string);
+    console.log('gpt model selected', event.target.value);
+  };
+
   const handleInputFocus = () => {
     if (flags?.recommended_prompts_expand?.value == 'blur') setShowPrompts(true);
   };
@@ -70,13 +82,24 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     }
   };
   return (
-    <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', px: 2, pb: 2 }}>
-      <DefaultPrompts
-        onPromptSelected={handlePromptSelected}
-        expanded={showPrompts}
-        handleChange={(_, value) => setShowPrompts(value)}
-      />
+    <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <SidekickSelect onSidekickSelected={handleSidekickSelected} selectedSidekick={sidekick} />
 
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          label="Sidekick"
+          value={gptModel}
+          onChange={handleGptModelSelected}>
+          <MenuItem key="gpt3" value="gpt-3.5-turbo">
+            GPT 3.5
+          </MenuItem>
+          <MenuItem key="gpt4" value="gpt-4">
+            GPT 4
+          </MenuItem>
+        </Select>
+      </Box>
       {filters ? <Filters filters={filters} /> : null}
       <TextField
         id="user-chat-input"
@@ -108,8 +131,8 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
           justifyContent: 'flex-end',
           position: 'absolute',
           gap: 1,
-          bottom: 24,
-          right: 24
+          bottom: 28,
+          right: 28
         }}>
         {/* Toggle component that updates when using query or streaming */}
 

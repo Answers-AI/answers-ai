@@ -18,7 +18,12 @@ interface AnswersContextType {
   messages?: Array<Message>;
   prompts?: Array<Prompt>;
   chats?: Array<Chat>;
-  sendMessage: (args: { content: string; isNewJourney?: boolean }) => void;
+  sendMessage: (
+    content: string,
+    isNewJourney?: boolean,
+    sidekick?: string,
+    gptModel?: string
+  ) => void;
   clearMessages: () => void;
   regenerateAnswer: () => void;
   isLoading: boolean;
@@ -133,13 +138,13 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
   });
 
   const sendMessage = useCallback(
-    async ({ content, isNewJourney }: { content: string; isNewJourney?: boolean }) => {
+    async (content: string, isNewJourney?: boolean, sidekick?: string, gptModel?: string) => {
       setIsLoading(true);
       setError(null);
       addMessage({ role: 'user', content: content } as Message);
       try {
         if (useStreaming) {
-          generateResponse(content);
+          generateResponse({ content, sidekick, gptModel }); // Pass sidekick and gptModel here
         } else {
           const { data } = await axios.post(`${apiUrl}/ai/query`, {
             isNewJourney,
@@ -147,7 +152,9 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
             chatId,
             content,
             messages,
-            filters
+            filters,
+            sidekick,
+            gptModel
           });
 
           setChatId(data?.chat.id);
@@ -187,7 +194,7 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
     // if (messages[messages.length - 1].role === ChatCompletionRequestMessageRoleEnum.Assistant) {
     //   setMessages(messages.slice(0, -1));
     // }
-    sendMessage(message);
+    sendMessage(message.content);
   };
 
   const clearMessages = () => {

@@ -1,6 +1,8 @@
-// import { TokenTextSplitter } from 'langchain/text_splitter';
-import { CharacterTextSplitter } from 'langchain/text_splitter';
-// an exported function that will accept a string and return the number of tokens in that string
+import GPT3Tokenizer from 'gpt3-tokenizer';
+
+const tokenizer = new GPT3Tokenizer({ type: 'gpt3' });
 export const countTokens = (text: string): number => {
-  return text.split(' ').length;
+  const encoded = tokenizer.encode(text);
+  const tokensInFile = encoded.bpe.length;
+  return tokensInFile;
 };

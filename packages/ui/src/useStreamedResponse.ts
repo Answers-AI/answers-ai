@@ -1,7 +1,12 @@
 'use client';
+// useStreamedResponse.ts
 import { useState } from 'react';
 import { Message } from 'types';
-
+interface GenerateResponseArgs {
+  content: string;
+  sidekick?: string;
+  gptModel?: string;
+}
 export const useStreamedResponse = ({
   chatId,
   journeyId,
@@ -9,7 +14,9 @@ export const useStreamedResponse = ({
   filters,
   apiUrl,
   onChunk,
-  onEnd
+  onEnd,
+  sidekick,
+  gptModel
 }: {
   journeyId?: string;
   chatId?: string;
@@ -17,14 +24,18 @@ export const useStreamedResponse = ({
   filters?: any;
   apiUrl: string;
   onChunk: (chunk: Message) => void;
+  sidekick?: string;
+  gptModel?: string;
   onEnd: (chunk: Message) => void;
 }) => {
   const [isStreaming, setIsStreaming] = useState(false);
 
   const [generatedResponse, setGeneratedResponse] = useState<any>({});
-  const generateResponse = async (aPrompt: string) => {
+
+  const generateResponse = async ({ content, sidekick, gptModel }: GenerateResponseArgs) => {
     setGeneratedResponse('');
     setIsStreaming(true);
+
     const response = await fetch(`${apiUrl || '/api'}/ai/stream`, {
       method: 'POST',
       headers: {
@@ -33,14 +44,15 @@ export const useStreamedResponse = ({
       body: JSON.stringify({
         journeyId,
         chatId,
-        prompt: aPrompt,
+        prompt: content,
         filters,
-        messages
+        messages,
+        sidekick, // Add sidekick parameter
+        gptModel // Add gptModel parameter
       })
     });
 
     if (!response.ok) {
-      console.log(response);
       throw new Error(response.statusText);
     }
 
@@ -51,32 +63,28 @@ export const useStreamedResponse = ({
     const reader = data.getReader();
     const decoder = new TextDecoder();
     let done = false;
-    // let curr = '';
     let extra: any;
-    let content = '';
+    let answer = '';
 
     while (!done) {
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
       const chunkValue = decoder.decode(value);
 
-      content = (content || '') + chunkValue;
+      answer = (answer || '') + chunkValue;
       if (!extra) {
-        const [jsonData, ...rest] = content.split('JSON_END');
+        const [jsonData, ...rest] = answer.split('JSON_END');
         if (jsonData && rest?.length) {
           try {
             extra = JSON.parse(jsonData);
-            console.log('ParsedExtra', extra);
           } catch (e) {
             console.log('ParseError', e);
           }
-          content = rest.join('');
+          answer = rest.join('');
         }
-        onChunk({ role: 'assistant', content, ...extra });
+        onChunk({ role: 'assistant', content: answer, ...extra });
       } else {
-        // console.log('OnChunk', { curr, jsonData });
-        // console.log('OnChunk', { curr, extra });
-        onChunk({ role: 'assistant', content, ...extra });
+        onChunk({ role: 'assistant', content: answer, ...extra });
       }
     }
     setGeneratedResponse({});
