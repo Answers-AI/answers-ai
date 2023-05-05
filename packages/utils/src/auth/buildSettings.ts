@@ -119,18 +119,23 @@ export const buildSettings = async (user: User, org?: Organization) => {
     newSettings.airtable = {
       tables: [
         {
-          id: 'My Tasks',
-          title: 'My Tasks',
+          id: 'supportq12023',
+          title: 'Support Q1 2023',
           enabled: true
         },
         {
-          id: 'Impossible Foods',
-          title: 'Last Rev Mission Control',
+          id: 'openprojects',
+          title: 'Open Projects',
           enabled: true
         },
         {
-          id: 'Dropbox',
-          title: 'Dropbox',
+          id: 'opensupport',
+          title: 'Open Support',
+          enabled: true
+        },
+        {
+          id: 'opengtm',
+          title: 'Open GTM',
           enabled: true
         }
       ]
@@ -155,6 +160,11 @@ export const buildSettings = async (user: User, org?: Organization) => {
         {
           id: 'lastrev-marketing-site-v0.1.0',
           name: 'lastrev-marketing-site-v0.1.0',
+          enabled: true
+        },
+        {
+          id: 'cams-env-test-v0.1.0',
+          name: 'cams-env-test-v0.1.0',
           enabled: true
         }
       ]
