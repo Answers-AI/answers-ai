@@ -1,42 +1,27 @@
-import { getServerSession } from 'next-auth';
-import { AnswersFilters, Message, User, Sidekicks } from 'types';
-import { prisma } from '@db/client';
-import { OpenAIStream } from '@utils/OpenAIStream';
-import cors from '@ui/cors';
-import { getCompletionRequest } from '@utils/llm/getCompletionRequest';
-import { inngest } from '@utils/ingest/client';
-import { fetchContext } from '@utils/pinecone/fetchContext';
+import { getAppSettings } from '@ui/getAppSettings';
+import { User, getServerSession } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { upsertChat } from '@utils/upsertChat';
+// import { syncFromAirtable } from '@utils/ingest/airtable';
+import { NextResponse } from 'next/server';
+import { QueryRequest } from '@pinecone-database/pinecone';
+import { OpenAIStream } from '@utils/OpenAIStream';
+import { inngest } from '@utils/ingest/client';
+import { getCompletionRequest } from '@utils/llm/getCompletionRequest';
+import { fetchContext } from '@utils/pinecone/fetchContext';
 import { sidekicks } from '@utils/sidekicks';
+import { upsertChat } from '@utils/upsertChat';
+import { prisma } from 'db/dist';
+import cors from 'cors';
+import { Sidekicks } from 'types';
 
-interface QueryRequest {
-  journeyId?: string;
-  chatId?: string;
-  prompt: string;
-  messages: Message[];
-  filters: AnswersFilters;
-  sidekick?: string;
-  gptModel: string;
-}
-
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await cors(req, res);
-
-  let user: User | undefined;
-  try {
-    const session = await getServerSession(req, res, authOptions);
-    user = session?.user;
-  } catch (err) {
-    console.error(err);
-  }
+export async function POST(req: Request) {
+  const session = await getServerSession(authOptions);
+  const user = session?.user!;
   if (!user?.email) {
     return Response.redirect('/', 401);
   }
 
-  const { journeyId, chatId, filters, prompt, messages, sidekick, gptModel } =
-    req.body as QueryRequest;
+  const { journeyId, chatId, filters, prompt, messages, sidekick, gptModel } = await req.json();
 
   let completionData, completionRequest;
 
@@ -144,16 +129,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     },
     handleResponse
   );
-  res.setHeader('Content-Type', 'text/plain');
-  res.setHeader('Transfer-Encoding', 'chunked');
-  res.setHeader('Content-Econding', 'none');
+  return new Response(stream, {
+    headers: { 'Content-Type': 'text/html; charset=utf-8' }
+  });
+  // res.setHeader('Content-Type', 'text/plain');
+  // res.setHeader('Transfer-Encoding', 'chunked');
+  // res.setHeader('Content-Econding', 'none');
 
-  //@ts-expect-error
-  for await (const chunk of stream) {
-    var string = new TextDecoder().decode(chunk);
-    res.write(string);
-  }
-  res.end();
-};
-
-export default handler;
+  // //@ts-expect-error
+  // for await (const chunk of stream) {
+  //   var string = new TextDecoder().decode(chunk);
+  //   res.write(string);
+  // }
+  // res.end();
+}
