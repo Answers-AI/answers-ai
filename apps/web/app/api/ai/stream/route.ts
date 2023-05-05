@@ -120,9 +120,9 @@ export async function POST(req: Request) {
       chat,
       contextSourceFilesUsed,
       filters: pineconeFilters,
+      context,
       ...(process.env.NODE_ENV === 'development' && {
         pineconeData,
-        context,
         summary,
         completionRequest
       })

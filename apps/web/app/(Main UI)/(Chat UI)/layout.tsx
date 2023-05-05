@@ -28,7 +28,7 @@ export default async function ChatUILayout({
           paddingTop: 0,
           paddingBottom: 3
         }}> */}
-      {/* <AppSyncToolbar appSettings={session?.user?.appSettings} /> */}
+      
       {/* {journey ? <Filters filters={journey.filters} /> : null} */}
 
       {/* </div> */}

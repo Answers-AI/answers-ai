@@ -14,13 +14,15 @@ import { DefaultPrompts } from './DefaultPrompts';
 import { SidekickSelect } from './SidekickSelect';
 import { Filters } from './Filters';
 import { Tooltip } from '@mui/material';
+import AppSyncToolbar from './AppSyncToolbar';
 
 export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?: boolean }) => {
   const [inputValue, setInputValue] = useState('');
-  
+
   const [sidekick, setSidekick] = useState('defaultPrompt');
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
-  const { chat, journey, filters, messages, sendMessage, clearMessages, isLoading } = useAnswers();
+  const { appSettings, chat, journey, filters, messages, sendMessage, clearMessages, isLoading } =
+    useAnswers();
 
   const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
 
@@ -83,6 +85,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
   };
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
+      <AppSyncToolbar appSettings={appSettings} />
       <Box sx={{ display: 'flex', gap: 2 }}>
         <SidekickSelect onSidekickSelected={handleSidekickSelected} selectedSidekick={sidekick} />
 
