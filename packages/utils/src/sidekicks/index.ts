@@ -12,6 +12,7 @@ import marketing from "./marketing";
 import productmanager from "./productmanager";
 import project from "./project";
 import promptCreator from "./promptCreator";
+import realtorListing from './realtorListing';
 import refactor from "./refactor";
 import research from "./research";
 import sales from "./sales";
@@ -32,6 +33,7 @@ export const sidekicks: Sidekick[] = [
   productmanager,
   project,
   promptCreator,
+  realtorListing,
   refactor,
   research,
   sales,
