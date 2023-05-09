@@ -1,6 +1,6 @@
 [build]
   ignore = "git diff --quiet HEAD^ HEAD ."
-  publish = "apps/inngest-worker/.next"
+  publish = ".next"
   command = "cd ../../ && pnpm build --filter inngest-worker"
 
 [dev]
