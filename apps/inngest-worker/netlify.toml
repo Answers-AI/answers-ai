@@ -1,0 +1,13 @@
+[build]
+  ignore = "git diff --quiet HEAD^ HEAD ."
+  publish = ".next"
+  command = "cd ../../ && pnpm build --filter inngest-worker"
+
+[dev]
+  command = "pnpm dev"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[plugins]]
+  package = "netlify-plugin-inngest"

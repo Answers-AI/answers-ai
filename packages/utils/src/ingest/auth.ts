@@ -16,7 +16,8 @@ export const authSession: EventVersionHandler<{
     if (!user) console.log('NO_USER_PROVIDED', event);
     else {
       // TODO: Sync only every X hours
-      await syncAppSettings({ userId: user.id });
+      const settings = await syncAppSettings({ userId: user.id });
+      return { settings };
     }
   }
 };
@@ -31,7 +32,8 @@ export const authUserSignIn: EventVersionHandler<{
   handler: async ({ event }) => {
     const { data, user } = event;
     if (!user) throw new Error('NO_USER_PROVIDED');
-    await syncAppSettings({ userId: user.id });
+    const settings = await syncAppSettings({ userId: user.id });
+    return { settings };
   }
 };
 export const authUserLinkAccount: EventVersionHandler<{
@@ -44,7 +46,8 @@ export const authUserLinkAccount: EventVersionHandler<{
   handler: async ({ event }) => {
     const { data, user } = event;
     if (!user) throw new Error('NO_USER_PROVIDED');
-    await syncAppSettings({ userId: user.id });
+    const settings = await syncAppSettings({ userId: user.id });
+    return { settings };
   }
 };
 
@@ -58,6 +61,7 @@ export const authCreateUser: EventVersionHandler<{
   handler: async ({ event }) => {
     const { data, user } = event;
     if (!user) throw new Error('NO_USER_PROVIDED');
-    await syncAppSettings({ userId: user.id });
+    const settings = await syncAppSettings({ userId: user.id });
+    return { settings };
   }
 };
