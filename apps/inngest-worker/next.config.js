@@ -23,7 +23,7 @@ module.exports = withBundleAnalyzer({
     }
   },
   webpack: (config, { isServer }) => {
-    config.externals = [...config.externals, 'db', 'puppeteer'];
+    config.externals = [...config.externals, 'db'];
 
     config.plugins = [
       ...config.plugins,
