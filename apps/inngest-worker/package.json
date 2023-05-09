@@ -24,6 +24,7 @@
     "cors": "^2.8.5",
     "db": "workspace:*",
     "encoding": "^0.1.13",
+    "puppeteer": "^19.8.2",
     "experimental-prisma-webpack-plugin": "workspace:*",
     "flagsmith": "^3.18.2",
     "hnswlib-node": "^1.4.2",
