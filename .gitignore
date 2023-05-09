@@ -41,6 +41,3 @@ yarn-error.log*
 
 # docubot
 **/docubot
-
-# Local Netlify folder
-.netlify
