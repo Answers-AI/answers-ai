@@ -1,0 +1,9 @@
+[build]
+  publish = "apps/inngest-worker/.next"
+  command = "pnpm build"
+
+[dev]
+  command = "pnpm dev"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
