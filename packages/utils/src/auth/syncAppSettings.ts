@@ -57,6 +57,7 @@ const updateUserSettings = async (user: User) => {
         appSettings: appSettings as object
       }
     });
+    return appSettings;
   }
 };
 
@@ -73,5 +74,7 @@ const updateOrgSettings = async (user: User, org: Organization) => {
         appSettings: appSettings as object
       }
     });
+
+    return appSettings;
   }
 };
