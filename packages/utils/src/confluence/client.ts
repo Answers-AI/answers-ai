@@ -1,14 +1,14 @@
 import axios, { AxiosResponse } from 'axios';
-import Redis from 'ioredis';
+
 import { ConfluencePage, ConfluenceSpace } from 'types';
 import redisLoader from '../redisLoader';
+import { redis } from '../redis/client';
 
 interface RequestOptions {
   cache?: boolean;
 }
 
 class ConfluenceClient {
-  redis: Redis;
   accessToken?: string;
   cloudId: Promise<string>;
   headers: { Authorization: string; Accept: string };
@@ -41,7 +41,6 @@ class ConfluenceClient {
   }: { cacheExpireTime?: number; accessToken?: string } = {}) {
     this.cacheExpireTime = cacheExpireTime;
 
-    this.redis = new Redis(process.env.REDIS_URL as string);
     this.accessToken = accessToken;
     this.headers = {
       Authorization: accessToken ? `Bearer ${accessToken}` : '',
@@ -94,7 +93,7 @@ class ConfluenceClient {
     console.log('[fetchConfluenceData] URL', url);
     if (cache) {
       try {
-        const cachedData = await this.redis.get(url);
+        const cachedData = await redis.get(url);
 
         if (cachedData) {
           data = JSON.parse(cachedData);
@@ -118,8 +117,8 @@ class ConfluenceClient {
       data = response.data;
 
       if (cache) {
-        await this.redis.set(url, JSON.stringify(data));
-        await this.redis.expire(url, this.cacheExpireTime);
+        await redis.set(url, JSON.stringify(data));
+        await redis.expire(url, this.cacheExpireTime);
       }
     }
 

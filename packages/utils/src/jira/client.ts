@@ -1,11 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
-import Redis from 'ioredis';
 import { JiraIssue, JiraProject } from 'types';
 import { getJiraTickets } from './getJiraTickets';
 import redisLoader from '../redisLoader';
+import { redis } from '../redis/client';
 
 class JiraClient {
-  static redis = new Redis(process.env.REDIS_URL as string);
   accessToken?: string;
   cloudId: Promise<string>;
   headers: { Authorization: string; Accept: string };
@@ -69,7 +68,7 @@ class JiraClient {
     const hashKey = 'v4-get-' + url;
     if (cache) {
       try {
-        const cachedData = await JiraClient.redis.get(hashKey);
+        const cachedData = await redis.get(hashKey);
 
         if (cachedData) {
           data = JSON.parse(cachedData);
@@ -90,8 +89,8 @@ class JiraClient {
         return null;
       }
       data = response?.data;
-      if (cache) await JiraClient.redis.set(hashKey, JSON.stringify(data));
-      if (cache) await JiraClient.redis.expire(hashKey, this.cacheExpireTime);
+      if (cache) await redis.set(hashKey, JSON.stringify(data));
+      if (cache) await redis.expire(hashKey, this.cacheExpireTime);
     }
     console.timeEnd('FetchJiraData:' + endpoint);
     return data;

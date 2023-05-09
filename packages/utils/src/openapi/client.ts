@@ -1,5 +1,5 @@
 import axios, { ResponseType } from 'axios';
-import Redis from 'ioredis';
+import { redis } from '../redis/client';
 
 const blobToString = async (blob: Blob): Promise<string> => {
   const buffer = await blob.arrayBuffer();
@@ -8,13 +8,11 @@ const blobToString = async (blob: Blob): Promise<string> => {
 };
 
 class OpenApiClient {
-  redis: Redis;
   responseType: ResponseType;
   headers: { Authorization?: string; Accept?: string; Cookie?: string };
   cacheExpireTime: number;
   constructor({ cacheExpireTime = 60 * 60 * 24 } = {}) {
     this.cacheExpireTime = cacheExpireTime;
-    this.redis = new Redis(process.env.REDIS_URL as string);
     this.headers = {
       Accept: 'application/json'
     };
@@ -28,7 +26,7 @@ class OpenApiClient {
     const hashKey = 'v4-get-' + url;
     if (cache) {
       try {
-        const cachedData = await this.redis.get(hashKey);
+        const cachedData = await redis.get(hashKey);
 
         if (cachedData) {
           data = JSON.parse(cachedData);
@@ -77,8 +75,8 @@ class OpenApiClient {
         }
 
         if (cache) {
-          await this.redis.set(hashKey, JSON.stringify(data));
-          await this.redis.expire(hashKey, this.cacheExpireTime);
+          await redis.set(hashKey, JSON.stringify(data));
+          await redis.expire(hashKey, this.cacheExpireTime);
         }
       } catch (err) {
         console.error(`Error fetching data from ${url}`, err);
