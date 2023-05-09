@@ -85,9 +85,7 @@ class PineconeClient {
   }
 
   async writeVectorsToIndex(vectors: any[]) {
-    const timerName = `[writeVectorsToIndex] @ ${Date.now()}`;
     try {
-      console.time(timerName);
       await this.init();
 
       const index = this.client.Index(this.indexName);
@@ -139,8 +137,6 @@ class PineconeClient {
         message = JSON.stringify(error);
       }
       return { error: `[Error in writeVectorsToIndex] ${message}` };
-    } finally {
-      console.timeEnd(timerName);
     }
   }
 }

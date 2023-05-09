@@ -1,10 +1,10 @@
 import DataLoader from 'dataloader';
-import Redis from 'ioredis';
+
 import { createHash } from 'crypto';
+import { redis } from './redis/client';
 
 const primeAll = async <K, V>(
   loader: DataLoader<K, V, K>,
-  redis: Redis,
   hashKey: any,
   keyValues: Array<[K, V]>,
   cacheExpirationInSeconds?: number
@@ -36,8 +36,6 @@ const redisLoader = <K, V>({
   cacheExpirationInSeconds?: number;
   disableCache?: boolean;
 }) => {
-  const redis = new Redis(redisConfig);
-
   const hashKey = (key: K) =>
     `v1:${keyPrefix || 'default'}:redisLoader:` +
     createHash('sha1').update(JSON.stringify(key)).digest('base64');
@@ -46,18 +44,14 @@ const redisLoader = <K, V>({
     if (disableCache) return getValuesFn(cacheKeys);
 
     const cacheKeyStrings = cacheKeys.map(hashKey);
-    const cacheKeyStringLength = cacheKeyStrings?.length;
 
     let cachedValues: (string | null)[] = [];
-    const timerName = `Loading ${cacheKeyStringLength} items from redis @ ${Date.now()}`;
+
     try {
-      console.time(timerName);
       cachedValues = await redis.mget(...cacheKeyStrings);
     } catch (err) {
       console.log('[Error in redisLoader] ', err);
       return cacheKeyStrings?.map(() => null);
-    } finally {
-      console.timeEnd(timerName);
     }
 
     const cacheMissKeys: K[] = [];

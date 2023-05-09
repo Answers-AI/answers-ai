@@ -1,14 +1,12 @@
 import axios, { AxiosError } from 'axios';
-import Redis from 'ioredis';
 import puppeteer from 'puppeteer';
+import { redis } from '../redis/client';
 
 class WebClient {
-  redis: Redis;
   headers: { Authorization?: string; Accept: string; Cookie?: string };
   cacheExpireTime: number;
   constructor({ cacheExpireTime = 60 * 60 * 24 } = {}) {
     this.cacheExpireTime = cacheExpireTime;
-    this.redis = new Redis(process.env.REDIS_URL as string);
     this.headers = {
       Accept: 'text/plain'
     };
@@ -21,7 +19,7 @@ class WebClient {
     const hashKey = 'v4-get-' + url;
     if (cache) {
       try {
-        const cachedData = await this.redis.get(hashKey);
+        const cachedData = await redis.get(hashKey);
 
         if (cachedData) {
           data = JSON.parse(cachedData);
@@ -64,8 +62,8 @@ class WebClient {
         }
 
         if (cache) {
-          await this.redis.set(hashKey, JSON.stringify(data));
-          await this.redis.expire(hashKey, this.cacheExpireTime);
+          await redis.set(hashKey, JSON.stringify(data));
+          await redis.expire(hashKey, this.cacheExpireTime);
         }
       } catch (err: AxiosError | any) {
         console.error(

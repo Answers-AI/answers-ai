@@ -1,6 +1,5 @@
 import { Configuration, CreateEmbeddingRequestInput, OpenAIApi } from 'openai';
 
-import Redis from 'ioredis';
 import redisLoader from '../redisLoader';
 import DataLoader from 'dataloader';
 
@@ -8,14 +7,12 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 class OpenAI {
   defaultModel = 'text-embedding-ada-002';
   openai: OpenAIApi;
-  redis: any;
   loader: DataLoader<any, any>;
   constructor() {
     const configuration = new Configuration({
       apiKey: process.env.OPENAI_API_KEY
     });
     this.openai = new OpenAIApi(configuration);
-    this.redis = new Redis(process.env.REDIS_URL as string);
     this.loader = redisLoader<string, number[]>({
       keyPrefix: 'openai',
       redisConfig: process.env.REDIS_URL as string,
