@@ -9,7 +9,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
  */
 module.exports = withBundleAnalyzer({
   experimental: {
-    appDir: true,
+    // appDir: true,
     serverComponentsExternalPackages: ['@prisma/client']
   },
   reactStrictMode: true,
