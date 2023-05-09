@@ -163,6 +163,11 @@ export const buildSettings = async (user: User, org?: Organization) => {
           enabled: true
         },
         {
+          id: 'langchainjs-v0.0.4',
+          name: 'langchainjs-v0.0.4',
+          enabled: true
+        },
+        {
           id: 'cams-env-test-v0.1.0',
           name: 'cams-env-test-v0.1.0',
           enabled: true
