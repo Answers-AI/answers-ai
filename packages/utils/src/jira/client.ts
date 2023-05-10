@@ -92,7 +92,6 @@ class JiraClient {
       if (cache) await redis.set(hashKey, JSON.stringify(data));
       if (cache) await redis.expire(hashKey, this.cacheExpireTime);
     }
-    console.timeEnd('FetchJiraData:' + endpoint);
     return data;
   }
   async getJiraTickets(options: any) {

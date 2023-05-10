@@ -41,7 +41,11 @@ export const pineconeQuery = async (
     const result = await pinconeIndex.query(queryRequest);
     // console.log('========result', result);
     console.timeEnd('[PineconeQuery]' + JSON.stringify({ filter, topK, namespace }));
-    // console.log('[PineconeQuery]', process.env.PINECONE_INDEX, result);
+    console.log(
+      '[PineconeQuery]',
+      JSON.stringify({ filter, topK, namespace }),
+      result?.data.matches?.length
+    );
     return result?.data;
   } catch (error) {
     console.timeEnd('[PineconeQuery]' + JSON.stringify({ filter, topK, namespace }));

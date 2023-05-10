@@ -11,8 +11,10 @@ import { extractUrlsFromSitemap } from '../utilities/getSitemapUrls';
 import { getUniqueUrls, getUniqueUrl } from '@utils/getUniqueUrls';
 import { chunkArray } from '../utilities/utils';
 import { isAxiosError } from 'axios';
+import { fetchSitemapUrls } from '../fetchSitemapUrls';
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
+const WEB_PAGE_SYNC_BATCH_SIZE = 100;
 
 const prefixHeaders = (markdown: string): string => {
   const lines = markdown.split('\n');
@@ -292,43 +294,45 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
     const data = event.data;
     const { domain } = data;
 
-    let urls = await extractUrlsFromSitemap(`${domain}/sitemap.xml`);
+    let urls = await fetchSitemapUrls(domain);
+    if (!urls?.length) urls = await extractUrlsFromSitemap(`${domain}/sitemap.xml`);
     if (!urls?.length) urls = await extractUrlsFromSitemap(`${domain}/sitemap-index.xml`);
 
     if (!urls?.length) {
-      const uniqueDomain = getUniqueUrl(domain);
-      try {
-        await inngest.send({
-          v: event.v,
-          ts: new Date().valueOf(),
-          name: 'web/deep.sync',
-          data: {
-            domain: uniqueDomain
-          },
-          user: event.user
-        });
-      } catch (error) {}
+      console.log('Could not extract URLs from sitemap');
+      return;
+      // const uniqueDomain = getUniqueUrl(domain);
+      // try {
+      //   await inngest.send({
+      //     v: event.v,
+      //     ts: new Date().valueOf(),
+      //     name: 'web/deep.sync',
+      //     data: {
+      //       domain: uniqueDomain
+      //     },
+      //     user: event.user
+      //   });
+      // } catch (error) {}
     } else {
       const uniqueUrls = getUniqueUrls(urls);
-      console.time('processWebDomainScrape:sendWebPageSync');
+
       try {
-        const webPages = await Promise.all(
-          uniqueUrls.map(async (url) => {
-            await inngest.send({
+        await Promise.all(
+          chunkArray(uniqueUrls, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
+            inngest.send({
               v: event.v,
               ts: new Date().valueOf(),
               name: 'web/page.sync',
               data: {
-                urls: [url]
+                urls
               },
               user: event.user
-            });
-          })
+            })
+          )
         );
       } catch (error) {
         console.log(error);
       } finally {
-        console.timeEnd('processWebDomainScrape:sendWebPageSync');
       }
     }
     console.timeEnd('processWebDomainScrape');

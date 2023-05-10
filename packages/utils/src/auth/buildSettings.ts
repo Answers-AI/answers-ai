@@ -178,6 +178,6 @@ export const buildSettings = async (user: User, org?: Organization) => {
     console.log('JiraSettingsError', error);
   }
 
-  console.log('NewSettings', newSettings);
+  console.log(JSON.stringify(newSettings, null, 2));
   return newSettings;
 };

@@ -20,7 +20,7 @@ const initializeOpenAI = () => {
 
 export const openai = initializeOpenAI();
 
-const JIRA_ISSUE_BATCH_SIZE = 1000;
+const JIRA_ISSUE_BATCH_SIZE = 100;
 const JIRA_PROJECT_BATCH_SIZE = 5;
 const PINECONE_VECTORS_BATCH_SIZE = 100;
 
@@ -151,6 +151,8 @@ export const processUpsertedIssues: EventVersionHandler<{ issuesKeys: string[]; 
           ?.filter((issue) => !!issue)
           ?.map(async (issue) => {
             const commentsSummary = await summarizeAI({
+              chunkSize: 7000,
+              maxTokens: 4000,
               input: issue?.comments
                 ?.map(
                   ({ author, body, updated, self }: any) =>
