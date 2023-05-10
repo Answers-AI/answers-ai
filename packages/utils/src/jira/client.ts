@@ -25,7 +25,7 @@ class JiraClient {
       Authorization: `Bearer ${accessToken}`,
       Accept: 'application/json'
     };
-    this.cloudId = this.getCloudId();
+    this.cloudId = this.getCloudId().catch((err) => console.log(err));
   }
   async getAppData() {
     const response = await axios.get('https://api.atlassian.com/oauth/token/accessible-resources', {

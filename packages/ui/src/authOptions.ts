@@ -1,6 +1,5 @@
-import { AuthOptions, DefaultSession } from 'next-auth';
+import { AuthOptions, DefaultSession, TokenSet } from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
-import GoogleProvider from 'next-auth/providers/google';
 import AtlassianProvider from 'next-auth/providers/atlassian';
 import SlackProvider from 'next-auth/providers/slack';
 import CredentialsProvider from 'next-auth/providers/credentials';
@@ -15,14 +14,20 @@ declare module 'next-auth' {
 
   interface Session extends DefaultSession {
     user?: AnswersUser;
+    error?: 'RefreshAccessTokenError';
   }
 }
 declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
     role: string;
+    access_token: string;
+    expires_at: number;
+    refresh_token: string;
+    error?: 'RefreshAccessTokenError';
   }
 }
+
 const ATLASSIAN_SCOPE = {
   // 'write:jira-work': true,
   'read:jira-work': true,
@@ -56,24 +61,69 @@ export const authOptions: AuthOptions = {
     }
   },
   session: {
-    strategy: 'jwt'
+    // strategy: 'jwt',
+    strategy: 'database',
+    // Seconds - How long until an idle session expires and is no longer valid.
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+
+    // Seconds - Throttle how frequently to write to database to extend a session.
+    // Use it to limit write operations. Set to 0 to always update the database.
+    // Note: This option is ignored if using JSON Web Tokens
+    updateAge: 24 * 60 * 60 // 24 hours
   },
   adapter: PrismaAdapter(prisma),
   callbacks: {
-    async jwt({ token, user, account, profile, isNewUser }) {
-      if (user) {
-        token.id = user?.id;
-        token.role = user?.role;
-        token.invited = user?.invited;
+    async session({ session, user }) {
+      const ts = Date.now();
+      console.time('session' + ts);
+      if (user && session.user) {
+        session.user.id = user.id!;
+        session.user.role = user.role!;
+        // @ts-ignore-next-line
+        session.user.invited = user.invited ? new Date(user.invited as string) : user.invited;
+        session.user.appSettings = user.appSettings;
       }
-      return token;
-    },
-    async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = token.id!;
-        session.user.role = token.role!;
-        // @ts-ignore
-        session.user.invited = token.invited ? new Date(token.invited as string) : token.invited;
+      const [atlassian] = await prisma.account.findMany({
+        where: { userId: user.id, provider: 'atlassian' }
+      });
+      if (atlassian.expires_at && atlassian.expires_at * 1000 < Date.now()) {
+        // If the access token has expired, try to refresh it
+        try {
+          // https://accounts.atlassian.com/.well-known/openid-configuration
+          // We need the `token_endpoint`.
+          const response = await fetch('https://auth.atlassian.com/oauth/token', {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              client_id: process.env.ATLASSIAN_CLIENT_ID!,
+              client_secret: process.env.ATLASSIAN_CLIENT_SECRET!,
+              grant_type: 'refresh_token',
+              refresh_token: atlassian.refresh_token!
+            }),
+            method: 'POST'
+          });
+
+          const tokens: TokenSet = await response.json();
+
+          if (!response.ok) throw tokens;
+
+          await prisma.account.update({
+            data: {
+              access_token: tokens.access_token,
+              expires_at: Math.floor(Date.now() / 1000 + (tokens.expires_in as number)),
+              refresh_token: tokens.refresh_token ?? atlassian.refresh_token
+            },
+            where: {
+              provider_providerAccountId: {
+                provider: 'atlassian',
+                providerAccountId: atlassian.providerAccountId
+              }
+            }
+          });
+        } catch (error) {
+          console.error('Error refreshing access token', error);
+          // The error property will be used client-side to handle the refresh token error
+          session.error = 'RefreshAccessTokenError';
+        }
       }
       return session;
     },
@@ -159,9 +209,9 @@ export const authOptions: AuthOptions = {
       clientSecret: process.env.GITHUB_SECRET!,
       allowDangerousEmailAccountLinking: true
     }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    AtlassianProvider({
+      clientId: process.env.ATLASSIAN_CLIENT_ID!,
+      clientSecret: process.env.ATLASSIAN_CLIENT_SECRET!,
       allowDangerousEmailAccountLinking: true
     })
   ],
