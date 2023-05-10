@@ -80,6 +80,7 @@ const getConfluencePagesVectors = async (confluencePages: ConfluencePage[]) => {
           text: headingChunk,
           metadata: {
             source: 'confluence',
+            url: `https://app.atlassian.com/wiki/spaces/${page.spaceId}/pages/${page.id}/${page.title}`,
             id: page.id,
             spaceId: page.spaceId.toString(),
             status: page.status,

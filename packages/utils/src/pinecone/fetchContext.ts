@@ -148,20 +148,19 @@ export const fetchContext = async ({
   let totalTokens = 0;
   const contextSourceFilesUsed: string[] = [];
   const maxContextTokens = getMaxContextTokens(gptModel);
-
   const contextPromises = relevantData.map((item) => {
+    let renderedContext = item?.metadata?.text;
     if (sidekick?.contextStringRender) {
-      const renderedContext = sidekick?.contextStringRender(item.metadata); // TODO: get this from the database to give us more flexibility
-      const tokenCount = countTokens(renderedContext || '');
-
-      if (totalTokens + tokenCount <= maxContextTokens) {
-        console.log('[FetchContext] using file: ', item.metadata.filePath, tokenCount);
-        contextSourceFilesUsed.push(item?.metadata?.filePath || item.metadata?.url); // TODO: standardize teh canonical location (UUID) of the file
-        totalTokens += tokenCount;
-        return renderedContext;
-      } else {
-        return null;
-      }
+      renderedContext = sidekick?.contextStringRender(item.metadata); // TODO: get this from the database to give us more flexibility
+    }
+    const tokenCount = countTokens(renderedContext || '');
+    if (totalTokens + tokenCount <= maxContextTokens) {
+      console.log('[FetchContext] using file: ', item.metadata.filePath, tokenCount);
+      contextSourceFilesUsed.push(item?.metadata?.filePath || item.metadata?.url); // TODO: standardize teh canonical location (UUID) of the file
+      totalTokens += tokenCount;
+      return renderedContext;
+    } else {
+      return null;
     }
   });
 

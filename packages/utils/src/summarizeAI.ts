@@ -27,7 +27,7 @@ export const summarizeAI = async ({
 }): Promise<string> => {
   if (!id) {
     id = randomUUID();
-    console.time(`[summarizeAI] ${id} - Done`);
+    // console.time(`[summarizeAI] ${id} - Done`);
   }
   if (!input) return input;
   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize });
@@ -38,7 +38,7 @@ export const summarizeAI = async ({
     // console.log(err);
     inputDocs = [];
   }
-  console.log(`[summarizeAI] ${id} - chunkSize: ${chunkSize} - ${inputDocs.length} chunks`);
+  // console.log(`[summarizeAI] ${id} - chunkSize: ${chunkSize} - ${inputDocs.length} chunks`);
   if (inputDocs.length > 1) {
     const summariesPromises = inputDocs?.map(async (doc, idx) => {
       let summary = '';
@@ -62,7 +62,7 @@ export const summarizeAI = async ({
     try {
       const summaryDocs = await textSplitter.createDocuments([summaryText]);
       if (summaryDocs.length === 1) {
-        console.timeEnd(`[summarizeAI] ${id} - Done`);
+        // console.timeEnd(`[summarizeAI] ${id} - Done`);
         return summaryText;
       } else {
         return summarizeAI({
@@ -76,7 +76,7 @@ export const summarizeAI = async ({
       return summaryText;
     }
   }
-  console.log('[summarizeAI] - No chunks');
-  console.timeEnd(`[summarizeAI] ${id} - Done`);
+  // console.log('[summarizeAI] - No chunks');
+  // console.timeEnd(`[summarizeAI] ${id} - Done`);
   return input;
 };
