@@ -1,5 +1,4 @@
 import React from 'react';
-import { getServerSession } from 'next-auth';
 import ChatLayout from '@ui/ChatLayout';
 import { authOptions } from '@ui/authOptions';
 

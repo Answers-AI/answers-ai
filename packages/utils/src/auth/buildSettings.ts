@@ -171,6 +171,11 @@ export const buildSettings = async (user: User, org?: Organization) => {
           id: 'cams-env-test-v0.1.0',
           name: 'cams-env-test-v0.1.0',
           enabled: true
+        },
+        {
+          id: 'ASDFASDFASDFASDF',
+          name: 'ASDFASDFASDFASDFASDF',
+          enabled: true
         }
       ]
     };

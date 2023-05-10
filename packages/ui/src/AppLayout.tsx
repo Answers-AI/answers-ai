@@ -5,7 +5,7 @@ import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { FlagsmithProvider } from 'flagsmith/react';
 import flagsmith from 'flagsmith/isomorphic';
 
-import { ClientSafeProvider, SessionProvider, signOut } from 'next-auth/react';
+import { ClientSafeProvider, signOut } from 'next-auth/react';
 
 import { Session } from 'next-auth';
 import Auth from './Auth';
