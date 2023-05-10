@@ -82,47 +82,49 @@ export const authOptions: AuthOptions = {
         // @ts-ignore-next-line
         session.user.invited = user.invited ? new Date(user.invited as string) : user.invited;
         session.user.appSettings = user.appSettings;
-      }
-      const [atlassian] = await prisma.account.findMany({
-        where: { userId: user.id, provider: 'atlassian' }
-      });
-      if (atlassian.expires_at && atlassian.expires_at * 1000 < Date.now()) {
-        // If the access token has expired, try to refresh it
-        try {
-          // https://accounts.atlassian.com/.well-known/openid-configuration
-          // We need the `token_endpoint`.
-          const response = await fetch('https://auth.atlassian.com/oauth/token', {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-              client_id: process.env.ATLASSIAN_CLIENT_ID!,
-              client_secret: process.env.ATLASSIAN_CLIENT_SECRET!,
-              grant_type: 'refresh_token',
-              refresh_token: atlassian.refresh_token!
-            }),
-            method: 'POST'
-          });
 
-          const tokens: TokenSet = await response.json();
+        const [atlassian] = await prisma.account.findMany({
+          where: { userId: user.id, provider: 'atlassian' }
+        });
 
-          if (!response.ok) throw tokens;
+        if (atlassian?.expires_at && atlassian?.expires_at * 1000 < Date.now()) {
+          // If the access token has expired, try to refresh it
+          try {
+            // https://accounts.atlassian.com/.well-known/openid-configuration
+            // We need the `token_endpoint`.
+            const response = await fetch('https://auth.atlassian.com/oauth/token', {
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: new URLSearchParams({
+                client_id: process.env.ATLASSIAN_CLIENT_ID!,
+                client_secret: process.env.ATLASSIAN_CLIENT_SECRET!,
+                grant_type: 'refresh_token',
+                refresh_token: atlassian.refresh_token!
+              }),
+              method: 'POST'
+            });
 
-          await prisma.account.update({
-            data: {
-              access_token: tokens.access_token,
-              expires_at: Math.floor(Date.now() / 1000 + (tokens.expires_in as number)),
-              refresh_token: tokens.refresh_token ?? atlassian.refresh_token
-            },
-            where: {
-              provider_providerAccountId: {
-                provider: 'atlassian',
-                providerAccountId: atlassian.providerAccountId
+            const tokens: TokenSet = await response.json();
+
+            if (!response.ok) throw tokens;
+
+            await prisma.account.update({
+              data: {
+                access_token: tokens.access_token,
+                expires_at: Math.floor(Date.now() / 1000 + (tokens.expires_in as number)),
+                refresh_token: tokens.refresh_token ?? atlassian.refresh_token
+              },
+              where: {
+                provider_providerAccountId: {
+                  provider: 'atlassian',
+                  providerAccountId: atlassian.providerAccountId
+                }
               }
-            }
-          });
-        } catch (error) {
-          console.error('Error refreshing access token', error);
-          // The error property will be used client-side to handle the refresh token error
-          session.error = 'RefreshAccessTokenError';
+            });
+          } catch (error) {
+            console.error('Error refreshing access token', error);
+            // The error property will be used client-side to handle the refresh token error
+            session.error = 'RefreshAccessTokenError';
+          }
         }
       }
       return session;
