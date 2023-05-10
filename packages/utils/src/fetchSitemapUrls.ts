@@ -7,9 +7,9 @@ export async function fetchSitemapUrls(domain: string): Promise<string[]> {
   try {
     const robotsTxtUrl = `${domain}/robots.txt`;
     const robotsTxtResponse = await axios.get(robotsTxtUrl);
-    const sitemapUrl = parseSitemapUrlFromRobotsTxt(robotsTxtResponse.data, domain);
+    const sitemapUrls = parseSitemapUrlsFromRobotsTxt(robotsTxtResponse.data);
 
-    if (sitemapUrl) {
+    for (const sitemapUrl of sitemapUrls) {
       const sitemapXml = await axios.get(sitemapUrl);
       const sitemapUrls = parseSitemapUrls(sitemapXml.data);
       urls.push(...sitemapUrls);
@@ -21,17 +21,19 @@ export async function fetchSitemapUrls(domain: string): Promise<string[]> {
   return urls;
 }
 
-function parseSitemapUrlFromRobotsTxt(robotsTxtContent: string, domain: string): string | null {
+function parseSitemapUrlsFromRobotsTxt(robotsTxtContent: string): string[] {
   const lines = robotsTxtContent.split('\n');
+  const sitemapUrls: string[] = [];
+
   for (const line of lines) {
     const lowerCaseLine = line.toLowerCase();
     if (lowerCaseLine.startsWith('sitemap:')) {
       const sitemapPath = lowerCaseLine.replace('sitemap:', '').trim();
-      return new URL(sitemapPath, domain).href;
+      sitemapUrls.push(sitemapPath);
     }
   }
 
-  return `${domain}/sitemap.xml`;
+  return sitemapUrls;
 }
 
 function parseSitemapUrls(sitemapXml: string): string[] {

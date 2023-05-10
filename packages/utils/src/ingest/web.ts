@@ -290,7 +290,6 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
   event: 'web/domain.sync',
   v: '1',
   handler: async ({ event }) => {
-    console.time('processWebDomainScrape');
     const data = event.data;
     const { domain } = data;
 
@@ -315,7 +314,7 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
       // } catch (error) {}
     } else {
       const uniqueUrls = getUniqueUrls(urls);
-
+      console.log(`EventName: web/urls.sync UniqueURLs: ${uniqueUrls?.length}`);
       try {
         await Promise.all(
           chunkArray(uniqueUrls, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
@@ -335,7 +334,6 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
       } finally {
       }
     }
-    console.timeEnd('processWebDomainScrape');
   }
 };
 

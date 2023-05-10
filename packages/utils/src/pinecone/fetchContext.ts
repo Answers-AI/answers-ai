@@ -148,7 +148,6 @@ export const fetchContext = async ({
   let totalTokens = 0;
   const contextSourceFilesUsed: string[] = [];
   const maxContextTokens = getMaxContextTokens(gptModel);
-  console.log({ sidekick });
   const contextPromises = relevantData.map((item) => {
     let renderedContext = item?.metadata?.text;
     if (sidekick?.contextStringRender) {
@@ -168,7 +167,6 @@ export const fetchContext = async ({
   const filteredData = contextPromises;
   const context = filteredData.filter((result) => result !== null).join(' ');
 
-  console.log({ contextPromises });
   return {
     context,
     summary: context,
