@@ -20,7 +20,7 @@ export async function POST(req: Request, res: NextResponse) {
   const { urls, byDomain } = await req.json();
   const uniqueUrls = getUniqueUrls(urls);
 
-  inngest.send({
+  await inngest.send({
     v: '1',
     ts: new Date().valueOf(),
     name: 'web/urls.sync',
