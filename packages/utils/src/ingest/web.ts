@@ -256,7 +256,7 @@ export const processWebUrlScrape: EventVersionHandler<{ urls: string[]; byDomain
 
     if (byDomain) {
       const domains = getUniqueDomains(urls);
-      const domainPromises = domains.map((domain) => {
+      const domainPromises = domains.map((domain) =>
         inngest.send({
           v: event.v,
           ts: new Date().valueOf(),
@@ -265,8 +265,8 @@ export const processWebUrlScrape: EventVersionHandler<{ urls: string[]; byDomain
             domain
           },
           user: event.user
-        });
-      });
+        })
+      );
 
       if (domainPromises?.length) {
         await Promise.all(domainPromises);
