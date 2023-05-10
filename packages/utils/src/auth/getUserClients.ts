@@ -23,16 +23,22 @@ export async function getUserClients(user: { id: string }) {
   const clients: UserClients = {};
   // console.log('Accounts', accountsByProvider);
   if (accountsByProvider?.atlassian?.access_token)
-    clients.confluenceClient = new ConfluenceClient({
-      accessToken: accountsByProvider?.atlassian?.access_token
-    });
+    try {
+      clients.confluenceClient = new ConfluenceClient({
+        accessToken: accountsByProvider?.atlassian?.access_token
+      });
+    } catch (e) {}
   if (accountsByProvider?.atlassian?.access_token)
-    clients.jiraClient = new JiraClient({
-      accessToken: accountsByProvider?.atlassian?.access_token
-    });
+    try {
+      clients.jiraClient = new JiraClient({
+        accessToken: accountsByProvider?.atlassian?.access_token
+      });
+    } catch (e) {}
   if (accountsByProvider?.slack?.access_token)
-    clients.slackClient = new SlackApiClient({
-      accessToken: accountsByProvider?.slack?.access_token
-    });
+    try {
+      clients.slackClient = new SlackApiClient({
+        accessToken: accountsByProvider?.slack?.access_token
+      });
+    } catch (e) {}
   return clients;
 }
