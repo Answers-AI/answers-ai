@@ -37,11 +37,9 @@ const MainUiLayout = async ({
 
   const flagsmithState = flagsmith.getState();
 
-  const appSettings = await getAppSettings();
-
   return (
     <AppLayout
-      appSettings={appSettings}
+      appSettings={session?.user?.appSettings!}
       providers={providers}
       session={session as Session}
       params={params}

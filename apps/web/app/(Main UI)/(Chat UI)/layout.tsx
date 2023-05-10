@@ -9,11 +9,6 @@ export default async function ChatUILayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return <a href={'/auth'}>Redirect</a>;
-  }
-
   return (
     // @ts-expect-error
     <ChatLayout>
@@ -28,7 +23,7 @@ export default async function ChatUILayout({
           paddingTop: 0,
           paddingBottom: 3
         }}> */}
-      
+
       {/* {journey ? <Filters filters={journey.filters} /> : null} */}
 
       {/* </div> */}

@@ -155,7 +155,6 @@ export const fetchContext = async ({
     }
     const tokenCount = countTokens(renderedContext || '');
     if (totalTokens + tokenCount <= maxContextTokens) {
-      console.log('[FetchContext] using file: ', item.metadata.filePath, tokenCount);
       contextSourceFilesUsed.push(item?.metadata?.filePath || item.metadata?.url); // TODO: standardize teh canonical location (UUID) of the file
       totalTokens += tokenCount;
       return renderedContext;
