@@ -36,7 +36,7 @@ const groupByDomain = (data: string[]) => {
   return groups;
 };
 
-const SourcesWeb: React.FC<{}> = ({ documents: Document }) => {
+const SourcesWeb: React.FC<{}> = () => {
   const { filters, updateFilter } = useAnswers();
 
   const activeUrls = filters?.datasources?.web?.url?.map((webUrl) => webUrl.url) || [];
