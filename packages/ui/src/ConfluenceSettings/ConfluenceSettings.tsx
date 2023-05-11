@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { AppSettings } from 'types';
 import ConfluenceSettingsClient from './ConfluenceSettings.Client';
 export interface ConfluenceSettingsProps {

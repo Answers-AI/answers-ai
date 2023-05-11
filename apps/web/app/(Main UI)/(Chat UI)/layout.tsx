@@ -1,7 +1,5 @@
 import React from 'react';
-import { getServerSession } from 'next-auth';
 import ChatLayout from '@ui/ChatLayout';
-import { authOptions } from '@ui/authOptions';
 
 export default async function ChatUILayout({
   // This will be populated with nested layouts or pages
@@ -11,22 +9,6 @@ export default async function ChatUILayout({
 }) {
   return (
     // @ts-expect-error
-    <ChatLayout>
-      {children}
-      {/* <div
-        style={{
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          padding: 2,
-          paddingTop: 0,
-          paddingBottom: 3
-        }}> */}
-
-      {/* {journey ? <Filters filters={journey.filters} /> : null} */}
-
-      {/* </div> */}
-    </ChatLayout>
+    <ChatLayout>{children}</ChatLayout>
   );
 }

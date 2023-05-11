@@ -5,7 +5,7 @@ import { AppBar, Box, Toolbar, Typography } from '@mui/material';
 import { AppSettings } from 'types';
 import { MessageCard } from './Message';
 import { useAnswers } from './AnswersContext';
-import SourcesToolbar from './SourcesToolbar';
+import SourcesToolbar from './JourneyLayout/SourcesToolbar';
 import { ChatInput } from './ChatInput';
 
 export const ChatDetail = ({

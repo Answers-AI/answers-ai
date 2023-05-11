@@ -59,8 +59,6 @@ The database of choice is PostgreSQL, in development this will run with Docker a
 
 The database is configured with [Prisma](https://www.prisma.io/), the database is configured through `DATABASE_URL`.
 
-The database is configured with [Prisma](https://www.prisma.io/), the database is configured through `DATABASE_URL`.
-
 ### Develop
 
 To create develop migrations use

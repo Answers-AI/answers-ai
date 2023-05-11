@@ -1,22 +1,23 @@
 'use client';
 import * as React from 'react';
 import NextLink from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { Chat, Journey } from 'types';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Add from '@mui/icons-material/Add';
-import { Button, Collapse } from '@mui/material';
-import { usePathname, useRouter } from 'next/navigation';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { Chat, Journey } from 'types';
 
 const drawerWidth = 400;
 
@@ -159,12 +160,11 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
         </DrawerHeader>
         <ListItem sx={{ flexDirection: 'column' }} disablePadding>
           <Button
-            href={`/chat`}
+            href={`/journey/new`}
             component={NextLink}
             sx={{ px: 2, width: '100%', textTransform: 'capitalize' }}
-            onClick={handleNewJourney}
             color="primary">
-            <ListItemText primary={'Create new journey'} />
+            <ListItemText primary={'Start New Journey'} />
             <Add />
           </Button>
         </ListItem>

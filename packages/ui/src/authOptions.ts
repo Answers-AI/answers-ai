@@ -86,7 +86,7 @@ export const authOptions: AuthOptions = {
       const [atlassian] = await prisma.account.findMany({
         where: { userId: user.id, provider: 'atlassian' }
       });
-      if (atlassian.expires_at && atlassian.expires_at * 1000 < Date.now()) {
+      if (atlassian?.expires_at && atlassian?.expires_at * 1000 < Date.now()) {
         // If the access token has expired, try to refresh it
         try {
           // https://accounts.atlassian.com/.well-known/openid-configuration

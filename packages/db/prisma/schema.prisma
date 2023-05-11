@@ -133,6 +133,7 @@ model Chat {
 model Journey {
   id    String  @id @default(uuid())
   title String?
+  goal  String?
 
   filters Json
 
@@ -169,9 +170,9 @@ model Prompt {
 }
 
 model Message {
-  id      String @id @default(uuid())
-  role    String @default("assistant")
-  content String
+  id                     String   @id @default(uuid())
+  role                   String   @default("assistant")
+  content                String
   contextSourceFilesUsed String[]
 
   prompt   Prompt? @relation(fields: promptId, references: id)

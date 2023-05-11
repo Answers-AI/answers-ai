@@ -1,7 +1,6 @@
 import React from 'react';
 import { prisma } from 'db/dist';
 import Chat from '@ui/Chat';
-import { AnswersProvider } from '@ui/AnswersContext';
 
 export const metadata = {
   title: 'Chats | Answers AI',

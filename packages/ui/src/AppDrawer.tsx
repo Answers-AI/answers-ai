@@ -1,25 +1,25 @@
 'use client';
-import { Avatar, Box } from '@mui/material';
-import NextLink from 'next/link';
+import React from 'react';
 import { signOut } from 'next-auth/react';
+import { useFlags } from 'flagsmith/react';
+import { usePathname } from 'next/navigation';
+import { styled, Theme, CSSObject } from '@mui/material/styles';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import NextLink from 'next/link';
 import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
+import MuiDrawer from '@mui/material/Drawer';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
+import MuiAppBar from '@mui/material/AppBar';
+import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import MessageIcon from '@mui/icons-material/QueryBuilder';
 import HomeIcon from '@mui/icons-material/Home';
 import StorageIcon from '@mui/icons-material/Storage';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import AIIcon from '@mui/icons-material/SmartButton';
-import React from 'react';
-import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
-import MuiDrawer from '@mui/material/Drawer';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import { useFlags } from 'flagsmith/react';
-import { usePathname } from 'next/navigation';
 
 export const AppDrawer = ({ params }: any) => {
   const flags = useFlags(['settings']);
@@ -28,10 +28,9 @@ export const AppDrawer = ({ params }: any) => {
   return (
     <Drawer variant="permanent" sx={{ sm: { width: 0 } }}>
       <DrawerHeader sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        {/* <IconButton onClick={handleDrawerClose}>
-              {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-            </IconButton> */}
-        <Avatar sx={{ objectFit: 'contain' }}>AI</Avatar>
+        <NextLink href="/">
+          <Avatar sx={{ objectFit: 'contain' }}>AI</Avatar>
+        </NextLink>
       </DrawerHeader>
 
       <List sx={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
@@ -47,49 +46,42 @@ export const AppDrawer = ({ params }: any) => {
                 { text: 'Tracing', link: '/tracing', icon: <AIIcon /> }
               ]
             : [])
-        ].map(
-          (item) => (
-            // item?.component ? (
-            //   item?.component
-            // ) : (
-            <ListItem
-              key={item.text}
-              href={item.link}
-              component={NextLink}
-              prefetch={false}
-              disablePadding
+        ].map((item) => (
+          <ListItem
+            key={item.text}
+            href={item.link}
+            component={NextLink}
+            prefetch={false}
+            disablePadding
+            sx={{
+              display: 'block',
+              transition: 'all 0.3s ease-in-out'
+            }}>
+            <ListItemButton
+              selected={
+                (pathname?.includes(item.link) && item.link !== '/') || pathname === item.link
+              }
+              aria-label={item.text}
               sx={{
-                display: 'block',
-                transition: 'all 0.3s ease-in-out'
+                minHeight: 48,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
               }}>
-              <ListItemButton
-                selected={
-                  (pathname?.includes(item.link) && item.link !== '/') || pathname === item.link
-                }
-                aria-label={item.text}
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center'
+                  minWidth: 0,
+                  justifyContent: 'center'
                 }}>
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    justifyContent: 'center'
-                  }}>
-                  {item.icon}
-                </ListItemIcon>
-              </ListItemButton>
-            </ListItem>
-          )
-          // )
-        )}
+                {item.icon}
+              </ListItemIcon>
+            </ListItemButton>
+          </ListItem>
+        ))}
         <Box sx={{ flex: 1 }}> </Box>
         <ListItem disablePadding sx={{ display: 'block' }}>
           <ListItemButton
             aria-label={'sign out'}
-            // href={link}
             onClick={() => signOut()}
             sx={{ minHeight: 48, width: 48 }}>
             <ListItemIcon
@@ -99,7 +91,6 @@ export const AppDrawer = ({ params }: any) => {
               }}>
               <ExitToAppIcon />
             </ListItemIcon>
-            {/* <ListItemText primary={} sx={{ opacity: 0 }} /> */}
           </ListItemButton>
         </ListItem>
       </List>

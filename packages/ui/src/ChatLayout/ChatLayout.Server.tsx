@@ -1,5 +1,5 @@
 import React from 'react';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@ui/authOptions';
 import { prisma } from 'db/dist';
 
@@ -17,9 +17,10 @@ export default async function ChatUILayout({
   journeyId: string;
 }) {
   const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return <a href={'/auth'}>Redirect</a>;
-  }
+  console.log('chat layoutserver', { session });
+  // if (!session?.user) {
+  //   return <a href={'/auth'}>Redirect</a>;
+  // }
   const appSettingsPromise = getAppSettings();
 
   const chatsPromise = prisma.chat

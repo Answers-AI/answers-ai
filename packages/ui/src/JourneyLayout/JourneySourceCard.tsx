@@ -1,0 +1,157 @@
+import React, { Component, ElementType } from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { signIn } from 'next-auth/react';
+import { useFlags } from 'flagsmith/react';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import CardActionArea from '@mui/material/CardActionArea';
+import CardHeader from '@mui/material/CardHeader';
+import Avatar from '@mui/material/Avatar';
+
+import { useAnswers } from '../AnswersContext';
+import { AnswersFilters, AppService, AppSettings } from 'types';
+
+import JourneySetting from './JourneySetting';
+
+interface JourneySourceCardProps extends AppService {
+  appSettings: AppSettings;
+  filters: AnswersFilters;
+  updateFilter: (newFilter: AnswersFilters) => void;
+  onClick?: () => void;
+  expanded?: boolean;
+  editable?: boolean;
+}
+
+const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
+  appSettings,
+  id,
+  name,
+  expanded,
+  imageURL,
+  providerId,
+  onClick,
+  enabled,
+  editable,
+  filters,
+  updateFilter
+}) => {
+  const flags = useFlags(['delete_prompt']);
+  const { deletePrompt, updatePrompt } = useAnswers();
+  const [lastInteraction, setLastInteraction] = React.useState<string>('');
+  const handleAuthIntegration = () => {
+    signIn(providerId);
+  };
+
+  const Wrapper: ElementType = expanded ? Box : CardActionArea;
+  return (
+    <>
+      <Card
+        component={motion.div}
+        layoutId={id}
+        sx={{
+          flex: 1,
+          display: 'flex',
+          position: 'relative',
+          alignItems: 'space-between',
+          justifyContent: 'space-between',
+          flexDirection: 'column'
+        }}>
+        <Box
+          sx={{
+            width: '100%',
+            flex: '1',
+            display: 'flex'
+          }}>
+          <Wrapper
+            component="div"
+            sx={{
+              width: '100%',
+              minHeight: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              ...(flags?.delete_prompt?.enabled && {
+                paddingRight: 4
+              })
+            }}
+            disabled={expanded}
+            onClick={onClick}>
+            <CardContent
+              sx={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2
+              }}>
+              <CardHeader
+                avatar={
+                  <Avatar>
+                    <Image
+                      style={{ background: 'white', padding: '6px' }}
+                      src={imageURL}
+                      alt={`${name} logo`}
+                      width={expanded ? 100 : 40}
+                      height={expanded ? 100 : 40}
+                    />
+                  </Avatar>
+                }
+                action={
+                  providerId ? (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      disabled={enabled && !expanded}
+                      onClick={handleAuthIntegration}>
+                      {expanded && enabled ? 'Refresh auth' : enabled ? 'Connected' : 'Connect'}
+                    </Button>
+                  ) : null
+                }
+                sx={{ 'p': 0, 'width': '100%', '.MuiCardHeader-action': { m: 0 } }}
+              />
+              {name ? (
+                <Typography
+                  variant="body1"
+                  sx={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    textTransform: 'capitalize',
+                    display: '-webkit-box',
+                    WebkitLineClamp: expanded ? '100' : '3',
+                    WebkitBoxOrient: 'vertical'
+                  }}>
+                  <strong>{name}</strong>
+                </Typography>
+              ) : null}
+
+              {enabled ? (
+                <Box
+                  component={motion.div}
+                  sx={{
+                    transition: '.25s',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    ...(expanded ? { maxHeight: '90vh', transitionDelay: '3s' } : { maxHeight: 0 })
+                  }}>
+                  <Typography variant="overline">Filter Options</Typography>
+                  <JourneySetting
+                    app={name}
+                    filters={filters}
+                    updateFilter={updateFilter}
+                    appSettings={appSettings}
+                  />
+                </Box>
+              ) : null}
+            </CardContent>
+          </Wrapper>
+        </Box>
+      </Card>
+    </>
+  );
+};
+
+export default JourneySourceCard;
