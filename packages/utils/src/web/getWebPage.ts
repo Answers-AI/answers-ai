@@ -139,6 +139,10 @@ export const convertWebPageToMarkdown = async (url: string, pageHtml: string): P
     $(elem).html($(elem).text()).add(nextSiblings).wrapAll(section);
   });
 
+  if (!$('h2').length) {
+    $('body').html(`<section>${$('body').html()}</section>`);
+  }
+
   $('body')
     .children()
     .each((i, elem) => {
@@ -158,7 +162,12 @@ export const convertWebPageToMarkdown = async (url: string, pageHtml: string): P
   });
   const article = reader.parse();
 
-  const mkdown = NodeHtmlMarkdown.translate(article?.content || '', {}, undefined, undefined);
+  const mkdown = NodeHtmlMarkdown.translate(
+    article?.content || $.html() || '',
+    {},
+    undefined,
+    undefined
+  );
   const domain = new URL(url).origin;
   return {
     url,

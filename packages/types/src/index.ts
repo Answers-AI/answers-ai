@@ -2,6 +2,7 @@ import * as DB from 'db/generated/prisma-client';
 import { Hit } from '@algolia/client-search';
 
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
+export interface Document extends DB.Document {}
 export type PineconeObject = {
   vectors: PineconeVector[];
 };
