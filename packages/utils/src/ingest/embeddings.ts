@@ -1,6 +1,7 @@
 import PineconeClient from '../pinecone/client';
 import { EventVersionHandler } from './EventVersionHandler';
 import { PineconeVector } from 'types';
+import { prisma } from 'db/dist';
 import OpenAI from '../openai/openai';
 const openAi = new OpenAI();
 
@@ -32,6 +33,18 @@ export const processVectorsUpserted: EventVersionHandler<{ vectors: PineconeVect
     );
 
     if (!DISABLE_EMBEDDING) await pinecone.writeVectorsToIndex(vectorData);
-    // TODOO: DElete them
+
+    const documentUrls = vectors?.map(
+      (vector) => vector.metadata?.url ?? vector.metadata?.documentId
+    );
+    await prisma.document.updateMany({
+      where: {
+        url: { in: documentUrls }
+      },
+      data: {
+        status: 'synced',
+        lastSyncedAt: new Date()
+      }
+    });
   }
 };

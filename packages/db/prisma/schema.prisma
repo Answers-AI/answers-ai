@@ -74,6 +74,18 @@ model WebDocument {
   updatedAt DateTime @default(now()) @updatedAt
 }
 
+model Document {
+  id                String    @id @default(cuid())
+  source            String 
+  url               String    @unique
+  
+  status String @default("pending")
+  lastSyncedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
 model Account {
   id                       String   @id @default(cuid())
   userId                   String

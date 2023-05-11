@@ -12,9 +12,10 @@ import { getUniqueUrls, getUniqueUrl } from '@utils/getUniqueUrls';
 import { chunkArray } from '../utilities/utils';
 import { isAxiosError } from 'axios';
 import { fetchSitemapUrls } from '../fetchSitemapUrls';
+import { getPendingSyncURLs } from './getPendingSyncURLs';
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
-const WEB_PAGE_SYNC_BATCH_SIZE = 100;
+const WEB_PAGE_SYNC_BATCH_SIZE = 10;
 
 const prefixHeaders = (markdown: string): string => {
   const lines = markdown.split('\n');
@@ -48,7 +49,7 @@ const splitPageHtmlChunkMore = async (markdownChunk: string) => {
 
 const splitPageHtml = async (iPage: WebPage) => {
   const page = await convertWebPageToMarkdown(iPage.url, iPage.content);
-
+  // console.log('PageMarkdown', page);
   const headingsRegex = /\n+(?=\s*#####\s(?!#))/;
   const markdown = prefixHeaders(page.content)
     .replace(/\n{2,}/g, '\n')
@@ -166,6 +167,7 @@ const getWebPagesVectors = async (webPages: WebPage[]) => {
 
         const markdownChunks = await splitPageHtml(page);
 
+        // console.log('Markdown', page, markdownChunks);
         if (!markdownChunks?.length) return [];
 
         return markdownChunks.map((headingChunk: string, i: any) => ({
@@ -314,15 +316,20 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
       // } catch (error) {}
     } else {
       const uniqueUrls = getUniqueUrls(urls);
-      console.log(`EventName: web/urls.sync UniqueURLs: ${uniqueUrls?.length}`);
+      const pendingSyncURls = await getPendingSyncURLs(uniqueUrls);
+      console.log(
+        `EventName: web/urls.sync UniqueURLs: ${uniqueUrls?.length} PendingSyncURLs: ${pendingSyncURls?.length}`
+      );
+
       try {
         await Promise.all(
-          chunkArray(uniqueUrls, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
+          chunkArray(pendingSyncURls, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
             inngest.send({
               v: event.v,
               ts: new Date().valueOf(),
               name: 'web/page.sync',
               data: {
+                _total: pendingSyncURls.length,
                 urls
               },
               user: event.user
@@ -411,48 +418,48 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
   event: 'web/page.sync',
   v: '1',
   handler: async ({ event }) => {
-    try {
-      const { urls } = event?.data;
-      if (!urls) {
-        throw new Error('Invalid input data: missing "urls" property');
-      }
-      // TODO: Validate if the URL exists in database
-      // TODO: Verify how long it passed since it was synced
-
-      const uniqueUrls = getUniqueUrls(Array.from(urls));
-      const webPagesHtml = (await webPageLoader.loadMany(uniqueUrls)) as string[];
-
-      const webPages = await Promise.all(
-        uniqueUrls.map(async (url, index) => {
-          const content = webPagesHtml[index];
-          const domain = new URL(url).origin;
-
-          const webData = {
-            url,
-            domain,
-            content
-          };
-
-          const uploadToDb = await prisma.webDocument.upsert({
-            create: webData,
-            update: webData,
-            where: {
-              url: webData.url
-            }
-          });
-
-          return webData;
-        })
-      );
-
-      const filteredPages = webPages.filter((x) => !!x?.content);
-
-      const vectors = await getWebPagesVectors(filteredPages);
-
-      const embeddedVectors = await embedVectors(event, vectors);
-      // TODO: Update webData with syncedAt
-    } catch (error) {
-      console.error(`[web/page.sync] ${error}`);
+    const { urls } = event?.data;
+    if (!urls) {
+      throw new Error('Invalid input data: missing "urls" property');
     }
+    // TODO: Validate if the URL exists in database
+    // TODO: Verify how long it passed since it was synced
+
+    const uniqueUrls = getUniqueUrls(Array.from(urls));
+
+    const pendingSyncURls = await getPendingSyncURLs(uniqueUrls);
+
+    await prisma.document.updateMany({
+      where: { url: { in: pendingSyncURls } },
+      data: {
+        status: 'syncing'
+      }
+    });
+
+    const webPagesHtml = (await webPageLoader.loadMany(pendingSyncURls)) as string[];
+    const webPages = await Promise.all(
+      pendingSyncURls.map(async (url, index) => {
+        const content = webPagesHtml[index];
+        const domain = new URL(url).origin;
+
+        const webData = {
+          url,
+          domain,
+          content
+        };
+
+        return webData;
+      })
+    );
+
+    const filteredPages = webPages.filter((x) => !!x?.content);
+
+    // console.log('filteredPages', filteredPages);
+    const vectors = await getWebPagesVectors(filteredPages);
+    // console.log('vectorrs', vectors);
+
+    const embeddedVectors = await embedVectors(event, vectors);
+    return pendingSyncURls;
+    // TODO: Update webData with syncedAt
   }
 };

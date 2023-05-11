@@ -29,7 +29,7 @@ export async function extractUrlsFromSitemap(sitemapUrl: string): Promise<string
 
     return sitemapUrls;
   } catch (err: any) {
-    console.log(`Error extractUrlsFromSitemap on url ${sitemapUrl}.  Message: err?.message`);
+    console.log(`Error extractUrlsFromSitemap on url ${sitemapUrl}.  Message: ${err?.message}`);
     return [];
   }
 }

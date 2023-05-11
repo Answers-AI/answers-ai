@@ -11,7 +11,7 @@ import {
   Switch,
   TextField
 } from '@mui/material';
-import { WebUrlType } from 'types';
+import { WebUrlType, Document } from 'types';
 import { useAnswers } from './AnswersContext';
 import { getUrlDomain } from '@utils/getUrlDomain';
 import { getUniqueUrls } from '@utils/getUniqueUrls';
@@ -36,7 +36,7 @@ const groupByDomain = (data: string[]) => {
   return groups;
 };
 
-const SourcesWeb: React.FC<{}> = () => {
+const SourcesWeb: React.FC<{}> = ({ documents: Document }) => {
   const { filters, updateFilter } = useAnswers();
 
   const activeUrls = filters?.datasources?.web?.url?.map((webUrl) => webUrl.url) || [];
