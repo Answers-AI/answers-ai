@@ -1,23 +1,18 @@
 import React from 'react';
-import { getServerSession, Session } from 'next-auth';
+import { Session } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
 import AppLayout from '@ui/AppLayout';
 import flagsmith from 'flagsmith/isomorphic';
 import { getProviders } from 'next-auth/react';
-import { getAppSettings } from '@ui/getAppSettings';
+import { getCachedSession } from '@ui/getCachedSession';
 
-const MainUiLayout = async ({
-  // Layouts must accept a children prop.
-  params,
-  // This will be populated with nested layouts or pages
-  children
-}: {
+const MainUiLayout = async (props: {
   children: React.ReactNode;
   params: {
     slug: string;
   };
 }) => {
-  const session = await getServerSession(authOptions);
+  const session = await getCachedSession(authOptions);
 
   const providers = await getProviders();
 
@@ -42,9 +37,9 @@ const MainUiLayout = async ({
       appSettings={session?.user?.appSettings!}
       providers={providers}
       session={session as Session}
-      params={params}
+      params={props.params}
       flagsmithState={flagsmithState}>
-      {children}
+      {props.children}
     </AppLayout>
   );
 };

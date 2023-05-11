@@ -65,7 +65,6 @@ export const authOptions: AuthOptions = {
     strategy: 'database',
     // Seconds - How long until an idle session expires and is no longer valid.
     maxAge: 30 * 24 * 60 * 60, // 30 days
-
     // Seconds - Throttle how frequently to write to database to extend a session.
     // Use it to limit write operations. Set to 0 to always update the database.
     // Note: This option is ignored if using JSON Web Tokens
@@ -74,8 +73,6 @@ export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
   callbacks: {
     async session({ session, user }) {
-      const ts = Date.now();
-      console.time('session' + ts);
       if (user && session.user) {
         session.user.id = user.id!;
         session.user.role = user.role!;
