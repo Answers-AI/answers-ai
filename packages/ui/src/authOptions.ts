@@ -1,4 +1,5 @@
 import { AuthOptions, DefaultSession, TokenSet } from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
 import GithubProvider from 'next-auth/providers/github';
 import AtlassianProvider from 'next-auth/providers/atlassian';
 import SlackProvider from 'next-auth/providers/slack';
@@ -45,6 +46,7 @@ const ATLASSIAN_SCOPE = {
   'read:page:confluence': true,
   'read:space:confluence': true
 };
+
 export const authOptions: AuthOptions = {
   cookies: {
     sessionToken: {
@@ -208,9 +210,9 @@ export const authOptions: AuthOptions = {
       clientSecret: process.env.GITHUB_SECRET!,
       allowDangerousEmailAccountLinking: true
     }),
-    AtlassianProvider({
-      clientId: process.env.ATLASSIAN_CLIENT_ID!,
-      clientSecret: process.env.ATLASSIAN_CLIENT_SECRET!,
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       allowDangerousEmailAccountLinking: true
     })
   ],
