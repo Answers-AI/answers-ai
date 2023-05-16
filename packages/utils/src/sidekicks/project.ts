@@ -1,5 +1,6 @@
 import { Sidekick } from 'types';
 const project: Sidekick = {
+  departments: ['support', 'project'],
   label: 'Project Manager Expert',
   value: 'project',
   placeholder: 'you are a Jira project manager expert ',

@@ -1,5 +1,6 @@
 import { Sidekick } from 'types';
 const docs: Sidekick = {
+  departments: ["content"],
   label: "Docs Creation Expert",
   value: "docs",
   placeholder: "I can create documentation for you",

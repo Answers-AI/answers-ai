@@ -1,6 +1,7 @@
 import { Sidekick } from 'types';
 
 const refactor: Sidekick = {
+  departments: ["engineering"],
   label: "Refactoring Expert",
   value: "refactor",
   placeholder: "I can create refactor code for you",
