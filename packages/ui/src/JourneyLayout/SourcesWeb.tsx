@@ -11,8 +11,8 @@ import {
   Switch,
   TextField
 } from '@mui/material';
-import { WebUrlType } from 'types';
-import { useAnswers } from '../AnswersContext';
+import { WebUrlType, Document } from 'types';
+import { useAnswers } from './AnswersContext';
 import { getUrlDomain } from '@utils/getUrlDomain';
 import { getUniqueUrls } from '@utils/getUniqueUrls';
 

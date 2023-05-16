@@ -1,10 +1,10 @@
 import React from 'react';
-import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@ui/authOptions';
 import { prisma } from 'db/dist';
 
 import ChatLayout from './ChatLayout.Client';
 import { getAppSettings } from '@ui/getAppSettings';
+import { getCachedSession } from '@ui/getCachedSession';
 
 export default async function ChatUILayout({
   // This will be populated with nested layouts or pages
@@ -16,12 +16,9 @@ export default async function ChatUILayout({
   chatId: string;
   journeyId: string;
 }) {
-  const session = await getServerSession(authOptions);
-  console.log('chat layoutserver', { session });
-  // if (!session?.user) {
-  //   return <a href={'/auth'}>Redirect</a>;
-  // }
-  const appSettingsPromise = getAppSettings();
+  const session = await getCachedSession(authOptions);
+
+  if (!session?.user?.email) return null;
 
   const chatsPromise = prisma.chat
     .findMany({
@@ -55,43 +52,9 @@ export default async function ChatUILayout({
     })
     .then((data: any) => JSON.parse(JSON.stringify(data)));
 
-  const chatPromise = chatId
-    ? prisma.chat
-        .findUnique({
-          where: {
-            id: chatId
-          },
-          include: { prompt: true, messages: { include: { user: true } } }
-        })
-        .then((data: any) => JSON.parse(JSON.stringify(data)))
-    : null;
-
-  const journeyPromise = journeyId
-    ? prisma.journey
-        .findUnique({
-          where: {
-            id: journeyId
-          },
-          include: { chats: { include: { prompt: true, messages: { include: { user: true } } } } }
-        })
-        .then((data: any) => JSON.parse(JSON.stringify(data)))
-    : null;
-
-  const [
-    chats,
-    journeys,
-    // chat,
-    //  journey,
-    appSettings
-  ] = await Promise.all([
-    chatsPromise,
-    journeysPromise,
-    chatPromise,
-    journeyPromise,
-    appSettingsPromise
-  ]);
+  const [chats, journeys] = await Promise.all([chatsPromise, journeysPromise]);
   return (
-    <ChatLayout chats={chats} journeys={journeys} appSettings={appSettings}>
+    <ChatLayout chats={chats} journeys={journeys} appSettings={session.user.appSettings}>
       {children}
     </ChatLayout>
   );

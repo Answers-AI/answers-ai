@@ -18,6 +18,6 @@ export const webPageLoader = redisLoader<string, string>({
     const allResults = await Promise.all(results);
     return allResults;
   },
-  cacheExpirationInSeconds: 0,
+  cacheExpirationInSeconds: 1000 * 60 * 60,
   disableCache: false
 });

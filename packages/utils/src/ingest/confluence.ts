@@ -145,6 +145,9 @@ export const processConfluencePage: EventVersionHandler<{ pageIds: string[] }> =
     const { user } = event;
     if (!user) throw new Error('User is requierd');
     const { confluenceClient } = await getUserClients(user);
+    // Create/Upsert confluence document
+    // Get only the pending for sync pages
+    // only update the pending for sync pages
     const confluencePages = (await confluenceClient.pageLoader.loadMany(
       pageIds
     )) as ConfluencePage[];
