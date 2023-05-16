@@ -1,5 +1,7 @@
 const { PrismaPlugin } = require('experimental-prisma-webpack-plugin');
 const webpack = require('webpack');
+const { withSentryConfig } = require('@sentry/nextjs');
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 });
@@ -7,7 +9,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /**
  * @type {import('next').NextConfig}
  */
-module.exports = withBundleAnalyzer({
+module.exports = withSentryConfig(withBundleAnalyzer({
   experimental: {
     appDir: true,
     serverComponentsExternalPackages: ['@prisma/client']
@@ -40,4 +42,4 @@ module.exports = withBundleAnalyzer({
 
     return config;
   }
-});
+}));

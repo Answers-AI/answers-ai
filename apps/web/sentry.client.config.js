@@ -2,11 +2,13 @@ import * as Sentry from '@sentry/nextjs';
 
 Sentry.init({
   dsn: 'https://31104059ebc64f998bb81cfb2b1c8814@o4505128356544512.ingest.sentry.io/4505128358510592',
-
-  // We recommend adjusting this value in production, or using tracesSampler
-  // for finer control
+  beforeSend: event => {
+    if (event.exception) {
+      Sentry.showReportDialog({ eventId: event.event_id });
+    }
+    return event;
+  },
   tracesSampleRate: 1.0
-
   // ...
 
   // Note: if you want to override the automatic release value, do not set a
