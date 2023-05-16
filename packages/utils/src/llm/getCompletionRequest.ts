@@ -8,6 +8,7 @@ export async function getCompletionRequest({
   messages,
   input,
   sidekick = {
+    departments: ['general'],
     value: 'default',
     getSystemPromptTemplate: () => '',
     getUserPromptTemplate: () => '',
