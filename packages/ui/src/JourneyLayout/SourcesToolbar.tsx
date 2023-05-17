@@ -7,7 +7,7 @@ import { useAnswers } from '../AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import Image from 'next/image';
 import JourneySetting from './JourneySetting';
-import SourcesWeb from './SourcesWeb';
+import SourcesWeb from '../SourcesWeb';
 // import SourcesJira from './SourcesJira';
 // import SourcesConfluence from './SourcesConfluence';
 // import SourcesAirtable from './SourcesAirtable';

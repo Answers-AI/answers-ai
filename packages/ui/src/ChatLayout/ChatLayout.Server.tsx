@@ -3,7 +3,6 @@ import { authOptions } from '@ui/authOptions';
 import { prisma } from 'db/dist';
 
 import ChatLayout from './ChatLayout.Client';
-import { getAppSettings } from '@ui/getAppSettings';
 import { getCachedSession } from '@ui/getCachedSession';
 
 export default async function ChatUILayout({

@@ -83,7 +83,7 @@ export const AppDrawer = ({ params }: any) => {
           <ListItemButton
             aria-label={'sign out'}
             onClick={() => signOut()}
-            sx={{ minHeight: 48, width: 48 }}>
+            sx={{ minHeight: 48, width: 48, justifyContent: 'center' }}>
             <ListItemIcon
               sx={{
                 minWidth: 0,

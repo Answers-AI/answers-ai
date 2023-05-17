@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import axios from 'axios';
 import {
@@ -9,13 +10,14 @@ import {
   List,
   ListItem,
   Switch,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material';
 import { WebUrlType, Document } from 'types';
-import { useAnswers } from './AnswersContext';
+import { useAnswers } from '@ui/AnswersContext';
 import { getUrlDomain } from '@utils/getUrlDomain';
 import { getUniqueUrls } from '@utils/getUniqueUrls';
-
+import DocumentTree from './DocumentTree';
 interface SourceUrl {
   id: string;
   url: string;
@@ -36,7 +38,7 @@ const groupByDomain = (data: string[]) => {
   return groups;
 };
 
-const SourcesWeb: React.FC<{}> = () => {
+const SourcesWeb: React.FC<{ sources?: Document[] }> = ({ sources }) => {
   const { filters, updateFilter } = useAnswers();
 
   const activeUrls = filters?.datasources?.web?.url?.map((webUrl) => webUrl.url) || [];
@@ -44,7 +46,7 @@ const SourcesWeb: React.FC<{}> = () => {
   const [allUrls, setAllUrls] = useState<string[]>(activeUrls);
   const [newUrl, setNewUrl] = useState('');
   const [entireDomain, setEntireDomain] = useState(false);
-  const domainGroups = groupByDomain(allUrls || []);
+  const domainGroups = groupByDomain(activeUrls || []);
 
   const handleAddUrl = async () => {
     const newWebUrl = { url: newUrl, entireDomain };
@@ -82,16 +84,6 @@ const SourcesWeb: React.FC<{}> = () => {
       });
     }
   };
-
-  // const toggleDomain = (domain: string) => {
-  //   if (activeDomains.includes(domain)) {
-  //     setActiveDomains(activeDomains.filter((d) => d !== domain));
-  //     setAllUrls(allUrls.filter((url) => !url.startsWith(domain)));
-  //   } else {
-  //     setActiveDomains([...activeDomains, domain]);
-  //     setAllUrls([...allUrls, ...domainGroups[domain].map((d) => d.url)]);
-  //   }
-  // };
 
   const toggleUrl = (url: string) => {
     if (activeUrls.includes(url)) {
@@ -136,18 +128,18 @@ const SourcesWeb: React.FC<{}> = () => {
       </Box>
       <List>
         {Object.entries(domainGroups).map(([domain, urls]) => (
-          <div key={domain}>
-            {/* <ListItem sx={{ padding: 0 }}>
+          <React.Fragment key={domain}>
+            <ListItem key={domain} sx={{ px: 0, py: 0 }}>
               <Chip
-                label={domain}
-                onClick={() => toggleDomain(domain)}
                 sx={{
-                  bgcolor: activeDomains.includes(domain) ? 'success.main' : 'rgba(0, 0, 0, 0)'
+                  bgcolor: activeUrls.includes(domain) ? 'success.main' : 'rgba(0, 0, 0, 0)'
                 }}
+                size="small"
+                label={domain}
+                onClick={() => toggleUrl(domain)}
               />
-            </ListItem> */}
+            </ListItem>
             <Collapse in>
-              {/* ={activeDomains.includes(domain)} && !activeDomains.includes(urls[0]?.domain)}> */}
               <List sx={{ gap: 0.25 }}>
                 {urls.map((webUrl) => (
                   <ListItem key={webUrl.id} sx={{ px: 0, py: 0 }}>
@@ -165,9 +157,10 @@ const SourcesWeb: React.FC<{}> = () => {
                 ))}
               </List>
             </Collapse>
-          </div>
+          </React.Fragment>
         ))}
       </List>
+      <DocumentTree documents={sources} />
     </>
   );
 };

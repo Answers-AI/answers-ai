@@ -1,7 +1,23 @@
+import { getAppSettings } from '@ui/getAppSettings';
 import React from 'react';
+import JourneyFormNew from '@ui/JourneyFormNew';
+import { prisma } from 'db/dist';
 
-const NewJourneyPage = async ({ params }: any) => {
-  return null;
+const NewJourneyPage = async ({}: any) => {
+  const appSettings = await getAppSettings();
+  const sources = await prisma.document
+    .findMany({
+      where: {
+        source: 'web'
+      }
+    })
+    .then((data: any) => JSON.parse(JSON.stringify(data)));
+
+  return (
+    <>
+      <JourneyFormNew appSettings={appSettings} sources={sources}></JourneyFormNew>
+    </>
+  );
 };
 
 export default NewJourneyPage;

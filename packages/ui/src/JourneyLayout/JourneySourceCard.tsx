@@ -37,7 +37,8 @@ const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
   enabled,
   editable,
   filters,
-  updateFilter
+  updateFilter,
+  ...other
 }) => {
   const flags = useFlags(['delete_prompt']);
   const { deletePrompt, updatePrompt } = useAnswers();
@@ -143,6 +144,7 @@ const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
                     filters={filters}
                     updateFilter={updateFilter}
                     appSettings={appSettings}
+                    {...other}
                   />
                 </Box>
               ) : null}

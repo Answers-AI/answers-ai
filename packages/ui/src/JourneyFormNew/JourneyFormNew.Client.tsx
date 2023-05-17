@@ -7,21 +7,25 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
-import { JourneyAppsDrawer } from './JourneyAppsDrawer';
+import { JourneyAppsDrawer } from '@ui/JourneyLayout/JourneyAppsDrawer';
 
 import { AppSettings } from 'types';
+import { AnswersProvider } from '@ui/AnswersContext';
 
-const NewJourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
+const JourneyFormNew = ({
+  appSettings,
+  handleSubmit,
+  sources
+}: {
+  appSettings: AppSettings;
+  handleSubmit: any;
+}): JSX.Element => {
   const [goal, setGoal] = useState('');
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Handle form submission logic heres
-  };
-
   return (
-    <Box p={8}>
-      <form onSubmit={handleSubmit}>
+    <AnswersProvider appSettings={appSettings}>
+      <Box p={8}>
+        {/* <form action={handleSubmit}> */}
         <Typography variant="h2" component="h1">
           Create New Journey
         </Typography>
@@ -55,7 +59,7 @@ const NewJourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
           </Typography>
 
           <Grid2 container sx={{ pt: 3, gap: 2, width: '100%' }}>
-            <JourneyAppsDrawer appSettings={appSettings} />
+            <JourneyAppsDrawer appSettings={appSettings} sources={sources} />
           </Grid2>
         </Box>
         <Box
@@ -67,9 +71,10 @@ const NewJourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
             Create New Journey
           </Button>
         </Box>
-      </form>
-    </Box>
+        {/* </form> */}
+      </Box>
+    </AnswersProvider>
   );
 };
 
-export default NewJourneyForm;
+export default JourneyFormNew;

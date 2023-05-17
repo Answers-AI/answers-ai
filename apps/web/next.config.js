@@ -1,4 +1,6 @@
 const { PrismaPlugin } = require('experimental-prisma-webpack-plugin');
+// const { PrismaPlugin } = require('@prisma/nextjs-monorepo-workaround-plugin');
+
 const webpack = require('webpack');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
@@ -9,6 +11,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
  */
 module.exports = withBundleAnalyzer({
   experimental: {
+    experimentalReact: true,
     appDir: true,
     serverComponentsExternalPackages: ['@prisma/client']
   },

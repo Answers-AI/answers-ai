@@ -80,7 +80,7 @@ export interface ChatDrawerProps {
 export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen || true);
+  const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen);
   const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({ chats: true });
   const handleDrawerOpen = () => {
     window.localStorage.setItem('drawerOpen', 'true');

@@ -9,7 +9,8 @@ import JourneySourceCard from './JourneySourceCard';
 
 export const JourneyAppsDrawer = ({
   appSettings,
-  activeApp
+  activeApp,
+  sources
 }: {
   appSettings: AppSettings;
   activeApp?: string;
@@ -47,6 +48,7 @@ export const JourneyAppsDrawer = ({
               updateFilter={updateFilter}
               key={service?.id}
               {...service}
+              sources={sources}
               // expanded={selectedService?.name === service.name}
               expanded
               // onClick={() => setServiceOpen(service.name)}
@@ -94,6 +96,7 @@ export const JourneyAppsDrawer = ({
                   {...selectedService}
                   id={selectedService.name}
                   expanded={true}
+                  sources={sources}
                 />
               </Box>
             </ClickAwayListener>

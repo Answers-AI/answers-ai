@@ -27,8 +27,8 @@ importers:
         specifier: latest
         version: 2.8.7
       prisma:
-        specifier: ^4.13.0
-        version: 4.13.0
+        specifier: ^4.14.0
+        version: 4.14.0
       turbo:
         specifier: ^1.9.3
         version: 1.9.3
@@ -61,7 +61,7 @@ importers:
         version: 0.0.5
       '@prisma/client':
         specifier: ^4.13.0
-        version: 4.13.0(prisma@4.13.0)
+        version: 4.13.0(prisma@4.14.0)
       '@textea/json-viewer':
         specifier: 2.14.1
         version: 2.14.1(@types/react@18.0.38)(react-dom@18.2.0)(react@18.2.0)
@@ -212,7 +212,7 @@ importers:
         version: 0.0.5
       '@prisma/client':
         specifier: ^4.13.0
-        version: 4.13.0(prisma@4.13.0)
+        version: 4.13.0(prisma@4.14.0)
       '@textea/json-viewer':
         specifier: 2.14.1
         version: 2.14.1(@types/react@18.0.38)(react-dom@18.2.0)(react@18.2.0)
@@ -289,6 +289,9 @@ importers:
       '@next/bundle-analyzer':
         specifier: ^13.2.4
         version: 13.3.1
+      '@prisma/nextjs-monorepo-workaround-plugin':
+        specifier: ^4.14.0
+        version: 4.14.0
       '@types/cors':
         specifier: ^2.8.13
         version: 2.8.13
@@ -540,7 +543,7 @@ importers:
         version: 1.0.6(@prisma/client@4.13.0)(next-auth@4.22.1)
       '@prisma/client':
         specifier: ^4.13.0
-        version: 4.13.0(prisma@4.13.0)
+        version: 4.13.0(prisma@4.14.0)
       '@textea/json-viewer':
         specifier: 2.14.1
         version: 2.14.1(@types/react@18.0.38)(react-dom@18.2.0)(react@18.2.0)
@@ -550,6 +553,9 @@ importers:
       axios:
         specifier: ^1.3.5
         version: 1.3.6
+      clsx:
+        specifier: ^1.2.1
+        version: 1.2.1
       cors:
         specifier: ^2.8.5
         version: 2.8.5
@@ -583,6 +589,9 @@ importers:
       react-syntax-highlighter:
         specifier: ^15.5.0
         version: 15.5.0(react@18.2.0)
+      swr:
+        specifier: ^2.1.5
+        version: 2.1.5(react@18.2.0)
       types:
         specifier: workspace:*
         version: link:../types
@@ -643,7 +652,7 @@ importers:
         version: 0.0.5
       '@prisma/client':
         specifier: ^4.13.0
-        version: 4.13.0(prisma@4.13.0)
+        version: 4.13.0(prisma@4.14.0)
       '@slack/web-api':
         specifier: ^6.8.1
         version: 6.8.1
@@ -2644,7 +2653,7 @@ packages:
       '@prisma/client': '>=2.26.0 || >=3'
       next-auth: ^4
     dependencies:
-      '@prisma/client': 4.13.0(prisma@4.13.0)
+      '@prisma/client': 4.13.0(prisma@4.14.0)
       next-auth: 4.22.1(next@13.3.1)(react-dom@18.2.0)(react@18.2.0)
     dev: false
 
@@ -2895,6 +2904,20 @@ packages:
       prisma: 4.13.0
     dev: false
 
+  /@prisma/client@4.13.0(prisma@4.14.0):
+    resolution: {integrity: sha512-YaiiICcRB2hatxsbnfB66uWXjcRw3jsZdlAVxmx0cFcTc/Ad/sKdHCcWSnqyDX47vAewkjRFwiLwrOUjswVvmA==}
+    engines: {node: '>=14.17'}
+    requiresBuild: true
+    peerDependencies:
+      prisma: '*'
+    peerDependenciesMeta:
+      prisma:
+        optional: true
+    dependencies:
+      '@prisma/engines-version': 4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a
+      prisma: 4.14.0
+    dev: false
+
   /@prisma/engines-version@4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a:
     resolution: {integrity: sha512-fsQlbkhPJf08JOzKoyoD9atdUijuGBekwoOPZC3YOygXEml1MTtgXVpnUNchQlRSY82OQ6pSGQ9PxUe4arcSLQ==}
     dev: false
@@ -2902,6 +2925,14 @@ packages:
   /@prisma/engines@4.13.0:
     resolution: {integrity: sha512-HrniowHRZXHuGT9XRgoXEaP2gJLXM5RMoItaY2PkjvuZ+iHc0Zjbm/302MB8YsPdWozAPHHn+jpFEcEn71OgPw==}
     requiresBuild: true
+
+  /@prisma/engines@4.14.0:
+    resolution: {integrity: sha512-PDNlhP/1vyTgmNyiucGqGCdXIp7HIkkvKO50si3y3PcceeHvqtiKPaH1iJdz63jCWMVMbj2MElSxXPOeBvEVIQ==}
+    requiresBuild: true
+
+  /@prisma/nextjs-monorepo-workaround-plugin@4.14.0:
+    resolution: {integrity: sha512-mN3sr13ea8nGi2w1PqcDXb3p0MVbNQj2kgvrrzg3tdMG30UJoz8ov+AQbCh5IBv+mzpi4sP5McXy4+Zf30eU+A==}
+    dev: true
 
   /@puppeteer/browsers@0.3.1(typescript@4.9.5):
     resolution: {integrity: sha512-WTFVqWY7ipI+CsJRb6vEddYJ/lMl2bHYP5BjFDBM9JMKPjJNT4psXz6DLuJpi3EkG80Q0ef5Azzv3gKu9MvMUg==}
@@ -9125,6 +9156,14 @@ packages:
     dependencies:
       '@prisma/engines': 4.13.0
 
+  /prisma@4.14.0:
+    resolution: {integrity: sha512-+5dMl1uxMQb4RepndY6AwR9xi1cDcaGFICu+ws6/Nmgt93mFPNj8tYxSfTdmfg+rkNrUId9rk/Ac2vTgLe/oXA==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      '@prisma/engines': 4.14.0
+
   /prismjs@1.27.0:
     resolution: {integrity: sha512-t13BGPUlFDR7wRB5kQDG4jjl7XeuH6jbJGt11JHPL96qwsEHNX2+68tFXqc1/k+/jALsbSWJKUOT/hcYAZ5LkA==}
     engines: {node: '>=6'}
@@ -10211,6 +10250,15 @@ packages:
       yargs: 17.7.1
     transitivePeerDependencies:
       - encoding
+    dev: false
+
+  /swr@2.1.5(react@18.2.0):
+    resolution: {integrity: sha512-/OhfZMcEpuz77KavXST5q6XE9nrOBOVcBLWjMT+oAE/kQHyE3PASrevXCtQDZ8aamntOfFkbVJp7Il9tNBQWrw==}
+    peerDependencies:
+      react: ^16.11.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+      use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
   /sylvester@0.0.12:
