@@ -1,6 +1,7 @@
 import { Sidekick } from 'types';
 
 const gptraw: Sidekick = {
+  departments: ["general"],
   label: "GPT-RAW",
   value: "gptraw",
   placeholder:

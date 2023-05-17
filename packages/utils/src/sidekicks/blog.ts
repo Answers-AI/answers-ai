@@ -1,5 +1,6 @@
 import { Sidekick } from 'types';
 const blog: Sidekick = {
+  departments: ["marketing", "content"],
   label: "Blog Critic Expert",
   value: "blog",
   placeholder: "I can give suggestions on how to make blog posts better",

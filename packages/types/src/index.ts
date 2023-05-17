@@ -366,6 +366,7 @@ export type JiraComment = { key: string; self: string; id: string; fields: any; 
 
 // Replace the Sidekick interface with the following type
 export type Sidekick = {
+  departments: string[];
   label: string;
   value: string;
   placeholder: string;

@@ -87,7 +87,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
       <AppSyncToolbar appSettings={appSettings} />
       <Box sx={{ display: 'flex', gap: 2 }}>
-        <SidekickSelect onSidekickSelected={handleSidekickSelected} selectedSidekick={sidekick} />
+        <SidekickSelect onSidekickSelected={handleSidekickSelected} selectedSidekick={sidekick} initialSidekick={sidekick} />
 
         <Select
           labelId="demo-simple-select-label"

@@ -1,5 +1,6 @@
 import { Sidekick } from 'types';
 const productmanager: Sidekick = {
+  departments: ["product", "engineering"],
   label: "Product Manager",
   value: "product",
   placeholder:

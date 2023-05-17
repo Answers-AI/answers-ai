@@ -1,5 +1,6 @@
 import { Sidekick } from 'types';
 const legal: Sidekick = {
+  departments: ["legal", "hr"],
   label: "Legal Expert",
   value: "legal",
   placeholder: "You are a legal assistant.",

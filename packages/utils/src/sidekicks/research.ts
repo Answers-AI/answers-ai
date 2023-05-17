@@ -1,5 +1,6 @@
 import { Sidekick } from "types";
 const research: Sidekick = {
+  departments: ["general"],
   label: "Research Assistant",
   value: "research",
   placeholder: "I can help you research topics and provide insights",

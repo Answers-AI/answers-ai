@@ -1,5 +1,6 @@
 import { Sidekick } from 'types';
 const promptCreator: Sidekick = {
+  departments: ["general"],
   label: "Prompt Assistant",
   value: "promptCreator",
   placeholder: "I can help you craft the perfect prompt",
