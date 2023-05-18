@@ -39,8 +39,13 @@ export const SYSTEM_SETTINGS: AppSettings = {
     { id: 'web', name: 'web', imageURL: '/static/images/logo-web.svg', enabled: true },
     { id: 'airtable', name: 'airtable', imageURL: '/static/images/airtable.png', enabled: false },
     { id: 'docubot', name: 'docubot', imageURL: '/static/images/docubot.png', enabled: false },
-    { id: 'documents', name: 'documents', imageURL: '/static/images/documents.png', enabled: false },
+    {
+      id: 'documents',
+      name: 'documents',
+      imageURL: '/static/images/documents.png',
+      enabled: false
+    },
     { id: 'zoom', name: 'zoom', imageURL: '/static/images/zoom.png', enabled: false },
-    { id: 'youtube', name: 'youtube', imageURL: '/static/images/youtube.png', enabled: false },
+    { id: 'youtube', name: 'youtube', imageURL: '/static/images/youtube.png', enabled: false }
   ]
 };

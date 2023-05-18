@@ -232,8 +232,8 @@ const SourcesWeb: React.FC<{}> = ({}) => {
           )}
         </Box>
       ) : null}
-      {getUrlDomain(newUrl) && !Object.entries(domainGroups)?.length ? (
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1 }}>
+      {getUrlDomain(newUrl) && !domains?.length ? (
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 1 }}>
           <DomainCard
             domain={getUrlDomain(newUrl)}
             urls={[]}
