@@ -9,8 +9,9 @@ import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import JourneyCard from '../JourneyLayout/JourneyCard';
-import AddIcon from '@mui/icons-material/Add';
-import MessageIcon from '@mui/icons-material/QueryBuilder';
+import AddIcon from '@mui/icons-material/EditRoad';
+import MessageIcon from '@mui/icons-material/Message';
+import { Button } from '@mui/material';
 
 const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
   return (
@@ -27,13 +28,29 @@ const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
           mt={2}
           sx={{
             width: '100%',
+            height: 80,
             gap: 2,
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, min-content))',
             gridAutoFlow: 'dense',
             transition: '.3s'
           }}>
-          <Box>
+          <Button
+            component={NextLink}
+            href="/journey/new"
+            variant="contained"
+            endIcon={<AddIcon />}>
+            <strong>New Journey</strong>
+          </Button>
+          <Button
+            color="primary"
+            component={NextLink}
+            href="/chat"
+            variant="outlined"
+            endIcon={<MessageIcon fontSize="large" />}>
+            <strong>Quick chat</strong>
+          </Button>
+          {/* <Box>
             <Card>
               <NextLink href="/journey/new">
                 <CardActionArea>
@@ -44,8 +61,8 @@ const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
                 </CardActionArea>
               </NextLink>
             </Card>
-          </Box>
-          <Box>
+          </Box> */}
+          {/* <Box>
             <Card>
               <NextLink href="/chat">
                 <CardActionArea>
@@ -56,7 +73,7 @@ const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
                 </CardActionArea>
               </NextLink>
             </Card>
-          </Box>
+          </Box> */}
         </Box>
       </Box>
       <Box my={4}>
@@ -75,11 +92,13 @@ const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
           }}>
           {journeys &&
             !!journeys.length &&
-            journeys?.map((journey, idx) => (
-              <Box key={journey.id}>
-                <JourneyCard journey={journey as any} />
-              </Box>
-            ))}
+            journeys
+              ?.filter((journey) => !!journey?.goal)
+              ?.map((journey, idx) => (
+                <Box key={journey.id}>
+                  <JourneyCard journey={journey as any} />
+                </Box>
+              ))}
         </Box>
       </Box>
     </Box>
