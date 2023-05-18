@@ -74,6 +74,27 @@ export interface AppSettings {
       enabled: boolean;
     }[];
   };
+  documents?: {
+    docs?: {
+      id: string;
+      name: string;
+      enabled: boolean;
+    }[];
+  };
+  zoom?: {
+    meetings?: {
+      id: string;
+      name: string;
+      enabled: boolean;
+    }[];
+  };
+  youtube?: {
+    video?: {
+      id: string;
+      name: string;
+      enabled: boolean;
+    }[];
+  };
   models?: Models;
   filters?: AnswersFilters;
 }
@@ -121,7 +142,10 @@ export type SourceFilters =
   | OpenApiFilters
   | ConfluenceFilters
   | AirtableFilters
-  | DocubotFilters;
+  | DocubotFilters
+  | DocumentFilters
+  | ZoomFilters
+  | YoutubeFilters;
 
 export interface AirtableFilters {
   table?: string[];
@@ -132,6 +156,22 @@ export interface DocubotFilters {
   repo?: string[];
   path?: string[];
 }
+
+export interface DocumentFilters {
+  name?: string[];
+  path?: string[];
+}
+
+export interface ZoomFilters {
+  name?: string[];
+  path?: string[];
+}
+
+export interface YoutubeFilters {
+  name?: string[];
+  path?: string[];
+}
+
 export interface DataSourcesFilters {
   user?: UserFilters;
   jira?: JiraFilters;
@@ -141,6 +181,9 @@ export interface DataSourcesFilters {
   confluence?: ConfluenceFilters;
   airtable?: AirtableFilters;
   docubot?: DocubotFilters;
+  document?: DocumentFilters;
+  zoom?: ZoomFilters;
+  youtube?: YoutubeFilters;
 }
 export interface AnswersFilters {
   models?: {
@@ -156,6 +199,10 @@ type Models = {
   algolia: string[];
   openapi: string[];
   airtable: string[];
+  docubot: string[];
+  document: string[];
+  zoom: string[];
+  youtube: string[];
   [key: string]: string[];
 };
 
@@ -269,6 +316,18 @@ export interface DocubotSetting extends DocubotRecord {
   enabled: boolean;
 }
 
+export interface DocumentsSetting extends DocumentRecord {
+  enabled: boolean;
+}
+
+export interface ZoomSetting extends ZoomRecord {
+  enabled: boolean;
+}
+
+export interface YoutubeSetting extends YoutubeRecord {
+  enabled: boolean;
+}
+
 export interface OpenApiProvider {
   added: string;
   preferred: string;
@@ -355,6 +414,22 @@ export type DocubotRecord = {
   id: number;
   title: string;
 };
+
+export type DocumentRecord = {
+  id: number;
+  title: string;
+};
+
+export type ZoomRecord = {
+  id: number;
+  title: string;
+};
+
+export type YoutubeRecord = {
+  id: number;
+  title: string;
+};
+
 
 export interface ConfluenceSetting extends ConfluencePage {
   enabled: boolean;

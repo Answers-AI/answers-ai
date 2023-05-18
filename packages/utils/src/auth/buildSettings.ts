@@ -172,11 +172,53 @@ export const buildSettings = async (user: User, org?: Organization) => {
           name: 'cams-env-test-v0.1.0',
           enabled: true
         },
+      ]
+    };
+  } catch (error) {
+    console.log('JiraSettingsError', error);
+  }
+
+  try {
+    newSettings.documents = {
+      docs: [
         {
-          id: 'ASDFASDFASDFASDF',
-          name: 'ASDFASDFASDFASDFASDF',
+          id: 'blueprint-for-an-ai-bill-of-rights',
+          name: 'blueprint-for-an-ai-bill-of-rights',
           enabled: true
-        }
+        },
+        {
+          id: 'trends-in-ai-regulation',
+          name: 'trends-in-ai-regulation',
+          enabled: true
+        },
+      ]
+    };
+  } catch (error) {
+    console.log('JiraSettingsError', error);
+  }
+
+  try {
+    newSettings.zoom = {
+      meetings: [
+        {
+          id: 'lrfa-live-preview',
+          name: 'lrfa-live-preview',
+          enabled: true
+        },
+      ]
+    };
+  } catch (error) {
+    console.log('JiraSettingsError', error);
+  }
+
+  try {
+    newSettings.youtube = {
+      video: [
+        {
+          id: 'congress-ai-hearing-2023-05-16',
+          name: 'congress-ai-hearing-2023-05-16',
+          enabled: true
+        },
       ]
     };
   } catch (error) {

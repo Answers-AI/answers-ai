@@ -12,7 +12,7 @@ import SourcesWeb from './SourcesWeb';
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
 
-  const flags = useFlags(['airtable', 'docubot']);
+  const flags = useFlags(['airtable', 'docubot', 'documents', 'zoom', 'youtube']);
 
   const enabledServices: AppService[] | undefined = appSettings?.services?.filter((service) => {
     const isServiceEnabledInFlags = (flags?.[service.name] as any)?.enabled;
@@ -22,7 +22,6 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
   const [serviceOpen, setServiceOpen] = React.useState<string>('');
   const { filters, updateFilter } = useAnswers();
   const selectedService = enabledServices?.find((service) => service.name === serviceOpen);
-
   return (
     <>
       <AvatarGroup total={enabledServices?.length} max={10} spacing={-8}>
@@ -101,6 +100,48 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                     value={filters?.datasources?.docubot?.repo || []}
                     onChange={(value: string[]) =>
                       updateFilter({ datasources: { docubot: { repo: value } } })
+                    }
+                  />
+                </>
+              ) : null}
+              {flags?.documents?.enabled && selectedService?.name === 'documents' ? (
+                <>
+                  <AutocompleteSelect
+                    label="Documents"
+                    options={
+                      appSettings?.documents?.docs?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                    }
+                    value={filters?.datasources?.document?.name || []}
+                    onChange={(value: string[]) =>
+                      updateFilter({ datasources: { document: { name: value } } })
+                    }
+                  />
+                </>
+              ) : null}
+              {flags?.zoom?.enabled && selectedService?.name === 'zoom' ? (
+                <>
+                  <AutocompleteSelect
+                    label="Meetings"
+                    options={
+                      appSettings?.zoom?.meetings?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                    }
+                    value={filters?.datasources?.zoom?.name || []}
+                    onChange={(value: string[]) =>
+                      updateFilter({ datasources: { zoom: { name: value } } })
+                    }
+                  />
+                </>
+              ) : null}
+              {flags?.youtube?.enabled && selectedService?.name === 'youtube' ? (
+                <>
+                  <AutocompleteSelect
+                    label="Videos"
+                    options={
+                      appSettings?.youtube?.video?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                    }
+                    value={filters?.datasources?.youtube?.name || []}
+                    onChange={(value: string[]) =>
+                      updateFilter({ datasources: { youtube: { name: value } } })
                     }
                   />
                 </>
