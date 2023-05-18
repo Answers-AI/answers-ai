@@ -8,6 +8,7 @@ import { useFlags } from 'flagsmith/react';
 import Image from 'next/image';
 import JourneySetting from './JourneySetting';
 import SourcesWeb from '../SourcesWeb';
+import AutocompleteSelect from '@ui/AutocompleteSelect';
 // import SourcesJira from './SourcesJira';
 // import SourcesConfluence from './SourcesConfluence';
 // import SourcesAirtable from './SourcesAirtable';
@@ -126,6 +127,77 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                   filters={filters}
                   updateFilter={updateFilter}
                 />
+              ) : null}
+              {flags?.docubot?.enabled && selectedService.name === 'docubot' ? (
+                <>
+                  <AutocompleteSelect
+                    label="Repository"
+                    options={
+                      appSettings?.docubot?.repos?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                    }
+                    value={filters?.datasources?.docubot?.repo || []}
+                    onChange={(value: string[]) =>
+                      updateFilter({ datasources: { docubot: { repo: value } } })
+                    }
+                  />
+                </>
+              ) : null}
+              {flags?.documents?.enabled && selectedService?.name === 'documents' ? (
+                <>
+                  <AutocompleteSelect
+                    label="Documents"
+                    options={
+                      appSettings?.documents?.docs?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                    }
+                    value={filters?.datasources?.document?.name || []}
+                    onChange={(value: string[]) =>
+                      updateFilter({ datasources: { document: { name: value } } })
+                    }
+                  />
+                </>
+              ) : null}
+              {flags?.zoom?.enabled && selectedService?.name === 'zoom' ? (
+                <>
+                  <AutocompleteSelect
+                    label="Meetings"
+                    options={
+                      appSettings?.zoom?.meetings?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                    }
+                    value={filters?.datasources?.zoom?.name || []}
+                    onChange={(value: string[]) =>
+                      updateFilter({ datasources: { zoom: { name: value } } })
+                    }
+                  />
+                </>
+              ) : null}
+              {flags?.youtube?.enabled && selectedService?.name === 'youtube' ? (
+                <>
+                  <AutocompleteSelect
+                    label="Videos"
+                    options={
+                      appSettings?.youtube?.video?.filter((s) => s.enabled)?.map((s) => s.id) || []
+                    }
+                    value={filters?.datasources?.youtube?.name || []}
+                    onChange={(value: string[]) =>
+                      updateFilter({ datasources: { youtube: { name: value } } })
+                    }
+                  />
+                </>
+              ) : null}
+              {flags?.airtable?.enabled && selectedService.name === 'airtable' ? (
+                <>
+                  <AutocompleteSelect
+                    label="Table"
+                    options={
+                      appSettings?.airtable?.tables?.filter((s) => s.enabled)?.map((s) => s.id) ||
+                      []
+                    }
+                    value={filters?.datasources?.airtable?.table || []}
+                    onChange={(value: string[]) =>
+                      updateFilter({ datasources: { airtable: { table: value } } })
+                    }
+                  />
+                </>
               ) : null}
             </Box>
           </Box>
