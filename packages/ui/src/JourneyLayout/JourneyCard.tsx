@@ -9,8 +9,10 @@ import CardActionArea from '@mui/material/CardActionArea';
 import CardHeader from '@mui/material/CardHeader';
 import WorkIcon from '@mui/icons-material/Work';
 import formatDateSince from '@utils/formatDateSince';
-
+import AddRoadIcon from '@mui/icons-material/AddRoad';
 import { Journey } from 'types';
+import MessageIcon from '@mui/icons-material/Message';
+import { Button } from '@mui/material';
 
 interface JourneyCardProps extends Journey {
   _count: { chats: number };
@@ -29,6 +31,7 @@ const JourneyCard = ({ journey }: Props) => {
       layoutId={id}
       sx={{
         flex: 1,
+        height: '100%',
         display: 'flex',
         position: 'relative',
         alignItems: 'space-between',
@@ -36,11 +39,27 @@ const JourneyCard = ({ journey }: Props) => {
         flexDirection: 'column'
       }}>
       {/* <NextLink> */}
-      <CardActionArea component={NextLink} href={`/journey/${journey.id}`}>
+      <CardActionArea
+        component={NextLink}
+        href={`/journey/${journey.id}`}
+        sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         <CardHeader
-          // avatar={<WorkIcon fontSize="small" />}
-          titleTypographyProps={{ variant: 'body1' }}
-          title={title ?? goal}></CardHeader>
+          // avatar={<AddRoadIcon fontSize="small" />}
+          sx={{ flex: 1, display: 'flex', width: '100%' }}
+          title={
+            <Typography
+              sx={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                textTransform: 'capitalize',
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: '2'
+              }}>
+              {title ?? goal}
+            </Typography>
+          }
+          titleTypographyProps={{ variant: 'body1' }}></CardHeader>
 
         {/* {goal ? (
             <CardContent>
@@ -48,13 +67,16 @@ const JourneyCard = ({ journey }: Props) => {
             </CardContent>
           ) : null} */}
 
-        <CardActions sx={{ justifyContent: 'space-between' }}>
-          <Typography variant="body2">{`${_count.chats} Chats`}</Typography>
-          {updatedAt ? (
+        <CardActions sx={{ justifyContent: 'space-between', width: '100%' }}>
+          {/* {updatedAt ? (
             <Typography variant="body2" sx={{ marginLeft: 'auto' }}>{`Updated ${formatDateSince(
               updatedAt
             )}`}</Typography>
-          ) : null}
+          ) : null} */}
+          <div></div>
+          <Button disabled startIcon={<MessageIcon sx={{ fontSize: 16 }} />}>
+            {_count.chats}
+          </Button>
         </CardActions>
       </CardActionArea>
       {/* </NextLink> */}

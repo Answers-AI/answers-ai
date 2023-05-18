@@ -4,6 +4,9 @@ import createTheme from '@mui/material/styles/createTheme';
 import { teal, grey, deepOrange } from '@mui/material/colors';
 
 const getDesignTokens = (mode: PaletteMode) => ({
+  typography: {
+    fontFamily: ['var(--font-poppins)']
+  },
   shape: {
     borderRadius: 12
   },
@@ -54,10 +57,12 @@ declare module '@mui/material/styles' {
     xxl: true;
   }
 }
+// @ts-ignore
 const theme = createTheme({
   ...getDesignTokens('dark')
 });
 
+// @ts-ignore
 export const darkModeTheme = createTheme({
   ...getDesignTokens('dark'),
   components: {
