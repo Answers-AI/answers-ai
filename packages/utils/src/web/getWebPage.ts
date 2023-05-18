@@ -187,8 +187,12 @@ export const getWebPageHtml = async ({ url }: { url: string }): Promise<string> 
     }
 
     return pageHtml;
-  } catch (error) {
-    console.error('getWebPage:ERROR', error);
+  } catch (error: any) {
+    if (error?.response?.status === 404) {
+      console.log('getWebPage:404', url);
+    } else {
+      console.error('getWebPage:ERROR', error);
+    }
     throw error;
   }
 };

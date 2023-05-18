@@ -1,15 +1,15 @@
 import React from 'react';
 
-import Chat from '@ui/Chat';
-import { redirect } from 'next/navigation';
+import Homepage from '@ui/Homepage';
 
 export const metadata = {
   title: 'Answers AI',
   description: 'Welcome to Answers AI, the last stop for all your questions.'
 };
 
-const Homepage = async ({ params }: any) => {
-  return redirect('/chat');
+const HomepagePage = async ({ params }: any) => {
+  // @ts-expect-error Async Server Component
+  return <Homepage />;
 };
 
-export default Homepage;
+export default HomepagePage;

@@ -40,7 +40,7 @@ function JourneySection({ journeys }: Props) {
                 <TreeItem nodeId="1" label={title}>
                   {chats?.map((chat) => (
                     <NextLink href={`/chat/${chat.id}`}>
-                      <TreeItem nodeId="2" label={chat.prompt?.content} />
+                      <TreeItem nodeId="2" label={chat.prompt?.content} /> d
                     </NextLink>
                   ))}
                 </TreeItem>

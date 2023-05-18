@@ -1,6 +1,6 @@
-import { LLMChain } from 'langchain';
-import { ChatOpenAI } from 'langchain/chat_models';
-import { OpenAI } from 'langchain/llms';
+// import { LLMChain } from 'langchain';
+// import { ChatOpenAI } from 'langchain/chat_models';
+// import { OpenAI } from 'langchain/llms';
 
 import { Message, User } from 'types';
 
@@ -19,8 +19,8 @@ const initializeOpenAI = () => {
 
 export const openai = initializeOpenAI();
 
-const chat = new ChatOpenAI({ modelName: 'gpt-3.5-turbo-0301', temperature: 0.1 });
-const openAIModel = new OpenAI({ temperature: 0.1 });
+// const chat = new ChatOpenAI({ modelName: 'gpt-3.5-turbo-0301', temperature: 0.1 });
+// const openAIModel = new OpenAI({ temperature: 0.1 });
 export const createChatChain = ({ messages }: { messages?: Message[] }) => {
   // const chatHistoryPrompt = ChatPromptTemplate.fromPromptMessages([
   //   assistantPrompt,
@@ -60,17 +60,17 @@ export const createChatChain = ({ messages }: { messages?: Message[] }) => {
   return chain;
 };
 
-export const summarizeChain = new LLMChain({
-  prompt: summarizePrompt,
-  llm: openAIModel
-});
+// export const summarizeChain = new LLMChain({
+//   prompt: summarizePrompt,
+//   llm: openAIModel
+// });
 
-export const summarizeQAChain = new LLMChain({
-  prompt: summarizeQAPrompt,
-  llm: chat
-});
+// export const summarizeQAChain = new LLMChain({
+//   prompt: summarizeQAPrompt,
+//   llm: chat
+// });
 
-export const rawChain = new LLMChain({
-  prompt: rawPrompt,
-  llm: chat
-});
+// export const rawChain = new LLMChain({
+//   prompt: rawPrompt,
+//   llm: chat
+// });

@@ -318,7 +318,7 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
       const uniqueUrls = getUniqueUrls(urls);
       const pendingSyncURls = await getPendingSyncURLs(uniqueUrls);
       console.log(
-        `EventName: web/urls.sync UniqueURLs: ${uniqueUrls?.length} PendingSyncURLs: ${pendingSyncURls?.length}`
+        `EventName: web/domain.sync UniqueURLs: ${uniqueUrls?.length} PendingSyncURLs: ${pendingSyncURls?.length}`
       );
 
       try {

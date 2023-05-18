@@ -1,4 +1,6 @@
 const { PrismaPlugin } = require('experimental-prisma-webpack-plugin');
+// const { PrismaPlugin } = require('@prisma/nextjs-monorepo-workaround-plugin');
+
 const webpack = require('webpack');
 const { withSentryConfig } = require('@sentry/nextjs');
 
@@ -11,6 +13,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
  */
 module.exports = withSentryConfig(withBundleAnalyzer({
   experimental: {
+    // experimentalReact: true,
     appDir: true,
     serverComponentsExternalPackages: ['@prisma/client']
   },

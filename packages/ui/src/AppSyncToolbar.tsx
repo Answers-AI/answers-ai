@@ -36,7 +36,7 @@ const AppSyncToolbar = ({
   appSettings?: AppSettings;
   onSync?: (s: string) => void;
 }) => {
-  const flags = useFlags(['sync']);
+  const flags = useFlags(['sync', 'confluence']);
   const { handleSync } = useSync({ onSync });
   // if (!flags.sync.enabled) return null;
   return (
@@ -93,7 +93,7 @@ const AppSyncToolbar = ({
               }}
               variant="outlined"
               color="primary"
-              disabled={!service.enabled}
+              disabled={!service.enabled && !(flags[service.id] as any)?.enabled}
               onClick={() => handleSync(service?.name)}>
               {service.name}
             </Button>

@@ -1,22 +1,23 @@
 'use client';
 import * as React from 'react';
 import NextLink from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { Chat, Journey } from 'types';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Add from '@mui/icons-material/Add';
-import { Button, Collapse } from '@mui/material';
-import { usePathname, useRouter } from 'next/navigation';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { Chat, Journey } from 'types';
 
 const drawerWidth = 400;
 
@@ -79,7 +80,7 @@ export interface ChatDrawerProps {
 export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen || true);
+  const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen);
   const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({ chats: true });
   const handleDrawerOpen = () => {
     window.localStorage.setItem('drawerOpen', 'true');
@@ -102,7 +103,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
   const handleNewJourney = () => {};
   const handleAddChat = ({ journey }: any) => {
     setOpen(false);
-    router.push('/');
+    router.push('/chat');
   };
 
   // React.useEffect(() => {
@@ -159,12 +160,11 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
         </DrawerHeader>
         <ListItem sx={{ flexDirection: 'column' }} disablePadding>
           <Button
-            href={`/chat`}
+            href={`/journey/new`}
             component={NextLink}
             sx={{ px: 2, width: '100%', textTransform: 'capitalize' }}
-            onClick={handleNewJourney}
             color="primary">
-            <ListItemText primary={'Create new journey'} />
+            <ListItemText primary={'Start New Journey'} />
             <Add />
           </Button>
         </ListItem>
@@ -190,12 +190,12 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
                   component={NextLink}
                   selected={pathname === `/journey/${journey.id}`}
                   sx={{ width: '100%', py: 2, paddingRight: 1 }}>
-                  <ListItemText primary={<strong>{journey.title}</strong>} />
-                  {journey?.chats?.length ? (
+                  <ListItemText primary={<strong>{journey.title ?? journey.goal}</strong>} />
+                  {/* {journey?.chats?.length ? (
                     <IconButton onClick={handleExpandJourney(idx)}>
                       {opened[idx] ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
-                  ) : null}
+                  ) : null} */}
                   {/* <IconButton onClick={() => handleAddChat({ journey })}>
                     <Add />
                   </IconButton> */}
