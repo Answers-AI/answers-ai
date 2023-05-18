@@ -101,33 +101,35 @@ const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
                     />
                   </Avatar>
                 }
+                title={
+                  name ? (
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        textTransform: 'capitalize',
+                        display: '-webkit-box',
+                        WebkitLineClamp: expanded ? '100' : '3',
+                        WebkitBoxOrient: 'vertical'
+                      }}>
+                      <strong>{name}</strong>
+                    </Typography>
+                  ) : null
+                }
                 action={
                   providerId ? (
                     <Button
-                      variant="contained"
+                      variant="text"
                       color="secondary"
                       disabled={enabled && !expanded}
                       onClick={handleAuthIntegration}>
-                      {expanded && enabled ? 'Refresh auth' : enabled ? 'Connected' : 'Connect'}
+                      {expanded && enabled ? 'Refresh' : enabled ? 'Connected' : 'Connect'}
                     </Button>
                   ) : null
                 }
                 sx={{ 'p': 0, 'width': '100%', '.MuiCardHeader-action': { m: 0 } }}
               />
-              {name ? (
-                <Typography
-                  variant="body1"
-                  sx={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    textTransform: 'capitalize',
-                    display: '-webkit-box',
-                    WebkitLineClamp: expanded ? '100' : '3',
-                    WebkitBoxOrient: 'vertical'
-                  }}>
-                  <strong>{name}</strong>
-                </Typography>
-              ) : null}
 
               <Box
                 component={motion.div}

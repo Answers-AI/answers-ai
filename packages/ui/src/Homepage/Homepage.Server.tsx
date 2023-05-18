@@ -16,6 +16,9 @@ const HomepageServer = async () => {
       where: {
         users: {
           some: { email: session.user.email }
+        },
+        goal: {
+          not: null
         }
       },
       orderBy: {

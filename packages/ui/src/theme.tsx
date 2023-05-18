@@ -4,6 +4,9 @@ import createTheme from '@mui/material/styles/createTheme';
 import { teal, grey, deepOrange } from '@mui/material/colors';
 
 const getDesignTokens = (mode: PaletteMode) => ({
+  typography: {
+    fontFamily: ['var(--font-poppins)']
+  },
   shape: {
     borderRadius: 12
   },

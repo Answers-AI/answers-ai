@@ -185,8 +185,10 @@ const SourcesWeb: React.FC<{}> = ({}) => {
         <Autocomplete
           freeSolo
           options={
-            newUrl
-              ? [...(sources?.map((source) => source.url) ?? []), newUrl]
+            isDomain(newUrl)
+              ? []
+              : newUrl
+              ? [...(sources?.map((source) => source.url) ?? [])]
               : sources?.map((source) => source.url) ?? []
           }
           onInputChange={(e: any, value: any) => {
@@ -212,7 +214,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
               //   setNewUrl(e.target.value);
               //   updateUrl(e.target.value);
               // }}
-              size="small"
+              sx={{ minHeight: 56 }}
               variant="outlined"
               fullWidth
             />
@@ -232,7 +234,9 @@ const SourcesWeb: React.FC<{}> = ({}) => {
           )}
         </Box>
       ) : null}
-      {getUrlDomain(newUrl) && !domains?.length ? (
+      {getUrlDomain(newUrl) &&
+      !domains?.length &&
+      !filters?.datasources?.web?.domain?.includes(getUrlDomain(newUrl)) ? (
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 1 }}>
           <DomainCard
             domain={getUrlDomain(newUrl)}

@@ -107,9 +107,17 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
         <Box
           sx={{
             py: 2,
-            textAlign: 'right'
+            px: 8,
+            textAlign: 'right',
+            position: 'fixed',
+            bottom: 0,
+            right: 0,
+            width: '100%',
+            zIndex: 1000,
+            background: (theme) => theme.palette.background.paper
           }}>
           <Button
+            sx={{}}
             variant="contained"
             color="primary"
             type="submit"

@@ -107,6 +107,22 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
                     />
                   </Avatar>
                 }
+                title={
+                  name ? (
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        textTransform: 'capitalize',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '3',
+                        WebkitBoxOrient: 'vertical'
+                      }}>
+                      <strong>{name}</strong>
+                    </Typography>
+                  ) : null
+                }
                 action={
                   providerId ? (
                     <Button
@@ -120,20 +136,6 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
                 }
                 sx={{ 'p': 0, 'width': '100%', '.MuiCardHeader-action': { m: 0 } }}
               />
-              {name ? (
-                <Typography
-                  variant="body1"
-                  sx={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    textTransform: 'capitalize',
-                    display: '-webkit-box',
-                    WebkitLineClamp: '3',
-                    WebkitBoxOrient: 'vertical'
-                  }}>
-                  <strong>{name}</strong>
-                </Typography>
-              ) : null}
 
               {!enabled ? (
                 <Typography
