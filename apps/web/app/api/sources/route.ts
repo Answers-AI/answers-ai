@@ -62,7 +62,7 @@ function countPagesByDomain(urls: string[]): DomainInfo[] {
     if (parsedUrl && parsedUrl.hostname) {
       const domain = parsedUrl.hostname;
       const count = domainMap.get(domain) || 0;
-      domainMap.set(domain, count + 1);
+      domainMap.set(`https://${domain}`, count + 1);
     }
   }
 
