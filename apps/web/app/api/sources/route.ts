@@ -13,7 +13,7 @@ export async function GET(req: Request, res: Response) {
 
   // TODO: Ensure this only shows documents are owned by the user
   // For now only access to web which is """public"""
-  const records = await prisma.document.findMany({
+  const filteredRecords = await prisma.document.findMany({
     where: {
       source: 'web',
       ...(url && {
@@ -35,11 +35,11 @@ export async function GET(req: Request, res: Response) {
         .then((records) =>
           records
             ?.filter(({ domain }) => !!domain)
-            ?.filter(({ domain }) => records?.some(({ domain: d }) => d === domain))
+            ?.filter(({ domain }) => filteredRecords?.some(({ domain: d }) => d === domain))
         )
     : [];
   const domains = countPagesByDomain(allWeb?.map((x) => x.url));
-  const sources = records?.map(({ url }) => ({ url }));
+  const sources = filteredRecords?.map(({ url }) => ({ url }));
 
   return NextResponse.json({
     sources,

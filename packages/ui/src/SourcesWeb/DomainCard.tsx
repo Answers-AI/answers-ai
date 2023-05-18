@@ -94,7 +94,11 @@ const DomainCard: React.FC<JourneySourceCardProps> = ({
                     }}>
                     {domain}
                   </Typography>
-                  <Typography variant="overline">{pageCount ?? urls?.length} pages</Typography>
+                  {pageCount ? (
+                    <Typography variant="overline">{pageCount ?? urls?.length} pages</Typography>
+                  ) : (
+                    <Typography variant="overline">Indexing...</Typography>
+                  )}
                 </Box>
               ) : null}
             </CardContent>
