@@ -44,14 +44,12 @@ export async function DELETE(req: Request, res: Response) {
 }
 
 export async function PATCH(req: Request, res: Response) {
-  console.log('Hello');
   try {
     // TODO: Validate which fields are allowed to be updated
+    // TODO: Validate user ownership or permisson scope
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) return NextResponse.redirect('/auth');
     const { id, ...data } = await req.json();
-
-    console.log('User', { id, data });
 
     const journey = id
       ? await prisma.journey.update({
