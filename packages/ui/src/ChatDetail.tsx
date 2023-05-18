@@ -47,7 +47,9 @@ export const ChatDetail = ({
           <Toolbar>
             <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
               {chat ? <Typography variant="body1">{chat?.title ?? chat.id}</Typography> : null}
-              {journey ? <Typography variant="body2">{journey?.title}</Typography> : null}
+              {journey ? (
+                <Typography variant="body2">{journey?.goal ?? journey?.title}</Typography>
+              ) : null}
             </Box>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
               <SourcesToolbar appSettings={appSettings} />

@@ -7,9 +7,9 @@ import HomepageClient from './Homepage.Client';
 
 const HomepageServer = async () => {
   const session = await getServerSession(authOptions);
-  // if (!session?.user) {
-  //   return <a href={'/auth'}>Redirect</a>;
-  // }
+  if (!session?.user) {
+    return null;
+  }
 
   const journeysPromise = prisma.journey
     .findMany({
@@ -24,7 +24,7 @@ const HomepageServer = async () => {
       select: {
         id: true,
         title: true,
-        // goal: true,
+        goal: true,
         updatedAt: true,
         _count: {
           select: { chats: true }

@@ -23,7 +23,8 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCon
     nodeId,
     icon: iconProp,
     expansionIcon,
-    displayIcon
+    displayIcon,
+    children
     // handleAdd
   } = props;
 
@@ -69,7 +70,7 @@ const CustomContent = React.forwardRef(function CustomContent(props: TreeItemCon
       <Typography onClick={handleSelectionClick} component="div" className={classes.label}>
         {label}
       </Typography>
-      <Button variant="text">Add</Button>
+      <Button variant="text">Add page</Button>
     </div>
   );
 });
@@ -79,7 +80,12 @@ function CustomTreeItem(props: TreeItemProps) {
 }
 
 export default function DocumentTree({ documents }: { documents: Document[] }) {
-  const tree = React.useMemo(() => buildTree(documents), [documents]);
+  const tree = React.useMemo(() => {
+    const newTree = buildTree(documents);
+    console.log(newTree);
+    return newTree;
+  }, [documents]);
+
   function RichObjectTreeView() {
     const renderTree = (nodes: TreeNode) => (
       <CustomTreeItem key={nodes.id} nodeId={nodes.id} label={nodes.path}>

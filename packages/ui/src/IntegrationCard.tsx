@@ -38,12 +38,16 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
   editable
 }) => {
   // const [expanded, setExpanded] = React.useState(false);
-  const flags = useFlags(['delete_prompt']);
+  const flags = useFlags(['delete_prompt', id]);
+  const integrationFlag = flags[id];
   const { deletePrompt, updatePrompt } = useAnswers();
   const [lastInteraction, setLastInteraction] = React.useState<string>('');
   // const onClick = () => {
   //   setExpanded(!expanded);
   // };
+
+  enabled = enabled || integrationFlag?.enabled;
+  console.log('IntegrationCard', { id, name, enabled, expanded, integrationFlag });
   const handleAuthIntegration = () => {
     signIn(providerId);
   };
@@ -152,6 +156,7 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
                   sx={{
                     transition: '.25s',
                     overflow: 'hidden',
+                    py: 1,
                     // transitionDelay: '1s',
                     display: 'flex',
                     flexDirection: 'column',

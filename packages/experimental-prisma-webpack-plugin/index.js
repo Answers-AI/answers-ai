@@ -135,7 +135,6 @@ class PrismaPlugin {
 
     // copy prisma files to output as the final step (for all users)
     compiler.hooks.done.tapPromise('PrismaPlugin', async () => {
-      console.log('PrismaPlugin', { fromDestPrismaMap });
       const asyncActions = Object.entries(fromDestPrismaMap).map(async ([from, dest]) => {
         // only copy if file doesn't exist, necessary for watch mode
 

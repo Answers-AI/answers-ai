@@ -39,7 +39,7 @@ export const answersMessageSent: EventVersionHandler<{
 };
 
 async function AIUpdateChatTitle(history: string, chatId: string) {
-  const titlePrompt = `Use the following conversation between a human and an AI assistant. Create a short title that represents the human intention. HISTORY: ${history} TITLE:`;
+  const titlePrompt = `Use the following conversation between a human and an AI assistant. Create a short title that represents the human intention. ${history} TITLE:`;
   const res = await openai.createCompletion({
     max_tokens: 500,
     prompt: titlePrompt,

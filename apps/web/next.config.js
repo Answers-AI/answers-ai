@@ -11,7 +11,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
  */
 module.exports = withBundleAnalyzer({
   experimental: {
-    experimentalReact: true,
+    // experimentalReact: true,
     appDir: true,
     serverComponentsExternalPackages: ['@prisma/client']
   },

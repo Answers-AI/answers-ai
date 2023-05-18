@@ -193,8 +193,10 @@ export interface Chat extends Omit<DB.Chat, 'filters'> {
   messages: Message[] | null;
 }
 
-export interface Journey extends DB.Journey {
+export interface Journey extends Omit<DB.Journey, 'filters'> {
   chats: Chat[] | null;
+  appSettings: AppSettings;
+  filters: AnswersFilters;
 }
 
 export type SlackChannel = { id: string; name: string };

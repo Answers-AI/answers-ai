@@ -1,0 +1,75 @@
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { prisma } from 'db/dist';
+import { authOptions } from '@ui/authOptions';
+import OpenAIClient from '@utils/openai/openai';
+
+const openai = new OpenAIClient();
+export async function GET(req: Request, res: Response) {
+  const user = await getServerSession(authOptions);
+  if (!user?.user?.email) return NextResponse.redirect('/auth');
+  const { searchParams } = new URL(req.url);
+  const url = searchParams.get('url');
+
+  // TODO: Ensure this only shows documents are owned by the user
+  // For now only access to web which is """public"""
+  const records = await prisma.document.findMany({
+    where: {
+      source: 'web',
+      ...(url && {
+        url: {
+          contains: url
+        }
+      })
+    },
+    take: 100
+  });
+
+  const allWeb = url
+    ? await prisma.document
+        .findMany({
+          where: {
+            source: 'web'
+          }
+        })
+        .then((records) =>
+          records
+            ?.filter(({ domain }) => !!domain)
+            ?.filter(({ domain }) => records?.some(({ domain: d }) => d === domain))
+        )
+    : [];
+  const domains = countPagesByDomain(allWeb?.map((x) => x.url));
+  const sources = records?.map(({ url }) => ({ url }));
+
+  return NextResponse.json({
+    sources,
+    domains
+  });
+}
+
+import { parse } from 'url';
+
+interface DomainInfo {
+  domain: string;
+  pageCount: number;
+}
+
+function countPagesByDomain(urls: string[]): DomainInfo[] {
+  const domainMap: Map<string, number> = new Map();
+
+  for (const url of urls) {
+    const parsedUrl = parse(url);
+    if (parsedUrl && parsedUrl.hostname) {
+      const domain = parsedUrl.hostname;
+      const count = domainMap.get(domain) || 0;
+      domainMap.set(domain, count + 1);
+    }
+  }
+
+  const domainInfoList: DomainInfo[] = [];
+  domainMap.forEach((pageCount, domain) => {
+    domainInfoList.push({ domain, pageCount });
+  });
+
+  return domainInfoList;
+}

@@ -103,7 +103,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
   const handleNewJourney = () => {};
   const handleAddChat = ({ journey }: any) => {
     setOpen(false);
-    router.push('/');
+    router.push('/chat');
   };
 
   // React.useEffect(() => {
@@ -190,12 +190,12 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
                   component={NextLink}
                   selected={pathname === `/journey/${journey.id}`}
                   sx={{ width: '100%', py: 2, paddingRight: 1 }}>
-                  <ListItemText primary={<strong>{journey.title}</strong>} />
-                  {journey?.chats?.length ? (
+                  <ListItemText primary={<strong>{journey.title ?? journey.goal}</strong>} />
+                  {/* {journey?.chats?.length ? (
                     <IconButton onClick={handleExpandJourney(idx)}>
                       {opened[idx] ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
-                  ) : null}
+                  ) : null} */}
                   {/* <IconButton onClick={() => handleAddChat({ journey })}>
                     <Add />
                   </IconButton> */}

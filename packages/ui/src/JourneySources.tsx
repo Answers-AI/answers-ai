@@ -7,7 +7,7 @@ import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import Image from 'next/image';
-import SourcesWeb from './JourneyLayout/SourcesWeb';
+import SourcesWeb from './SourcesWeb';
 import SourcesJira from './JourneyLayout/SourcesJira';
 import SourcesConfluence from './JourneyLayout/SourcesConfluence';
 import SourcesAirtable from './JourneyLayout/SourcesAirtable';

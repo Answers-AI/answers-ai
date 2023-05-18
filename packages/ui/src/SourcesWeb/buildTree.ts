@@ -4,13 +4,15 @@ interface TreeNode {
   id: string;
   path: string;
   children: TreeNode[];
+  pageCount: number; // New property to store the total number of pages in children
 }
 
 export function buildTree(urls: Document[]): TreeNode {
   const root: TreeNode = {
     id: 'root',
     path: '',
-    children: []
+    children: [],
+    pageCount: 0
   };
 
   const insertNode = (node: TreeNode, path: string[]): void => {
@@ -21,7 +23,8 @@ export function buildTree(urls: Document[]): TreeNode {
       child = {
         id: `${node.id}-${node.children.length + 1}`,
         path: current,
-        children: []
+        children: [],
+        pageCount: 0
       };
       node.children.push(child);
     }
@@ -38,7 +41,19 @@ export function buildTree(urls: Document[]): TreeNode {
       .split('/')
       .filter((segment) => segment.length > 0);
     insertNode(root, [domain, ...path]);
+    root.pageCount += 1; // Increment the total page count in the root node
   }
+
+  const updatePageCount = (node: TreeNode): number => {
+    let count = 0;
+    for (const child of node.children) {
+      count += updatePageCount(child);
+    }
+    node.pageCount = count + node.children.length;
+    return node.pageCount;
+  };
+
+  updatePageCount(root);
 
   return root;
 }

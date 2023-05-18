@@ -1,4 +1,5 @@
 import { prisma } from 'db/dist';
+import { getUrlDomain } from '../getUrlDomain';
 
 export async function getPendingSyncURLs(urls: string[]) {
   const normalizedUrls = urls.map((url) => url.toLowerCase());
@@ -6,6 +7,7 @@ export async function getPendingSyncURLs(urls: string[]) {
   await prisma.document.createMany({
     data: normalizedUrls.map((url) => ({
       url,
+      domain: getUrlDomain(url),
       source: 'web',
       status: 'pending',
       lastSyncedAt: null

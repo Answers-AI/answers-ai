@@ -49,14 +49,14 @@ const getMaxContextTokens = (gptModel: string) => {
 };
 
 export const fetchContext = async ({
-  user,
+  // user,
   prompt,
   messages = [],
   filters: clientFilters = {},
   sidekick, // added default value
   gptModel = 'gpt-3.5-turbo'
 }: {
-  user: User;
+  user?: User;
   prompt: string;
   messages?: Message[];
   filters?: AnswersFilters;

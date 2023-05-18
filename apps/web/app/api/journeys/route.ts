@@ -42,3 +42,30 @@ export async function DELETE(req: Request, res: Response) {
     return NextResponse.json({ id });
   }
 }
+
+export async function PATCH(req: Request, res: Response) {
+  console.log('Hello');
+  try {
+    // TODO: Validate which fields are allowed to be updated
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) return NextResponse.redirect('/auth');
+    const { id, ...data } = await req.json();
+
+    console.log('User', { id, data });
+
+    const journey = id
+      ? await prisma.journey.update({
+          where: {
+            id
+          },
+          data: { ...data, users: { connect: { email: session?.user?.email } } }
+        })
+      : await prisma.journey.create({
+          data: { ...data, users: { connect: { email: session?.user?.email } } }
+        });
+    return NextResponse.json(journey);
+  } catch (error) {
+    console.log('[PATCH] error', error);
+    throw error;
+  }
+}

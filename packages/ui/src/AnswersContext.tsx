@@ -42,7 +42,7 @@ interface AnswersContextType {
   updateMessage: (message: Partial<Message>) => Promise<void>;
   updateChat: (chat: Partial<Chat>) => Promise<void>;
   updatePrompt: (prompt: Partial<Prompt>) => Promise<void>;
-  updateJourney: (journey: Partial<Journey>) => Promise<void>;
+  upsertJourney: (journey: Partial<Journey>) => Promise<void>;
 
   messageIdx: any;
   setMessages: (arg: SetStateAction<Message[]>) => void;
@@ -78,7 +78,7 @@ const AnswersContext = createContext<AnswersContextType>({
   updateMessage: async () => {},
   updateChat: async () => {},
   updatePrompt: async () => {},
-  updateJourney: async () => {}
+  upsertJourney: async () => {}
 });
 
 export function useAnswers({ apiUrl = '/api' }: any = {}) {
@@ -217,8 +217,9 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
     axios.patch(`${apiUrl}/chats`, chat).then(() => router.refresh());
   const updatePrompt = async (prompt: Partial<Prompt>) =>
     axios.patch(`${apiUrl}/prompts`, prompt).then(() => router.refresh());
-  const updateJourney = async (journey: Partial<Journey>) =>
-    axios.patch(`${apiUrl}/journeys`, journey).then(() => router.refresh());
+  const upsertJourney = async (journey: Partial<Journey>) =>
+    axios.patch(`${apiUrl}/journeys`, journey);
+
   const updateMessage = async (message: Partial<Message>) =>
     axios.patch(`${apiUrl}/messages`, message).then(() => router.refresh());
 
@@ -234,7 +235,7 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
     deleteJourney,
     updateChat,
     updatePrompt,
-    updateJourney,
+    upsertJourney,
     updateMessage
   };
 }

@@ -13,7 +13,11 @@ const ChatDetailPage = async ({ params }: any) => {
       where: {
         id: params.chatId
       },
-      include: { prompt: true, journey: true, messages: { include: { user: true } } }
+      include: {
+        prompt: true,
+        journey: true,
+        messages: { include: { user: true }, orderBy: { createdAt: 'asc' } }
+      }
     })
     .then((data: any) => JSON.parse(JSON.stringify(data)));
   // @ts-expect-error Async Server Component

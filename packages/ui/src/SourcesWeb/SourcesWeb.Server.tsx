@@ -13,7 +13,7 @@ const SourcesWeb = ({ sources }: any) => {
   //   })
   //   .then((data: any) => JSON.parse(JSON.stringify(data)));
 
-  return <SourcesWebClient sources={sources?.slice(0, 100)} />;
+  return <SourcesWebClient />;
 };
 
 export default SourcesWeb;

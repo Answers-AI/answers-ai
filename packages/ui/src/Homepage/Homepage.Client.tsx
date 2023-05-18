@@ -77,8 +77,7 @@ const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
             !!journeys.length &&
             journeys?.map((journey, idx) => (
               <Box key={journey.id}>
-                {' '}
-                <JourneyCard journey={journey} />
+                <JourneyCard journey={journey as any} />
               </Box>
             ))}
         </Box>

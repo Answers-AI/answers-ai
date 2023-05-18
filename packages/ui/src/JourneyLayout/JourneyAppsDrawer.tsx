@@ -9,15 +9,14 @@ import JourneySourceCard from './JourneySourceCard';
 
 export const JourneyAppsDrawer = ({
   appSettings,
-  activeApp,
-  sources
+  activeApp
 }: {
   appSettings: AppSettings;
   activeApp?: string;
 }) => {
   const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
 
-  const flags = useFlags(['airtable', 'docubot']);
+  const flags = useFlags(['airtable', 'docubot', 'confluence']);
 
   const enabledServices: AppService[] | undefined = appSettings?.services?.filter((service) => {
     const isServiceEnabledInFlags = (flags?.[service.name] as any)?.enabled;
@@ -35,12 +34,12 @@ export const JourneyAppsDrawer = ({
           width: '100%',
           gap: 2,
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
           gridAutoFlow: 'dense',
           transition: '.3s'
         }}>
         {appSettings?.services
-          ?.filter((s) => s.enabled)
+          ?.filter((s) => s.enabled || (flags?.[s.name] as any)?.enabled)
           ?.map((service) => (
             <JourneySourceCard
               appSettings={appSettings}
@@ -48,7 +47,6 @@ export const JourneyAppsDrawer = ({
               updateFilter={updateFilter}
               key={service?.id}
               {...service}
-              sources={sources}
               // expanded={selectedService?.name === service.name}
               expanded
               // onClick={() => setServiceOpen(service.name)}
@@ -96,7 +94,6 @@ export const JourneyAppsDrawer = ({
                   {...selectedService}
                   id={selectedService.name}
                   expanded={true}
-                  sources={sources}
                 />
               </Box>
             </ClickAwayListener>

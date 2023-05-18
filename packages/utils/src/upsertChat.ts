@@ -14,7 +14,7 @@ export async function upsertChat({
   journeyId?: string;
 }) {
   const journey = await (!journeyId
-    ? prisma.journey.create({ data: { title: prompt, filters, users: { connect: { email } } } })
+    ? null
     : prisma.journey.update({
         where: { id: journeyId },
         data: { filters, users: { connect: { email } } }

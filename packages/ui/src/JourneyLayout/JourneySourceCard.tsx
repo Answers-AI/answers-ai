@@ -40,7 +40,8 @@ const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
   updateFilter,
   ...other
 }) => {
-  const flags = useFlags(['delete_prompt']);
+  const flags = useFlags(['delete_prompt', id]);
+  enabled = enabled || flags[id]?.enabled;
   const { deletePrompt, updatePrompt } = useAnswers();
   const [lastInteraction, setLastInteraction] = React.useState<string>('');
   const handleAuthIntegration = () => {
@@ -128,26 +129,23 @@ const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
                 </Typography>
               ) : null}
 
-              {enabled ? (
-                <Box
-                  component={motion.div}
-                  sx={{
-                    transition: '.25s',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    ...(expanded ? { maxHeight: '90vh', transitionDelay: '3s' } : { maxHeight: 0 })
-                  }}>
-                  <Typography variant="overline">Filter Options</Typography>
-                  <JourneySetting
-                    app={name}
-                    filters={filters}
-                    updateFilter={updateFilter}
-                    appSettings={appSettings}
-                    {...other}
-                  />
-                </Box>
-              ) : null}
+              <Box
+                component={motion.div}
+                sx={{
+                  transition: '.25s',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  ...(expanded ? { maxHeight: '90vh', transitionDelay: '3s' } : { maxHeight: 0 })
+                }}>
+                {/* <Typography variant="overline">Filter Options</Typography> */}
+                <JourneySetting
+                  app={name}
+                  filters={filters}
+                  updateFilter={updateFilter}
+                  appSettings={appSettings}
+                  {...other}
+                />
+              </Box>
             </CardContent>
           </Wrapper>
         </Box>

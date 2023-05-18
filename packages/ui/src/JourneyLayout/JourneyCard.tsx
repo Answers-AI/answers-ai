@@ -38,25 +38,25 @@ const JourneyCard = ({ journey }: Props) => {
       <NextLink href={`/journey/${journey.id}`}>
         <CardActionArea>
           <CardHeader
-            avatar={<WorkIcon fontSize="small" />}
+            // avatar={<WorkIcon fontSize="small" />}
             titleTypographyProps={{ variant: 'body1' }}
-            title={title}></CardHeader>
+            title={title ?? goal}></CardHeader>
 
-          {goal ? (
+          {/* {goal ? (
             <CardContent>
               <Typography variant="body1">{`Goal: ${goal}`}</Typography>{' '}
             </CardContent>
-          ) : null}
-        </CardActionArea>
+          ) : null} */}
 
-        <CardActions sx={{ justifyContent: 'space-between' }}>
-          <Typography variant="body2">{`${_count.chats} Chats`}</Typography>
-          {updatedAt ? (
-            <Typography variant="body2" sx={{ marginLeft: 'auto' }}>{`Updated ${formatDateSince(
-              updatedAt
-            )}`}</Typography>
-          ) : null}
-        </CardActions>
+          <CardActions sx={{ justifyContent: 'space-between' }}>
+            <Typography variant="body2">{`${_count.chats} Chats`}</Typography>
+            {updatedAt ? (
+              <Typography variant="body2" sx={{ marginLeft: 'auto' }}>{`Updated ${formatDateSince(
+                updatedAt
+              )}`}</Typography>
+            ) : null}
+          </CardActions>
+        </CardActionArea>
       </NextLink>
     </Card>
   );
