@@ -2,6 +2,8 @@ const { PrismaPlugin } = require('experimental-prisma-webpack-plugin');
 // const { PrismaPlugin } = require('@prisma/nextjs-monorepo-workaround-plugin');
 
 const webpack = require('webpack');
+const { withSentryConfig } = require('@sentry/nextjs');
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 });
@@ -9,7 +11,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /**
  * @type {import('next').NextConfig}
  */
-module.exports = withBundleAnalyzer({
+module.exports = withSentryConfig(withBundleAnalyzer({
   experimental: {
     // experimentalReact: true,
     appDir: true,
@@ -43,4 +45,4 @@ module.exports = withBundleAnalyzer({
 
     return config;
   }
-});
+}));

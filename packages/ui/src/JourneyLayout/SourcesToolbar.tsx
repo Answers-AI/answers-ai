@@ -17,7 +17,7 @@ import SourcesWeb from '../SourcesWeb';
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
 
-  const flags = useFlags(['airtable', 'docubot', 'confluence']);
+  const flags = useFlags(['airtable', 'docubot', 'confluence', 'documents', 'zoom', 'youtube']);
 
   const enabledServices: AppService[] | undefined = appSettings?.services?.filter((service) => {
     const isServiceEnabledInFlags = (flags?.[service.name] as any)?.enabled;

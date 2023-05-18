@@ -1,5 +1,6 @@
 import { Sidekick } from 'types';
 const sales: Sidekick = {
+  departments: ["sales"],
   label: "Sales Proposal Expert",
   value: "sales",
   placeholder: "I can create sales proposals for you based on client requirements",

@@ -1,6 +1,7 @@
 import { Sidekick } from 'types';
 
 const teacher: Sidekick = {
+  departments: ["education"],
   label: "Teacher",
   value: "teacher",
   placeholder:

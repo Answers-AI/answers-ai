@@ -1,6 +1,7 @@
 import { Sidekick } from 'types';
 
 const contentful: Sidekick = {
+  departments: ["content"],
   label: "Contentful Expert",
   value: "contentful",
   placeholder: "I can help you with Contentful",

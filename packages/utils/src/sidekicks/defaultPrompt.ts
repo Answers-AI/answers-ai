@@ -1,5 +1,6 @@
 import { Sidekick } from 'types';
 const defaultPrompt: Sidekick = {
+  departments: ['general'],
   label: 'Default Assistant',
   value: 'defaultPrompt',
   placeholder: 'I can help with general questions',

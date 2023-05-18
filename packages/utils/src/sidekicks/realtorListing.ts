@@ -1,5 +1,6 @@
 import { Sidekick } from 'types';
 const realtorListing: Sidekick = {
+  departments: ["realtor"],
   label: "Realtor Listing",
   value: "realtorListing",
   placeholder: "I can make amazing realestate listings for you",

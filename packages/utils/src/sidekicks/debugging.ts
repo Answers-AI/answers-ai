@@ -1,5 +1,6 @@
 import { Sidekick } from 'types';
 const debugging: Sidekick = {
+  departments: ["engineering"],
   label: "Debugging Expert",
   value: "debugging",
   placeholder: "I can debug code for you",
