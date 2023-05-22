@@ -93,7 +93,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
 
               {flags?.docubot?.enabled && selectedService.name === 'docubot' ? (
                 <JourneySetting
-                  app={name}
+                  app={selectedService.name}
                   appSettings={appSettings}
                   filters={filters}
                   updateFilter={updateFilter}
@@ -102,7 +102,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
 
               {flags?.airtable?.enabled && selectedService.name === 'airtable' ? (
                 <JourneySetting
-                  app={name}
+                  app={selectedService.name}
                   appSettings={appSettings}
                   filters={filters}
                   updateFilter={updateFilter}
@@ -111,7 +111,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
 
               {serviceOpen === 'confluence' ? (
                 <JourneySetting
-                  app={name}
+                  app={selectedService.name}
                   appSettings={appSettings}
                   filters={filters}
                   updateFilter={updateFilter}
@@ -122,7 +122,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
 
               {serviceOpen === 'jira' ? (
                 <JourneySetting
-                  app={name}
+                  app={selectedService.name}
                   appSettings={appSettings}
                   filters={filters}
                   updateFilter={updateFilter}
