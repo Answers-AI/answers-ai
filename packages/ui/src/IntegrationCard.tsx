@@ -47,7 +47,7 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
   // };
 
   enabled = enabled || integrationFlag?.enabled;
-  console.log('IntegrationCard', { id, name, enabled, expanded, integrationFlag });
+
   const handleAuthIntegration = () => {
     signIn(providerId);
   };
