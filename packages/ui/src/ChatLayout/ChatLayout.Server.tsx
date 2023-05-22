@@ -32,7 +32,7 @@ export default async function ChatUILayout({
       },
       include: {
         prompt: true,
-        messages: { orderBy: { createdAt: 'desc' }, include: { user: true } }
+        messages: { orderBy: { createdAt: 'desc' }, take: 1 }
       }
     })
     .then((data: any) => JSON.parse(JSON.stringify(data)));
@@ -47,7 +47,9 @@ export default async function ChatUILayout({
       orderBy: {
         createdAt: 'desc'
       },
-      include: { chats: { include: { prompt: true, messages: { include: { user: true } } } } }
+      include: {
+        chats: { include: { prompt: true, messages: { take: 1 } } }
+      }
     })
     .then((data: any) => JSON.parse(JSON.stringify(data)));
 
