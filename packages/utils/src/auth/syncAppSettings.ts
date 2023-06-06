@@ -1,5 +1,5 @@
 import { User, Organization } from 'types';
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 import { buildSettings } from './buildSettings';
 import { SYSTEM_SETTINGS } from './SYSTEM_SETTINGS';
 

@@ -213,6 +213,9 @@ importers:
       '@prisma/client':
         specifier: ^4.13.0
         version: 4.13.0(prisma@4.14.0)
+      '@prisma/nextjs-monorepo-workaround-plugin':
+        specifier: ^4.15.0
+        version: 4.15.0
       '@sentry/nextjs':
         specifier: ^7.52.1
         version: 7.52.1(encoding@0.1.13)(next@13.3.1)(react@18.2.0)(webpack@5.78.0)
@@ -2948,6 +2951,10 @@ packages:
   /@prisma/engines@4.14.0:
     resolution: {integrity: sha512-PDNlhP/1vyTgmNyiucGqGCdXIp7HIkkvKO50si3y3PcceeHvqtiKPaH1iJdz63jCWMVMbj2MElSxXPOeBvEVIQ==}
     requiresBuild: true
+
+  /@prisma/nextjs-monorepo-workaround-plugin@4.15.0:
+    resolution: {integrity: sha512-AVImaGnRBmxnxRGlrxT+9No+fgek0fji861jiTQq1rs4sjY/EysW956OCbBGxRWUnEIpLFDDjrqVrFVVUWr4mA==}
+    dev: false
 
   /@puppeteer/browsers@0.3.1(typescript@4.9.5):
     resolution: {integrity: sha512-WTFVqWY7ipI+CsJRb6vEddYJ/lMl2bHYP5BjFDBM9JMKPjJNT4psXz6DLuJpi3EkG80Q0ef5Azzv3gKu9MvMUg==}

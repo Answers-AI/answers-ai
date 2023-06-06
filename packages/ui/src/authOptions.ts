@@ -5,7 +5,7 @@ import AtlassianProvider from 'next-auth/providers/atlassian';
 import SlackProvider from 'next-auth/providers/slack';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 import { inngest } from '@utils/ingest/client';
 import { User as AnswersUser } from 'types';
 export const USER_EVENTS = ['signIn', 'signOut', 'createUser', 'updateUser', 'linkAccount'];

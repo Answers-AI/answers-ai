@@ -27,6 +27,7 @@
     "db": "workspace:*",
     "encoding": "^0.1.13",
     "experimental-prisma-webpack-plugin": "workspace:*",
+    "@prisma/nextjs-monorepo-workaround-plugin": "^4.15.0",
     "flagsmith": "^3.18.2",
     "hnswlib-node": "^1.4.2",
     "inngest": "^1.8.0",

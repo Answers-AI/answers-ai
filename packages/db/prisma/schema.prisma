@@ -53,7 +53,10 @@ model Organization {
   id    String  @id @default(cuid())
   name  String?
   image String?
+
   users User[]
+
+  documentPermissions DocumentPermission[]
 
   appSettings Json?
 
@@ -79,9 +82,27 @@ model Document {
   source            String 
   domain            String?
   url               String    @unique
+
+  content String
+  metadata Json
+
+  permissions DocumentPermission[]
   
   status String @default("pending")
   lastSyncedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model DocumentPermission {
+  id                String    @id @default(cuid())
+  
+  document   Document @relation(fields: [documentId], references: [id])
+  documentId String
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt

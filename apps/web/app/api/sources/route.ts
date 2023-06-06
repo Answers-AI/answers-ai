@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import OpenAIClient from '@utils/openai/openai';
 

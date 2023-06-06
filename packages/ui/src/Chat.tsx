@@ -1,6 +1,6 @@
 import React from 'react';
 import { getAppSettings } from '@ui/getAppSettings';
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 
 import { ChatDetail } from './ChatDetail';
 import { Chat, Journey } from 'types';

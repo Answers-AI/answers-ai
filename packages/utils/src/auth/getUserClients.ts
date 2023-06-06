@@ -1,4 +1,4 @@
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 import ConfluenceClient from '../confluence/client';
 import JiraClient from '../jira/client';
 import SlackApiClient from '../slack/client';

@@ -1,7 +1,7 @@
 import PineconeClient from '../pinecone/client';
 import { EventVersionHandler } from './EventVersionHandler';
 import { PineconeVector } from 'types';
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 import OpenAI from '../openai/openai';
 const openAi = new OpenAI();
 

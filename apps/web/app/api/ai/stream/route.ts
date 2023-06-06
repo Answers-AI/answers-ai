@@ -10,7 +10,7 @@ import { getCompletionRequest } from '@utils/llm/getCompletionRequest';
 import { fetchContext } from '@utils/pinecone/fetchContext';
 import { sidekicks } from '@utils/sidekicks';
 import { upsertChat } from '@utils/upsertChat';
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 import cors from 'cors';
 import { Sidekicks } from 'types';
 

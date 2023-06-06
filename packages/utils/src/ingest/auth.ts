@@ -1,4 +1,4 @@
-// import { prisma } from 'db/dist';
+// import { prisma } from '@db/client';
 // import { Session } from 'next-auth/core/types';
 import { syncAppSettings } from '../auth/syncAppSettings';
 

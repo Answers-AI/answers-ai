@@ -35,10 +35,6 @@ export const inngest = new Inngest<Events>({ name: 'My App' });
 
 const inngestFunctions = createInngestFunctions(functions as any);
 
-export const config = {
-  type: 'experimental-background'
-};
-
 export default serve(inngest, inngestFunctions, {
   signingKey: process.env.INNGEST_SIGNING_KEY
 });

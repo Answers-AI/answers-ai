@@ -9,8 +9,8 @@
     "dist/**"
   ],
   "scripts": {
-    "dev": "concurrently \"prisma generate --watch\" \"tsc -w\"",
-    "build": "prisma migrate deploy && prisma generate && tsc",
+    "dev": "concurrently \"prisma generate --watch\"",
+    "build": "prisma migrate deploy && prisma generate",
     "prisma": "npx prisma",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
