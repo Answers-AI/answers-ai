@@ -218,6 +218,11 @@ export const buildSettings = async (user: User, org?: Organization) => {
           id: 'congress-ai-hearing-2023-05-16',
           name: 'congress-ai-hearing-2023-05-16',
           enabled: true
+        },
+        {
+          id: 'et-sam-altman-June-07-2023',
+          name: 'et-sam-altman-June-07-2023',
+          enabled: true
         }
       ]
     };
