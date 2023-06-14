@@ -8,7 +8,7 @@ import defaultPrompt from "./defaultPrompt";
 import docs from "./docs";
 import gptraw from "./gptraw";
 import legal from "./legal";
-import marketing from "./marketing";
+import usecaseWritingExpert from "./usecaseWritingExpert";
 import productmanager from "./productmanager";
 import project from "./project";
 import promptCreator from "./promptCreator";
@@ -29,7 +29,7 @@ export const sidekicks: Sidekick[] = [
   docs,
   gptraw,
   legal,
-  marketing,
+  usecaseWritingExpert,
   productmanager,
   project,
   promptCreator,

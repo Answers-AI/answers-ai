@@ -200,6 +200,11 @@ export const buildSettings = async (user: User, org?: Organization) => {
           id: 'trends-in-ai-regulation',
           name: 'trends-in-ai-regulation',
           enabled: true
+        },
+        {
+          id: 'drata-soc2-policies',
+          name: 'drata-soc2-policies',
+          enabled: true
         }
       ]
     };
