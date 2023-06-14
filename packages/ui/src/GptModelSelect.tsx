@@ -18,8 +18,15 @@ export const GptModelSelect = ({ onGptModelSelected, selectedGptModel }: GptMode
       label="GPT Model"
       value={selectedGptModel}
       onChange={handleGptModelChange}>
-      <MenuItem key="gpt3" value="gpt-3.5-turbo">GPT 3.5</MenuItem>
-      <MenuItem key="gpt4" value="gpt-4">GPT 4</MenuItem>
+      <MenuItem key="gpt3" value="gpt-3.5-turbo">
+        GPT 3.5
+      </MenuItem>
+      <MenuItem key="gpt316k" value="gpt-3.5-turbo-16k">
+        GPT 3.5 16k
+      </MenuItem>
+      <MenuItem key="gpt4" value="gpt-4">
+        GPT 4
+      </MenuItem>
     </Select>
   );
 };

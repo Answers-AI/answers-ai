@@ -78,6 +78,8 @@ const getMaxTokensByModel = (gptModel?: string) => {
       return 4000;
     case 'gpt-4':
       return 8192;
+    case 'gpt-3.5-turbo-16k':
+        return 15000;
     default:
       return 4096;
   }

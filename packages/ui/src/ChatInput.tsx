@@ -87,7 +87,11 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
       <AppSyncToolbar appSettings={appSettings} />
       <Box sx={{ display: 'flex', gap: 2 }}>
-        <SidekickSelect onSidekickSelected={handleSidekickSelected} selectedSidekick={sidekick} initialSidekick={sidekick} />
+        <SidekickSelect
+          onSidekickSelected={handleSidekickSelected}
+          selectedSidekick={sidekick}
+          initialSidekick={sidekick}
+        />
 
         <Select
           labelId="demo-simple-select-label"
@@ -97,6 +101,9 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
           onChange={handleGptModelSelected}>
           <MenuItem key="gpt3" value="gpt-3.5-turbo">
             GPT 3.5
+          </MenuItem>
+          <MenuItem key="gpt316k" value="gpt-3.5-turbo-16k">
+            GPT 3.5 16k
           </MenuItem>
           <MenuItem key="gpt4" value="gpt-4">
             GPT 4
