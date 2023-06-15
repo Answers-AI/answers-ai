@@ -181,6 +181,11 @@ export const buildSettings = async (user: User, org?: Organization) => {
           id: 'answersai-marketing-v0.1.0',
           name: 'answersai-marketing-v0.1.0',
           enabled: true
+        },
+        {
+          id: 'trotto-go-links-v0.1.0',
+          name: 'trotto-go-links-v0.1.0',
+          enabled: true
         }
       ]
     };
