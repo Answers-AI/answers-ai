@@ -18,6 +18,7 @@ import research from "./research";
 import sales from "./sales";
 import support from "./support";
 import teacher from "./teacher";
+import salesOutboundEmail from "./salesOutboundEmail";
 
 export const sidekicks: Sidekick[] = [
   accountManager,
@@ -39,5 +40,6 @@ export const sidekicks: Sidekick[] = [
   sales,
   support,
   teacher,
+  salesOutboundEmail,
   // Add more prompts here
 ];
