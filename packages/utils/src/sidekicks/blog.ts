@@ -1,11 +1,11 @@
 import { Sidekick } from 'types';
 const blog: Sidekick = {
-  departments: ["marketing", "content"],
-  label: "Blog Critic Expert",
-  value: "blog",
-  placeholder: "I can give suggestions on how to make blog posts better",
+  departments: ['marketing', 'content'],
+  label: 'Blog Critic Expert',
+  value: 'blog',
+  placeholder: 'I can give suggestions on how to make blog posts better',
   getSystemPromptTemplate: () => {
-    return `You are a digital marketing expert. I want you to be a harsh critic for the following blog post.`
+    return `You are a digital marketing expert. I want you to be a harsh critic for the following blog post.`;
   },
   getUserPromptTemplate: (query, context) => {
     return `You are an English writing expert.I want you to be a harsh critic for the following blog post.
@@ -25,8 +25,8 @@ const blog: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath}\n${context.text}\n\n`;
-  },
+    return `filePath: ${context.filePath ?? context.url}\n${context.text}\n\n`;
+  }
 };
 
 export default blog;

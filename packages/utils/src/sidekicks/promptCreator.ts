@@ -1,9 +1,9 @@
 import { Sidekick } from 'types';
 const promptCreator: Sidekick = {
-  departments: ["general"],
-  label: "Prompt Assistant",
-  value: "promptCreator",
-  placeholder: "I can help you craft the perfect prompt",
+  departments: ['general'],
+  label: 'Prompt Assistant',
+  value: 'promptCreator',
+  placeholder: 'I can help you craft the perfect prompt',
   getSystemPromptTemplate: () => {
     return `I want you to become my Prompt Creator. Your goal is to help me craft the best possible prompt for my needs. The prompt will be used by you, ChatGPT.`;
   },
@@ -20,8 +20,8 @@ const promptCreator: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath}\n${context.text}\n\n`;
-  },
+    return `filePath: ${context.filePath ?? context.url}\n${context.text}\n\n`;
+  }
 };
 
 export default promptCreator;

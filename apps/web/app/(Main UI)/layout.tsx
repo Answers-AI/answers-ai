@@ -12,15 +12,15 @@ const MainUiLayout = async (props: {
     slug: string;
   };
 }) => {
-  const session = await getCachedSession(authOptions);
-
-  const providers = await getProviders();
-
-  await flagsmith.init({
-    // fetches flags on the server and passes them to the App
-    environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
-    preventFetch: true
-  });
+  const [session, providers] = await Promise.all([
+    getCachedSession(authOptions),
+    getProviders(),
+    flagsmith.init({
+      // fetches flags on the server and passes them to the App
+      environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
+      preventFetch: true
+    })
+  ]);
 
   if (session?.user?.email)
     await flagsmith.identify(`user_${session.user.id}`, {

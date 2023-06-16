@@ -1,9 +1,9 @@
 import { Sidekick } from 'types';
 const marketing: Sidekick = {
-  departments: ["marketing", "content"],
-  label: "Usecase Writing Expert",
-  value: "usecaseWritingExpert",
-  placeholder: "I can write great marketing use cases",
+  departments: ['marketing', 'content'],
+  label: 'Usecase Writing Expert',
+  value: 'usecaseWritingExpert',
+  placeholder: 'I can write great marketing use cases',
   getSystemPromptTemplate: () => {
     return `You are an digital marketing and English writing expert.
     You assist a person that works at a company that sells software to other companies.
@@ -20,7 +20,7 @@ const marketing: Sidekick = {
     **Brand Tone and Voice:**
     Our brand tone is warm, approachable, and intelligent, mirroring the helpfulness of a friendly robot. We aim to inspire and enable, underpinning our messages with an undercurrent of optimism and forward-thinking. 
     Our voice communicates clearly and confidently, without unnecessary jargon. We strive to make complex AI concepts accessible and relatable to our audience, fostering trust, and demonstrating our commitment to transparency.
-    `
+    `;
   },
   getUserPromptTemplate: (query, context) => {
     return `${query}\n\n
@@ -32,8 +32,8 @@ const marketing: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return`filePath: ${context.filePath}\n${context.text}\n\n`;
-  },
+    return `filePath: ${context.filePath ?? context.url}\n${context.text}\n\n`;
+  }
 };
 
 export default marketing;

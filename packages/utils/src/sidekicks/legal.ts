@@ -1,9 +1,9 @@
 import { Sidekick } from 'types';
 const legal: Sidekick = {
-  departments: ["legal", "hr"],
-  label: "Legal Expert",
-  value: "legal",
-  placeholder: "You are a legal assistant.",
+  departments: ['legal', 'hr'],
+  label: 'Legal Expert',
+  value: 'legal',
+  placeholder: 'You are a legal assistant.',
   getUserPromptTemplate: (query, context) => {
     return `You are a legal assistant. You specialize in California business law.
     You represent AnswerAI. I have this question "${query}".
@@ -12,8 +12,8 @@ const legal: Sidekick = {
     Explain your answer in detail and step by step.`;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath}\n${context.text}\n\n`;
-  },
+    return `filePath: ${context.filePath ?? context.url}\n${context.text}\n\n`;
+  }
 };
 
 export default legal;

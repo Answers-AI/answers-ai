@@ -1,9 +1,9 @@
-import { Sidekick } from "types";
+import { Sidekick } from 'types';
 const research: Sidekick = {
-  departments: ["general"],
-  label: "Research Assistant",
-  value: "research",
-  placeholder: "I can help you research topics and provide insights",
+  departments: ['general'],
+  label: 'Research Assistant',
+  value: 'research',
+  placeholder: 'I can help you research topics and provide insights',
   getSystemPromptTemplate: () => {
     return `You are a helpful assistant.You specialize in helping people find answers to questions.
       I will ask you a series of questions and your goal is to help me find the answer.`;
@@ -30,8 +30,8 @@ const research: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return`filePath: ${context.filePath}\n${context.code}\n\n`;
-  },
+    return `filePath: ${context.filePath ?? context.url}\n${context.code}\n\n`;
+  }
 };
 
 export default research;

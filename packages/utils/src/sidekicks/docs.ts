@@ -1,9 +1,9 @@
 import { Sidekick } from 'types';
 const docs: Sidekick = {
-  departments: ["content"],
-  label: "Docs Creation Expert",
-  value: "docs",
-  placeholder: "I can create documentation for you",
+  departments: ['content'],
+  label: 'Docs Creation Expert',
+  value: 'docs',
+  placeholder: 'I can create documentation for you',
   getUserPromptTemplate: (query, context) => {
     return `You are a code documentation assistant.
       You specialize in building NextJS applications with OpenAI.
@@ -13,8 +13,8 @@ const docs: Sidekick = {
       think step by step. Ask me questions to clarify what you need. Let me know how confident you are in your answer.`;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath}\n${context.text}\n\n`;
-  },
+    return `filePath: ${context.filePath ?? context.url}\n${context.text}\n\n`;
+  }
 };
 
 export default docs;
