@@ -26,7 +26,7 @@ export interface AppService {
   description?: string;
   providerId?: string;
   enabled?: boolean;
-  imageURL: string;
+  imageURL?: string;
 }
 export interface ConfluenceSettings {
   enabled: boolean;

@@ -50,13 +50,17 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                 if (ref) serviceRefs.current[service.name] = ref;
               }}
               onClick={() => setServiceOpen(service.name)}>
-              <Image
-                style={{ background: 'white', padding: '8px' }}
-                src={service.imageURL}
-                alt={`${service.name} logo`}
-                width={40}
-                height={40}
-              />
+              {service.imageURL ? (
+                <Image
+                  style={{ background: 'white', padding: '8px' }}
+                  src={service.imageURL}
+                  alt={`${service.name} logo`}
+                  width={40}
+                  height={40}
+                />
+              ) : (
+                service.name[0]?.toUpperCase()
+              )}
             </Avatar>
           ])
           .flat()}

@@ -2,15 +2,12 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import { Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { debounce } from '@utils/debounce';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
-import { DefaultPrompts } from './DefaultPrompts';
 import { SidekickSelect } from './SidekickSelect';
 import { Filters } from './Filters';
 import { Tooltip } from '@mui/material';
@@ -54,12 +51,10 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
 
   const handleSidekickSelected = (value: string) => {
     setSidekick(value);
-    console.log('sidekick selected', value);
   };
 
   const handleGptModelSelected = (event: SelectChangeEvent<string>) => {
     setGptModel(event.target.value as string);
-    console.log('gpt model selected', event.target.value);
   };
 
   const handleInputFocus = () => {

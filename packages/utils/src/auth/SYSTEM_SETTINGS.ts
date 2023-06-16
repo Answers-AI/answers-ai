@@ -5,7 +5,7 @@ export const SYSTEM_SETTINGS: AppSettings = {
     {
       id: 'files',
       name: 'files',
-      imageURL: '/static/images/files.png',
+      // imageURL: '/static/images/files.png',
       enabled: false
     },
     {

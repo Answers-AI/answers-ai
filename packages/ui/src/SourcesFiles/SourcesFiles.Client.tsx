@@ -1,24 +1,12 @@
 'use client';
-import React, { useState } from 'react';
-import axios from 'axios';
-import {
-  Box,
-  Button,
-  Chip,
-  Collapse,
-  FormControlLabel,
-  List,
-  ListItem,
-  Switch,
-  TextField,
-  Typography
-} from '@mui/material';
+import React from 'react';
+import { Box } from '@mui/material';
 import Autocomplete from '@ui/AutocompleteSelect';
-import { WebUrlType, Document } from 'types';
+import { Document } from 'types';
 import { useAnswers } from '@ui/AnswersContext';
 import { getUrlDomain } from '@utils/getUrlDomain';
 import NewFileModal from './NewFileModal';
-import { throttle } from '@utils/throttle';
+
 import useSWR from 'swr';
 
 const isDomain = (url?: string) => {
@@ -64,11 +52,6 @@ const SourcesFiles: React.FC<{}> = ({}) => {
   return (
     <>
       <Box marginBottom={1} sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
-        {filters?.datasources?.file?.url?.length ? (
-          <Box>
-            <Typography variant="overline">Files</Typography>
-          </Box>
-        ) : null}
         <Autocomplete
           label={'File URL'}
           value={filters?.datasources?.file?.url || []}

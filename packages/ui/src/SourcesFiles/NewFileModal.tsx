@@ -36,7 +36,7 @@ const FileContentModal: React.FC = () => {
 
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={handleOpen}>
+      <Button variant="contained" color="primary" onClick={handleOpen} fullWidth>
         Create File Content
       </Button>
       <Modal open={open} onClose={handleClose}>
