@@ -8,6 +8,7 @@ import { useFlags } from 'flagsmith/react';
 import Image from 'next/image';
 import JourneySetting from './JourneySetting';
 import SourcesWeb from '../SourcesWeb';
+import SourcesFiles from '../SourcesFiles';
 import AutocompleteSelect from '@ui/AutocompleteSelect';
 // import SourcesJira from './SourcesJira';
 // import SourcesConfluence from './SourcesConfluence';
@@ -18,7 +19,15 @@ import AutocompleteSelect from '@ui/AutocompleteSelect';
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
 
-  const flags = useFlags(['airtable', 'docubot', 'confluence', 'documents', 'zoom', 'youtube']);
+  const flags = useFlags([
+    'airtable',
+    'files',
+    'docubot',
+    'confluence',
+    'documents',
+    'zoom',
+    'youtube'
+  ]);
 
   const enabledServices: AppService[] | undefined = appSettings?.services?.filter((service) => {
     const isServiceEnabledInFlags = (flags?.[service.name] as any)?.enabled;
@@ -136,12 +145,13 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                       appSettings?.docubot?.repos?.filter((s) => s.enabled)?.map((s) => s.id) || []
                     }
                     value={filters?.datasources?.docubot?.repo || []}
-                    onChange={(value: string[]) =>
-                      updateFilter({ datasources: { docubot: { repo: value } } })
+                    onChange={(evt, value) =>
+                      updateFilter({ datasources: { docubot: { repo: value as string[] } } })
                     }
                   />
                 </>
               ) : null}
+              {serviceOpen === 'files' ? <SourcesFiles /> : null}
               {flags?.documents?.enabled && selectedService?.name === 'documents' ? (
                 <>
                   <AutocompleteSelect
@@ -150,7 +160,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                       appSettings?.documents?.docs?.filter((s) => s.enabled)?.map((s) => s.id) || []
                     }
                     value={filters?.datasources?.document?.name || []}
-                    onChange={(value: string[]) =>
+                    onChange={(evt, value) =>
                       updateFilter({ datasources: { document: { name: value } } })
                     }
                   />

@@ -51,17 +51,17 @@ export const authUserLinkAccount: EventVersionHandler<{
   }
 };
 
-export const authCreateUser: EventVersionHandler<{
-  chatId: number;
-  role: string;
-  content: string;
-}> = {
-  v: '1',
-  event: 'auth/user.createUser',
-  handler: async ({ event }) => {
-    const { data, user } = event;
-    if (!user) throw new Error('NO_USER_PROVIDED');
-    const settings = await syncAppSettings({ userId: user.id });
-    return { settings };
-  }
-};
+// export const authCreateUser: EventVersionHandler<{
+//   chatId: number;
+//   role: string;
+//   content: string;
+// }> = {
+//   v: '1',
+//   event: 'auth/user.createUser',
+//   handler: async ({ event }) => {
+//     const { data, user } = event;
+//     if (!user) throw new Error('NO_USER_PROVIDED');
+//     const settings = await syncAppSettings({ userId: user.id });
+//     return { settings };
+//   }
+// };

@@ -3,6 +3,12 @@ import { AppSettings } from 'types';
 export const SYSTEM_SETTINGS: AppSettings = {
   services: [
     {
+      id: 'files',
+      name: 'files',
+      imageURL: '/static/images/files.png',
+      enabled: false
+    },
+    {
       id: 'confluence',
       providerId: 'atlassian',
       name: 'confluence',
@@ -39,6 +45,7 @@ export const SYSTEM_SETTINGS: AppSettings = {
     { id: 'web', name: 'web', imageURL: '/static/images/logo-web.svg', enabled: true },
     { id: 'airtable', name: 'airtable', imageURL: '/static/images/airtable.png', enabled: false },
     { id: 'docubot', name: 'docubot', imageURL: '/static/images/docubot.png', enabled: false },
+
     {
       id: 'documents',
       name: 'documents',

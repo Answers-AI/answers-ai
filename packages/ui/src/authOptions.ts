@@ -78,6 +78,7 @@ export const authOptions: AuthOptions = {
       if (user && session.user) {
         session.user.id = user.id!;
         session.user.role = user.role!;
+        session.user.organizationId = user.organizationId!;
         // @ts-ignore-next-line
         session.user.invited = user.invited ? new Date(user.invited as string) : user.invited;
         session.user.appSettings = user.appSettings;

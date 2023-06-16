@@ -33,8 +33,9 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  organizationId String?
+  currentOrganization   Organization? @relation("UserOrganzationsSelected", fields: [organizationId], references: [id])
+
+  organizations Organization[] @relation("UserOrganzations")
 
   appSettings Json?
   chats       Chat[]
@@ -44,9 +45,10 @@ model User {
 
   journeys Journey[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
-  ChatApp   ChatApp[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now()) @updatedAt
+  ChatApp        ChatApp[]
+  organizationId String?
 }
 
 model Organization {
@@ -54,7 +56,8 @@ model Organization {
   name  String?
   image String?
 
-  users User[]
+  users         User[] @relation("UserOrganzations")
+  usersSelected User[] @relation("UserOrganzationsSelected")
 
   documentPermissions DocumentPermission[]
 
@@ -78,17 +81,18 @@ model WebDocument {
 }
 
 model Document {
-  id                String    @id @default(cuid())
-  source            String 
-  domain            String?
-  url               String    @unique
+  id     String  @id @default(cuid())
+  source String
+  title   String?
+  domain String?
+  url    String  @unique
 
-  content String
-  metadata Json
+  content  String @default("")
+  metadata Json   @default("{}")
 
   permissions DocumentPermission[]
-  
-  status String @default("pending")
+
+  status       String    @default("pending")
   lastSyncedAt DateTime?
 
   createdAt DateTime @default(now())
@@ -96,8 +100,8 @@ model Document {
 }
 
 model DocumentPermission {
-  id                String    @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   document   Document @relation(fields: [documentId], references: [id])
   documentId String
 

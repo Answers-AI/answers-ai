@@ -27,7 +27,6 @@
     "db": "workspace:*",
     "encoding": "^0.1.13",
     "experimental-prisma-webpack-plugin": "workspace:*",
-    "@prisma/nextjs-monorepo-workaround-plugin": "^4.15.0",
     "flagsmith": "^3.18.2",
     "hnswlib-node": "^1.4.2",
     "inngest": "^1.8.0",
@@ -48,6 +47,7 @@
   "devDependencies": {
     "@babel/core": "^7.21.4",
     "@next/bundle-analyzer": "^13.2.4",
+    "@prisma/nextjs-monorepo-workaround-plugin": "^4.15.0",
     "@types/cors": "^2.8.13",
     "@types/node": "^18.15.11",
     "@types/react": "^18.0.31",

@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "dotenv -- turbo run dev dev-inngest dev-docker",
+    "dev": "dotenv -- turbo run dev dev-inngest dev-docker db:studio",
     "dev-docker": "docker-compose up -d",
     "build": "dotenv -- turbo run build",
     "db": "dotenv -- pnpm --filter db prisma",

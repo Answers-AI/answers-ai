@@ -213,9 +213,6 @@ importers:
       '@prisma/client':
         specifier: ^4.13.0
         version: 4.13.0(prisma@4.14.0)
-      '@prisma/nextjs-monorepo-workaround-plugin':
-        specifier: ^4.15.0
-        version: 4.15.0
       '@sentry/nextjs':
         specifier: ^7.52.1
         version: 7.52.1(encoding@0.1.13)(next@13.3.1)(react@18.2.0)(webpack@5.78.0)
@@ -301,6 +298,9 @@ importers:
       '@next/bundle-analyzer':
         specifier: ^13.2.4
         version: 13.3.1
+      '@prisma/nextjs-monorepo-workaround-plugin':
+        specifier: ^4.15.0
+        version: 4.15.0
       '@types/cors':
         specifier: ^2.8.13
         version: 2.8.13
@@ -680,6 +680,9 @@ importers:
       '@slack/web-api':
         specifier: ^6.8.1
         version: 6.8.1
+      '@types/uuid':
+        specifier: ^9.0.1
+        version: 9.0.1
       airtable:
         specifier: ^0.11.6
         version: 0.11.6
@@ -794,6 +797,9 @@ importers:
       utf-8-validate:
         specifier: 6.0.3
         version: 6.0.3
+      uuid:
+        specifier: ^9.0.0
+        version: 9.0.0
       yaml:
         specifier: ^2.2.1
         version: 2.2.1
@@ -2954,7 +2960,7 @@ packages:
 
   /@prisma/nextjs-monorepo-workaround-plugin@4.15.0:
     resolution: {integrity: sha512-AVImaGnRBmxnxRGlrxT+9No+fgek0fji861jiTQq1rs4sjY/EysW956OCbBGxRWUnEIpLFDDjrqVrFVVUWr4mA==}
-    dev: false
+    dev: true
 
   /@puppeteer/browsers@0.3.1(typescript@4.9.5):
     resolution: {integrity: sha512-WTFVqWY7ipI+CsJRb6vEddYJ/lMl2bHYP5BjFDBM9JMKPjJNT4psXz6DLuJpi3EkG80Q0ef5Azzv3gKu9MvMUg==}
@@ -3603,6 +3609,10 @@ packages:
 
   /@types/unist@2.0.6:
     resolution: {integrity: sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==}
+    dev: false
+
+  /@types/uuid@9.0.1:
+    resolution: {integrity: sha512-rFT3ak0/2trgvp4yYZo5iKFEPsET7vKydKF+VRCxlQ9bpheehyAJH89dAkaLEq/j/RZXJIqcgsmPJKUP1Z28HA==}
     dev: false
 
   /@types/yargs-parser@21.0.0:
@@ -11314,6 +11324,8 @@ packages:
 
   /uuid@3.4.0:
     resolution: {integrity: sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==}
+    deprecated: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+    hasBin: true
     dev: false
 
   /uuid@8.3.2:

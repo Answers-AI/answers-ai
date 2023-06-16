@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/nextjs';
 Sentry.init({
   dsn: 'https://31104059ebc64f998bb81cfb2b1c8814@o4505128356544512.ingest.sentry.io/4505128358510592',
   beforeSend: event => {
+console.error(event);
     if (event.exception) {
       Sentry.showReportDialog({ eventId: event.event_id });
     }

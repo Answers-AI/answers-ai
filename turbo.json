@@ -18,6 +18,7 @@
     "//#dev-inngest": { "cache": false },
     "//#dev-langchain": { "cache": false },
     "//#db:healthcheck": { "cache": false },
+    "//#db:studio": { "cache": false },
     "build": {
       "outputMode": "new-only",
       "dependsOn": ["^build"],

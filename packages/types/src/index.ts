@@ -161,6 +161,10 @@ export interface DocumentFilters {
   name?: string[];
   path?: string[];
 }
+export interface DocumentFilters {
+  name?: string[];
+  url?: string[];
+}
 
 export interface ZoomFilters {
   name?: string[];
@@ -170,6 +174,9 @@ export interface ZoomFilters {
 export interface YoutubeFilters {
   name?: string[];
   path?: string[];
+}
+export interface FileFilters {
+  url?: string[];
 }
 
 export interface DataSourcesFilters {
@@ -184,6 +191,7 @@ export interface DataSourcesFilters {
   document?: DocumentFilters;
   zoom?: ZoomFilters;
   youtube?: YoutubeFilters;
+  file?: FileFilters;
 }
 export interface AnswersFilters {
   models?: {
@@ -431,7 +439,6 @@ export type YoutubeRecord = {
   id: number;
   title: string;
 };
-
 
 export interface ConfluenceSetting extends ConfluencePage {
   enabled: boolean;

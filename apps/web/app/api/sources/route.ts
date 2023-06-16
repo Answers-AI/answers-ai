@@ -6,20 +6,24 @@ import OpenAIClient from '@utils/openai/openai';
 
 const openai = new OpenAIClient();
 export async function GET(req: Request, res: Response) {
-  const user = await getServerSession(authOptions);
-  if (!user?.user?.email) return NextResponse.redirect('/auth');
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) return NextResponse.redirect('/auth');
   const { searchParams } = new URL(req.url);
   const url = searchParams.get('url');
+  const source = searchParams.get('source');
 
   // TODO: Ensure this only shows documents are owned by the user
   // For now only access to web which is """public"""
   const filteredRecords = await prisma.document.findMany({
     where: {
-      source: 'web',
+      source: source ?? 'web',
       ...(url && {
         url: {
           contains: url
         }
+      }),
+      ...(source && {
+        permissions: { some: { organization: { users: { some: { id: session?.user?.id } } } } }
       })
     },
     take: 100
@@ -39,7 +43,7 @@ export async function GET(req: Request, res: Response) {
         )
     : [];
   const domains = countPagesByDomain(allWeb?.map((x) => x.url));
-  const sources = filteredRecords?.map(({ url }) => ({ url }));
+  const sources = filteredRecords?.map(({ url, title }) => ({ url, title }));
 
   return NextResponse.json({
     sources,
