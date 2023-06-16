@@ -17,8 +17,8 @@ export async function POST(request: Request) {
   const user = await prisma.user.findUnique({
     where: {
       email: session?.user?.email
-    },
-    include: { organization: true }
+    }
+    // include: { organization: true }
   });
   if (user) {
     const newSettings = await request.json();

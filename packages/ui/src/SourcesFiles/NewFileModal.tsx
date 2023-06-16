@@ -27,7 +27,7 @@ const FileContentModal: React.FC = () => {
     try {
       await axios.post('/api/sync/file', data);
       handleClose();
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);

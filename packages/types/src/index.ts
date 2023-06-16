@@ -176,7 +176,7 @@ export interface YoutubeFilters {
   path?: string[];
 }
 export interface FileFilters {
-  url?: string[];
+  url?: Document[];
 }
 
 export interface DataSourcesFilters {
@@ -224,7 +224,7 @@ export type Flags = {
 
 export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
-  accounts: DB.Account[] | null;
+  // accounts: DB.Account[] | null;
 }
 export interface Organization extends Omit<DB.Organization, 'appSettings'> {
   appSettings: AppSettings;

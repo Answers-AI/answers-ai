@@ -10,7 +10,7 @@ describe('Message', () => {
     role: 'user',
     user: {
       name: 'John Doe',
-      accounts: [],
+      // accounts: [],
       appSettings: {},
       email: 'user@theanswer.ai',
       id: 'test-id',

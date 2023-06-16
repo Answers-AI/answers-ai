@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",
-    "@next/bundle-analyzer": "^13.2.4",
+    "@next/bundle-analyzer": "^13.4.6",
     "@prisma/nextjs-monorepo-workaround-plugin": "^4.15.0",
     "@types/cors": "^2.8.13",
     "@types/node": "^18.15.11",

@@ -196,7 +196,7 @@ export const authOptions: AuthOptions = {
           if (!chatApp?.user) {
             throw new Error('Invalid API Key');
           }
-          // @ts-expect-error
+
           return chatApp?.user! as AnswersUser;
         } catch (e) {
           console.log(e);

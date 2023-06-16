@@ -145,7 +145,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                       appSettings?.docubot?.repos?.filter((s) => s.enabled)?.map((s) => s.id) || []
                     }
                     value={filters?.datasources?.docubot?.repo || []}
-                    onChange={(evt, value) =>
+                    onChange={(value) =>
                       updateFilter({ datasources: { docubot: { repo: value as string[] } } })
                     }
                   />
@@ -160,7 +160,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                       appSettings?.documents?.docs?.filter((s) => s.enabled)?.map((s) => s.id) || []
                     }
                     value={filters?.datasources?.document?.name || []}
-                    onChange={(evt, value) =>
+                    onChange={(value) =>
                       updateFilter({ datasources: { document: { name: value } } })
                     }
                   />
