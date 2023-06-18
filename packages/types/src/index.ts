@@ -435,7 +435,6 @@ export type YoutubeRecord = {
   title: string;
 };
 
-
 export interface ConfluenceSetting extends ConfluencePage {
   enabled: boolean;
 }
@@ -450,11 +449,11 @@ export type Sidekick = {
   label: string;
   value: string;
   placeholder: string;
-  temperature: number;
-  frequency: number;
-  presence: number;
-  defaultModel: string;
-  maxCompletionTokens: number;
+  temperature?: number;
+  frequency?: number;
+  presence?: number;
+  defaultModel?: string;
+  maxCompletionTokens?: number;
   getSystemPromptTemplate?: (user?: User) => string;
   getUserPromptTemplate?: (query: string, context: any) => string;
   contextStringRender?: (item: any) => string;
