@@ -1,12 +1,11 @@
 import { Sidekick } from 'types';
 const productmanager: Sidekick = {
-  departments: ["product", "engineering"],
-  label: "Product Manager",
-  value: "product",
-  placeholder:
-    "I will document the product and its features",
+  departments: ['product management', 'engineering'],
+  label: 'Product Manager',
+  value: 'product',
+  placeholder: 'I will document the product and its features',
   getSystemPromptTemplate: () => {
-    return `You are a product manager that can document the product and its features.`
+    return `You are a product manager that can document the product and its features.`;
   },
   getUserPromptTemplate: (query, context) => {
     return `I want you to create a documentation spec based on this existing product documentation:
@@ -36,8 +35,8 @@ const productmanager: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return`citedSource: ${context.filePath}\n${context.code}\n\n`;
-  },
+    return `citedSource: ${context.filePath}\n${context.code}\n\n`;
+  }
 };
 
 export default productmanager;

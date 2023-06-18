@@ -1,9 +1,9 @@
 import { Sidekick } from 'types';
 const support: Sidekick = {
-  departments: ["support"],
-  label: "Support Expert",
-  value: "support",
-  placeholder: "I can help with support issues",
+  departments: ['customer support'],
+  label: 'Customer Support',
+  value: 'support',
+  placeholder: 'I can help with support issues',
   getSystemPromptTemplate: () => {
     return `You are a helpful and friendly support assistant.You specialize in helping people find answers to questions and solving problems.`;
   },
@@ -18,7 +18,7 @@ const support: Sidekick = {
         Explain to me where you are not confident.
         Suggest followup information the user can ask to make you more confident in your reponse.
         `;
-  },
+  }
 };
 
 export default support;

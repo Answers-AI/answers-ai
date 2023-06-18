@@ -210,6 +210,11 @@ export const buildSettings = async (user: User, org?: Organization) => {
           id: 'drata-soc2-policies',
           name: 'drata-soc2-policies',
           enabled: true
+        },
+        {
+          id: 'investor-deck',
+          name: 'investor-deck',
+          enabled: true
         }
       ]
     };
@@ -221,8 +226,8 @@ export const buildSettings = async (user: User, org?: Organization) => {
     newSettings.zoom = {
       meetings: [
         {
-          id: 'lrfa-live-preview',
-          name: 'lrfa-live-preview',
+          id: 'beacon-strategy-meeting-2023-06-15',
+          name: 'beacon-strategy-meeting-2023-06-15',
           enabled: true
         }
       ]
@@ -242,6 +247,11 @@ export const buildSettings = async (user: User, org?: Organization) => {
         {
           id: 'et-sam-altman-June-07-2023',
           name: 'et-sam-altman-June-07-2023',
+          enabled: true
+        },
+        {
+          id: 'allin-e133',
+          name: 'allin-e133',
           enabled: true
         }
       ]

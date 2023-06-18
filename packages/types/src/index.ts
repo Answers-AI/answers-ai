@@ -410,6 +410,9 @@ export type ConfluencePage = {
 export type AirtableRecord = {
   id: number;
   title: string;
+  fields: {
+    [key: string]: string;
+  };
 };
 
 export type DocubotRecord = {
@@ -447,6 +450,11 @@ export type Sidekick = {
   label: string;
   value: string;
   placeholder: string;
+  temperature: number;
+  frequency: number;
+  presence: number;
+  defaultModel: string;
+  maxCompletionTokens: number;
   getSystemPromptTemplate?: (user?: User) => string;
   getUserPromptTemplate?: (query: string, context: any) => string;
   contextStringRender?: (item: any) => string;

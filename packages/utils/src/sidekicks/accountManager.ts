@@ -1,10 +1,9 @@
 import { Sidekick } from 'types';
 const accountManager: Sidekick = {
-  departments: ["sales", "support"],
-  label: "Account Manager Expert",
-  value: "accountManager",
-  placeholder:
-    "I wont use any of my memory and will answer your questions using ",
+  departments: ['sales', 'customer support', 'leadership'],
+  label: 'Account Manager Expert',
+  value: 'accountManager',
+  placeholder: 'I wont use any of my memory and will answer your questions using ',
   getSystemPromptTemplate: () => {
     return `You are a helpful and friendly assistant.You specialize in helping people find answers to questions.`;
   },
@@ -24,7 +23,7 @@ const accountManager: Sidekick = {
   },
   contextStringRender: (context) => {
     return `filePath: ${context.filePath}\n${context.text}\n\n`;
-  },
+  }
 };
 
 export default accountManager;
