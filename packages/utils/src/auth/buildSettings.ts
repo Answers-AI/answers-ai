@@ -186,6 +186,11 @@ export const buildSettings = async (user: User, org?: Organization) => {
           id: 'trotto-go-links-v0.1.0',
           name: 'trotto-go-links-v0.1.0',
           enabled: true
+        },
+        {
+          id: 'last-rev-contentful-app-v0.1.0',
+          name: 'last-rev-contentful-app-v0.1.0',
+          enabled: true
         }
       ]
     };
