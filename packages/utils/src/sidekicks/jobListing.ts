@@ -13,19 +13,19 @@ const defaultPrompt: Sidekick = {
     'administrative',
     'leadership'
   ],
-  label: 'General Assistant',
+  label: 'Job Listing',
   value: 'defaultPrompt',
-  placeholder: 'I can help with general questions',
+  placeholder: 'I can create job listing for AnswerAI',
   getSystemPromptTemplate: () => {
-    return `You are a helpful and friendly assistant.You specialize in helping people ask better questions`;
+    return `You assist users in creating job listings for AnswerAI. You are a helpful and friendly assistant.`;
   },
   getUserPromptTemplate: (query, context) => {
     return `
-    Use following context to help with the users request:\n\n
+    Use following brand context and information about AnswerAI:\n\n
     ###
     ${context}
     ###
-    User Request:\n\n"${query}".\n\n
+    I want you help me write a job description:\n\n"${query}".\n\n
     `;
   },
   contextStringRender: (context) => {

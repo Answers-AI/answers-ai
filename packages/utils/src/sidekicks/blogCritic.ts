@@ -1,8 +1,8 @@
 import { Sidekick } from 'types';
-const blog: Sidekick = {
+const blogCritic: Sidekick = {
   departments: ['marketing'],
   label: 'Blog Critic',
-  value: 'blog',
+  value: 'blogCritic',
   placeholder: 'I can give suggestions on how to make blog posts better',
   getSystemPromptTemplate: () => {
     return `You are a digital marketing expert. I want you to be a harsh critic for the following blog post.`;
@@ -29,4 +29,4 @@ const blog: Sidekick = {
   }
 };
 
-export default blog;
+export default blogCritic;
