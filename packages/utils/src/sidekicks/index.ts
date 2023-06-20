@@ -31,6 +31,8 @@ import engineeringQA from './engineeringQA';
 import blogOutlineExpert from './blogOutlineExpert';
 import prfaqCreator from './prfaqCreator';
 import imageGenerator from './imageGenerator';
+import imageConceptGenerator from './imageConceptGenerator';
+import decisionMaking from './decisionMaking';
 
 export const sidekicks: Sidekick[] = [
   accountManager,
@@ -64,6 +66,8 @@ export const sidekicks: Sidekick[] = [
   engineeringQA,
   blogOutlineExpert,
   prfaqCreator,
-  imageGenerator
+  imageGenerator,
+  imageConceptGenerator,
+  decisionMaking
   // Add more prompts here
 ];
