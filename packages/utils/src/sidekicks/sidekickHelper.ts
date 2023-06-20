@@ -13,21 +13,23 @@ const defaultPrompt: Sidekick = {
     'administrative',
     'leadership'
   ],
-  label: 'General Assistant',
-  value: 'defaultPrompt',
-  placeholder: 'I can help with general questions',
+  label: 'Sidekick Helper',
+  value: 'sidekickHelper',
+  placeholder:
+    'I can help you figure out what sidekick or group of sidekicks to use. Just give me a topic',
   getSystemPromptTemplate: () => {
-    return `You are a helpful and friendly assistant.You specialize in helping people ask better questions`;
+    return `You are a helpful and friendly assistant.You help direct me to the right sidekick to use.`;
   },
   getUserPromptTemplate: (query, context) => {
     return `
-    Use following context to help with the users request:\n\n
+    Use following context to help with the users request:
     ###
     ${context}
     ###
-    User Request:\n\n"${query}".\n\n
-
-    You also have access to AI Sidekicks that can help you with the users request.
+    User Request:
+    ${query}
+    
+    These are the sidekicks that can help you with the users request.
     ###
     List of Sidekicks:
     Account Manager Expert - I can answer questions about accounts 
@@ -67,8 +69,8 @@ const defaultPrompt: Sidekick = {
     Tiktok Script Writer - I can help you write a script for a tiktok video
     ###
 
-    If another sidekick can help with the users request, then recommend them and in what order to use them.
-    
+    I want you to recommend each sidekick to the user based on the users request and explain why you recommended it.
+    If multiple sidekicks can help with the users request, then recommend all of them an in what order to use them.
     `;
   },
   contextStringRender: (context) => {

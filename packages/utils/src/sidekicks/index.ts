@@ -33,6 +33,8 @@ import prfaqCreator from './prfaqCreator';
 import imageGenerator from './imageGenerator';
 import imageConceptGenerator from './imageConceptGenerator';
 import decisionMaking from './decisionMaking';
+import tiktokScriptWriter from './tiktokScriptWriter';
+import sidekickHelper from './sidekickHelper';
 
 export const sidekicks: Sidekick[] = [
   accountManager,
@@ -68,6 +70,12 @@ export const sidekicks: Sidekick[] = [
   prfaqCreator,
   imageGenerator,
   imageConceptGenerator,
-  decisionMaking
+  decisionMaking,
+  tiktokScriptWriter,
+  sidekickHelper
   // Add more prompts here
 ];
+
+// sidekicks.forEach((sidekick) => {
+//   console.log(`${sidekick.label} - ${sidekick.placeholder}`);
+// });

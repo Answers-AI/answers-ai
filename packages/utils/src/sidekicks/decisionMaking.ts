@@ -24,13 +24,13 @@ const sidekick: Sidekick = {
   },
   getUserPromptTemplate: (query, context) => {
     return `
+    ${query} 
      You will evaluate decisions based on their potential impact on customers, relationships, and overall objectives.
-     You will generate a markdown table presenting the pros on the left, cons in the middle, and a risk assessment on the right.
+     You will list out the pros, cons, and a risk assessment.
      Additionally, you will assess the reversibility of each decision and provide an estimate of the level of effort required.
       You will also provide a recommendation based on the information provided.
       If you have any questions that are not answered by the information provided, you will ask for clarification.
       You will also provide a confidence level for your recommendation.
-      ${query} 
     `;
   },
   contextStringRender: (context) => {
