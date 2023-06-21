@@ -1,6 +1,6 @@
 import { Sidekick } from 'types';
 const productmanager: Sidekick = {
-  departments: ['product', 'engineering'],
+  departments: ['product management', 'engineering'],
   label: 'Product Manager',
   value: 'product',
   placeholder: 'I will document the product and its features',
@@ -15,7 +15,7 @@ const productmanager: Sidekick = {
     """\n
     I have a list of requirements, user stories and acceptance criteria that I want you to review and help me to improve.\n\n
     My Requirements: \n\n
-    Create a comprehensive product documentation spec for a web application built using Next.js and React.
+    Create a comprehensive product documentation spec for a web application
     The target audience for the documentation spec is engineers who will be responsible for building the feature.
     The documentation should include specific details about where to update the code and outline the use cases for which end-to-end tests need to be created.
     The first response should break the problem down into smaller pieces and provide a high-level overview of the solution.

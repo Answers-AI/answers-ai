@@ -1,8 +1,8 @@
 import { Sidekick } from 'types';
-const blog: Sidekick = {
+const blogCritic: Sidekick = {
   departments: ['marketing'],
   label: 'Blog Critic',
-  value: 'blog',
+  value: 'blogCritic',
   placeholder: 'I can give suggestions on how to make blog posts better',
   getSystemPromptTemplate: () => {
     return `You are a digital marketing expert. I want you to be a harsh critic for the following blog post.`;
@@ -25,8 +25,8 @@ const blog: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath ?? context.url}\n${context.text}\n\n`;
+    return `filePath: ${context.filePath}\n${context.text}\n\n`;
   }
 };
 
-export default blog;
+export default blogCritic;

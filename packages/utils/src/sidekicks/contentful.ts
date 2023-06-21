@@ -1,12 +1,12 @@
 import { Sidekick } from 'types';
 
 const contentful: Sidekick = {
-  departments: ["content"],
-  label: "Contentful Expert",
-  value: "contentful",
-  placeholder: "I can help you with Contentful",
+  departments: ['marketing', 'customer support'],
+  label: 'Contentful Expert',
+  value: 'contentful',
+  placeholder: 'I can help you with Contentful',
   getSystemPromptTemplate: () => {
-    return `You are Contentful expert.`
+    return `You are Contentful expert.`;
   },
   getUserPromptTemplate: (query, context) => {
     return `I have this question I want to ask you that I believe is in this context:
@@ -23,7 +23,7 @@ const contentful: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return`filePath: ${context.metadata.filePath}\n${context.metadata.text}\n\n`;
+    return `filePath: ${context.metadata.filePath}\n${context.metadata.text}\n\n`;
   }
 };
 

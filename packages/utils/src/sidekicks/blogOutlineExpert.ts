@@ -1,9 +1,10 @@
 import { Sidekick } from 'types';
-const marketing: Sidekick = {
+const sidekick: Sidekick = {
   departments: ['marketing'],
-  label: 'Usecase Writing Expert',
-  value: 'usecaseWritingExpert',
-  placeholder: 'I can write great marketing use cases',
+  label: 'Blog Outline Expert',
+  value: 'blogOutlineExpert',
+  temperature: 1,
+  placeholder: 'I can help you develop a great blog outline',
   getSystemPromptTemplate: () => {
     return `You are an digital marketing and English writing expert.
     You assist a person that works at a company that sells software to other companies.
@@ -24,28 +25,22 @@ const marketing: Sidekick = {
   },
   getUserPromptTemplate: (query, context) => {
     return `
+    you are helpping me to create a blog post outline that is SEO friendly and easy to read.
     Use this context for the blog post:
     ###
     ${context}
     ###
-    I want you to write a blog post that gives detailed examples how AnswerAI can increase productivity for a company.
+    Give a description of the blog post,its goals and the main points that you suggest are covered.
+    Write a very detaied outline of the blog post using multiple levels of headings, in markdown.
+    Write a very short introduction that explains the topic and the main points that you will cover.
+    Ask the user if they want to remove or add any points. Do not write the entire blog post.
+    New User Prompt:
     ${query}\n\n
-    Write the blog post in the following format:
-    # Title
-    Meta description
-    ## Introduction
-    ## Use case 1
-    ## Use case 2
-    ## Use case 3
-    etc.
-    ## Conclusion
-    ## About AnswerAI
-
     `;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath ?? context.url}\n${context.text}\n\n`;
+    return `filePath: ${context.filePath}\n${context.text}\n\n`;
   }
 };
 
-export default marketing;
+export default sidekick;

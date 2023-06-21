@@ -1,8 +1,20 @@
 import { Sidekick } from 'types';
 
 const gptraw: Sidekick = {
-  departments: ['general'],
-  label: 'GPT-RAW',
+  departments: [
+    'marketing',
+    'sales',
+    'customer support',
+    'engineering',
+    'product management',
+    'legal',
+    'hr',
+    'education',
+    'real estate',
+    'administrative',
+    'leadership'
+  ],
+  label: 'ChatGPT',
   value: 'gptraw',
   placeholder: 'I wont use any of my memory and will answer your questions using ',
   getUserPromptTemplate: (query) => {

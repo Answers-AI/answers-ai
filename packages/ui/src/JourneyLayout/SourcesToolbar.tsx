@@ -104,24 +104,6 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                 />
               ) : null}
 
-              {flags?.docubot?.enabled && selectedService.name === 'docubot' ? (
-                <JourneySetting
-                  app={selectedService.name}
-                  appSettings={appSettings}
-                  filters={filters}
-                  updateFilter={updateFilter}
-                />
-              ) : null}
-
-              {flags?.airtable?.enabled && selectedService.name === 'airtable' ? (
-                <JourneySetting
-                  app={selectedService.name}
-                  appSettings={appSettings}
-                  filters={filters}
-                  updateFilter={updateFilter}
-                />
-              ) : null}
-
               {serviceOpen === 'confluence' ? (
                 <JourneySetting
                   app={selectedService.name}
@@ -200,8 +182,9 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
               ) : null}
               {flags?.airtable?.enabled && selectedService.name === 'airtable' ? (
                 <>
+                  <div>Last Rev Mission control</div>
                   <AutocompleteSelect
-                    label="Table"
+                    label="View"
                     options={
                       appSettings?.airtable?.tables?.filter((s) => s.enabled)?.map((s) => s.id) ||
                       []

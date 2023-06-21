@@ -14,7 +14,12 @@ export async function getCompletionRequest({
     getUserPromptTemplate: () => '',
     label: 'Default',
     placeholder: 'Default Sidekick',
-    contextStringRender: () => ''
+    contextStringRender: () => '',
+    temperature: 0.1,
+    frequency: 0,
+    presence: 0,
+    maxCompletionTokens: 500,
+    defaultModel: 'gpt-3.5-turbo'
   },
   gptModel
 }: {
@@ -32,10 +37,17 @@ export async function getCompletionRequest({
     ? sidekick.getUserPromptTemplate(input, context)
     : input;
 
+  const temperature = sidekick.temperature || 0.1;
+  const frequency = sidekick.frequency || 0;
+  const presence = sidekick.presence || 0;
+  const sidekickModel = sidekick.defaultModel || gptModel || 'gpt-3.5-turbo';
+  const maxCompletionTokens = sidekick.maxCompletionTokens || 500;
+
+
   const systemPromptTokens = await countTokens(systemPrompt);
   const userPromptTokens = await countTokens(userPrompt);
 
-  const maxTokens = getMaxTokensByModel(gptModel);
+  const maxTokens = getMaxTokensByModel(maxCompletionTokens, gptModel);
   let filteredMessages: Message[] = [];
   let currentTokenCount = systemPromptTokens + userPromptTokens;
 
@@ -52,7 +64,7 @@ export async function getCompletionRequest({
   }
 
   return {
-    max_tokens: 500,
+    max_tokens: maxCompletionTokens,
     messages: [
       {
         role: ChatCompletionRequestMessageRoleEnum.System,
@@ -66,21 +78,22 @@ export async function getCompletionRequest({
       ...filteredMessages.map(({ role, content }) => ({ role, content })),
       { role: ChatCompletionRequestMessageRoleEnum.User, content: input }
     ],
-
-    temperature: 0.1,
-    model: gptModel || 'gpt-3.5-turbo'
+    frequency_penalty: frequency,
+    presence_penalty: presence,
+    temperature: temperature,
+    model: sidekickModel
   };
 }
 
-const getMaxTokensByModel = (gptModel?: string) => {
+const getMaxTokensByModel = (maxCompletionTokens: number, gptModel?: string) => {
   switch (gptModel) {
     case 'gpt-3.5-turbo':
-      return 4000;
+      return 4000 - maxCompletionTokens;
     case 'gpt-4':
-      return 8192;
+      return 8192 - maxCompletionTokens;
     case 'gpt-3.5-turbo-16k':
-        return 15000;
+        return 16000 - maxCompletionTokens;
     default:
-      return 4096;
+      return 4000 - maxCompletionTokens;
   }
 };

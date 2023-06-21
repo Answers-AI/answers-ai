@@ -1,6 +1,18 @@
 import { Sidekick } from 'types';
 const research: Sidekick = {
-  departments: ['general'],
+  departments: [
+    'marketing',
+    'sales',
+    'customer support',
+    'engineering',
+    'product management',
+    'legal',
+    'hr',
+    'education',
+    'real estate',
+    'administrative',
+    'leadership'
+  ],
   label: 'Research Assistant',
   value: 'research',
   placeholder: 'I can help you research topics and provide insights',
@@ -20,13 +32,10 @@ const research: Sidekick = {
     Where there may be incomplete context, explain how that impacts your answer.
     Explain to me where you are not confident.
     Suggest followup information the user can ask to make you more confident in your reponse.
-    Resonse Template: \n\n
-    ## Summary\n\n
-    <detailed summary based on the context>\n\n
-    ## Confidence\n\n
-    <confidence level>\n\n
-    ## Followup Questions\n\n
-    <list followup questions>\n\n
+    Resonse:\n
+    ## Summary
+    ## Confidence
+    ## Followup Questions
     `;
   },
   contextStringRender: (context) => {
