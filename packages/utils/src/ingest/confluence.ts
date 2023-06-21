@@ -1,7 +1,7 @@
 import { inngest } from './client';
 import { EventVersionHandler } from './EventVersionHandler';
 import { chunkArray } from '../utilities/utils';
-import { ConfluencePage } from 'types';
+import { ConfluencePage, User } from 'types';
 import { jiraAdfToMarkdown } from '../utilities/jiraAdfToMarkdown';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { getUserClients } from '../auth/getUserClients';
@@ -64,7 +64,7 @@ const splitPageAdf = async (page: ConfluencePage) => {
   return contextChunks.flat();
 };
 
-const getConfluencePagesVectors = async (confluencePages: ConfluencePage[]) => {
+const getConfluencePagesVectors = async (user: User, confluencePages: ConfluencePage[]) => {
   const vectors = (
     await Promise.all(
       confluencePages.map(async (page) => {
@@ -81,6 +81,8 @@ const getConfluencePagesVectors = async (confluencePages: ConfluencePage[]) => {
           metadata: {
             source: 'confluence',
             url: `https://app.atlassian.com/wiki/spaces/${page.spaceId}/pages/${page.id}/${page.title}`,
+
+            organizationId: user?.organizationId,
             id: page.id,
             spaceId: page.spaceId.toString(),
             status: page.status,
@@ -98,7 +100,7 @@ const getConfluencePagesVectors = async (confluencePages: ConfluencePage[]) => {
   return vectors;
 };
 
-const embedVectors = async (event: any, vectors: any[]) => {
+const embedVectors = async (user: User, event: any, vectors: any[]) => {
   let outVectors: void[] = [];
 
   if (vectors?.length && vectors?.every((x: any) => !!x)) {
@@ -112,7 +114,8 @@ const embedVectors = async (event: any, vectors: any[]) => {
             _page: i,
             _total: vectors.length,
             _batchSize: PINECONE_VECTORS_BATCH_SIZE,
-            vectors: batchVectors
+            vectors: batchVectors,
+            organizationId: user.organizationId
           },
           user: event.user
         });
@@ -131,8 +134,8 @@ export const processConfluencePages: EventVersionHandler<{ pageIds: string[] }> 
     if (!user) throw new Error('User is requierd');
     const { confluenceClient } = await getUserClients(user);
     const confluencePages = (await confluenceClient.getConfluencePages()) as ConfluencePage[];
-    const vectors = await getConfluencePagesVectors(confluencePages);
-    const embeddedVectors = await embedVectors(event, vectors);
+    const vectors = await getConfluencePagesVectors(user, confluencePages);
+    const embeddedVectors = await embedVectors(user, event, vectors);
   }
 };
 
@@ -151,7 +154,7 @@ export const processConfluencePage: EventVersionHandler<{ pageIds: string[] }> =
     const confluencePages = (await confluenceClient.pageLoader.loadMany(
       pageIds
     )) as ConfluencePage[];
-    const vectors = await getConfluencePagesVectors(confluencePages);
-    const embeddedVectors = await embedVectors(event, vectors);
+    const vectors = await getConfluencePagesVectors(user, confluencePages);
+    const embeddedVectors = await embedVectors(user, event, vectors);
   }
 };

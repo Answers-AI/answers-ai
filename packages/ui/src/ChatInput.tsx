@@ -44,7 +44,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
 
   const handleSubmit = () => {
     if (!inputValue) return;
-    sendMessage(inputValue, isNewJourney, sidekick, gptModel);
+    sendMessage(inputValue, sidekick, gptModel);
     setShowPrompts(false);
     setInputValue('');
   };
@@ -172,9 +172,8 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
           variant="contained"
           color="primary"
           onClick={handleSubmit}
-          disabled={!inputValue || isLoading}
-          sx={{}}>
-          {isNewJourney ? 'Start journey' : 'Send'}
+          disabled={!inputValue || isLoading}>
+          Send
         </Button>
       </Box>
     </Box>

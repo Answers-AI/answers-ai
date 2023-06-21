@@ -16,3 +16,4 @@ const docs: Sidekick = {
     return `filePath: ${context.filePath ?? context.url}\n${context.text}\n\n`;
   }
 };
+export default docs;

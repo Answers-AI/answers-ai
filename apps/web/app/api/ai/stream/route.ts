@@ -11,7 +11,6 @@ import { fetchContext } from '@utils/pinecone/fetchContext';
 import { sidekicks } from '@utils/sidekicks';
 import { upsertChat } from '@utils/upsertChat';
 import { prisma } from '@db/client';
-import cors from 'cors';
 import { Sidekicks } from 'types';
 
 export async function POST(req: Request) {
@@ -132,14 +131,4 @@ export async function POST(req: Request) {
   return new Response(stream, {
     headers: { 'Content-Type': 'text/html; charset=utf-8' }
   });
-  // res.setHeader('Content-Type', 'text/plain');
-  // res.setHeader('Transfer-Encoding', 'chunked');
-  // res.setHeader('Content-Econding', 'none');
-
-  // //@ts-expect-error
-  // for await (const chunk of stream) {
-  //   var string = new TextDecoder().decode(chunk);
-  //   res.write(string);
-  // }
-  // res.end();
 }

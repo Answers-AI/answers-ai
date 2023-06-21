@@ -16,7 +16,8 @@ const FileContentModal: React.FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    reset
   } = useForm<IFormInput>();
 
   const handleOpen = () => setOpen(true);
@@ -31,6 +32,7 @@ const FileContentModal: React.FC = () => {
       setError(err.message);
     } finally {
       setLoading(false);
+      reset();
     }
   };
 
@@ -54,14 +56,14 @@ const FileContentModal: React.FC = () => {
             Create File Content
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <TextField
+            {/* <TextField
               {...register('organizationId')}
               error={Boolean(errors.organizationId)}
               helperText={errors.organizationId?.message}
               label="Organization Id"
               fullWidth
               margin="normal"
-            />
+            /> */}
             <TextField
               {...register('title', { required: 'Title is required' })}
               error={Boolean(errors.title)}

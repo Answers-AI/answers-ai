@@ -5,6 +5,7 @@ import { prisma } from '@db/client';
 import { v4 as uuidV4 } from 'uuid';
 
 import { PineconeVector } from 'types';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
 /* 
@@ -18,10 +19,16 @@ const PINECONE_VECTORS_BATCH_SIZE = 100;
    }
   }
 */
+const slugify = (text?: string) =>
+  text
+    ?.toLowerCase()
+    ?.replace(/ /g, '-')
+    ?.replace(/[^\w-]+/g, '');
+
 export const indexText: EventVersionHandler<{
   title?: string;
   url?: string;
-  content?: string;
+  content: string;
   organizationId: string;
 }> = {
   event: 'file/markdown.index',
@@ -42,8 +49,9 @@ export const indexText: EventVersionHandler<{
       organizationId = data.organizationId;
     }
     // TODO: Use a provided
-    const fileTextId = data.url ?? uuidV4();
-    const url = `file://${user.organizationId}/${fileTextId}`;
+    const fileTextId = uuidV4();
+    const slug = slugify(title);
+    const url = data.url ?? `file://${user.organizationId}/${slug}-${fileTextId}`;
 
     await prisma.document.create({
       data: {
@@ -54,17 +62,24 @@ export const indexText: EventVersionHandler<{
       }
     });
     if (!organizationId) throw new Error('No organizationId found');
-    const embeddedVectors = await embedVectors(organizationId, event, [
-      {
-        uid: `File_${url}`,
-        text: `${content}`,
+
+    const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 3000 });
+
+    const chunks = await textSplitter.createDocuments([content]);
+
+    const embeddedVectors = await embedVectors(
+      organizationId,
+      event,
+      chunks.map(({ pageContent }, idx) => ({
+        uid: `File_${idx}_${url}`,
+        text: `${pageContent}`,
         metadata: {
           url,
           source: 'file',
-          text: content
+          text: pageContent
         }
-      }
-    ]);
+      }))
+    );
     return embeddedVectors;
   }
 };

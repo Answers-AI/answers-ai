@@ -21,12 +21,11 @@ export const NotInvitedPage = ({ session }: { session: Session | undefined }) =>
         }}>
         <Typography variant="h4">You are almost in!</Typography>
         <Typography variant="h5">Answer AI is currently in closed beta.</Typography>
-        <Typography variant="h6">Check your email for a confirmation soon!</Typography>
-        {session?.user ? (
-          <Button variant="outlined" fullWidth onClick={() => signOut()}>
-            Change account
-          </Button>
-        ) : null}
+        <Typography variant="h6">Check your emai for a confirmation soon!</Typography>
+
+        <Button variant="outlined" fullWidth onClick={() => signOut()}>
+          Change account
+        </Button>
       </Box>
     </Box>
   );

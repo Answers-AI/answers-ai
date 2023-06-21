@@ -21,8 +21,6 @@ declare module 'next-auth' {
 declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
-    role: string;
-    organizationId: string;
     access_token: string;
     expires_at: number;
     refresh_token: string;
@@ -78,25 +76,20 @@ export const authOptions: AuthOptions = {
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id!;
-        token.role = user.role!;
-        token.organizationId = user.organizationId!;
-        // @ts-ignore-next-line
-        token.invited = user.invited ? new Date(user.invited as string) : user.invited;
-        // token.appSettings = user.appSettings;
       }
       refresAccessToken({ token, user, account });
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.id!;
-        session.user.role = token.role!;
-        session.user.organizationId = token.organizationId!;
+        const user = await prisma.user.findUnique({ where: { id: token.id } });
+        if (!user) throw new Error('User not found');
+        session.user.id = user.id!;
+        session.user.role = user.role!;
+        session.user.organizationId = user.organizationId!;
         // @ts-ignore-next-line
-        session.user.invited = token.invited ? new Date(token.invited as string) : token.invited;
-        session.user.appSettings = await prisma.user
-          .findUnique({ where: { id: token.id } })
-          .then((u) => u?.appSettings as AppSettings);
+        session.user.invited = user.invited ? new Date(user.invited as string) : user.invited;
+        session.user.appSettings = user?.appSettings as AppSettings;
       }
       return session;
     },
@@ -203,11 +196,13 @@ export const authOptions: AuthOptions = {
     {}
   )
 };
-async function refresAccessToken({ token, user, account }: any) {
-  if (token?.atlassian_expires_at && token?.atlassian_expires_at * 1000 < Date.now()) {
-    const [atlassian] = await prisma.account.findMany({
-      where: { userId: user.id, provider: 'atlassian' }
-    });
+async function refresAccessToken({ token, account }: any) {
+  // if (token?.atlassian_expires_at && token?.atlassian_expires_at * 1000 < Date.now()) {
+  const [atlassian] = await prisma.account.findMany({
+    where: { userId: token.id, provider: 'atlassian' }
+  });
+  // If the access token has expired, try to refresh it
+  if (atlassian?.expires_at && atlassian?.expires_at * 1000 < Date.now()) {
     // If the access token has expired, try to refresh it
     try {
       // https://accounts.atlassian.com/.well-known/openid-configuration
@@ -223,14 +218,15 @@ async function refresAccessToken({ token, user, account }: any) {
         method: 'POST'
       });
 
-      const atlassianTokens: TokenSet = await response.json();
+      const tokens: TokenSet = await response.json();
 
-      if (!response.ok) throw atlassianTokens;
+      if (!response.ok) throw tokens;
 
       await prisma.account.update({
         data: {
-          expires_at: Math.floor(Date.now() / 1000 + (atlassianTokens.expires_in as number)),
-          refresh_token: atlassianTokens.refresh_token ?? atlassian.refresh_token
+          access_token: tokens.access_token,
+          expires_at: Math.floor(Date.now() / 1000 + (tokens.expires_in as number)),
+          refresh_token: tokens.refresh_token ?? atlassian.refresh_token
         },
         where: {
           provider_providerAccountId: {
@@ -239,18 +235,11 @@ async function refresAccessToken({ token, user, account }: any) {
           }
         }
       });
-      return {
-        ...token, // Keep the previous token properties
-        // access_token: tokens.access_token,
-        atlassian_expires_at: Math.floor(Date.now() / 1000 + (atlassianTokens.expires_in as number))
-        // // Fall back to old refresh token, but note that
-        // // many providers may only allow using a refresh token once.
-        // refresh_token: tokens.refresh_token ?? token.refresh_token
-      };
     } catch (error) {
       console.error('Error refreshing access token', error);
-      // The error property will be used clien-side to handle the refresh token error
-      return { ...token, error: 'RefreshAccessTokenError' as const };
+      // The error property will be used client-side to handle the refresh token error
+      // session.error = 'RefreshAccessTokenError';
     }
   }
+  // }
 }

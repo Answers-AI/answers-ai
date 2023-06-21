@@ -28,6 +28,7 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
   const router = useRouter();
   const [goal, setGoal] = useState('');
   const [query, setQuery] = useState<string>('');
+
   const { updateFilter, upsertJourney, filters } = useAnswers();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateQuery = React.useCallback(debounce(setQuery, 600), []);
@@ -37,19 +38,23 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
     {
       refreshInterval: 0,
       revalidateIfStale: false,
-      revalidateOnFocus: false,
-      onSuccess: ({ domain }) => {
-        console.log('Data', data);
-        updateFilter({
-          datasources: {
-            web: {
-              domain
-            }
-          }
-        });
-      }
+      revalidateOnFocus: false
+      // onSuccess: ({ domain }) => {
+      //   console.log('Data', data);
+      //   updateFilter({
+      //     datasources: {
+      //       web: {
+      //         domain
+      //       }
+      //     }
+      //   });
+      // }
     }
   );
+  const suggestedSources = React.useMemo(() => {
+    console.log('Data', data);
+    return data;
+  }, [data]);
   const handleCreateNewJourney = async () => {
     const { data: journey } = await upsertJourney({
       goal,
@@ -98,8 +103,10 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
             <Typography variant="h5" component="h2">
               Choose your data sources
             </Typography>
+
             {isLoading ? <CircularProgress size={20} sx={{ ml: 1 }} /> : null}
           </Box>
+          <pre>{JSON.stringify(suggestedSources, null, 2)}</pre>
           <Grid2 container sx={{ pt: 3, gap: 2, width: '100%' }}>
             <JourneyAppsDrawer appSettings={appSettings} />
           </Grid2>

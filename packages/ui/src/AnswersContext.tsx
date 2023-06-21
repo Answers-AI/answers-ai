@@ -138,7 +138,7 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
   });
 
   const sendMessage = useCallback(
-    async (content: string, isNewJourney?: boolean, sidekick?: string, gptModel?: string) => {
+    async (content: string, sidekick?: string, gptModel?: string) => {
       setIsLoading(true);
       setError(null);
       addMessage({ role: 'user', content: content } as Message);
@@ -147,7 +147,6 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
           generateResponse({ content, sidekick, gptModel }); // Pass sidekick and gptModel here
         } else {
           const { data } = await axios.post(`${apiUrl}/ai/query`, {
-            isNewJourney,
             journeyId,
             chatId,
             content,
@@ -272,6 +271,9 @@ export function AnswersProvider({
   const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
   const [chatId, setChatId] = useState<string | undefined>(chat?.id);
   const [journeyId, setJourneyId] = useState<string | undefined>(journey?.id);
+  const [sidekick, setSidekick] = useState('defaultPrompt');
+  const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
+
   const messageIdx = useRef(0);
 
   const contextValue = {
@@ -300,7 +302,11 @@ export function AnswersProvider({
     setChatId,
     journeyId,
     setJourneyId,
-    messageIdx
+    messageIdx,
+    sidekick,
+    setSidekick,
+    gptModel,
+    setGptModel
   };
   // @ts-ignore
   return <AnswersContext.Provider value={contextValue}>{children}</AnswersContext.Provider>;
