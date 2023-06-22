@@ -191,6 +191,16 @@ export const buildSettings = async (user: User, org?: Organization) => {
           id: 'last-rev-contentful-app-v0.1.0',
           name: 'last-rev-contentful-app-v0.1.0',
           enabled: true
+        },
+        {
+          id: 'contentful-sidekick-v1.0.0',
+          name: 'contentful-sidekick-v1.0.0',
+          enabled: true
+        },
+        {
+          id: 'lastrev-next-starter-v0.1.0',
+          name: 'lastrev-next-starter-v0.1.0',
+          enabled: true
         }
       ]
     };

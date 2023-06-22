@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Avatar, Box, Card, CardActions, CardContent, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { JsonViewer } from '@textea/json-viewer';
@@ -8,6 +8,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ContentCopy from '@mui/icons-material/ContentCopy';
 
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
@@ -16,6 +17,8 @@ import Typography from '@mui/material/Typography';
 import { Message, User } from 'types';
 import { useFlags } from 'flagsmith/react';
 import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { duotoneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useAnswers } from '@ui/AnswersContext';
 import { AxiosError } from 'axios';
 
@@ -101,6 +104,12 @@ export const MessageCard = ({
   const { developer_mode } = useFlags(['developer_mode']); // only causes re-render if specified flag values / traits change
   const { updateMessage } = useAnswers();
   const [lastInteraction, setLastInteraction] = React.useState<string>('');
+  const [codeStyle, setCodeStyle] = useState({});
+  // useEffect(() => {
+  //   import('react-syntax-highlighter/dist/esm/styles/prism/duotone-dark').then((mod) =>
+  //     setCodeStyle(mod.default)
+  //   );
+  // });
 
   if (error) {
     pineconeData = error?.response?.data.pineconeData;
@@ -118,6 +127,9 @@ export const MessageCard = ({
         id: id,
         likes: (likes ?? 0) + 1
       });
+  };
+  const handleCopyCodeClick = (codeString: string) => {
+    navigator.clipboard.writeText(codeString);
   };
   const handleDislike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.stopPropagation();
@@ -174,7 +186,30 @@ export const MessageCard = ({
                     marginBottom: '1em'
                   }
                 }}>
-                <ReactMarkdown>{content}</ReactMarkdown>
+                <ReactMarkdown
+                  components={{
+                    code({ node, inline, className, children, ...props }) {
+                      const codeExample = String(children).replace(/\n$/, '');
+                      return !inline ? (
+                        <Box sx={{ position: 'relative' }}>
+                          <SyntaxHighlighter style={duotoneDark as any} PreTag="div" {...props}>
+                            {codeExample}
+                          </SyntaxHighlighter>
+                          <IconButton
+                            sx={{ position: 'absolute', bottom: 16, right: 16 }}
+                            onClick={() => handleCopyCodeClick(codeExample)}>
+                            <ContentCopy />
+                          </IconButton>
+                        </Box>
+                      ) : (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    }
+                  }}>
+                  {content}
+                </ReactMarkdown>
               </Typography>
             </>
           ) : null}

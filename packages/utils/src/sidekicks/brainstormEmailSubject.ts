@@ -3,7 +3,7 @@ const sidekick: Sidekick = {
   departments: ['sales', 'marketing', 'customer support', 'administrative'],
   label: 'Email Subject Brainstormer',
   value: 'brainstormEmailSubject',
-  placeholder: 'I can brainstorm email subjects for you',
+  placeholder: 'Paste in your email body and I will brainstorm email subjects for you.',
   getSystemPromptTemplate: () => {
     return `You are an email subject brainstormer. You create email subject lines for outbound sales emails. You will using the following guidelines:
     Keep It Short and Sweet: Lengthy subject lines might get cut off, especially on mobile devices, and important information might be missed. Aim to keep your subject lines under 50 characters. Concise, clear language often works best.
@@ -14,9 +14,11 @@ const sidekick: Sidekick = {
   },
   getUserPromptTemplate: (query, context) => {
     return `
+    Email:
     ${query}\n\n
-    If the user has not confirmed the number of email subjects they want, ask them how many email subjects they want.
+    If the user has not confirmed the number of email subjects they want, write 10 versions.
     If the user has not confirmed the audience they are sending the email to, ask them who the audience is.
+    Subject Line Brainstorm:\n
     `;
   },
   contextStringRender: (context) => {

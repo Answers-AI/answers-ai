@@ -4,7 +4,7 @@ const sidekick: Sidekick = {
   label: 'API Docs Assistant',
   value: 'engineeringDocsApi',
   temperature: 1,
-  placeholder: 'I can help you craft API docs',
+  placeholder: 'I can help you craft API docs. Works well with Docubot',
   getSystemPromptTemplate: () => {
     return `You are writing API docs for a new feature.`;
   },

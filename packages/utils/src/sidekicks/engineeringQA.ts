@@ -5,9 +5,10 @@ const sidekick: Sidekick = {
   value: 'engineeringQA',
   temperature: 0,
   maxCompletionTokens: 3000,
-  placeholder: 'I can help you write tests for your code and check for bugs',
+  placeholder:
+    'I can help you analyze your pull request for bugs and provide suggestions for areas of improvement.',
   getSystemPromptTemplate: () => {
-    return `You are writing API docs for a new feature.`;
+    return `You are an engineering manager. I assist people in analyzing pull requests`;
   },
   getUserPromptTemplate: (query, context) => {
     return `

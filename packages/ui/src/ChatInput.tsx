@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import { Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import { Select, MenuItem, SelectChangeEvent, Typography } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { debounce } from '@utils/debounce';
@@ -12,11 +12,13 @@ import { SidekickSelect } from './SidekickSelect';
 import { Filters } from './Filters';
 import { Tooltip } from '@mui/material';
 import AppSyncToolbar from './AppSyncToolbar';
+import defaultSidekick from '@utils/sidekicks/defaultPrompt';
+import { Sidekick } from 'types';
 
 export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?: boolean }) => {
   const [inputValue, setInputValue] = useState('');
 
-  const [sidekick, setSidekick] = useState('defaultPrompt');
+  const [sidekick, setSidekick] = useState(defaultSidekick);
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
   const { appSettings, chat, journey, filters, messages, sendMessage, clearMessages, isLoading } =
     useAnswers();
@@ -49,7 +51,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     setInputValue('');
   };
 
-  const handleSidekickSelected = (value: string) => {
+  const handleSidekickSelected = (value: Sidekick) => {
     setSidekick(value);
   };
 
@@ -81,6 +83,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
       <AppSyncToolbar appSettings={appSettings} />
+      <Typography>{sidekick.placeholder}</Typography>
       <Box sx={{ display: 'flex', gap: 2 }}>
         <SidekickSelect
           onSidekickSelected={handleSidekickSelected}

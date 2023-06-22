@@ -4,7 +4,8 @@ const sidekick: Sidekick = {
   label: 'Blog Outline Expert',
   value: 'blogOutlineExpert',
   temperature: 1,
-  placeholder: 'I can help you develop a great blog outline',
+  placeholder:
+    'Sinmply write a few topics to cover in the blog post. I will write the outline for you.',
   getSystemPromptTemplate: () => {
     return `You are an digital marketing and English writing expert.
     You assist a person that works at a company that sells software to other companies.
@@ -34,7 +35,7 @@ const sidekick: Sidekick = {
     Write a very detaied outline of the blog post using multiple levels of headings, in markdown.
     Write a very short introduction that explains the topic and the main points that you will cover.
     Ask the user if they want to remove or add any points. Do not write the entire blog post.
-    New User Prompt:
+    Topics to cover:
     ${query}\n\n
     `;
   },

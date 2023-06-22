@@ -3,7 +3,8 @@ const debugging: Sidekick = {
   departments: ['engineering'],
   label: 'Debugging Expert',
   value: 'debugging',
-  placeholder: 'I can debug code for you',
+  placeholder:
+    'I can debug code for you. Paste in the error and I will help you fix it. Works best with Docubot',
   getSystemPromptTemplate: () => {
     return `You are a code debugging expert assistant. You specialize in debugging typescript and javascript applications with NextJS`;
   },

@@ -16,7 +16,7 @@ const gptraw: Sidekick = {
   ],
   label: 'ChatGPT',
   value: 'gptraw',
-  placeholder: 'I wont use any of my memory and will answer your questions using ',
+  placeholder: 'Just like ChatGPT, but more model control. Does not use context.',
   getUserPromptTemplate: (query) => {
     return query;
   },
