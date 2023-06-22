@@ -189,9 +189,7 @@ export const MessageCard = ({
                 <ReactMarkdown
                   components={{
                     code({ node, inline, className, children, ...props }) {
-                      // const match = /language-(\w+)/.exec(className || '');
                       const codeExample = String(children).replace(/\n$/, '');
-                      // console.log('match', match);
                       return !inline ? (
                         <Box sx={{ position: 'relative' }}>
                           <SyntaxHighlighter style={duotoneDark as any} PreTag="div" {...props}>
