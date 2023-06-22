@@ -52,7 +52,6 @@ const getAirtablePineconeObject = async (airtableRecords: AirtableRecord[]) => {
         // ];
 
         return [];
-        
 
         // TODO: Chunk these by tokens
         // const markdownChunks = await splitPageHtml(algoliaHit);
@@ -101,7 +100,8 @@ const embedVectors = async (event: any, vectors: any[]) => {
             _page: i,
             _total: vectors.length,
             _batchSize: PINECONE_VECTORS_BATCH_SIZE,
-            vectors: batchVectors
+            vectors: batchVectors,
+            organizationId: event?.user?.currentOrganizationId
           },
           user: event.user
         });
@@ -115,7 +115,7 @@ const embedVectors = async (event: any, vectors: any[]) => {
 const getAirtableRecords = (base: any): Promise<AirtableRecord[]> => {
   return new Promise((resolve, reject) => {
     const allRecords: AirtableRecord[] = [];
-    
+
     base('AIRTABLE: Customer - Impossible Foods')
       .select({
         view: 'Q12023'

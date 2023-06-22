@@ -1,11 +1,11 @@
 import { Sidekick } from 'types';
 const sales: Sidekick = {
-  departments: ["sales"],
-  label: "Sales Proposal Expert",
-  value: "sales",
-  placeholder: "I can create sales proposals for you based on client requirements",
+  departments: ['sales'],
+  label: 'Sales Proposal Expert',
+  value: 'sales',
+  placeholder: 'I can create sales proposals for you based on client requirements',
   getSystemPromptTemplate: () => {
-    return `You are a sales proposal assistant.`
+    return `You are a sales proposal assistant.`;
   },
   getUserPromptTemplate: (query, context) => {
     return `I want you to create a proposal for this project based on the following context from previous proposals:
@@ -39,8 +39,8 @@ const sales: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath}\n${context.text}\n\n`;
-  },
+    return `filePath: ${context.filePath ?? context.url}\n${context.text}\n\n`;
+  }
 };
 
 export default sales;

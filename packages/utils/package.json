@@ -28,13 +28,13 @@
   "license": "ISC",
   "dependencies": {
     "@algolia/client-search": "^4.17.0",
-    "@dqbd/tiktoken": "^1.0.6",
     "@contentful/app-sdk": "^4.17.0",
     "@contentful/rich-text-from-markdown": "^15.16.3",
+    "@dqbd/tiktoken": "^1.0.6",
     "@mozilla/readability": "0.4.2",
     "@pinecone-database/pinecone": "^0.0.5",
-    "@prisma/client": "^4.13.0",
     "@slack/web-api": "^6.8.1",
+    "@types/uuid": "^9.0.1",
     "airtable": "^0.11.6",
     "algoliasearch": "^4.17.0",
     "axios": "^1.3.5",
@@ -73,6 +73,7 @@
     "showdown": "^2.1.0",
     "swagger2openapi": "^7.0.8",
     "utf-8-validate": "6.0.3",
+    "uuid": "^9.0.0",
     "yaml": "^2.2.1"
   },
   "devDependencies": {

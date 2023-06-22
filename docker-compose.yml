@@ -9,18 +9,18 @@ services:
   #   ports:
   #     - '8288:8288'
   #   command: npx inngest-cli@latest dev -u http://127.0.0.1:3000/api/inngest
-  studio:
-    image: node:18
-    working_dir: /app/packages/db
-    volumes:
-      - .:/app
-    ports:
-      - '5555:5555'
-    command: npx prisma studio
-    environment:
-      - DATABASE_URL=postgresql://example_user:example_password@postgres:5432/example_db?schema=public
-    depends_on:
-      - postgres
+  # studio:
+  #   image: node:18
+  #   working_dir: /app/packages/db
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - '5555:5555'
+  #   command: npx prisma studio
+  #   environment:
+  #     - DATABASE_URL=postgresql://example_user:example_password@postgres:5432/example_db?schema=public
+  #   depends_on:
+  #     - postgres
   redis:
     image: redis:latest
     ports:

@@ -13,7 +13,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import Autocomplete from './VirtualAutocomplete';
+import Autocomplete from '@ui/VirtualAutocomplete';
 import { WebUrlType, Document } from 'types';
 import { useAnswers } from '@ui/AnswersContext';
 import { getUrlDomain } from '@utils/getUrlDomain';

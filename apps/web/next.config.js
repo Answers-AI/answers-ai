@@ -11,11 +11,9 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /**
  * @type {import('next').NextConfig}
  */
-module.exports = withSentryConfig(withBundleAnalyzer({
+let nextConfig = withBundleAnalyzer({
   experimental: {
-    // experimentalReact: true,
-    appDir: true,
-    serverComponentsExternalPackages: ['@prisma/client']
+    appDir: true
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],
@@ -27,9 +25,9 @@ module.exports = withSentryConfig(withBundleAnalyzer({
       transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}'
     }
   },
+
   webpack: (config, { isServer }) => {
     config.externals = [...config.externals, 'db', 'puppeteer'];
-
     config.plugins = [
       ...config.plugins,
       // new PrismaPlugin(),
@@ -45,4 +43,13 @@ module.exports = withSentryConfig(withBundleAnalyzer({
 
     return config;
   }
-}));
+});
+
+const disableSentry = process.env.DISABLE_SENTRY;
+if (!disableSentry) {
+  nextConfig = withSentryConfig(nextConfig);
+} else {
+  console.warn('Sentry is disabled.  Please check your environment variables.');
+}
+
+module.exports = nextConfig;

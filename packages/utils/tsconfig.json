@@ -2,12 +2,12 @@
   "compilerOptions": {
     "lib": ["dom", "es2021"],
     "outDir": "./dist",
-    "rootDir": "./src",
     "allowJs": true,
     "isolatedModules": false,
     "paths": {
       "@utils/*": ["../../packages/utils/src/*"],
-      "@ui/*": ["../../packages/ui/src/*"]
+      "@ui/*": ["../../packages/ui/src/*"],
+      "@db/*": ["../../packages/db/src/*"]
     }
   },
   "exclude": ["node_modules"],

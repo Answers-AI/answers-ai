@@ -84,12 +84,12 @@ class PineconeClient {
     }
   }
 
-  async writeVectorsToIndex(vectors: any[]) {
+  async writeVectorsToIndex(vectors: any[], organizationId?: string) {
     try {
       await this.init();
 
       const index = this.client.Index(this.indexName);
-
+      const namespace = organizationId ? `org-${organizationId}` : 'public';
       //TODO: Remove after testing
       // await this.deleteIndex(index);
       // console.log('Vector', vectors[0]);
@@ -99,7 +99,7 @@ class PineconeClient {
         chunks.map(async (chunkedVectors) => {
           const upsertRequest = {
             vectors: chunkedVectors,
-            namespace: this.namespace
+            namespace
           };
           try {
             await index.upsert(upsertRequest);

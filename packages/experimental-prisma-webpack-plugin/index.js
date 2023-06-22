@@ -1,5 +1,3 @@
-// @ts-check
-
 const path = require('path');
 const fs = require('fs/promises');
 
@@ -27,6 +25,9 @@ async function getPrismaFiles(from) {
   return prismaFiles.filter((file) => file.match(filterRegex));
 }
 
+let schemaCount = 0;
+const fromDestPrismaMap = {}; // { [from]: dest }
+
 class PrismaPlugin {
   constructor(options = {}) {
     this.options = options;
@@ -38,9 +39,6 @@ class PrismaPlugin {
   apply(compiler) {
     const { webpack } = compiler;
     const { Compilation, sources } = webpack;
-
-    let schemaCount = 0;
-    const fromDestPrismaMap = {}; // { [from]: dest }
 
     // read bundles to find which prisma files to copy (for all users)
     compiler.hooks.compilation.tap('PrismaPlugin', (compilation) => {
@@ -56,7 +54,6 @@ class PrismaPlugin {
             const outputDir = compiler.outputPath;
             const assetPath = path.resolve(outputDir, assetName);
             const assetDir = path.dirname(assetPath);
-
             // get sources
             const oldSourceAsset = compilation.getAsset(assetName);
             const oldSourceContents = oldSourceAsset.source.source() + '';
@@ -66,7 +63,7 @@ class PrismaPlugin {
               const prismaDir = await getPrismaDir(match[1]);
               const prismaFiles = await getPrismaFiles(match[1]);
 
-              prismaFiles.forEach((f) => {
+              prismaFiles.forEach(async (f) => {
                 const from = path.join(prismaDir, f);
 
                 // if we have multiple schema.prisma files, we need to rename them
@@ -135,16 +132,14 @@ class PrismaPlugin {
 
     // copy prisma files to output as the final step (for all users)
     compiler.hooks.done.tapPromise('PrismaPlugin', async () => {
+      // console.log('fromDestPrismaMap', fromDestPrismaMap);
       const asyncActions = Object.entries(fromDestPrismaMap).map(async ([from, dest]) => {
         // only copy if file doesn't exist, necessary for watch mode
-
+        const folder = path.dirname(dest);
+        // Create path if it doesn't exist
+        await fs.mkdir(folder, { recursive: true });
         if ((await fs.access(dest).catch(() => false)) === false) {
-          const folder = path.dirname(dest);
-          // Create path if it doesn't exist
-          await fs.mkdir(folder, { recursive: true });
-
-          const result = await fs.copyFile(from, dest);
-          return result;
+          return fs.copyFile(from, dest);
         }
       });
 

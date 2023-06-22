@@ -1,7 +1,7 @@
 import React from 'react';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 
 import HomepageClient from './Homepage.Client';
 

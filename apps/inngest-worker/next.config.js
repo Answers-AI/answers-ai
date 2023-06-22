@@ -1,5 +1,8 @@
 const { PrismaPlugin } = require('experimental-prisma-webpack-plugin');
+
 const webpack = require('webpack');
+const { withSentryConfig } = require('@sentry/nextjs');
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 });
@@ -7,10 +10,9 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /**
  * @type {import('next').NextConfig}
  */
-module.exports = withBundleAnalyzer({
+let nextConfig = withBundleAnalyzer({
   experimental: {
-    // appDir: true,
-    serverComponentsExternalPackages: ['@prisma/client']
+    appDir: true
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],
@@ -22,9 +24,9 @@ module.exports = withBundleAnalyzer({
       transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}'
     }
   },
+
   webpack: (config, { isServer }) => {
     config.externals = [...config.externals, 'db', 'puppeteer'];
-
     config.plugins = [
       ...config.plugins,
       // new PrismaPlugin(),
@@ -41,3 +43,12 @@ module.exports = withBundleAnalyzer({
     return config;
   }
 });
+
+const disableSentry = process.env.DISABLE_SENTRY;
+if (!disableSentry) {
+  nextConfig = withSentryConfig(nextConfig);
+} else {
+  console.warn('Sentry is disabled.  Please check your environment variables.');
+}
+
+module.exports = nextConfig;

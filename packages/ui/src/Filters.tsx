@@ -23,9 +23,9 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
           {datasources.map(([source, sourceFilters]) => {
             if (!sourceFilters || !Object.keys(sourceFilters).length) return null;
             return (
-              <>
+              <React.Fragment key={source}>
                 {Object.entries(sourceFilters)?.map(([field, values]) => (
-                  <>
+                  <React.Fragment key={`${source}_${field}`}>
                     <Typography variant="overline">
                       {source} {field}
                     </Typography>
@@ -37,9 +37,9 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
                             label={value?.name ?? value.url ?? value?.id ?? JSON.stringify(value)}
                           />
                         ))}
-                  </>
+                  </React.Fragment>
                 ))}
-              </>
+              </React.Fragment>
             );
           })}
         </>

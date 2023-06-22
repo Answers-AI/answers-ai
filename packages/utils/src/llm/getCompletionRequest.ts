@@ -92,7 +92,7 @@ const getMaxTokensByModel = (maxCompletionTokens: number, gptModel?: string) => 
     case 'gpt-4':
       return 8192 - maxCompletionTokens;
     case 'gpt-3.5-turbo-16k':
-        return 16000 - maxCompletionTokens;
+      return 16000 - maxCompletionTokens;
     default:
       return 4000 - maxCompletionTokens;
   }

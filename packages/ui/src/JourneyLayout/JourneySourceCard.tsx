@@ -92,13 +92,17 @@ const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
               <CardHeader
                 avatar={
                   <Avatar>
-                    <Image
-                      style={{ background: 'white', padding: '6px' }}
-                      src={imageURL}
-                      alt={`${name} logo`}
-                      width={expanded ? 100 : 40}
-                      height={expanded ? 100 : 40}
-                    />
+                    {imageURL ? (
+                      <Image
+                        style={{ background: 'white', padding: '8px' }}
+                        src={imageURL}
+                        alt={`${name} logo`}
+                        width={40}
+                        height={40}
+                      />
+                    ) : (
+                      name[0]?.toUpperCase()
+                    )}
                   </Avatar>
                 }
                 title={

@@ -26,6 +26,13 @@ const parseFilters = (filters: AnswersFilters) => {
     );
   }
 
+  if (parsedFilters?.datasources?.file?.url?.length) {
+    // TODO: Define a type for the Pinecone filters which this function must return
+    (parsedFilters.datasources.file.url as any) = parsedFilters?.datasources?.file?.url.map(
+      (url) => (url as any)?.url
+    );
+  }
+
   return parsedFilters;
 };
 
@@ -49,7 +56,7 @@ const getMaxContextTokens = (gptModel: string) => {
 };
 
 export const fetchContext = async ({
-  // user,
+  user,
   prompt,
   messages = [],
   filters: clientFilters = {},
@@ -123,7 +130,17 @@ export const fetchContext = async ({
 
   console.time(`[${ts}] Pineconedata`);
   console.time(`[${ts}] Pineconedata get`);
-
+  const PUBLIC_SOURCES = [
+    'web',
+    'docubot',
+    'drive',
+    'github',
+    'notion',
+    'documents',
+    'zoom',
+    'youtube',
+    'airtable'
+  ];
   const pineconeData = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
       if (!filter[source]) return Promise.resolve(null);
@@ -131,6 +148,7 @@ export const fetchContext = async ({
       return pineconeQuery(promptEmbedding, {
         // TODO: Figure how to filter by namespace without having to re-index per user
         // namespace: `org-${user?.organizationId}`,
+        ...(!PUBLIC_SOURCES.includes(source) && { namespace: `org-${user?.organizationId}` }),
         filter: {
           source,
           ...filter[source]

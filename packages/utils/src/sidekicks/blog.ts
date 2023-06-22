@@ -25,7 +25,7 @@ const blog: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath}\n${context.text}\n\n`;
+    return `filePath: ${context.filePath ?? context.url}\n${context.text}\n\n`;
   }
 };
 

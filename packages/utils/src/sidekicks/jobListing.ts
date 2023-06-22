@@ -14,7 +14,7 @@ const defaultPrompt: Sidekick = {
     'leadership'
   ],
   label: 'Job Listing',
-  value: 'defaultPrompt',
+  value: 'jobListing',
   placeholder: 'I can create job listing for AnswerAI',
   getSystemPromptTemplate: () => {
     return `You assist users in creating job listings for AnswerAI. You are a helpful and friendly assistant.`;
