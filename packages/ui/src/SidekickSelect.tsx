@@ -97,33 +97,31 @@ export const SidekickSelect = ({
   };
 
   return departments.length ? (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-      <Box>
-        <Select
-          labelId="department-select-label"
-          id="department-select"
-          label="Department"
-          value={selectedDepartment}
-          onChange={handleDepartmentChange}>
-          {departments.map((department) => (
-            <MenuItem key={department} value={department}>
-              {department}
-            </MenuItem>
-          ))}
-        </Select>
-        <Select
-          labelId="sidekick-select-label"
-          id="sidekick-select"
-          label="Sidekick"
-          value={selectedSidekick.value}
-          onChange={handleSidekickChange}>
-          {departmentSidekicks.map((sidekick) => (
-            <MenuItem key={sidekick.value} value={sidekick.value}>
-              {sidekick.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </Box>
-    </Box>
+    <>
+      <Select
+        labelId="department-select-label"
+        id="department-select"
+        label="Department"
+        value={selectedDepartment}
+        onChange={handleDepartmentChange}>
+        {departments.map((department) => (
+          <MenuItem key={department} value={department}>
+            {department}
+          </MenuItem>
+        ))}
+      </Select>
+      <Select
+        labelId="sidekick-select-label"
+        id="sidekick-select"
+        label="Sidekick"
+        value={selectedSidekick.value}
+        onChange={handleSidekickChange}>
+        {departmentSidekicks.map((sidekick) => (
+          <MenuItem key={sidekick.value} value={sidekick.value}>
+            {sidekick.label}
+          </MenuItem>
+        ))}
+      </Select>
+    </>
   ) : null;
 };
