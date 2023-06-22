@@ -8,6 +8,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ContentCopy from '@mui/icons-material/ContentCopy';
 
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
@@ -17,6 +18,7 @@ import { Message, User } from 'types';
 import { useFlags } from 'flagsmith/react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { duotoneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useAnswers } from '@ui/AnswersContext';
 import { AxiosError } from 'axios';
 
@@ -103,11 +105,11 @@ export const MessageCard = ({
   const { updateMessage } = useAnswers();
   const [lastInteraction, setLastInteraction] = React.useState<string>('');
   const [codeStyle, setCodeStyle] = useState({});
-  useEffect(() => {
-    import('react-syntax-highlighter/dist/esm/styles/prism/duotone-dark').then((mod) =>
-      setCodeStyle(mod.default)
-    );
-  });
+  // useEffect(() => {
+  //   import('react-syntax-highlighter/dist/esm/styles/prism/duotone-dark').then((mod) =>
+  //     setCodeStyle(mod.default)
+  //   );
+  // });
 
   if (error) {
     pineconeData = error?.response?.data.pineconeData;
@@ -189,20 +191,18 @@ export const MessageCard = ({
                     code({ node, inline, className, children, ...props }) {
                       // const match = /language-(\w+)/.exec(className || '');
                       const codeExample = String(children).replace(/\n$/, '');
-                      console.log('codeExample', codeExample);
-                      console.log('inline', inline);
                       // console.log('match', match);
                       return !inline ? (
-                        <div className="relative">
-                          <SyntaxHighlighter style={codeStyle} PreTag="div" {...props}>
+                        <Box sx={{ position: 'relative' }}>
+                          <SyntaxHighlighter style={duotoneDark as any} PreTag="div" {...props}>
                             {codeExample}
                           </SyntaxHighlighter>
-                          <button
-                            onClick={() => handleCopyCodeClick(codeExample)}
-                            className="absolute top-0 right-0 py-1 px-2 bg-gray-500 text-white font-semibold rounded hover:bg-gray-600">
-                            Copy to Clipboard
-                          </button>
-                        </div>
+                          <IconButton
+                            sx={{ position: 'absolute', bottom: 16, right: 16 }}
+                            onClick={() => handleCopyCodeClick(codeExample)}>
+                            <ContentCopy />
+                          </IconButton>
+                        </Box>
                       ) : (
                         <code className={className} {...props}>
                           {children}
