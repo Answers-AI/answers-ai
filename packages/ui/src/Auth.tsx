@@ -1,13 +1,10 @@
 'use client';
-// import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-// import { useForm } from 'react-hook-form';
 import { Box, Button, Container, TextField, Typography } from '@mui/material';
 import { Session } from 'next-auth';
-import { IntegrationsSettings } from './IntegrationsSettings';
+
 import { AppSettings } from 'types';
 
-import { AppProviders } from 'next-auth/providers';
 import { ClientSafeProvider, signIn } from 'next-auth/react';
 
 type AuthFormInputs = {
@@ -16,7 +13,7 @@ type AuthFormInputs = {
 };
 interface AuthProps {
   session?: Session;
-  appSettings: AppSettings;
+  // appSettings: AppSettings;
   providers: Record<string, ClientSafeProvider> | null;
 }
 const Auth = ({ session, providers }: AuthProps) => {

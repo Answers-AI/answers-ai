@@ -1,4 +1,4 @@
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 import { Chat } from 'db/generated/prisma-client';
 import { Message } from 'types';
 

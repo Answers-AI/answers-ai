@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { deepmerge } from '@utils/deepmerge';
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 
 import { authOptions } from '@ui/authOptions';
 import { getAppSettings } from '@ui/getAppSettings';
@@ -17,8 +17,8 @@ export async function POST(request: Request) {
   const user = await prisma.user.findUnique({
     where: {
       email: session?.user?.email
-    },
-    include: { organization: true }
+    }
+    // include: { organization: true }
   });
   if (user) {
     const newSettings = await request.json();

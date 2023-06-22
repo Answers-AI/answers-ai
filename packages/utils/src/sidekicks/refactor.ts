@@ -1,12 +1,12 @@
 import { Sidekick } from 'types';
 
 const refactor: Sidekick = {
-  departments: ["engineering"],
-  label: "Refactoring Expert",
-  value: "refactor",
-  placeholder: "I can create refactor code for you",
+  departments: ['engineering'],
+  label: 'Refactoring Expert',
+  value: 'refactor',
+  placeholder: 'I can create refactor code for you',
   getSystemPromptTemplate: () => {
-    return `You are a code refactoring assistant.`
+    return `You are a code refactoring assistant.`;
   },
   getUserPromptTemplate: (query, context) => {
     return `You specialize in building typescript and javascript applications with OpenAI.
@@ -24,8 +24,8 @@ const refactor: Sidekick = {
       only respond with the refactored code, comments and be detailed`;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath}\n${context.code}\n\n`;
-  },
+    return `filePath: ${context.filePath ?? context.url}\n${context.code}\n\n`;
+  }
 };
 
 export default refactor;

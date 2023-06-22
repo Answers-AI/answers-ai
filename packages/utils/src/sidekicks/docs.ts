@@ -12,8 +12,7 @@ const docs: Sidekick = {
       think step by step. Ask me questions to clarify what you need. Let me know how confident you are in your answer.`;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath}\n${context.text}\n\n`;
+    return `filePath: ${context.filePath ?? context.url}\n${context.text}\n\n`;
   }
 };
-
 export default docs;

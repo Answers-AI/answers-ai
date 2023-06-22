@@ -1,7 +1,7 @@
 // import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 
 export async function GET(req: Request, res: Response) {

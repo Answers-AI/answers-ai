@@ -2,20 +2,16 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import { Select, MenuItem, SelectChangeEvent, Typography } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { debounce } from '@utils/debounce';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
-import { DefaultPrompts } from './DefaultPrompts';
 import { SidekickSelect } from './SidekickSelect';
 import { Filters } from './Filters';
 import { Tooltip } from '@mui/material';
 import AppSyncToolbar from './AppSyncToolbar';
-import { sidekicks } from '@utils/sidekicks';
 import defaultSidekick from '@utils/sidekicks/defaultPrompt';
 import { Sidekick } from 'types';
 
@@ -50,19 +46,17 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
 
   const handleSubmit = () => {
     if (!inputValue) return;
-    sendMessage(inputValue, isNewJourney, sidekick, gptModel);
+    sendMessage(inputValue, sidekick, gptModel);
     setShowPrompts(false);
     setInputValue('');
   };
 
   const handleSidekickSelected = (value: Sidekick) => {
     setSidekick(value);
-    console.log('sidekick selected', value);
   };
 
   const handleGptModelSelected = (event: SelectChangeEvent<string>) => {
     setGptModel(event.target.value as string);
-    console.log('gpt model selected', event.target.value);
   };
 
   const handleInputFocus = () => {
@@ -181,9 +175,8 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
           variant="contained"
           color="primary"
           onClick={handleSubmit}
-          disabled={!inputValue || isLoading}
-          sx={{}}>
-          {isNewJourney ? 'Start journey' : 'Send'}
+          disabled={!inputValue || isLoading}>
+          Send
         </Button>
       </Box>
     </Box>

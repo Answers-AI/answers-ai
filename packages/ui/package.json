@@ -4,16 +4,7 @@
   "private": true,
   "license": "MIT",
   "sideEffects": false,
-  "main": "./src/index.tsx",
-  "module": "./src/index.tsx",
-  "types": "./src/index.tsx",
-  "files": [
-    "dist/**"
-  ],
   "scripts": {
-    "not-build": "tsup src/index.tsx --format esm,cjs --dts --external react",
-    "clean": "rm -rf dist",
-    "not-dev": "tsup src/index.tsx --format esm,cjs --watch --dts --external react",
     "lint": "eslint \"src/**/*.ts*\"",
     "test": "jest"
   },
@@ -39,8 +30,7 @@
     "@mui/icons-material": "^5.11.9",
     "@mui/lab": "5.0.0-alpha.127",
     "@mui/material": "^5.11.9",
-    "@next-auth/prisma-adapter": "^1.0.6",
-    "@prisma/client": "^4.13.0",
+    "@next-auth/prisma-adapter": "^1.0.7",
     "@sentry/browser": "^7.52.1",
     "@textea/json-viewer": "2.14.1",
     "@types/cors": "^2.8.13",
@@ -53,7 +43,7 @@
     "flagsmith": "^3.18.3",
     "framer-motion": "^10.12.4",
     "js-cookie": "^3.0.5",
-    "next": "^13.3.1",
+    "next": "^13.4.6",
     "next-auth": "^4.22.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

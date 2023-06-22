@@ -1,6 +1,6 @@
 import React from 'react';
 import SourcesWebClient from './SourcesWeb.Client';
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 
 const SourcesWeb = ({ sources }: any) => {
   // TODO: Check why making requests from here makes the app not work

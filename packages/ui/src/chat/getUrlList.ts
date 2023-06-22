@@ -1,4 +1,4 @@
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 
 const getUrlList = async ({ domains }: { domains?: string[] }) => {
   const urlsPromise = await prisma.webDocument.findMany({

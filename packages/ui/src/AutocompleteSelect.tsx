@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
@@ -55,8 +55,9 @@ export default function AutocompleteSelect<T>({
       //     />
       //   ))
       // }
-      renderOption={(props, option, { selected }) => (
-        <li {...props}>
+      // @ts-expect-error
+      renderOption={({ key, ...itemProps }, option, { selected }) => (
+        <li key={key} {...itemProps}>
           <Checkbox
             icon={icon}
             checkedIcon={checkedIcon}
@@ -66,10 +67,10 @@ export default function AutocompleteSelect<T>({
           {getOptionLabel ? getOptionLabel(option) : (option as object).toString()}
         </li>
       )}
+      {...props}
       renderInput={(params) => (
         <TextField {...params} label={label} placeholder={`Enter ${label}`} />
       )}
-      {...props}
     />
   );
 }

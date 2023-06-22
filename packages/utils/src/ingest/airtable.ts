@@ -33,7 +33,6 @@ const getAirtablePineconeObject = async (airtableRecords: AirtableRecord[]) => {
 
         const nlpSummary = getNLPSummary(record);
 
-        
         return [
           {
             uid: `Airtable_${record.id}`,
@@ -81,7 +80,8 @@ const embedVectors = async (event: any, vectors: any[]) => {
             _page: i,
             _total: vectors.length,
             _batchSize: PINECONE_VECTORS_BATCH_SIZE,
-            vectors: batchVectors
+            vectors: batchVectors,
+            organizationId: event?.user?.currentOrganizationId
           },
           user: event.user
         });
@@ -95,7 +95,7 @@ const embedVectors = async (event: any, vectors: any[]) => {
 const getAirtableRecords = (base: any): Promise<AirtableRecord[]> => {
   return new Promise((resolve, reject) => {
     const allRecords: AirtableRecord[] = [];
-    
+
     base(AIRTABLE_BASE_ID)
       .select({
         view: AIRTABLE_VIEW_ID

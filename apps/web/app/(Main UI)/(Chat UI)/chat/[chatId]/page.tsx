@@ -1,5 +1,5 @@
 import React from 'react';
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 import Chat from '@ui/Chat';
 
 export const metadata = {

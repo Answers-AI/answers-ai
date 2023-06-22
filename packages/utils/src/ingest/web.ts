@@ -1,7 +1,7 @@
 import { URL } from 'url';
 import cheerio from 'cheerio';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 import { inngest } from './client';
 import { webPageLoader } from '../web';
 import { convertWebPageToMarkdown } from '../web/getWebPage';

@@ -26,7 +26,7 @@ export interface AppService {
   description?: string;
   providerId?: string;
   enabled?: boolean;
-  imageURL: string;
+  imageURL?: string;
 }
 export interface ConfluenceSettings {
   enabled: boolean;
@@ -161,6 +161,10 @@ export interface DocumentFilters {
   name?: string[];
   path?: string[];
 }
+export interface DocumentFilters {
+  name?: string[];
+  url?: string[];
+}
 
 export interface ZoomFilters {
   name?: string[];
@@ -170,6 +174,9 @@ export interface ZoomFilters {
 export interface YoutubeFilters {
   name?: string[];
   path?: string[];
+}
+export interface FileFilters {
+  url?: Document[];
 }
 
 export interface DataSourcesFilters {
@@ -184,6 +191,7 @@ export interface DataSourcesFilters {
   document?: DocumentFilters;
   zoom?: ZoomFilters;
   youtube?: YoutubeFilters;
+  file?: FileFilters;
 }
 export interface AnswersFilters {
   models?: {
@@ -216,7 +224,7 @@ export type Flags = {
 
 export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
-  accounts: DB.Account[] | null;
+  // accounts: DB.Account[] | null;
 }
 export interface Organization extends Omit<DB.Organization, 'appSettings'> {
   appSettings: AppSettings;

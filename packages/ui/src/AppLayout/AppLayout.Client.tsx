@@ -1,24 +1,21 @@
 'use client';
 import React from 'react';
-import { Box, Button, CssBaseline, Typography } from '@mui/material';
+import { CssBaseline } from '@mui/material';
 import * as Sentry from '@sentry/browser';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { FlagsmithProvider } from 'flagsmith/react';
 import flagsmith from 'flagsmith/isomorphic';
-
-import { ClientSafeProvider, signOut } from 'next-auth/react';
-
 import { Session } from 'next-auth';
-import Auth from './Auth';
-import { AppDrawer } from './AppDrawer';
-import { darkModeTheme } from './theme';
-import GlobalStyles from './GlobalStyles';
+import { AppDrawer } from '@ui/AppDrawer';
+import { darkModeTheme } from '@ui/theme';
+import GlobalStyles from '@ui/GlobalStyles';
 import { AppSettings } from 'types';
+import { NotInvitedPage } from './NotInvitedPage';
 
 export default function AppLayout({
   session,
   appSettings,
-  providers,
+  // providers,
   // Layouts must accept a children prop.
   params,
   // This will be populated with nested layouts or pages
@@ -27,7 +24,7 @@ export default function AppLayout({
 }: {
   session?: Session;
   appSettings: AppSettings;
-  providers: Record<string, ClientSafeProvider> | null;
+  // providers: Record<string, ClientSafeProvider> | null;
   children: any;
   params: {
     slug: string;
@@ -56,9 +53,7 @@ export default function AppLayout({
       <ThemeProvider theme={darkModeTheme}>
         <CssBaseline enableColorScheme />
         <GlobalStyles />
-        {!session?.user ? (
-          <Auth appSettings={appSettings} providers={providers} />
-        ) : flagsmithState?.flags?.access_enabled?.enabled ? (
+        {flagsmithState?.flags?.access_enabled?.enabled ? (
           <>
             <AppDrawer params={params} session={session} />
             <div
@@ -101,31 +96,7 @@ export default function AppLayout({
             </div>
           </>
         ) : (
-          <>
-            <Box
-              sx={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 1
-                }}>
-                <Typography variant="h4">You are almost in!</Typography>
-                <Typography variant="h5">Answer AI is currently in closed beta.</Typography>
-                <Typography variant="h6">Check your email for a confirmation soon!</Typography>
-                {session?.user ? (
-                  <Button variant="outlined" fullWidth onClick={() => signOut()}>
-                    Change account
-                  </Button>
-                ) : null}
-              </Box>
-            </Box>
-          </>
+          <NotInvitedPage session={session} />
         )}
       </ThemeProvider>
     </FlagsmithProvider>

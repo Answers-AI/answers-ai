@@ -1,4 +1,4 @@
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 import { getUrlDomain } from '../getUrlDomain';
 
 export async function getPendingSyncURLs(urls: string[]) {

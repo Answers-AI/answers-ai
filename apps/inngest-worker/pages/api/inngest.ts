@@ -11,6 +11,7 @@ import * as promptFunctions from '@utils/ingest/prompt';
 import * as slackFunctions from '@utils/ingest/slack';
 import * as webFunctions from '@utils/ingest/web';
 import * as jiraFunctions from '@utils/ingest/jira';
+import * as fileFunctions from '@utils/ingest/file';
 import * as airtableFunctions from '@utils/ingest/airtable';
 
 // Create a client to send and receive events
@@ -26,6 +27,7 @@ const handlers = {
   ...slackFunctions,
   ...webFunctions,
   ...jiraFunctions,
+  ...fileFunctions,
   ...airtableFunctions
 };
 
@@ -34,10 +36,6 @@ type Events = {};
 export const inngest = new Inngest<Events>({ name: 'My App' });
 
 const inngestFunctions = createInngestFunctions(functions as any);
-
-export const config = {
-  type: 'experimental-background'
-};
 
 export default serve(inngest, inngestFunctions, {
   signingKey: process.env.INNGEST_SIGNING_KEY

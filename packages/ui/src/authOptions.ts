@@ -5,9 +5,9 @@ import AtlassianProvider from 'next-auth/providers/atlassian';
 import SlackProvider from 'next-auth/providers/slack';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 import { inngest } from '@utils/ingest/client';
-import { User as AnswersUser } from 'types';
+import { User as AnswersUser, AppSettings } from 'types';
 export const USER_EVENTS = ['signIn', 'signOut', 'createUser', 'updateUser', 'linkAccount'];
 
 declare module 'next-auth' {
@@ -21,7 +21,6 @@ declare module 'next-auth' {
 declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
-    role: string;
     access_token: string;
     expires_at: number;
     refresh_token: string;
@@ -63,8 +62,8 @@ export const authOptions: AuthOptions = {
     }
   },
   session: {
-    // strategy: 'jwt',
-    strategy: 'database',
+    strategy: 'jwt',
+    // strategy: 'database',
     // Seconds - How long until an idle session expires and is no longer valid.
     maxAge: 30 * 24 * 60 * 60, // 30 days
     // Seconds - Throttle how frequently to write to database to extend a session.
@@ -74,57 +73,23 @@ export const authOptions: AuthOptions = {
   },
   adapter: PrismaAdapter(prisma),
   callbacks: {
-    async session({ session, user }) {
-      if (user && session.user) {
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id!;
+      }
+      refresAccessToken({ token, user, account });
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        const user = await prisma.user.findUnique({ where: { id: token.id } });
+        if (!user) throw new Error('User not found');
         session.user.id = user.id!;
         session.user.role = user.role!;
+        session.user.organizationId = user.organizationId!;
         // @ts-ignore-next-line
         session.user.invited = user.invited ? new Date(user.invited as string) : user.invited;
-        session.user.appSettings = user.appSettings;
-
-        const [atlassian] = await prisma.account.findMany({
-          where: { userId: user.id, provider: 'atlassian' }
-        });
-
-        if (atlassian?.expires_at && atlassian?.expires_at * 1000 < Date.now()) {
-          // If the access token has expired, try to refresh it
-          try {
-            // https://accounts.atlassian.com/.well-known/openid-configuration
-            // We need the `token_endpoint`.
-            const response = await fetch('https://auth.atlassian.com/oauth/token', {
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-              body: new URLSearchParams({
-                client_id: process.env.ATLASSIAN_CLIENT_ID!,
-                client_secret: process.env.ATLASSIAN_CLIENT_SECRET!,
-                grant_type: 'refresh_token',
-                refresh_token: atlassian.refresh_token!
-              }),
-              method: 'POST'
-            });
-
-            const tokens: TokenSet = await response.json();
-
-            if (!response.ok) throw tokens;
-
-            await prisma.account.update({
-              data: {
-                access_token: tokens.access_token,
-                expires_at: Math.floor(Date.now() / 1000 + (tokens.expires_in as number)),
-                refresh_token: tokens.refresh_token ?? atlassian.refresh_token
-              },
-              where: {
-                provider_providerAccountId: {
-                  provider: 'atlassian',
-                  providerAccountId: atlassian.providerAccountId
-                }
-              }
-            });
-          } catch (error) {
-            console.error('Error refreshing access token', error);
-            // The error property will be used client-side to handle the refresh token error
-            session.error = 'RefreshAccessTokenError';
-          }
-        }
+        session.user.appSettings = user?.appSettings as AppSettings;
       }
       return session;
     },
@@ -132,9 +97,9 @@ export const authOptions: AuthOptions = {
       let finalUrl = baseUrl;
       try {
         // Allows relative callback URLs
-        if (url.startsWith('/')) finalUrl = `${baseUrl}${url}`;
+        if (url.startsWith('/')) url = `${baseUrl}${url}`;
         // Allows callback URLs on the same origin
-        else if (new URL(url).origin === baseUrl) finalUrl = url;
+        if (new URL(url).origin === baseUrl) finalUrl = url;
         if (
           ['http://localhost:3000', 'https://theanswer.ai', 'https://ias.theanswer.ai'].includes(
             new URL(url).origin
@@ -195,7 +160,7 @@ export const authOptions: AuthOptions = {
           if (!chatApp?.user) {
             throw new Error('Invalid API Key');
           }
-          // @ts-expect-error
+
           return chatApp?.user! as AnswersUser;
         } catch (e) {
           console.log(e);
@@ -231,3 +196,50 @@ export const authOptions: AuthOptions = {
     {}
   )
 };
+async function refresAccessToken({ token, account }: any) {
+  // if (token?.atlassian_expires_at && token?.atlassian_expires_at * 1000 < Date.now()) {
+  const [atlassian] = await prisma.account.findMany({
+    where: { userId: token.id, provider: 'atlassian' }
+  });
+  // If the access token has expired, try to refresh it
+  if (atlassian?.expires_at && atlassian?.expires_at * 1000 < Date.now()) {
+    // If the access token has expired, try to refresh it
+    try {
+      // https://accounts.atlassian.com/.well-known/openid-configuration
+      // We need the `token_endpoint`.
+      const response = await fetch('https://auth.atlassian.com/oauth/token', {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: process.env.ATLASSIAN_CLIENT_ID!,
+          client_secret: process.env.ATLASSIAN_CLIENT_SECRET!,
+          grant_type: 'refresh_token',
+          refresh_token: atlassian.refresh_token!
+        }),
+        method: 'POST'
+      });
+
+      const tokens: TokenSet = await response.json();
+
+      if (!response.ok) throw tokens;
+
+      await prisma.account.update({
+        data: {
+          access_token: tokens.access_token,
+          expires_at: Math.floor(Date.now() / 1000 + (tokens.expires_in as number)),
+          refresh_token: tokens.refresh_token ?? atlassian.refresh_token
+        },
+        where: {
+          provider_providerAccountId: {
+            provider: 'atlassian',
+            providerAccountId: atlassian.providerAccountId
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Error refreshing access token', error);
+      // The error property will be used client-side to handle the refresh token error
+      // session.error = 'RefreshAccessTokenError';
+    }
+  }
+  // }
+}

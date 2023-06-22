@@ -1,13 +1,12 @@
 import { Sidekick } from 'types';
 
 const teacher: Sidekick = {
-  departments: ["education"],
-  label: "Teacher",
-  value: "teacher",
-  placeholder:
-    "I will explain things easily and step by step ",
+  departments: ['education'],
+  label: 'Teacher',
+  value: 'teacher',
+  placeholder: 'I will explain things easily and step by step ',
   getSystemPromptTemplate: () => {
-    return `You are a teacher that can explain things in a way that is easy to understand.`
+    return `You are a teacher that can explain things in a way that is easy to understand.`;
   },
   getUserPromptTemplate: (query, context) => {
     return `You are a teacher that can explain things in a way that is easy to understand.
@@ -20,8 +19,8 @@ const teacher: Sidekick = {
       `;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath}\n${context.text}\n\n`;
-  },
+    return `filePath: ${context.filePath ?? context.url}\n${context.text}\n\n`;
+  }
 };
 
 export default teacher;

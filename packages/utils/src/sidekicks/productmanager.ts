@@ -35,7 +35,7 @@ const productmanager: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return `citedSource: ${context.filePath}\n${context.code}\n\n`;
+    return `citedSource: ${context.filePath ?? context.url}\n${context.code}\n\n`;
   }
 };
 

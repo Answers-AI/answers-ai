@@ -7,6 +7,9 @@ interface GenerateResponseArgs {
   sidekick?: Sidekick;
   gptModel?: string;
 }
+
+const parseMessages = (messages?: any[]) =>
+  messages?.map(({ role, content }) => ({ role, content }));
 export const useStreamedResponse = ({
   chatId,
   journeyId,
@@ -46,7 +49,7 @@ export const useStreamedResponse = ({
         chatId,
         prompt: content,
         filters,
-        messages,
+        messages: parseMessages(messages),
         sidekick: sidekick?.value, // Add sidekick parameter
         gptModel // Add gptModel parameter
       })

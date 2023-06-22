@@ -47,7 +47,7 @@ class ConfluenceClient {
       Accept: 'application/json'
     };
 
-    this.cloudId = this.getCloudId().catch(err => console.log(err));
+    this.cloudId = this.getCloudId().catch((err) => console.log(err));
   }
 
   async handleRateLimit(response: AxiosResponse) {

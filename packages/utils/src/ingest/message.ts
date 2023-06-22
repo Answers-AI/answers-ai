@@ -1,4 +1,4 @@
-import { prisma } from 'db/dist';
+import { prisma } from '@db/client';
 
 import { AnswersFilters, User, Chat } from 'types';
 // import { inngest } from './client';

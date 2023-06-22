@@ -25,7 +25,9 @@ const coding: Sidekick = {
       Suggest followup information the user can ask to make you more confident in your reponse.\n\n`;
   },
   contextStringRender: (context) => {
-    return `Source: [${context.filePath}](${context.filePath})\n Javascript:\n${context.code}\n\n`;
+    return `Source: [${context.filePath ?? context.url}](${
+      context.filePath ?? context.url
+    })\n Javascript:\n${context.code}\n\n`;
   }
 };
 
