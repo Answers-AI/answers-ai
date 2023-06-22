@@ -2,181 +2,21 @@ import { Sidekick } from 'types';
 
 const sidekick: Sidekick = {
   departments: ['marketing'],
-  label: 'Contentful Entry Expert',
+  label: 'Contentful Publisher',
   value: 'contentfulContent',
-  placeholder: 'I can help you post a blog in Contentful',
+  placeholder: 'I can help you publish content in Contentful',
   getSystemPromptTemplate: () => {
-    return `You are Contentful content entry expert. You create JSON files to that can be imported into Contentful. I will give you a concept and you will create the content entry for that concept.`;
+    return `You only repate what I say.`;
   },
   getUserPromptTemplate: (query, context) => {
-    return `Convert this blog post content in this chain. I want you to make the following changes to the blog post:
-    ${query}
-    """
-    Use this JSON template to create the content entry for this blog post:
-    """
-    {
-      "metadata": {
-          "tags": []
-      },
-      "sys": {
-          "space": {
-              "sys": {
-                  "type": "Link",
-                  "linkType": "Space",
-                  "id": "imglmb3xms7o"
-              }
-          },
-          "id": "5EpajGfjb4CqYxHyGtiHaC",
-          "type": "Entry",
-          "createdAt": "2023-06-18T05:38:13.526Z",
-          "updatedAt": "2023-06-18T05:38:13.526Z",
-          "environment": {
-              "sys": {
-                  "id": "master",
-                  "type": "Link",
-                  "linkType": "Environment"
-              }
-          },
-          "revision": 1,
-          "contentType": {
-              "sys": {
-                  "type": "Link",
-                  "linkType": "ContentType",
-                  "id": "pageBlog"
-              }
-          }
-      },
-      "fields": {
-          "title": {
-              "en-US": "This is and engaging title"
-          },
-          "landingPageSummary": {
-              "en-US": "This is the summary that is shown on the blog cards or when it is in a featured area like the blog landing page"
-          },
-          "creationDate": {
-              "en-US": "01/01/2020"
-          },
-          "slug": {
-              "en-US": "this-is-and-engaging-title"
-          },
-          "author": {
-              "en-US": "John Smith"
-          },
-          "featuredMedia": {
-              "en-US": [
-                  {
-                      "sys": {
-                          "type": "Link",
-                          "linkType": "Entry",
-                          "id": "1lsWAQn8pEIt9nEhXVsTAS"
-                      }
-                  }
-              ]
-          },
-          "body": {
-              "en-US": {
-                  "data": {},
-                  "content": [
-                      {
-                          "data": {},
-                          "content": [
-                              {
-                                  "data": {},
-                                  "marks": [],
-                                  "value": "Heading 2",
-                                  "nodeType": "text"
-                              }
-                          ],
-                          "nodeType": "heading-2"
-                      },
-                      {
-                          "data": {},
-                          "content": [
-                              {
-                                  "data": {},
-                                  "marks": [],
-                                  "value": "Nulla vitae elit libero, a pharetra augue. Sed posuere consectetur est at lobortis.",
-                                  "nodeType": "text"
-                              }
-                          ],
-                          "nodeType": "paragraph"
-                      },
-                      {
-                          "data": {},
-                          "content": [
-                              {
-                                  "data": {},
-                                  "marks": [],
-                                  "value": "Heading 3",
-                                  "nodeType": "text"
-                              }
-                          ],
-                          "nodeType": "heading-3"
-                      },
-                      {
-                          "data": {},
-                          "content": [
-                              {
-                                  "data": {},
-                                  "marks": [],
-                                  "value": "Nulla vitae elit libero, a pharetra augue. Sed posuere consectetur est at lobortis.Nulla vitae elit libero, a pharetra augue. Sed posuere consectetur est at lobortis.Nulla vitae elit libero, a pharetra augue. Sed posuere consectetur est at lobortis.Nulla vitae elit libero, a pharetra augue. Sed posuere consectetur est at lobortis",
-                                  "nodeType": "text"
-                              }
-                          ],
-                          "nodeType": "paragraph"
-                      },
-                      {
-                          "data": {},
-                          "content": [
-                              {
-                                  "data": {},
-                                  "marks": [],
-                                  "value": "Heading 2",
-                                  "nodeType": "text"
-                              }
-                          ],
-                          "nodeType": "heading-2"
-                      },
-                      {
-                          "data": {},
-                          "content": [
-                              {
-                                  "data": {},
-                                  "marks": [],
-                                  "value": "Nulla vitae elit libero, a pharetra augue. Sed posuere consectetur est at lobortis.",
-                                  "nodeType": "text"
-                              }
-                          ],
-                          "nodeType": "paragraph"
-                      }
-                  ],
-                  "nodeType": "document"
-              }
-          },
-          "seo": {
-              "en-US": {
-                  "title": {
-                      "name": "title",
-                      "value": "SEO Page Title"
-                  },
-                  "description": {
-                      "name": "description",
-                      "value": "SEO description under 158 characters"
-                  },
-                  "keywords": {
-                      "name": "keywords",
-                      "value": "keywords seperated, by, commas"
-                  },
-                  "canonical": {
-                      "name": "canonical",
-                      "value": ""
-                  }
-              }
-          }
-      }
-  }
-  Always end with the following iframe: <iframe src="https://answerai-marketing-git-last-rev-starter-lastrev.vercel.app/live-preview?id=3tJBL4yg6WdoPWUHxHZim2" />
-  write the new JSON in markdown using the previous blog here:\n\n
+    return `Repeat what I say. Repeat only the following and do not say anything else. Do not say repeat. Only show the Header, Body, and Image Concept and link. Print it in plain text:
+
+    Header:\nLaunching Innovation: The Dynamic Partnership of Contentful and Last Rev\n\n
+    Body:\nExplore the extraordinary collaboration between Contentful and Last Rev as they join forces to revolutionize the digital landscape. Witness their groundbreaking Kickstarter program that combines Contentful's cutting-edge content infrastructure with Last Rev's dynamic creative solutions. Experience the future of digital innovation and discover how this partnership is reshaping the way businesses create, manage, and deliver content like never before.\n
+    Image Concept:\n /imagine Launching Innovation, A futuristic cityscape with towering skyscrapers, showcasing the collaboration between Contentful and Last Rev, with Contentful's infrastructure forming the foundation of the city, and Last Rev's creative solutions bringing it to life, Photography, using a wide-angle lens to capture the grandeur of the city, --ar 16:9 --v 5
+    ![](https://images.ctfassets.net/imglmb3xms7o/4SOvevjHwBzngyC5ITe7oC/49ae570cd5816014ff7e4acb099cab06/Screenshot_2023-06-21_at_9.18.41_PM.png?w=1400&q=100) \n\n
+    [Edit in Contentful](https://app.contentful.com/spaces/imglmb3xms7o/environments/master/entries/4259Oc7JX5tdWKsJbSqQ77)\n\n
+
   """
     `;
   },

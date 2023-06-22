@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import { Select, MenuItem, SelectChangeEvent, Box, Typography } from '@mui/material';
 import { sidekicks } from '@utils/sidekicks';
 import Cookies from 'js-cookie';
+import { Sidekick } from 'types';
 
 interface SidekickSelectProps {
-  onSidekickSelected: (value: string) => void;
-  initialSidekick: string;
-  selectedSidekick: string;
+  onSidekickSelected: (sidekick: Sidekick) => void;
+  initialSidekick: Sidekick;
+  selectedSidekick: Sidekick;
 }
 
 const toSentenceCase = (str: string) =>
@@ -23,10 +24,22 @@ export const SidekickSelect = ({
   const [selectedDepartment, setSelectedDepartment] = useState<string>(
     toSentenceCase(Cookies.get('department') || 'General')
   );
-  const [selectedSidekick, setSelectedSidekick] = useState<string>(
-    Cookies.get('sidekick') || initialSidekick
+  const [selectedPlaceholder, setSelectedPlaceholder] = useState<string>(
+    'Select a Sidekick for specialized tasks!'
   );
-  const [departmentSidekicks, setDepartmentSidekicks] = useState(sidekicks);
+
+  let cookieSidekick: Sidekick;
+  try {
+    cookieSidekick = JSON.parse(Cookies.get('sidekick')!);
+  } catch (error) {
+    // If we can't parse the sidekick cookie, assume it's because it's an old string format.
+    // Clear the cookie and default to the initial sidekick.
+    // remove this after a while
+    Cookies.remove('sidekick');
+    cookieSidekick = initialSidekick || sidekicks[0];
+  }
+  const [selectedSidekick, setSelectedSidekick] = useState<Sidekick>(cookieSidekick);
+  const [departmentSidekicks, setDepartmentSidekicks] = useState<Sidekick[]>(sidekicks);
 
   useEffect(() => {
     const uniqueDepartments = Array.from(
@@ -41,7 +54,6 @@ export const SidekickSelect = ({
     setDepartments(uniqueDepartments);
   }, []);
 
-  // Inside the useEffect that is handling department changes, after the setSelectedSidekick line
   useEffect(() => {
     const sidekicksInDepartment = sidekicks
       .filter((s) => s.departments.includes(selectedDepartment.toLowerCase()))
@@ -52,10 +64,10 @@ export const SidekickSelect = ({
     const lastUsedSidekick = lastUsedSidekicks[selectedDepartment.toLowerCase()];
     if (lastUsedSidekick) {
       setSelectedSidekick(lastUsedSidekick);
-      onSidekickSelected(lastUsedSidekick); // New line
+      onSidekickSelected(lastUsedSidekick);
     } else if (sidekicksInDepartment[0]) {
-      setSelectedSidekick(sidekicksInDepartment[0].value);
-      onSidekickSelected(sidekicksInDepartment[0].value); // New line
+      setSelectedSidekick(sidekicksInDepartment[0]);
+      onSidekickSelected(sidekicksInDepartment[0]);
     }
   }, [selectedDepartment]);
 
@@ -66,44 +78,52 @@ export const SidekickSelect = ({
   };
 
   const handleSidekickChange = (event: SelectChangeEvent<string>) => {
-    const sidekick = event.target.value;
-    setSelectedSidekick(sidekick);
-    Cookies.set('sidekick', sidekick);
+    const sidekickValue = event.target.value;
+    const selectedSidekick = departmentSidekicks.find((s) => s.value === sidekickValue);
+    if (!selectedSidekick) return; // If no matching sidekick, abort
+
+    setSelectedSidekick(selectedSidekick);
+    Cookies.set('sidekick', JSON.stringify(selectedSidekick));
+
+    console.log('selectedSidekick', selectedSidekick);
 
     // Save the last used sidekick for this department
     const lastUsedSidekicks = JSON.parse(Cookies.get('lastUsedSidekicks') || '{}');
-    lastUsedSidekicks[selectedDepartment.toLowerCase()] = sidekick;
+    lastUsedSidekicks[selectedDepartment.toLowerCase()] = selectedSidekick;
     Cookies.set('lastUsedSidekicks', JSON.stringify(lastUsedSidekicks));
 
-    onSidekickSelected(sidekick);
+    setSelectedPlaceholder(selectedSidekick.placeholder);
+    onSidekickSelected(selectedSidekick);
   };
 
   return departments.length ? (
-    <>
-      <Select
-        labelId="department-select-label"
-        id="department-select"
-        label="Department"
-        value={selectedDepartment}
-        onChange={handleDepartmentChange}>
-        {departments.map((department) => (
-          <MenuItem key={department} value={department}>
-            {department}
-          </MenuItem>
-        ))}
-      </Select>
-      <Select
-        labelId="sidekick-select-label"
-        id="sidekick-select"
-        label="Sidekick"
-        value={selectedSidekick}
-        onChange={handleSidekickChange}>
-        {departmentSidekicks.map((sidekick) => (
-          <MenuItem key={sidekick.value} value={sidekick.value}>
-            {sidekick.label}
-          </MenuItem>
-        ))}
-      </Select>
-    </>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+      <Box>
+        <Select
+          labelId="department-select-label"
+          id="department-select"
+          label="Department"
+          value={selectedDepartment}
+          onChange={handleDepartmentChange}>
+          {departments.map((department) => (
+            <MenuItem key={department} value={department}>
+              {department}
+            </MenuItem>
+          ))}
+        </Select>
+        <Select
+          labelId="sidekick-select-label"
+          id="sidekick-select"
+          label="Sidekick"
+          value={selectedSidekick.value}
+          onChange={handleSidekickChange}>
+          {departmentSidekicks.map((sidekick) => (
+            <MenuItem key={sidekick.value} value={sidekick.value}>
+              {sidekick.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </Box>
+    </Box>
   ) : null;
 };

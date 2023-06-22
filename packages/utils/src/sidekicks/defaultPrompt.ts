@@ -15,7 +15,7 @@ const defaultPrompt: Sidekick = {
   ],
   label: 'General Assistant',
   value: 'defaultPrompt',
-  placeholder: 'I can help with general questions',
+  placeholder: 'I can help with general questions. Add data sources to help me understand more.',
   getSystemPromptTemplate: () => {
     return `You are a helpful and friendly assistant.You specialize in helping people ask better questions`;
   },

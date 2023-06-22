@@ -1,10 +1,10 @@
 'use client';
 // useStreamedResponse.ts
 import { useState } from 'react';
-import { Message } from 'types';
+import { Message, Sidekick } from 'types';
 interface GenerateResponseArgs {
   content: string;
-  sidekick?: string;
+  sidekick?: Sidekick;
   gptModel?: string;
 }
 export const useStreamedResponse = ({
@@ -24,7 +24,7 @@ export const useStreamedResponse = ({
   filters?: any;
   apiUrl: string;
   onChunk: (chunk: Message) => void;
-  sidekick?: string;
+  sidekick?: Sidekick;
   gptModel?: string;
   onEnd: (chunk: Message) => void;
 }) => {
@@ -47,7 +47,7 @@ export const useStreamedResponse = ({
         prompt: content,
         filters,
         messages,
-        sidekick, // Add sidekick parameter
+        sidekick: sidekick?.value, // Add sidekick parameter
         gptModel // Add gptModel parameter
       })
     });

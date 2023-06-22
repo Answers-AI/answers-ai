@@ -1,12 +1,11 @@
 import { Sidekick } from 'types';
 const docs: Sidekick = {
   departments: ['engineering'],
-  label: 'Docs Creation',
+  label: 'Documentation Creation',
   value: 'docs',
-  placeholder: 'I can create documentation for you',
+  placeholder: 'Paste your code in here and I will create documentation for it.',
   getUserPromptTemplate: (query, context) => {
     return `You are a code documentation assistant.
-      You specialize in building NextJS applications with OpenAI.
       document this code:\n\n
       ${query}\n\n
       please provide an appropriate response in markdown.

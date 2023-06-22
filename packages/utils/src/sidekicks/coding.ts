@@ -1,12 +1,13 @@
 import { Sidekick } from 'types';
 
 const coding: Sidekick = {
-  departments: ["engineering"],
-  label: "Coding Expert",
-  value: "coding",
-  placeholder: "I can create code for you",
+  departments: ['engineering'],
+  label: 'Coding Expert',
+  value: 'coding',
+  placeholder:
+    'I can analyze your code and help you write code. Works best with Docubot, but can just as easily work with copy paste.',
   getSystemPromptTemplate: (user) => {
-    return `You are a code assistant. You specialize in building Typescript applications with NextJS and React.`
+    return `You are a code assistant. You specialize in building Typescript applications with NextJS and React.`;
   },
   getUserPromptTemplate: (query, context) => {
     return `
@@ -21,11 +22,11 @@ const coding: Sidekick = {
       Outline the use cases for which end-to-end tests need to be created.
       Give me your confidence level in your answer 0-100
       Where there may be incomplete context, explain how that impacts your answer.
-      Suggest followup information the user can ask to make you more confident in your reponse.\n\n`
+      Suggest followup information the user can ask to make you more confident in your reponse.\n\n`;
   },
   contextStringRender: (context) => {
     return `Source: [${context.filePath}](${context.filePath})\n Javascript:\n${context.code}\n\n`;
-  },
+  }
 };
 
 export default coding;

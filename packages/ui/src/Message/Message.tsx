@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Avatar, Box, Card, CardActions, CardContent, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { JsonViewer } from '@textea/json-viewer';
@@ -16,6 +16,7 @@ import Typography from '@mui/material/Typography';
 import { Message, User } from 'types';
 import { useFlags } from 'flagsmith/react';
 import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { useAnswers } from '@ui/AnswersContext';
 import { AxiosError } from 'axios';
 
@@ -101,6 +102,12 @@ export const MessageCard = ({
   const { developer_mode } = useFlags(['developer_mode']); // only causes re-render if specified flag values / traits change
   const { updateMessage } = useAnswers();
   const [lastInteraction, setLastInteraction] = React.useState<string>('');
+  const [codeStyle, setCodeStyle] = useState({});
+  useEffect(() => {
+    import('react-syntax-highlighter/dist/esm/styles/prism/duotone-dark').then((mod) =>
+      setCodeStyle(mod.default)
+    );
+  });
 
   if (error) {
     pineconeData = error?.response?.data.pineconeData;
@@ -118,6 +125,9 @@ export const MessageCard = ({
         id: id,
         likes: (likes ?? 0) + 1
       });
+  };
+  const handleCopyCodeClick = (codeString: string) => {
+    navigator.clipboard.writeText(codeString);
   };
   const handleDislike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.stopPropagation();
@@ -174,7 +184,34 @@ export const MessageCard = ({
                     marginBottom: '1em'
                   }
                 }}>
-                <ReactMarkdown>{content}</ReactMarkdown>
+                <ReactMarkdown
+                  components={{
+                    code({ node, inline, className, children, ...props }) {
+                      // const match = /language-(\w+)/.exec(className || '');
+                      const codeExample = String(children).replace(/\n$/, '');
+                      console.log('codeExample', codeExample);
+                      console.log('inline', inline);
+                      // console.log('match', match);
+                      return !inline ? (
+                        <div className="relative">
+                          <SyntaxHighlighter style={codeStyle} PreTag="div" {...props}>
+                            {codeExample}
+                          </SyntaxHighlighter>
+                          <button
+                            onClick={() => handleCopyCodeClick(codeExample)}
+                            className="absolute top-0 right-0 py-1 px-2 bg-gray-500 text-white font-semibold rounded hover:bg-gray-600">
+                            Copy to Clipboard
+                          </button>
+                        </div>
+                      ) : (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    }
+                  }}>
+                  {content}
+                </ReactMarkdown>
               </Typography>
             </>
           ) : null}

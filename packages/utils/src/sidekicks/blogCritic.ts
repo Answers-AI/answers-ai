@@ -3,7 +3,7 @@ const blogCritic: Sidekick = {
   departments: ['marketing'],
   label: 'Blog Critic',
   value: 'blogCritic',
-  placeholder: 'I can give suggestions on how to make blog posts better',
+  placeholder: 'Paste a blog post here. I will give you feedback on it.',
   getSystemPromptTemplate: () => {
     return `You are a digital marketing expert. I want you to be a harsh critic for the following blog post.`;
   },

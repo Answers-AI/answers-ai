@@ -8,17 +8,20 @@ import { chunkArray } from '../utilities/utils';
 // import { TokenTextSplitter } from 'langchain/text_splitter';
 // import { encoding_for_model } from "@dqbd/tiktoken";
 
+const AIRTABLE_VIEW_ID = 'viw0CqPKmPU2HNfel';
+const AIRTABLE_BASE_ID = 'tblTAWf8YYAqckiMH';
+
 const PINECONE_VECTORS_BATCH_SIZE = 2;
 // TODO: Move this to a config file from the settings
-// const getNLPSummary = (record: object) => {
-//   const string = `${record.fields['Summary']} ${record.fields['Description']}
-//     reported by ${record.fields['Reporter']} and assigned to ${record.fields['Assignee']}
-//     QA/Quality Assurance by ${record.fields['QA Person'] || 'Unknown'}
-//     Linked to Issues: ${record.fields['Linked Issues'] || 'None'}
-//     Status: ${record.fields['Status']}
-//     `;
-//   return string;
-// };
+const getNLPSummary = (record: AirtableRecord) => {
+  const string = `${record.fields['Summary']} ${record.fields['Description']}
+    reported by ${record.fields['Reporter']} and assigned to ${record.fields['Assignee']}
+    QA/Quality Assurance by ${record.fields['QA Person'] || 'Unknown'}
+    Linked to Issues: ${record.fields['Linked Issues'] || 'None'}
+    Status: ${record.fields['Status']}
+    `;
+  return string;
+};
 
 const getAirtablePineconeObject = async (airtableRecords: AirtableRecord[]) => {
   const vectors = (
@@ -28,54 +31,31 @@ const getAirtablePineconeObject = async (airtableRecords: AirtableRecord[]) => {
           return [];
         }
 
-        // const nlpSummary = getNLPSummary(record);
+        const nlpSummary = getNLPSummary(record);
 
-        // return [
-        //   {
-        //     uid: `Airtable_${record.id}`,
-        //     text: nlpSummary,
-        //     metadata: {
-        //       source: 'airtable',
-        //       url: `https://lastrev.atlassian.net/browse/${record.fields['Issue Key']}`,
-        //       text: nlpSummary,
-        //       table: 'Issues',
-        //       view: 'Grid view',
-        //       summary: record.fields['Summary'],
-        //       // description: record.fields['Description'],
-        //       reporter: record.fields['Reporter'],
-        //       assignee: record.fields['Assignee'],
-        //       qaPerson: record.fields['QA Person'] || 'Unknown',
-        //       linkedIssues: record.fields['Linked Issues'] || 'None',
-        //       status: record.fields['Status']
-        //     }
-        //   }
-        // ];
+        
+        return [
+          {
+            uid: `Airtable_${record.id}`,
+            text: nlpSummary,
+            metadata: {
+              source: 'airtable',
+              url: `https://lastrev.atlassian.net/browse/${record.fields['Issue Key']}`,
+              text: nlpSummary,
+              table: AIRTABLE_BASE_ID,
+              view: AIRTABLE_VIEW_ID,
+              summary: record.fields['Summary'],
+              description: record.fields['Description'],
+              reporter: record.fields['Reporter'],
+              assignee: record.fields['Assignee'],
+              qaPerson: record.fields['QA Person'] || 'Unknown',
+              linkedIssues: record.fields['Linked Issues'] || 'None',
+              status: record.fields['Status']
+            }
+          }
+        ];
 
         return [];
-        
-
-        // TODO: Chunk these by tokens
-        // const markdownChunks = await splitPageHtml(algoliaHit);
-        // const encodingName = encoding_for_model('text-davinci-003');
-        //   if (!markdownChunks?.length) return [];
-        // const splitter = new TokenTextSplitter({
-        //   encodingName: 'text-davinci-003',
-        //   chunkSize: 3000,
-        //   chunkOverlap: 0
-        // });
-
-        // const output = await splitter.createDocuments([nlpSummary]);
-
-        // console.log('airtable' + ' nlpSummary: ' + nlpSummary)
-
-        // return output.map((doc: Document) => ({
-        //   uid: `Airtable_${record.id}`,
-        //   text: doc.pageContent,
-        //   metadata: {
-        //     source: 'airtable',
-        //     url: `${record.fields['Summary']}`
-        //   }
-        // }));
       })
     )
   )
@@ -116,9 +96,9 @@ const getAirtableRecords = (base: any): Promise<AirtableRecord[]> => {
   return new Promise((resolve, reject) => {
     const allRecords: AirtableRecord[] = [];
     
-    base('AIRTABLE: Customer - Impossible Foods')
+    base(AIRTABLE_BASE_ID)
       .select({
-        view: 'Q12023'
+        view: AIRTABLE_VIEW_ID
       })
       .eachPage(
         (records: AirtableRecord[], fetchNextPage: () => void) => {
@@ -157,7 +137,7 @@ export const processAirtable: EventVersionHandler<{
       const pinconeObjs = await getAirtablePineconeObject(allRecords);
       console.log('airtable' + ' pinecone: ' + pinconeObjs.length);
       const embeddedVectors = await embedVectors(event, pinconeObjs);
-      // console.log('airtable' + ' embeddedVectors: ' + embeddedVectors.length);
+      console.log('airtable' + ' embeddedVectors: ' + embeddedVectors.length);
     } catch (error) {
       console.error(`[airtable/app.sync] ${error}`);
     }

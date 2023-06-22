@@ -4,7 +4,7 @@ const contentful: Sidekick = {
   departments: ['marketing', 'customer support'],
   label: 'Contentful Expert',
   value: 'contentful',
-  placeholder: 'I can help you with Contentful',
+  placeholder: 'I can help you with questions about Contentful',
   getSystemPromptTemplate: () => {
     return `You are Contentful expert.`;
   },

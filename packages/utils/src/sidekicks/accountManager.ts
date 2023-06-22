@@ -3,7 +3,7 @@ const accountManager: Sidekick = {
   departments: ['sales', 'customer support', 'leadership'],
   label: 'Account Manager Expert',
   value: 'accountManager',
-  placeholder: 'I wont use any of my memory and will answer your questions using ',
+  placeholder: 'I can answer questions about accounts. Works best with Airtable or Jira.',
   getSystemPromptTemplate: () => {
     return `You are a helpful and friendly assistant.You specialize in helping people find answers to questions.`;
   },

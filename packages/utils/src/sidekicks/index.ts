@@ -21,6 +21,7 @@ import teacher from './teacher';
 import salesOutboundEmail from './salesOutboundEmail';
 import meetingAnalysisReplyExpert from './meetingAnalysisReplyExpert';
 import investorOutboundEmail from './investorOutboundEmail';
+import landingPageCreator from './landingPageCreator';
 import planMyWeek from './planMyWeek';
 import salesEmailCritic from './salesEmailCritic';
 import brainstormEmailSubject from './brainstormEmailSubject';
@@ -35,6 +36,8 @@ import imageConceptGenerator from './imageConceptGenerator';
 import decisionMaking from './decisionMaking';
 import tiktokScriptWriter from './tiktokScriptWriter';
 import sidekickHelper from './sidekickHelper';
+import engineeringPRCreator from './engineeringPRCreator';
+import productUserStories from './productUserStories';
 
 export const sidekicks: Sidekick[] = [
   accountManager,
@@ -72,7 +75,10 @@ export const sidekicks: Sidekick[] = [
   imageConceptGenerator,
   decisionMaking,
   tiktokScriptWriter,
-  sidekickHelper
+  sidekickHelper,
+  landingPageCreator,
+  engineeringPRCreator,
+  productUserStories
   // Add more prompts here
 ];
 

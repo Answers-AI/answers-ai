@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
 import { SetStateAction, createContext, useCallback, useContext, useRef, useState } from 'react';
-import { AnswersFilters, AppSettings, Chat, Journey, Message, Prompt } from 'types';
+import { AnswersFilters, AppSettings, Chat, Journey, Message, Prompt, Sidekick } from 'types';
 import { deepmerge } from '@utils/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
 
@@ -21,7 +21,7 @@ interface AnswersContextType {
   sendMessage: (
     content: string,
     isNewJourney?: boolean,
-    sidekick?: string,
+    sidekick?: Sidekick,
     gptModel?: string
   ) => void;
   clearMessages: () => void;
@@ -138,7 +138,8 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
   });
 
   const sendMessage = useCallback(
-    async (content: string, isNewJourney?: boolean, sidekick?: string, gptModel?: string) => {
+    async (content: string, isNewJourney?: boolean, sidekick?: Sidekick, gptModel?: string) => {
+      const sidekickValue = sidekick?.value || 'defaultPrompt';
       setIsLoading(true);
       setError(null);
       addMessage({ role: 'user', content: content } as Message);
@@ -153,7 +154,7 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
             content,
             messages,
             filters,
-            sidekick,
+            sidekickValue,
             gptModel
           });
 
