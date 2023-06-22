@@ -1,4 +1,4 @@
 import { withAuth } from 'next-auth/middleware';
 
-export const config = { matcher: ['/:path*'] };
+export const config = { matcher: ['/((?!api/inngest|_next/static|_next/image|favicon.ico).*)'] };
 export default withAuth({});
