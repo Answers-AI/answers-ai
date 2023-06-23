@@ -76,14 +76,6 @@ const FileContentModal: React.FC<ModalProps> = ({ onSave, source = 'file' }) => 
             <Typography variant="h4" component="h2">
               Add {source} document
             </Typography>
-            {/* <TextField
-              {...register('organizationId')}
-              error={Boolean(errors.organizationId)}
-              helperText={errors.organizationId?.message}
-              label="Organization Id"
-              fullWidth
-              margin="normal"
-            /> */}
             <TextField
               {...register('title', { required: 'Title is required' })}
               error={Boolean(errors.title)}

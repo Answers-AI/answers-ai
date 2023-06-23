@@ -86,9 +86,6 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
             horizontal: 'right'
           }}>
           <Box sx={{ width: 320, px: 2, py: 2 }}>
-            {/* <Typography variant="overline" sx={{ textTransform: 'capitalize' }}>
-              {serviceOpen}
-            </Typography> */}
             <Box
               sx={{
                 display: 'flex',
