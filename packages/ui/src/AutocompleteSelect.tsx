@@ -11,9 +11,11 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 interface Props<T> {
   sx?: any;
   label: string;
+  placeholder?: string;
   options: T[];
   value: T[];
   onChange: (value: T[]) => void;
+  onFocus: React.FocusEventHandler<HTMLDivElement>;
   getOptionLabel?: (value: T) => string;
   getOptionValue?: (value: T) => string;
 }
@@ -25,6 +27,7 @@ export default function AutocompleteSelect<T>({
   onChange,
   getOptionLabel,
   getOptionValue,
+  placeholder,
   ...props
 }: Props<T>) {
   const handleChange = (event: any, newValue: any) => {
@@ -69,7 +72,7 @@ export default function AutocompleteSelect<T>({
       )}
       {...props}
       renderInput={(params) => (
-        <TextField {...params} label={label} placeholder={`Enter ${label}`} />
+        <TextField {...params} label={label} placeholder={placeholder ?? `Enter ${label}`} />
       )}
     />
   );

@@ -26,6 +26,7 @@ const slugify = (text?: string) =>
     ?.replace(/[^\w-]+/g, '');
 
 export const indexText: EventVersionHandler<{
+  source?: string;
   title?: string;
   url?: string;
   content: string;
@@ -43,7 +44,7 @@ export const indexText: EventVersionHandler<{
     if (!user?.id) throw new Error('No user found');
 
     const data = event.data;
-    const { content, title } = data;
+    const { content, title, source } = data;
     let organizationId = user.organizationId;
     if (user.role === 'superadmin' && data.organizationId) {
       organizationId = data.organizationId;
@@ -58,7 +59,7 @@ export const indexText: EventVersionHandler<{
         title,
         url,
         content,
-        source: 'file'
+        source: source ?? 'file'
       }
     });
     if (!organizationId) throw new Error('No organizationId found');
@@ -75,7 +76,7 @@ export const indexText: EventVersionHandler<{
         text: `${pageContent}`,
         metadata: {
           url,
-          source: 'file',
+          source: source ?? 'file',
           text: pageContent
         }
       }))

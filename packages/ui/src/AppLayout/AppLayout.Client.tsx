@@ -66,7 +66,7 @@ export default function AppLayout({
               <div
                 style={{
                   position: 'absolute',
-                  zIndex: 999999,
+                  zIndex: 99,
                   top: 0,
                   left: 0,
                   flex: 1,

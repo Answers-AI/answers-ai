@@ -6,10 +6,16 @@ import { Button, TextField, Modal, Box, CircularProgress, Typography, Paper } fr
 interface IFormInput {
   title: string;
   content: string;
+  source: string;
   organizationId: string;
 }
 
-const FileContentModal: React.FC = () => {
+interface ModalProps {
+  source?: string;
+  onSave: (args?: any) => void;
+}
+
+const FileContentModal: React.FC<ModalProps> = ({ onSave, source = 'file' }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +24,11 @@ const FileContentModal: React.FC = () => {
     handleSubmit,
     formState: { errors },
     reset
-  } = useForm<IFormInput>();
+  } = useForm<IFormInput>({
+    defaultValues: {
+      source
+    }
+  });
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -28,6 +38,7 @@ const FileContentModal: React.FC = () => {
     try {
       await axios.post('/api/sync/file', data);
       handleClose();
+      onSave();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -39,23 +50,32 @@ const FileContentModal: React.FC = () => {
   return (
     <div>
       <Button variant="contained" color="primary" onClick={handleOpen} fullWidth>
-        Create File Content
+        Add {source} document
       </Button>
       <Modal open={open} onClose={handleClose}>
         <Paper
           sx={{
             width: '100%',
+            height: 'calc(100% - 32px)',
             maxWidth: 800,
             padding: 2,
             backgroundColor: 'background.paper',
             margin: 'auto',
-            marginTop: '10%',
-            outline: 'none'
+            outline: 'none',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            display: 'flex',
+            flexDirection: 'column'
           }}>
-          <Typography variant="h4" component="h2" gutterBottom>
-            Create File Content
-          </Typography>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+            sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 2 }}>
+            <Typography variant="h4" component="h2">
+              Add {source} document
+            </Typography>
             {/* <TextField
               {...register('organizationId')}
               error={Boolean(errors.organizationId)}
@@ -70,7 +90,6 @@ const FileContentModal: React.FC = () => {
               helperText={errors.title?.message}
               label="Title"
               fullWidth
-              margin="normal"
             />
             <TextField
               {...register('content', { required: 'Content is required' })}
@@ -79,8 +98,14 @@ const FileContentModal: React.FC = () => {
               label="Content"
               fullWidth
               multiline
-              rows={8}
-              margin="normal"
+              sx={{
+                'flex': 1,
+                '.MuiInputBase-root': { flex: 1, alignItems: 'flex-start' },
+                '.MuiInputBase-input': {
+                  height: '100%!important',
+                  overflow: 'auto!important'
+                }
+              }}
             />
             {loading ? (
               <Box display="flex" justifyContent="center" marginTop="1rem">
@@ -88,7 +113,7 @@ const FileContentModal: React.FC = () => {
               </Box>
             ) : (
               <Button type="submit" variant="contained" color="primary" fullWidth>
-                Submit
+                Add {source}
               </Button>
             )}
             {error && (
@@ -96,7 +121,7 @@ const FileContentModal: React.FC = () => {
                 <p>Error: {error}</p>
               </Box>
             )}
-          </form>
+          </Box>
         </Paper>
       </Modal>
     </div>

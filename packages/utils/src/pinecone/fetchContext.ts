@@ -186,7 +186,7 @@ export const fetchContext = async ({
 
   return {
     context,
-    summary: context,
+    // summary: context,
     contextSourceFilesUsed,
     ...(process.env.NODE_ENV === 'development'
       ? {

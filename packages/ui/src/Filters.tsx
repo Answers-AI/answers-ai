@@ -24,17 +24,23 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
             if (!sourceFilters || !Object.keys(sourceFilters).length) return null;
             return (
               <React.Fragment key={source}>
+                <Typography variant="overline">{source}</Typography>
                 {Object.entries(sourceFilters)?.map(([field, values]) => (
                   <React.Fragment key={`${source}_${field}`}>
-                    <Typography variant="overline">
-                      {source} {field}
-                    </Typography>
                     {!values
                       ? null
                       : (values as any[])?.map((value: any) => (
                           <Chip
-                            key={`${field}:${value?.name ?? value?.id ?? value.url ?? value}`}
-                            label={value?.name ?? value.url ?? value?.id ?? JSON.stringify(value)}
+                            key={`${field}:${
+                              value?.title ?? value?.name ?? value?.id ?? value.url ?? value
+                            }`}
+                            label={
+                              value?.title ??
+                              value?.name ??
+                              value.url ??
+                              value?.id ??
+                              JSON.stringify(value)
+                            }
                           />
                         ))}
                   </React.Fragment>
