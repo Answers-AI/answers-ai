@@ -4,41 +4,9 @@ import { Box } from '@mui/material';
 import Autocomplete from '@ui/AutocompleteSelect';
 import { Document } from 'types';
 import { useAnswers } from '@ui/AnswersContext';
-import { getUrlDomain } from '@utils/getUrlDomain';
 import NewFileModal from './NewFileModal';
 
 import useSWR from 'swr';
-
-const isDomain = (url?: string) => {
-  try {
-    if (!url) return false;
-    const domain = getUrlDomain(url);
-    return domain === url;
-  } catch (err) {
-    return false;
-  }
-};
-interface SourceUrl {
-  id: string;
-  url: string;
-  domain: string;
-}
-
-const groupByDomain = (data: string[]) => {
-  const groups: { [key: string]: SourceUrl[] } = {};
-
-  data.forEach((webUrl) => {
-    const domain = getUrlDomain(webUrl);
-    if (domain) {
-      if (!groups[domain]) {
-        groups[domain] = [];
-      }
-      groups[domain].push({ id: webUrl, url: webUrl, domain });
-    }
-  });
-
-  return groups;
-};
 
 const SourcesFiles: React.FC<{}> = ({}) => {
   const { filters, updateFilter } = useAnswers();
@@ -53,14 +21,20 @@ const SourcesFiles: React.FC<{}> = ({}) => {
     <>
       <Box marginBottom={1} sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
         <Autocomplete
-          label={'File URL'}
+          label={'Choose file'}
+          placeholder={`My custom file`}
           value={filters?.datasources?.file?.url || []}
           onChange={(value) => updateFilter({ datasources: { file: { url: value } } })}
           getOptionLabel={(option) => option?.title ?? option?.url}
           getOptionValue={(option) => option?.url}
           options={sources ?? []}
+          onFocus={() => mutate()}
         />
-        <NewFileModal />
+        <NewFileModal
+          onSave={() => {
+            setTimeout(mutate, 2000);
+          }}
+        />
       </Box>
     </>
   );
