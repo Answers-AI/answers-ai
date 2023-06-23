@@ -4,6 +4,7 @@ import NextLink from 'next/link';
 import { Journey } from 'types';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Image from 'next/image';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
@@ -16,9 +17,12 @@ import { Button } from '@mui/material';
 const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
   return (
     <Box p={8}>
-      <Typography variant="h2" component="h1">
-        Welcome to Answer AI
-      </Typography>
+      <Image
+        src={'/logos/answerai-logo-600-white-teal-orange.png'}
+        alt={'AnswerAI Logo'}
+        width={400}
+        height={80}
+      />
       <Divider sx={{ my: 2 }} />
       <Box my={4}>
         <Typography variant="h5" component="h2">
