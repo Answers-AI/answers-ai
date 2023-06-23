@@ -13,7 +13,8 @@ const sales: Sidekick = {
     'administrative',
     'leadership'
   ],
-  label: 'Meeting Analysis & Reply Expert',
+  temperature: 1,
+  label: 'Meeting Email Reply',
   value: 'meetingAnalysisReplyExpert',
   placeholder: 'You can analyze a meeting transcript and create a reply email for a customer.',
   getSystemPromptTemplate: () => {

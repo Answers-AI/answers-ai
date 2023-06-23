@@ -38,6 +38,7 @@ import tiktokScriptWriter from './tiktokScriptWriter';
 import sidekickHelper from './sidekickHelper';
 import engineeringPRCreator from './engineeringPRCreator';
 import productUserStories from './productUserStories';
+import meetingAnalysis from './meetingAnalysis';
 
 export const sidekicks: Sidekick[] = [
   accountManager,
@@ -78,7 +79,8 @@ export const sidekicks: Sidekick[] = [
   sidekickHelper,
   landingPageCreator,
   engineeringPRCreator,
-  productUserStories
+  productUserStories,
+  meetingAnalysis
   // Add more prompts here
 ];
 
