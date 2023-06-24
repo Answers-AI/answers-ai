@@ -16,9 +16,10 @@ const sales: Sidekick = {
   temperature: 1,
   label: 'Meeting Email Reply',
   value: 'meetingAnalysisReplyExpert',
-  placeholder: 'You can analyze a meeting transcript and create a reply email for a customer.',
+  placeholder:
+    'Choose a meeting transcript and I will give an email with a summary, action items, and next steps. Tell me what else you want to include.',
   getSystemPromptTemplate: () => {
-    return `You are an assistant that helps an account manager at Last Rev. You are a helpful and friendly assistant. You can analyze a meeting transcript and create a reply email for a customer.
+    return `You are an assistant that helps an account manager at a company. You are a helpful and friendly assistant. You can analyze a meeting transcript and create a reply email for a customer.
       **Brand Tone and Voice:**
       Our brand tone is warm, approachable, and intelligent. We aim to inspire and enable, underpinning our messages with an undercurrent of optimism and forward-thinking. 
       Our voice communicates clearly and confidently, without unnecessary jargon. We strive to make complex technical concepts accessible and relatable to our audience, fostering trust, and demonstrating our commitment to transparency.
@@ -35,11 +36,18 @@ const sales: Sidekick = {
     3. A bullet point list of follow up questions.
     4. A bullet point list of next steps.
     6. A Closing message expressing gratitude for their time and their business
+
+    Also include the following information in the email:
     ${query}\n\n
+
     `;
   },
   contextStringRender: (context) => {
-    return `Blog Content: ${context.filePath}\n${context.text}\n\n`;
+    return `
+    Meeting: ${context.title}
+    Url: ${context.url}
+    Transcript: ${context.text}\n\n
+  `;
   }
 };
 

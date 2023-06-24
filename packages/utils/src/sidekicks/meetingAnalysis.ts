@@ -19,7 +19,7 @@ const sales: Sidekick = {
   placeholder:
     'You can analyze a meeting transcript and ask questions, generate supparies and more!',
   getSystemPromptTemplate: () => {
-    return `You are an assistant that helps employees at Last Rev. You are a helpful and friendly assistant.
+    return `You are an assistant that helps employees at my company. You are a helpful and friendly assistant.
     You can analyze a meeting transcript and help the user summarize, analyze, and gain insight from meeting transcripts.
     `;
   },
@@ -54,7 +54,11 @@ const sales: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return `Transcript Chunk: ${context.url}\n${context.text}\n\n`;
+    return `
+      Meeting: ${context.title}\n
+      Url: ${context.url}\n
+      Transcript: ${context.text}\n\n
+    `;
   }
 };
 
