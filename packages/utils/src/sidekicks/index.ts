@@ -39,6 +39,7 @@ import sidekickHelper from './sidekickHelper';
 import engineeringPRCreator from './engineeringPRCreator';
 import productUserStories from './productUserStories';
 import meetingAnalysis from './meetingAnalysis';
+import executiveSummary from './executiveSummary';
 
 export const sidekicks: Sidekick[] = [
   accountManager,
@@ -80,7 +81,8 @@ export const sidekicks: Sidekick[] = [
   landingPageCreator,
   engineeringPRCreator,
   productUserStories,
-  meetingAnalysis
+  meetingAnalysis,
+  executiveSummary
   // Add more prompts here
 ];
 
