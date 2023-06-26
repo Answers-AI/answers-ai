@@ -1,8 +1,8 @@
 import React from 'react';
-import SourcesWebClient from './SourcesFile.Client';
+import SourcesFileClient from './SourcesFile.Client';
 // import { prisma } from '@db/client';
 
-const SourcesWeb = ({ sources }: any) => {
+const SourcesFile = ({ sources }: any) => {
   // TODO: Check why making requests from here makes the app not work
   // const sources = await prisma.document
   //   .findMany({
@@ -13,7 +13,7 @@ const SourcesWeb = ({ sources }: any) => {
   //   })
   //   .then((data: any) => JSON.parse(JSON.stringify(data)));
 
-  return <SourcesWebClient />;
+  return <SourcesFileClient />;
 };
 
-export default SourcesWeb;
+export default SourcesFile;

@@ -157,7 +157,6 @@ const SourcesWeb: React.FC<{}> = ({}) => {
     await mutate();
   };
 
-  console.log('WebFilters', filters?.datasources?.web);
   return (
     <>
       <Box marginBottom={1} sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>

@@ -16,7 +16,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
     'files',
     'codebase',
     'confluence',
-    'documents',
+    'document',
     'zoom',
     'youtube'
   ]);

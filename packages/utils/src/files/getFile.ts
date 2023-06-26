@@ -1,11 +1,11 @@
-import { webClient } from './index';
-import { WebPage } from 'types';
+import { FileRecord } from 'types';
 import cheerio from 'cheerio';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 import { Readability } from '@mozilla/readability';
 //@ts-ignore-next-line
 import { JSDOM } from 'jsdom';
 import showdown, { ConverterOptions } from 'showdown';
+import mammoth from 'mammoth';
 
 const showDownOptions: ConverterOptions = {
   omitExtraWLInCodeBlocks: true,
@@ -34,7 +34,7 @@ const showDownOptions: ConverterOptions = {
   backslashEscapesHTMLTags: false,
   emoji: false,
   underline: false,
-  completeHTMLDocument: false,
+  completeHTMLFile: false,
   metadata: false
 };
 
@@ -105,7 +105,10 @@ const excludeSelectors: string[] = [
   'hr'
 ];
 
-export const convertWebPageToMarkdown = async (url: string, pageHtml: string): Promise<WebPage> => {
+export const convertFileToMarkdown = async (
+  fileId: string,
+  pageHtml: string
+): Promise<FileRecord> => {
   let $ = cheerio.load(pageHtml);
   $(excludeSelectors.join(',')).remove();
 
@@ -151,11 +154,11 @@ export const convertWebPageToMarkdown = async (url: string, pageHtml: string): P
       }
     });
 
-  const dom = new JSDOM(`<article>${$.html()}</article>`, { url });
+  const dom = new JSDOM(`<article>${$.html()}</article>`, { fileId });
 
-  const document = dom.window.document;
+  const file = dom.window.file;
 
-  const reader = new Readability(document, {
+  const reader = new Readability(file, {
     debug: false,
     keepClasses: false,
     disableJSONLD: false
@@ -168,31 +171,32 @@ export const convertWebPageToMarkdown = async (url: string, pageHtml: string): P
     undefined,
     undefined
   );
-  const domain = new URL(url).origin;
+
   return {
-    url,
-    domain,
-    title: article?.title,
-    description: article?.excerpt,
-    content: `# ${url}\n${mkdown}`
+    fileId,
+    title: article?.title || `File: ${fileId}`,
+    content: `# ${fileId}\n${mkdown}`
   };
 };
 
-export const getWebPageHtml = async ({ url }: { url: string }): Promise<string> => {
-  console.log(`===Fetching webpage: ${url}`);
+export const getFileHtml = async ({
+  buffer,
+  fileId
+}: {
+  fileId: string;
+  buffer: Buffer;
+}): Promise<string> => {
+  console.log(`===Fetching file: ${fileId}`);
   try {
-    const pageHtml = await webClient.fetchWebData(url, { cache: false });
+    const response = await mammoth.convertToHtml({ buffer });
+    const pageHtml = response.value;
     if (!pageHtml) {
-      throw new Error(`No valid HTML returned for url: ${url}`);
+      throw new Error(`No valid HTML returned for fileId: ${fileId}`);
     }
 
     return pageHtml;
   } catch (error: any) {
-    if (error?.response?.status === 404) {
-      console.log('getWebPage:404', url);
-    } else {
-      console.error('getWebPage:ERROR', error);
-    }
+    console.error(`getFileHtml (${fileId}):ERROR ${error}`);
     throw error;
   }
 };

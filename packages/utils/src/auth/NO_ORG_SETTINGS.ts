@@ -21,7 +21,8 @@ export const NO_ORG_SETTINGS = {
     },
     { id: 'airtable', name: 'airtable', imageURL: '/static/images/airtable.png' },
     { id: 'codebase', name: 'codebase', imageURL: '/static/images/docubot.png' },
-    { id: 'documents', name: 'documents', imageURL: '/static/images/documents.png' },
+    { id: 'document', name: 'document', imageURL: '/static/images/documents.png' },
+    { id: 'files', name: 'files', imageURL: '/static/images/documents.png' },
     { id: 'zoom', name: 'zoom', imageURL: '/static/images/zoom.png' },
     { id: 'youtube', name: 'youtube', imageURL: '/static/images/youtube.png' }
   ]

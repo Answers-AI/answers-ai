@@ -3,7 +3,7 @@ import React from 'react';
 import { useFlags } from 'flagsmith/react';
 import { Box, ClickAwayListener } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AppSettings, AppService, AnswersFilters } from 'types';
+import { AppSettings, AppService } from 'types';
 import { useAnswers } from '../AnswersContext';
 import JourneySourceCard from './JourneySourceCard';
 
@@ -14,7 +14,7 @@ export const JourneyAppsDrawer = ({
   appSettings: AppSettings;
   activeApp?: string;
 }) => {
-  const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
+  // const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
 
   const flags = useFlags(['airtable', 'codebase', 'confluence']);
 
