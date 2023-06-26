@@ -62,17 +62,15 @@ export async function POST(req: Request) {
   let pineconeData,
     pineconeFilters,
     context = '',
-    summary = '',
     contextSourceFilesUsed: string[] = [];
   try {
-    ({ pineconeFilters, pineconeData, context, summary, contextSourceFilesUsed } =
-      await fetchContext({
-        user,
-        prompt,
-        messages,
-        filters,
-        sidekick: sidekickObject
-      }));
+    ({ pineconeFilters, pineconeData, context, contextSourceFilesUsed } = await fetchContext({
+      user,
+      prompt,
+      messages,
+      filters,
+      sidekick: sidekickObject
+    }));
   } catch (contextError) {
     console.log('fetchContext', contextError);
     throw contextError;
@@ -122,7 +120,6 @@ export async function POST(req: Request) {
       context,
       ...(process.env.NODE_ENV === 'development' && {
         pineconeData,
-        summary,
         completionRequest
       })
     },

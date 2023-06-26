@@ -18,15 +18,15 @@ declare module 'next-auth' {
     error?: 'RefreshAccessTokenError';
   }
 }
-declare module 'next-auth/jwt' {
-  interface JWT {
-    id: string;
-    access_token: string;
-    expires_at: number;
-    refresh_token: string;
-    error?: 'RefreshAccessTokenError';
-  }
-}
+// declare module 'next-auth/jwt' {
+//   interface JWT {
+//     id: string;
+//     access_token: string;
+//     expires_at: number;
+//     refresh_token: string;
+//     error?: 'RefreshAccessTokenError';
+//   }
+// }
 
 const ATLASSIAN_SCOPE = {
   // 'write:jira-work': true,
@@ -82,7 +82,7 @@ export const authOptions: AuthOptions = {
     },
     async session({ session, token }) {
       if (token && session.user) {
-        const user = await prisma.user.findUnique({ where: { id: token.id } });
+        const user = await prisma.user.findUnique({ where: { id: token.id as any } });
         if (!user) throw new Error('User not found');
         session.user.id = user.id!;
         session.user.role = user.role!;

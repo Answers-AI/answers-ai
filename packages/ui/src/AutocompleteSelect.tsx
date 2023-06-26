@@ -10,12 +10,12 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 interface Props<T> {
   sx?: any;
-  label: string;
+  label?: string;
   placeholder?: string;
   options: T[];
   value: T[];
-  onChange: (value: T[]) => void;
-  onFocus: React.FocusEventHandler<HTMLDivElement>;
+  onChange?: (value: T[]) => void;
+  onFocus?: React.FocusEventHandler<HTMLDivElement>;
   getOptionLabel?: (value: T) => string;
   getOptionValue?: (value: T) => string;
 }
@@ -31,12 +31,7 @@ export default function AutocompleteSelect<T>({
   ...props
 }: Props<T>) {
   const handleChange = (event: any, newValue: any) => {
-    const { target } = event;
-    onChange(
-      // On autofill we get a stringified value.
-
-      newValue
-    );
+    if (onChange) onChange(newValue);
   };
   return (
     <Autocomplete

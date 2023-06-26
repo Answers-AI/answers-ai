@@ -68,10 +68,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       }
     });
   let pineconeData,
-    context = '',
-    summary = '';
+    context = '';
   try {
-    ({ pineconeData, context, summary } = await fetchContext({
+    ({ pineconeData, context } = await fetchContext({
       // chat,
       user,
       prompt,
@@ -93,7 +92,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     console.timeEnd(`[${ts}] [query createChatChain]: ` + prompt);
     console.time(`[${ts}] [query chatChain.call]: ` + prompt);
     const response = await chatChain.call({
-      context: summary,
+      context,
       user,
       input: prompt,
       messages,
@@ -134,7 +133,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       role: 'assistant',
       content: answer,
       context,
-      summary,
       filters,
       pineconeData,
       completionData,
@@ -146,7 +144,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       prompt,
       error,
       context,
-      summary,
       filters,
       pineconeData,
       completionData,
