@@ -106,7 +106,7 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
 
             {isLoading ? <CircularProgress size={20} sx={{ ml: 1 }} /> : null}
           </Box>
-          <pre>{JSON.stringify(suggestedSources, null, 2)}</pre>
+          {/* <pre>{JSON.stringify(suggestedSources, null, 2)}</pre> */}
           <Grid2 container sx={{ pt: 3, gap: 2, width: '100%' }}>
             <JourneyAppsDrawer appSettings={appSettings} />
           </Grid2>
