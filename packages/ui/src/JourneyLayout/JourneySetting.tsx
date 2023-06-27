@@ -2,7 +2,7 @@ import React from 'react';
 
 import SourcesAirtable from './SourcesAirtable';
 import SourcesConfluence from './SourcesConfluence';
-import SourcesDocubot from './SourcesDocubot';
+import SourcesCodebase from '../SourcesCodebase';
 import SourcesFile from '@ui/SourcesFile';
 import SourcesJira from './SourcesJira';
 import SourcesSlack from './SourcesSlack';
@@ -14,7 +14,7 @@ import SourcesZoom from '../SourcesZoom';
 const JOURNEY_SETTINGS: { [key: string]: any } = {
   airtable: SourcesAirtable,
   confluence: SourcesConfluence,
-  docubot: SourcesDocubot,
+  codebase: SourcesCodebase,
   files: SourcesFile,
   jira: SourcesJira,
   slack: SourcesSlack,

@@ -11,7 +11,7 @@ import SourcesWeb from './SourcesWeb';
 import SourcesJira from './JourneyLayout/SourcesJira';
 import SourcesConfluence from './JourneyLayout/SourcesConfluence';
 import SourcesAirtable from './JourneyLayout/SourcesAirtable';
-import SourcesDocubot from './JourneyLayout/SourcesDocubot';
+import SourcesCodebase from './SourcesCodebase';
 import SourcesSlack from './JourneyLayout/SourcesSlack';
 
 export default function JourneySources({ appSettings }: { appSettings: AppSettings }) {
@@ -93,8 +93,8 @@ export default function JourneySources({ appSettings }: { appSettings: AppSettin
                 />
               ) : null}
 
-              {flags?.docubot?.enabled && selectedService.name === 'docubot' ? (
-                <SourcesDocubot
+              {flags?.docubot?.enabled && selectedService.name === 'codebase' ? (
+                <SourcesCodebase
                   appSettings={appSettings}
                   filters={filters}
                   updateFilter={updateFilter}

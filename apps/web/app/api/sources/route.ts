@@ -43,7 +43,7 @@ export async function GET(req: Request, res: Response) {
         )
     : [];
   const domains = countPagesByDomain(allWeb?.map((x) => x.url));
-  const sources = filteredRecords?.map(({ url, title }) => ({ url, title }));
+  const sources = filteredRecords?.map(({ url, title }) => ({ url, title, repo: title }));
 
   return NextResponse.json({
     sources,

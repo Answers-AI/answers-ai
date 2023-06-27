@@ -13,7 +13,7 @@ import * as webFunctions from '@utils/ingest/web';
 import * as jiraFunctions from '@utils/ingest/jira';
 import * as fileFunctions from '@utils/ingest/file';
 import * as airtableFunctions from '@utils/ingest/airtable';
-import * as alpha42Functions from '@utils/ingest/alpha42';
+import * as codebaseFunctions from '@utils/ingest/codebase';
 
 // Create a client to send and receive events
 
@@ -30,7 +30,7 @@ const handlers = {
   ...jiraFunctions,
   ...fileFunctions,
   ...airtableFunctions,
-  ...alpha42Functions
+  ...codebaseFunctions
 };
 
 const functions = Object.values(handlers);

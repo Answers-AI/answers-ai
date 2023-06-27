@@ -46,6 +46,10 @@ const parseFilters = (filters: AnswersFilters) => {
     (parsedFilters.datasources.zoom.url as any) = parsedFilters?.datasources?.zoom?.url.map(
       (url) => (url as any)?.url
     );
+  if (parsedFilters?.datasources?.codebase?.repo?.length) {
+    // TODO: Define a type for the Pinecone filters which this function must return
+    (parsedFilters.datasources.codebase.repo as any) =
+      parsedFilters?.datasources?.codebase?.repo.map(({ title }) => title);
   }
 
   return parsedFilters;
@@ -145,7 +149,7 @@ export const fetchContext = async ({
 
   console.time(`[${ts}] Pineconedata`);
   console.time(`[${ts}] Pineconedata get`);
-  const PUBLIC_SOURCES = ['web', 'docubot', 'drive', 'github', 'notion', 'airtable'];
+  const PUBLIC_SOURCES = ['web', 'drive', 'github', 'notion', 'airtable'];
   const pineconeData = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
       if (!filter[source]) return Promise.resolve(null);

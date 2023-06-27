@@ -2,19 +2,18 @@ import { EventVersionHandler } from './EventVersionHandler';
 import { prisma } from '@db/client';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import embedVectors from '../pinecone/embedVectors';
-import { v4 as uuidV4 } from 'uuid';
 
-export const alpha42Embeddings: EventVersionHandler<{
+export const codebaseEmbeddings: EventVersionHandler<{
   repo: string;
   text: string;
   filePath: string;
   organizationId?: string;
   code?: string;
 }> = {
-  event: 'alpha42/repo.sync',
+  event: 'codebase/repo.sync',
   v: '1',
   handler: async ({ event }) => {
-    const source = 'alpha42';
+    const source = 'codebase';
     const user = await prisma.user.findUnique({
       where: { id: event?.user?.id! },
       include: { currentOrganization: true }

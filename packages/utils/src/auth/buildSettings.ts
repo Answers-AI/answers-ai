@@ -144,69 +144,69 @@ export const buildSettings = async (user: User, org?: Organization) => {
     console.log('JiraSettingsError', error);
   }
 
-  try {
-    newSettings.docubot = {
-      repos: [
-        {
-          id: 'docubot-v0.2.2',
-          name: 'docubot-v0.2.2',
-          enabled: true
-        },
-        {
-          id: 'answers-ai-v0.1.1',
-          name: 'answers-ai-v0.1.1',
-          enabled: true
-        },
-        {
-          id: 'lastrev-marketing-site-v0.1.0',
-          name: 'lastrev-marketing-site-v0.1.0',
-          enabled: true
-        },
-        {
-          id: 'langchainjs-v0.0.4',
-          name: 'langchainjs-v0.0.4',
-          enabled: true
-        },
-        {
-          id: 'cams-env-test-v0.1.0',
-          name: 'cams-env-test-v0.1.0',
-          enabled: true
-        },
-        {
-          id: 'ias-knowledge-base-v0.1.0',
-          name: 'ias-knowledge-base-v0.1.0',
-          enabled: true
-        },
-        {
-          id: 'answersai-marketing-v0.1.0',
-          name: 'answersai-marketing-v0.1.0',
-          enabled: true
-        },
-        {
-          id: 'trotto-go-links-v0.1.0',
-          name: 'trotto-go-links-v0.1.0',
-          enabled: true
-        },
-        {
-          id: 'last-rev-contentful-app-v0.1.0',
-          name: 'last-rev-contentful-app-v0.1.0',
-          enabled: true
-        },
-        {
-          id: 'contentful-sidekick-v1.0.0',
-          name: 'contentful-sidekick-v1.0.0',
-          enabled: true
-        },
-        {
-          id: 'lastrev-next-starter-v0.1.0',
-          name: 'lastrev-next-starter-v0.1.0',
-          enabled: true
-        }
-      ]
-    };
-  } catch (error) {
-    console.log('JiraSettingsError', error);
-  }
+  // try {
+  //   newSettings.docubot = {
+  //     repos: [
+  //       {
+  //         id: 'docubot-v0.2.2',
+  //         name: 'docubot-v0.2.2',
+  //         enabled: true
+  //       },
+  //       {
+  //         id: 'answers-ai-v0.1.1',
+  //         name: 'answers-ai-v0.1.1',
+  //         enabled: true
+  //       },
+  //       {
+  //         id: 'lastrev-marketing-site-v0.1.0',
+  //         name: 'lastrev-marketing-site-v0.1.0',
+  //         enabled: true
+  //       },
+  //       {
+  //         id: 'langchainjs-v0.0.4',
+  //         name: 'langchainjs-v0.0.4',
+  //         enabled: true
+  //       },
+  //       {
+  //         id: 'cams-env-test-v0.1.0',
+  //         name: 'cams-env-test-v0.1.0',
+  //         enabled: true
+  //       },
+  //       {
+  //         id: 'ias-knowledge-base-v0.1.0',
+  //         name: 'ias-knowledge-base-v0.1.0',
+  //         enabled: true
+  //       },
+  //       {
+  //         id: 'answersai-marketing-v0.1.0',
+  //         name: 'answersai-marketing-v0.1.0',
+  //         enabled: true
+  //       },
+  //       {
+  //         id: 'trotto-go-links-v0.1.0',
+  //         name: 'trotto-go-links-v0.1.0',
+  //         enabled: true
+  //       },
+  //       {
+  //         id: 'last-rev-contentful-app-v0.1.0',
+  //         name: 'last-rev-contentful-app-v0.1.0',
+  //         enabled: true
+  //       },
+  //       {
+  //         id: 'contentful-sidekick-v1.0.0',
+  //         name: 'contentful-sidekick-v1.0.0',
+  //         enabled: true
+  //       },
+  //       {
+  //         id: 'lastrev-next-starter-v0.1.0',
+  //         name: 'lastrev-next-starter-v0.1.0',
+  //         enabled: true
+  //       }
+  //     ]
+  //   };
+  // } catch (error) {
+  //   console.log('JiraSettingsError', error);
+  // }
 
   try {
     newSettings.documents = {
