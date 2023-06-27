@@ -7,14 +7,6 @@ import { useAnswers } from '../AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import Image from 'next/image';
 import JourneySetting from './JourneySetting';
-import SourcesWeb from '../SourcesWeb';
-import SourcesFiles from '../SourcesFiles';
-import AutocompleteSelect from '@ui/AutocompleteSelect';
-// import SourcesJira from './SourcesJira';
-// import SourcesConfluence from './SourcesConfluence';
-// import SourcesAirtable from './SourcesAirtable';
-// import SourcesDocubot from './SourcesDocubot';
-// import SourcesSlack from './SourcesSlack';
 
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
@@ -92,106 +84,13 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
                 gap: 2,
                 flexDirection: 'column'
               }}>
-              {selectedService.name === 'slack' ? (
+              {selectedService.name ? (
                 <JourneySetting
                   app={selectedService.name}
                   appSettings={appSettings}
                   filters={filters}
                   updateFilter={updateFilter}
                 />
-              ) : null}
-
-              {serviceOpen === 'confluence' ? (
-                <JourneySetting
-                  app={selectedService.name}
-                  appSettings={appSettings}
-                  filters={filters}
-                  updateFilter={updateFilter}
-                />
-              ) : null}
-
-              {serviceOpen === 'web' ? <SourcesWeb /> : null}
-
-              {serviceOpen === 'jira' ? (
-                <JourneySetting
-                  app={selectedService.name}
-                  appSettings={appSettings}
-                  filters={filters}
-                  updateFilter={updateFilter}
-                />
-              ) : null}
-              {flags?.docubot?.enabled && selectedService.name === 'docubot' ? (
-                <>
-                  <AutocompleteSelect
-                    label="Repository"
-                    options={
-                      appSettings?.docubot?.repos?.filter((s) => s.enabled)?.map((s) => s.id) || []
-                    }
-                    value={filters?.datasources?.docubot?.repo || []}
-                    onChange={(value) =>
-                      updateFilter({ datasources: { docubot: { repo: value as string[] } } })
-                    }
-                  />
-                </>
-              ) : null}
-              {serviceOpen === 'files' ? <SourcesFiles /> : null}
-              {flags?.documents?.enabled && selectedService?.name === 'documents' ? (
-                <>
-                  <AutocompleteSelect
-                    label="Documents"
-                    options={
-                      appSettings?.documents?.docs?.filter((s) => s.enabled)?.map((s) => s.id) || []
-                    }
-                    value={filters?.datasources?.document?.name || []}
-                    onChange={(value) =>
-                      updateFilter({ datasources: { document: { name: value } } })
-                    }
-                  />
-                </>
-              ) : null}
-              {flags?.zoom?.enabled && selectedService?.name === 'zoom' ? (
-                <>
-                  <AutocompleteSelect
-                    label="Meetings"
-                    options={
-                      appSettings?.zoom?.meetings?.filter((s) => s.enabled)?.map((s) => s.id) || []
-                    }
-                    value={filters?.datasources?.zoom?.name || []}
-                    onChange={(value: string[]) =>
-                      updateFilter({ datasources: { zoom: { name: value } } })
-                    }
-                  />
-                </>
-              ) : null}
-              {flags?.youtube?.enabled && selectedService?.name === 'youtube' ? (
-                <>
-                  <AutocompleteSelect
-                    label="Videos"
-                    options={
-                      appSettings?.youtube?.video?.filter((s) => s.enabled)?.map((s) => s.id) || []
-                    }
-                    value={filters?.datasources?.youtube?.name || []}
-                    onChange={(value: string[]) =>
-                      updateFilter({ datasources: { youtube: { name: value } } })
-                    }
-                  />
-                </>
-              ) : null}
-              {flags?.airtable?.enabled && selectedService.name === 'airtable' ? (
-                <>
-                  <div>Last Rev Mission control</div>
-                  <AutocompleteSelect
-                    label="View"
-                    options={
-                      appSettings?.airtable?.tables?.filter((s) => s.enabled)?.map((s) => s.id) ||
-                      []
-                    }
-                    value={filters?.datasources?.airtable?.table || []}
-                    onChange={(value: string[]) =>
-                      updateFilter({ datasources: { airtable: { table: value } } })
-                    }
-                  />
-                </>
               ) : null}
             </Box>
           </Box>

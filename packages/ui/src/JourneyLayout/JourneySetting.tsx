@@ -1,19 +1,27 @@
 import React from 'react';
 
-import SourcesWeb from '../SourcesWeb';
-import SourcesJira from './SourcesJira';
-import SourcesConfluence from './SourcesConfluence';
 import SourcesAirtable from './SourcesAirtable';
+import SourcesConfluence from './SourcesConfluence';
 import SourcesDocubot from './SourcesDocubot';
+import SourcesFile from '@ui/SourcesFile';
+import SourcesJira from './SourcesJira';
 import SourcesSlack from './SourcesSlack';
+import SourcesWeb from '../SourcesWeb';
+import SourcesYoutube from '../SourcesYoutube';
+import SourcesDocument from '../SourcesDocument';
+import SourcesZoom from '../SourcesZoom';
 
 const JOURNEY_SETTINGS: { [key: string]: any } = {
-  jira: SourcesJira,
-  slack: SourcesSlack,
+  airtable: SourcesAirtable,
   confluence: SourcesConfluence,
   docubot: SourcesDocubot,
-  airtable: SourcesAirtable,
-  web: SourcesWeb
+  files: SourcesFile,
+  jira: SourcesJira,
+  slack: SourcesSlack,
+  web: SourcesWeb,
+  documents: SourcesDocument,
+  zoom: SourcesZoom,
+  youtube: SourcesYoutube
 };
 
 const JourneySettings = ({ app, ...other }: any) => {
