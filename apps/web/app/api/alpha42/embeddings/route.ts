@@ -1,7 +1,8 @@
 // import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
-import { authenticateUser, respond401 } from '../utils';
 import { inngest } from '@utils/ingest/client';
+import { authenticateUser } from '@utils/auth/authenticateUser';
+import { respond401 } from '@utils/auth/respond401';
 
 export async function POST(req: Request) {
   const user = await authenticateUser(req);
