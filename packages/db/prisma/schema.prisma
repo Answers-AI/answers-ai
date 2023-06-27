@@ -49,6 +49,14 @@ model User {
   updatedAt      DateTime  @default(now()) @updatedAt
   ChatApp        ChatApp[]
   organizationId String?
+  apiKey         ApiKey?
+}
+
+model ApiKey {
+  id        String @id @default(cuid())
+  userId    String @unique
+  user User @relation(fields: [userId], references: [id])
+  key       String @unique
 }
 
 model Organization {
