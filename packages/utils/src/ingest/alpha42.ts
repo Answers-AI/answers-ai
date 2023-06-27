@@ -8,13 +8,13 @@ export const alpha42Embeddings: EventVersionHandler<{
   repo: string;
   text: string;
   filePath: string;
-  source?: string;
   organizationId?: string;
   code?: string;
 }> = {
   event: 'alpha42/repo.sync',
   v: '1',
   handler: async ({ event }) => {
+    const source = 'alpha42';
     const user = await prisma.user.findUnique({
       where: { id: event?.user?.id! },
       include: { currentOrganization: true }
@@ -23,7 +23,7 @@ export const alpha42Embeddings: EventVersionHandler<{
     if (!user?.id) throw new Error('No user found');
 
     const data = event.data;
-    const { text, repo, source, filePath, code } = data;
+    const { text, repo, filePath, code } = data;
 
     let organizationId = user.organizationId;
     if (user.role === 'superadmin' && data.organizationId) {
@@ -31,7 +31,7 @@ export const alpha42Embeddings: EventVersionHandler<{
     }
 
     const fileTextId = uuidV4();
-    const url = `${repo}`;
+    const url = `${repo}${filePath}`;
 
     await prisma.document.create({
       data: {
@@ -41,12 +41,12 @@ export const alpha42Embeddings: EventVersionHandler<{
         metadata: {
           url,
           repo,
-          source: source ?? 'file',
+          source,
           text,
           filePath,
           code
         },
-        source: source ?? 'alpha42'
+        source
       }
     });
 
@@ -65,7 +65,7 @@ export const alpha42Embeddings: EventVersionHandler<{
         metadata: {
           url,
           repo,
-          source: source ?? 'file',
+          source,
           text,
           filePath,
           code
