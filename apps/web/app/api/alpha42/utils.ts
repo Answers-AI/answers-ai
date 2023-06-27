@@ -7,7 +7,7 @@ export const respond401 = () => {
   });
 };
 
-export const authenticateUser = async (req: Request, res: Response): Promise<User | null> => {
+export const authenticateUser = async (req: Request): Promise<User | null> => {
   const token = req.headers.get('authorization')?.replace('Bearer ', '');
   if (!token) return null;
 

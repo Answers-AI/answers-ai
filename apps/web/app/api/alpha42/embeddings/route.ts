@@ -3,8 +3,8 @@ import { NextResponse } from 'next/server';
 import { authenticateUser, respond401 } from '../utils';
 import { inngest } from '@utils/ingest/client';
 
-export async function POST(req: Request, res: Response) {
-  const user = await authenticateUser(req, res);
+export async function POST(req: Request) {
+  const user = await authenticateUser(req);
 
   if (!user) return respond401();
 
