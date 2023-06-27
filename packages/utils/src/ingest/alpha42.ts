@@ -30,7 +30,6 @@ export const alpha42Embeddings: EventVersionHandler<{
       organizationId = data.organizationId;
     }
 
-    const fileTextId = uuidV4();
     const url = `${repo}${filePath}`;
 
     await prisma.document.create({
