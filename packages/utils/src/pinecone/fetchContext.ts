@@ -27,8 +27,23 @@ const parseFilters = (filters: AnswersFilters) => {
   }
 
   if (parsedFilters?.datasources?.file?.url?.length) {
-    // TODO: Define a type for the Pinecone filters which this function must return
     (parsedFilters.datasources.file.url as any) = parsedFilters?.datasources?.file?.url.map(
+      (url) => (url as any)?.url
+    );
+  }
+
+  if (parsedFilters?.datasources?.youtube?.url?.length) {
+    (parsedFilters.datasources.youtube.url as any) = parsedFilters?.datasources?.youtube?.url.map(
+      (url) => (url as any)?.url
+    );
+  }
+  if (parsedFilters?.datasources?.document?.url?.length) {
+    (parsedFilters.datasources.document.url as any) = parsedFilters?.datasources?.document?.url.map(
+      (url) => (url as any)?.url
+    );
+  }
+  if (parsedFilters?.datasources?.zoom?.url?.length) {
+    (parsedFilters.datasources.zoom.url as any) = parsedFilters?.datasources?.zoom?.url.map(
       (url) => (url as any)?.url
     );
   }
@@ -130,17 +145,7 @@ export const fetchContext = async ({
 
   console.time(`[${ts}] Pineconedata`);
   console.time(`[${ts}] Pineconedata get`);
-  const PUBLIC_SOURCES = [
-    'web',
-    'docubot',
-    'drive',
-    'github',
-    'notion',
-    'documents',
-    'zoom',
-    'youtube',
-    'airtable'
-  ];
+  const PUBLIC_SOURCES = ['web', 'docubot', 'drive', 'github', 'notion', 'airtable'];
   const pineconeData = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
       if (!filter[source]) return Promise.resolve(null);

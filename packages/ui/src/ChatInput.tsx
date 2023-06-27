@@ -46,7 +46,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
 
   const handleSubmit = () => {
     if (!inputValue) return;
-    sendMessage(inputValue, sidekick, gptModel);
+    sendMessage({content: inputValue, sidekick, gptModel});
     setShowPrompts(false);
     setInputValue('');
   };

@@ -38,6 +38,7 @@ const Accordion = styled((props: AccordionProps) => (
     background: 'rgba(24,24,24)'
   }
 }));
+
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
   <MuiAccordionSummary
     expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}

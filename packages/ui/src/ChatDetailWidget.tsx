@@ -62,7 +62,7 @@ const ChatDetailWidget = ({
               />
               <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                 <Button
-                  onClick={regenerateAnswer}
+                  onClick={() => regenerateAnswer()}
                   variant="contained"
                   color="primary"
                   sx={{ margin: 'auto' }}>
@@ -92,7 +92,7 @@ const ChatDetailWidget = ({
 
           {messages?.length && !isLoading && !error ? (
             <Box sx={{ py: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
-              <Button onClick={regenerateAnswer} variant="outlined" color="primary">
+              <Button onClick={() => regenerateAnswer()} variant="outlined" color="primary">
                 <Refresh />
               </Button>
             </Box>

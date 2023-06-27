@@ -158,22 +158,15 @@ export interface DocubotFilters {
 }
 
 export interface DocumentFilters {
-  name?: string[];
-  path?: string[];
-}
-export interface DocumentFilters {
-  name?: string[];
-  url?: string[];
+  url?: Document[];
 }
 
 export interface ZoomFilters {
-  name?: string[];
-  path?: string[];
+  url?: Document[];
 }
 
 export interface YoutubeFilters {
-  name?: string[];
-  path?: string[];
+  url?: Document[];
 }
 export interface FileFilters {
   url?: Document[];

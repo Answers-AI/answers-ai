@@ -74,7 +74,6 @@ export const processVectorsUpserted: EventVersionHandler<{
             })
           )
       );
-
       await tx.document.updateMany({
         where: {
           url: { in: documentUrls }

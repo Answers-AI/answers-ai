@@ -138,14 +138,24 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
   });
 
   const sendMessage = useCallback(
-    async (content: string, sidekick?: Sidekick, gptModel?: string) => {
+    async ({
+      content,
+      sidekick,
+      gptModel,
+      retry
+    }: {
+      content: string;
+      sidekick?: Sidekick;
+      gptModel?: string;
+      retry?: boolean;
+    }) => {
       const sidekickValue = sidekick?.value || 'defaultPrompt';
       setIsLoading(true);
       setError(null);
-      addMessage({ role: 'user', content: content } as Message);
+      if (!retry) addMessage({ role: 'user', content: content } as Message);
       try {
         if (useStreaming) {
-          generateResponse({ content, sidekick, gptModel }); // Pass sidekick and gptModel here
+          await generateResponse({ content, sidekick, gptModel }); // Pass sidekick and gptModel here
         } else {
           const { data } = await axios.post(`${apiUrl}/ai/query`, {
             journeyId,
@@ -189,12 +199,12 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
     setFilters(mergedSettings);
   };
 
-  const regenerateAnswer = () => {
+  const regenerateAnswer = (retry?: boolean) => {
     const [message] = messages?.filter((m) => m.role === 'user').slice(-1) ?? [];
     // if (messages[messages.length - 1].role === ChatCompletionRequestMessageRoleEnum.Assistant) {
     //   setMessages(messages.slice(0, -1));
     // }
-    sendMessage(message.content);
+    sendMessage({ content: message.content, retry });
   };
 
   const clearMessages = () => {
