@@ -1,6 +1,12 @@
 {
   "extends": "tsconfig/nextjs.json",
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "app/api/alpha42/embeddings"
+  ],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "moduleResolution": "node",
