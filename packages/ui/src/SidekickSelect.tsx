@@ -22,7 +22,7 @@ export const SidekickSelect = ({
 }: SidekickSelectProps) => {
   const [departments, setDepartments] = useState<string[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState<string>(
-    toSentenceCase(Cookies.get('department') || 'General')
+    toSentenceCase(Cookies.get('department') || 'Administrative')
   );
   const [selectedPlaceholder, setSelectedPlaceholder] = useState<string>(
     'Select a Sidekick for specialized tasks!'
@@ -102,7 +102,7 @@ export const SidekickSelect = ({
         labelId="department-select-label"
         id="department-select"
         label="Department"
-        value={selectedDepartment}
+        value={selectedDepartment || 'administrative'}
         onChange={handleDepartmentChange}>
         {departments.map((department) => (
           <MenuItem key={department} value={department}>
@@ -114,7 +114,7 @@ export const SidekickSelect = ({
         labelId="sidekick-select-label"
         id="sidekick-select"
         label="Sidekick"
-        value={selectedSidekick.value}
+        value={selectedSidekick.value || 'defaultPrompt'}
         onChange={handleSidekickChange}>
         {departmentSidekicks.map((sidekick) => (
           <MenuItem key={sidekick.value} value={sidekick.value}>
