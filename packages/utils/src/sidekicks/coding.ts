@@ -27,7 +27,7 @@ const coding: Sidekick = {
   contextStringRender: (context) => {
     return `Source: [${context.filePath ?? context.url}](${
       context.filePath ?? context.url
-    })\n Javascript:\n${context.code}\n\n`;
+    })\n Javascript:\n${context.code ?? context.text}\n\n`;
   }
 };
 

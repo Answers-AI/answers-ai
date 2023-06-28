@@ -24,7 +24,7 @@ const refactor: Sidekick = {
       only respond with the refactored code, comments and be detailed`;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath ?? context.url}\n${context.code}\n\n`;
+    return `filePath: ${context.filePath ?? context.url}\n${context.code ?? context.text}\n\n`;
   }
 };
 

@@ -28,7 +28,7 @@ const debugging: Sidekick = {
       `;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath ?? context.url}\n${context.code}\n\n`;
+    return `filePath: ${context.filePath ?? context.url}\n${context.code ?? context.text}\n\n`;
   }
 };
 

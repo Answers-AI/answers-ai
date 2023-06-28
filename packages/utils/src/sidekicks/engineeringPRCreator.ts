@@ -25,7 +25,7 @@ const sidekick: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.filePath}\n${context.code}\n\n`;
+    return `filePath: ${context.filePath}\n${context.code ?? context.text}\n\n`;
   }
 };
 
