@@ -32,11 +32,11 @@ const defaultPrompt: Sidekick = {
     Blog Critic - I can give suggestions on how to make blog posts better
     Blog Outline Expert - I can help you develop a great blog outline
     ChatGPT - I am just like ChatGPT
-    Coding Expert - I can create code for you using Docubot
+    Coding Expert - I can create code for you using codebases
     Contentful Entry Expert - I can help you post a blog in Contentful
     Contentful Expert - I can help you with Contentful Content Entry Questions
     Customer Support - I can help with support issues
-    Debugging Expert - I can debug code for you using Docubot
+    Debugging Expert - I can debug code for you using codebases
     Decision Making - I can help you think through a decision and help look at a decision from all angles.
     Docs Creation - I can create documentation for you
     Email Subject Brainstormer - I can brainstorm email subjects for you
@@ -54,7 +54,7 @@ const defaultPrompt: Sidekick = {
     Prompt Assistant - I can help you craft the perfect prompt
     QA Assistant - I can help you write tests for your code and check for bugs
     Realtor Listing - I can make amazing real estate listings for you
-    Refactoring Expert - I can create refactor code for you using Docubot
+    Refactoring Expert - I can create refactor code for you using codebases
     Research Assistant - I can help you research topics and provide insights
     Root Cause Analysis - I can help you get to the root cause of a problem and help develop a plan
     Sales Proposal Expert - I can create sales proposals for you based on client requirements

@@ -5,7 +5,7 @@ const coding: Sidekick = {
   label: 'Coding Expert',
   value: 'coding',
   placeholder:
-    'I can analyze your code and help you write code. Works best with Docubot, but can just as easily work with copy paste.',
+    'I can analyze your code and help you write code. Works best with Codebases, but can just as easily work with copy paste.',
   getSystemPromptTemplate: (user) => {
     return `You are a code assistant. You specialize in building Typescript applications with NextJS and React.`;
   },

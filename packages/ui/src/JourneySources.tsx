@@ -11,13 +11,13 @@ import SourcesWeb from './SourcesWeb';
 import SourcesJira from './JourneyLayout/SourcesJira';
 import SourcesConfluence from './JourneyLayout/SourcesConfluence';
 import SourcesAirtable from './JourneyLayout/SourcesAirtable';
-import SourcesDocubot from './JourneyLayout/SourcesDocubot';
+import SourcesCodebase from './SourcesCodebase';
 import SourcesSlack from './JourneyLayout/SourcesSlack';
 
 export default function JourneySources({ appSettings }: { appSettings: AppSettings }) {
   const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
 
-  const flags = useFlags(['airtable', 'docubot']);
+  const flags = useFlags(['airtable', 'codebase']);
 
   const enabledServices: AppService[] | undefined = appSettings?.services?.filter((service) => {
     const isServiceEnabledInFlags = (flags?.[service.name] as any)?.enabled;
@@ -93,8 +93,8 @@ export default function JourneySources({ appSettings }: { appSettings: AppSettin
                 />
               ) : null}
 
-              {flags?.docubot?.enabled && selectedService.name === 'docubot' ? (
-                <SourcesDocubot
+              {flags?.codebase?.enabled && selectedService.name === 'codebase' ? (
+                <SourcesCodebase
                   appSettings={appSettings}
                   filters={filters}
                   updateFilter={updateFilter}

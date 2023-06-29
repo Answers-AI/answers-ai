@@ -28,7 +28,7 @@ export async function POST(req: Request) {
   await inngest.send({
     v: '1',
     ts: new Date().valueOf(),
-    name: 'alpha42/repo.sync',
+    name: 'codebase/repo.sync',
     user,
     data
   });

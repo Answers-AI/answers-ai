@@ -14,7 +14,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
   const flags = useFlags([
     'airtable',
     'files',
-    'docubot',
+    'codebase',
     'confluence',
     'documents',
     'zoom',

@@ -67,7 +67,7 @@ export interface AppSettings {
       enabled: boolean;
     }[];
   };
-  docubot?: {
+  codebase?: {
     repos?: {
       id: string;
       name: string;
@@ -142,7 +142,7 @@ export type SourceFilters =
   | OpenApiFilters
   | ConfluenceFilters
   | AirtableFilters
-  | DocubotFilters
+  | CodebaseFilters
   | DocumentFilters
   | ZoomFilters
   | YoutubeFilters;
@@ -152,8 +152,8 @@ export interface AirtableFilters {
   view?: string[];
 }
 
-export interface DocubotFilters {
-  repo?: string[];
+export interface CodebaseFilters {
+  repo?: Document[];
   path?: string[];
 }
 
@@ -180,7 +180,7 @@ export interface DataSourcesFilters {
   openapi?: OpenApiFilters;
   confluence?: ConfluenceFilters;
   airtable?: AirtableFilters;
-  docubot?: DocubotFilters;
+  codebase?: CodebaseFilters;
   document?: DocumentFilters;
   zoom?: ZoomFilters;
   youtube?: YoutubeFilters;
@@ -200,7 +200,7 @@ type Models = {
   algolia: string[];
   openapi: string[];
   airtable: string[];
-  docubot: string[];
+  codebase: string[];
   document: string[];
   zoom: string[];
   youtube: string[];
@@ -315,7 +315,7 @@ export interface AirtableSetting extends AirtableRecord {
   enabled: boolean;
 }
 
-export interface DocubotSetting extends DocubotRecord {
+export interface CodebaseSetting extends CodebaseRecord {
   enabled: boolean;
 }
 
@@ -416,7 +416,7 @@ export type AirtableRecord = {
   };
 };
 
-export type DocubotRecord = {
+export type CodebaseRecord = {
   id: number;
   title: string;
 };
