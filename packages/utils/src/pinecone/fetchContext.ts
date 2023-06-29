@@ -46,6 +46,7 @@ const parseFilters = (filters: AnswersFilters) => {
     (parsedFilters.datasources.zoom.url as any) = parsedFilters?.datasources?.zoom?.url.map(
       (url) => (url as any)?.url
     );
+  }
   if (parsedFilters?.datasources?.codebase?.repo?.length) {
     // TODO: Define a type for the Pinecone filters which this function must return
     (parsedFilters.datasources.codebase.repo as any) =
