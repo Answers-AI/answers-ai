@@ -29,10 +29,25 @@ export const codebaseEmbeddings: EventVersionHandler<{
       organizationId = data.organizationId;
     }
 
-    const url = `${repo}${filePath}`;
+    const url = `${repo}/${filePath}`;
 
-    await prisma.document.create({
-      data: {
+    await prisma.document.upsert({
+      where: { url },
+      create: {
+        title: repo,
+        url,
+        content: text,
+        metadata: {
+          url,
+          repo,
+          source,
+          text,
+          filePath,
+          code
+        },
+        source
+      },
+      update: {
         title: repo,
         url,
         content: text,
@@ -58,7 +73,7 @@ export const codebaseEmbeddings: EventVersionHandler<{
       organizationId,
       event,
       chunks.map(({ pageContent }, idx) => ({
-        uid: `Alpha42_${idx}_${url}`,
+        uid: `codebase_${idx}_${url}`,
         text: `${pageContent}`,
         metadata: {
           url,

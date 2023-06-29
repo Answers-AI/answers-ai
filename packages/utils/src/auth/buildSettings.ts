@@ -145,7 +145,7 @@ export const buildSettings = async (user: User, org?: Organization) => {
   }
 
   // try {
-  //   newSettings.docubot = {
+  //   newSettings.codebase = {
   //     repos: [
   //       {
   //         id: 'docubot-v0.2.2',

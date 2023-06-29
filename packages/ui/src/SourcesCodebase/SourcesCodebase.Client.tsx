@@ -11,8 +11,7 @@ const SourcesCodebase: React.FC<{}> = ({}) => {
   const { filters, updateFilter } = useAnswers();
   const { data, error, isLoading, mutate } = useSWR<{
     sources: Document[];
-    domains: { domain: string; pageCount: number }[];
-  }>(`/api/sources?source=codebase`, (url) => fetch(url).then((res) => res.json()));
+  }>(`/api/sources/codebase`, (doc) => fetch(doc).then((res) => res.json()));
 
   const { sources } = data || {};
 
@@ -24,8 +23,8 @@ const SourcesCodebase: React.FC<{}> = ({}) => {
           placeholder={`My repo`}
           value={filters?.datasources?.codebase?.repo || []}
           onChange={(value) => updateFilter({ datasources: { codebase: { repo: value } } })}
-          getOptionLabel={(option) => option?.title ?? option?.url}
-          getOptionValue={(option) => option?.url}
+          getOptionLabel={(option) => (option?.metadata as any)?.repo!}
+          getOptionValue={(option) => (option?.metadata as any)?.repo!}
           options={sources ?? []}
           onFocus={() => mutate()}
         />
