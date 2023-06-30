@@ -52,7 +52,6 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
     }
   );
   const suggestedSources = React.useMemo(() => {
-    console.log('Data', data);
     return data;
   }, [data]);
   const handleCreateNewJourney = async () => {
@@ -60,7 +59,6 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
       goal,
       filters
     });
-    console.log('Journey', journey);
     router.push(`/journey/${journey.id}`);
   };
   return (

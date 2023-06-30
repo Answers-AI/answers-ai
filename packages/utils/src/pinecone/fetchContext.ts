@@ -42,6 +42,7 @@ const parseFilters = (filters: AnswersFilters) => {
       (url) => (url as any)?.url
     );
   }
+
   if (parsedFilters?.datasources?.zoom?.url?.length) {
     (parsedFilters.datasources.zoom.url as any) = parsedFilters?.datasources?.zoom?.url.map(
       (url) => (url as any)?.url

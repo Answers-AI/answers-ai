@@ -114,7 +114,6 @@ export const processMessageEmbeddingsUpserted: EventVersionHandler<{
     const vectorData = await prepareAllForEmbedding(
       messages.map((m) => new SlackMessageModel(m.cache.info))
     );
-    console.log('vectorData', vectorData[0]);
     if (!DISABLE_EMBEDDING) await pinecone.writeVectorsToIndex(vectorData, user?.organizationId!);
   }
 };

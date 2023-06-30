@@ -121,7 +121,6 @@ const SourcesWeb: React.FC<{}> = ({}) => {
   };
 
   const handleRemoveDomain = async (domain: string) => {
-    console.log('handleRemoveDomain', domain);
     const newDomain = (filters?.datasources?.web?.domain ?? []).filter((d) => {
       return domain !== d;
     });
@@ -196,7 +195,6 @@ const SourcesWeb: React.FC<{}> = ({}) => {
           }}
           onChange={(e: any, value: any) => {
             if (value) {
-              console.log('Change');
               handleAddUrl({ url: value, entireDomain: false });
 
               setNewUrl('');

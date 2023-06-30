@@ -2,12 +2,8 @@ import { AppSettings } from 'types';
 
 export const SYSTEM_SETTINGS: AppSettings = {
   services: [
-    {
-      id: 'files',
-      name: 'files',
-      // imageURL: '/static/images/files.png',
-      enabled: false
-    },
+    { id: 'files', name: 'files', imageURL: '/static/images/icon-fast-text.svg', enabled: true },
+    { id: 'document', name: 'document', imageURL: '/static/images/documents.png', enabled: true },
     {
       id: 'confluence',
       providerId: 'atlassian',
@@ -53,13 +49,6 @@ export const SYSTEM_SETTINGS: AppSettings = {
     { id: 'airtable', name: 'airtable', imageURL: '/static/images/airtable.png', enabled: false },
 
     { id: 'docubot', name: 'docubot', imageURL: '/static/images/docubot.png', enabled: false },
-
-    {
-      id: 'files',
-      name: 'files',
-      imageURL: '/static/images/documents.png',
-      enabled: true
-    },
 
     { id: 'zoom', name: 'zoom', imageURL: '/static/images/zoom.png', enabled: false },
 

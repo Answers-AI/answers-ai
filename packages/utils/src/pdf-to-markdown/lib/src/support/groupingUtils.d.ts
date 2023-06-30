@@ -1,0 +1,17 @@
+import Item from '../Item';
+export declare function flatMap<T, S>(array: T[], func: (entry: T, idx: number) => S[]): S[];
+export declare function onlyUniques<T>(value: T, index: number, self: T[]): boolean;
+export declare function ascending<T>(a: number, b: number): number;
+export declare function descending<T>(a: number, b: number): number;
+export declare function count<T, S>(array: T[], find: (entry: T) => boolean): number;
+export declare function median(values: number[]): number;
+declare type PageItemTransformer = (page: number, items: Item[]) => Item[];
+declare type LineItemTransformer = (page: number, line: number, items: Item[]) => Item[];
+export declare function groupByPage(items: Item[]): Item[][];
+export declare function groupByLine(items: Item[]): Item[][];
+export declare function groupByElement(items: Item[], elementName: string): Item[][];
+export declare function transformGroupedByPage(items: Item[], groupedTransformer: PageItemTransformer): Item[];
+export declare function transformGroupedByPageAndLine(items: Item[], groupedTransformer: LineItemTransformer): Item[];
+export declare function mostFrequent<T extends number | string>(items: Item[], dataElementKey: string): T | undefined;
+export declare function majorityElement<T>(items: Item[], extract: (item: Item) => T): T | undefined;
+export {};

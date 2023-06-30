@@ -4,6 +4,7 @@
     "outDir": "./dist",
     "allowJs": true,
     "isolatedModules": false,
+    "typeRoots": ["types"],
     "paths": {
       "@utils/*": ["../../packages/utils/src/*"],
       "@ui/*": ["../../packages/ui/src/*"],

@@ -74,6 +74,13 @@ export interface AppSettings {
       enabled: boolean;
     }[];
   };
+  document?: {
+    url?: {
+      id: string;
+      title: string;
+      enabled: boolean;
+    }[];
+  };
   files?: {
     docs?: {
       id: string;
@@ -158,12 +165,8 @@ export interface CodebaseFilters {
   path?: string[];
 }
 
-export interface FileFilters {
-  docs?: string[];
-}
 export interface DocumentFilters {
-  name?: string[];
-  url?: string[];
+  url?: Document[];
 }
 
 export interface ZoomFilters {
@@ -330,6 +333,10 @@ export interface FilesSetting extends FileRecord {
   enabled: boolean;
 }
 
+export interface DocumentSetting extends DocumentRecord {
+  enabled: boolean;
+}
+
 export interface ZoomSetting extends ZoomRecord {
   enabled: boolean;
 }
@@ -426,6 +433,12 @@ export type AirtableRecord = {
 export type CodebaseRecord = {
   id: number;
   title: string;
+};
+
+export type DocumentRecord = {
+  title: string;
+  url: string;
+  content: string;
 };
 
 export type FileRecord = {
