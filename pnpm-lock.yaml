@@ -638,9 +638,6 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.360.0
         version: 3.360.0(@aws-sdk/signature-v4-crt@3.357.0)
-      '@aws-sdk/client-textract':
-        specifier: ^3.360.0
-        version: 3.360.0
       '@contentful/app-sdk':
         specifier: ^4.17.0
         version: 4.17.1(contentful-management@10.32.0)
@@ -779,9 +776,6 @@ importers:
       swagger2openapi:
         specifier: ^7.0.8
         version: 7.0.8
-      typescript-collections:
-        specifier: ^1.3.3
-        version: 1.3.3
       utf-8-validate:
         specifier: 6.0.3
         version: 6.0.3
@@ -801,9 +795,6 @@ importers:
       '@types/node':
         specifier: ^18.15.11
         version: 18.16.0
-      '@types/pdf-parse':
-        specifier: ^1.1.1
-        version: 1.1.1
       '@types/react-dom':
         specifier: ^18.0.11
         version: 18.0.11
@@ -813,9 +804,6 @@ importers:
       '@types/swagger2openapi':
         specifier: ^7.0.0
         version: 7.0.0
-      enumify:
-        specifier: ^2.0.0
-        version: 2.0.0
       eslint:
         specifier: ^7.32.0
         version: 7.32.0
@@ -1199,50 +1187,6 @@ packages:
       '@smithy/protocol-http': 1.1.0
       '@smithy/types': 1.1.0
       fast-xml-parser: 4.2.5
-      tslib: 2.5.0
-    transitivePeerDependencies:
-      - aws-crt
-    dev: false
-
-  /@aws-sdk/client-textract@3.360.0:
-    resolution: {integrity: sha512-p1PFBd3iLYOQZ2iO/5yPq8bSLoIhtRzsMj0FTcb51hXGifuCx6IV7ZPPLWTMyRPSBaigsDl7Up/GHyrCgbPrxg==}
-    engines: {node: '>=14.0.0'}
-    dependencies:
-      '@aws-crypto/sha256-browser': 3.0.0
-      '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sts': 3.360.0
-      '@aws-sdk/config-resolver': 3.357.0
-      '@aws-sdk/credential-provider-node': 3.360.0
-      '@aws-sdk/fetch-http-handler': 3.357.0
-      '@aws-sdk/hash-node': 3.357.0
-      '@aws-sdk/invalid-dependency': 3.357.0
-      '@aws-sdk/middleware-content-length': 3.357.0
-      '@aws-sdk/middleware-endpoint': 3.357.0
-      '@aws-sdk/middleware-host-header': 3.357.0
-      '@aws-sdk/middleware-logger': 3.357.0
-      '@aws-sdk/middleware-recursion-detection': 3.357.0
-      '@aws-sdk/middleware-retry': 3.357.0
-      '@aws-sdk/middleware-serde': 3.357.0
-      '@aws-sdk/middleware-signing': 3.357.0
-      '@aws-sdk/middleware-stack': 3.357.0
-      '@aws-sdk/middleware-user-agent': 3.357.0
-      '@aws-sdk/node-config-provider': 3.357.0
-      '@aws-sdk/node-http-handler': 3.360.0
-      '@aws-sdk/smithy-client': 3.360.0
-      '@aws-sdk/types': 3.357.0
-      '@aws-sdk/url-parser': 3.357.0
-      '@aws-sdk/util-base64': 3.310.0
-      '@aws-sdk/util-body-length-browser': 3.310.0
-      '@aws-sdk/util-body-length-node': 3.310.0
-      '@aws-sdk/util-defaults-mode-browser': 3.360.0
-      '@aws-sdk/util-defaults-mode-node': 3.360.0
-      '@aws-sdk/util-endpoints': 3.357.0
-      '@aws-sdk/util-retry': 3.357.0
-      '@aws-sdk/util-user-agent-browser': 3.357.0
-      '@aws-sdk/util-user-agent-node': 3.357.0
-      '@aws-sdk/util-utf8': 3.310.0
-      '@smithy/protocol-http': 1.1.0
-      '@smithy/types': 1.1.0
       tslib: 2.5.0
     transitivePeerDependencies:
       - aws-crt
@@ -4529,10 +4473,6 @@ packages:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
     dev: false
 
-  /@types/pdf-parse@1.1.1:
-    resolution: {integrity: sha512-lDBKAslCwvfK2uvS1Uk+UCpGvw+JRy5vnBFANPKFSY92n/iEnunXi0KVBjPJXhsM4jtdcPnS7tuZ0zjA9x6piQ==}
-    dev: true
-
   /@types/prettier@2.7.2:
     resolution: {integrity: sha512-KufADq8uQqo1pYKVIYzfKbJfBAc0sOeXqGbFaSpv8MRmC/zXgowNZmFcbngndGk922QDmOASEXUZCaY48gs4cg==}
     dev: true
@@ -6612,10 +6552,6 @@ packages:
   /entities@4.4.0:
     resolution: {integrity: sha512-oYp7156SP8LkeGD0GF85ad1X9Ai79WtRsZ2gxJqtBuzH+98YUV6jkHEKlZkMbcrjJjIVJNIDP/3WL9wQkoPbWA==}
     engines: {node: '>=0.12'}
-
-  /enumify@2.0.0:
-    resolution: {integrity: sha512-hpyRdixXrBdr1sZOWH/WKBleMtHWVbM+DyVa0OqKQnKEw6x0TuUNYjcWKlp5/+tdiOsbgYiaZ/pYUeMake4k8A==}
-    dev: true
 
   /envinfo@7.8.1:
     resolution: {integrity: sha512-/o+BXHmB7ocbHEAs6F2EnG0ogybVVUdkRunTT2glZU9XAaGmhqskrvKwqXuDfNjEO0LZKWdejEEpnq8aM0tOaw==}
@@ -12628,10 +12564,6 @@ packages:
       yargs: 17.7.1
     transitivePeerDependencies:
       - supports-color
-    dev: false
-
-  /typescript-collections@1.3.3:
-    resolution: {integrity: sha512-7sI4e/bZijOzyURng88oOFZCISQPTHozfE2sUu5AviFYk5QV7fYGb6YiDl+vKjF/pICA354JImBImL9XJWUvdQ==}
     dev: false
 
   /typescript@4.9.5:
