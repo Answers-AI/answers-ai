@@ -134,8 +134,8 @@ const convertToValidHTML = (lines: (TextItem | TextMarkedContent)[]): string => 
       //@ts-ignore-next-line
       const headerTag = getHeaderTag(line.height, lineHeightRange);
       //@ts-ignore-next-line
-      const isNewParagraph =
-        !i || headerTag !== prevHeaderTag || line.transform?.[5] < prevTransformY - 2 * prevHeight;
+      const isnewParagraphByHeight = line.transform?.[5] < prevTransformY - 2 * prevHeight;
+      const isNewParagraph = !i || headerTag !== prevHeaderTag || isnewParagraphByHeight;
 
       if (headerTag || isNewParagraph) {
         if (isDivOpen) {
