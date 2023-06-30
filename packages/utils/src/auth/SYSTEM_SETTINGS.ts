@@ -2,20 +2,17 @@ import { AppSettings } from 'types';
 
 export const SYSTEM_SETTINGS: AppSettings = {
   services: [
-    { id: 'files', name: 'files', imageURL: '/static/images/icon-fast-text.svg', enabled: true },
-    { id: 'document', name: 'document', imageURL: '/static/images/documents.png', enabled: true },
+    { id: 'files', name: 'files', imageURL: '/static/images/icon-fast-text.svg' },
+    { id: 'document', name: 'document', imageURL: '/static/images/documents.png' },
     {
       id: 'confluence',
       providerId: 'atlassian',
       name: 'confluence',
-
       imageURL: '/static/images/logo-confluence.svg'
     },
-
     {
       id: 'contentful',
       name: 'contentful',
-
       imageURL: '/static/images/logo-contentful.svg'
     },
 
@@ -44,14 +41,14 @@ export const SYSTEM_SETTINGS: AppSettings = {
 
     { id: 'slack', providerId: 'slack', name: 'slack', imageURL: '/static/images/logo-slack.svg' },
 
-    { id: 'web', name: 'web', imageURL: '/static/images/logo-web.svg', enabled: true },
+    { id: 'web', name: 'web', imageURL: '/static/images/logo-web.svg' },
 
-    { id: 'airtable', name: 'airtable', imageURL: '/static/images/airtable.png', enabled: false },
+    { id: 'airtable', name: 'airtable', imageURL: '/static/images/airtable.png' },
 
-    { id: 'codebase', name: 'codebase', imageURL: '/static/images/docubot.png', enabled: false },
+    { id: 'codebase', name: 'codebase', imageURL: '/static/images/docubot.png' },
 
-    { id: 'zoom', name: 'zoom', imageURL: '/static/images/zoom.png', enabled: false },
+    { id: 'zoom', name: 'zoom', imageURL: '/static/images/zoom.png' },
 
-    { id: 'youtube', name: 'youtube', imageURL: '/static/images/youtube.png', enabled: false }
+    { id: 'youtube', name: 'youtube', imageURL: '/static/images/youtube.png' }
   ]
 };

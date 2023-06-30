@@ -1,13 +1,12 @@
 export const NO_ORG_SETTINGS = {
   services: [
     { id: 'google', name: 'google', imageURL: '/static/images/logo-google.svg' },
-    { id: 'web', name: 'web', imageURL: '/static/images/logo-web.svg', enabled: true },
+    { id: 'web', name: 'web', imageURL: '/static/images/logo-web.svg' },
     { id: 'jira', name: 'jira', imageURL: '/static/images/logo-jira.svg' },
     { id: 'slack', name: 'slack', imageURL: '/static/images/logo-slack.svg' },
     {
       id: 'confluence',
       name: 'confluence',
-
       imageURL: '/static/images/logo-confluence.svg'
     },
     { id: 'notion', name: 'notion', imageURL: '/static/images/logo-notion.svg' },
@@ -16,7 +15,6 @@ export const NO_ORG_SETTINGS = {
     {
       id: 'contentful',
       name: 'contentful',
-
       imageURL: '/static/images/contentful.png'
     },
     { id: 'airtable', name: 'airtable', imageURL: '/static/images/airtable.png' },
