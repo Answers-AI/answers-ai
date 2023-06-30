@@ -11,6 +11,7 @@ export const fileLoader = redisLoader<string, string>({
     const results: Array<string> = [];
 
     for (const fileId of keys) {
+      //@ts-ignore-next-line
       const result = await getFileHtml({ fileId });
       results.push(result);
     }

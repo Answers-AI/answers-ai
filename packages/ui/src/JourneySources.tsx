@@ -1,9 +1,8 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
-import { AppSettings, ConfluenceSpace, AppService, Flags } from 'types';
+import { AppSettings, AppService } from 'types';
 
 import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
-import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import Image from 'next/image';
@@ -13,11 +12,12 @@ import SourcesConfluence from './JourneyLayout/SourcesConfluence';
 import SourcesAirtable from './JourneyLayout/SourcesAirtable';
 import SourcesCodebase from './SourcesCodebase';
 import SourcesSlack from './JourneyLayout/SourcesSlack';
+import SourcesDocument from './SourcesDocument';
 
 export default function JourneySources({ appSettings }: { appSettings: AppSettings }) {
   const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
 
-  const flags = useFlags(['airtable', 'codebase']);
+  const flags = useFlags(['airtable', 'codebase', 'document']);
 
   const enabledServices: AppService[] | undefined = appSettings?.services?.filter((service) => {
     const isServiceEnabledInFlags = (flags?.[service.name] as any)?.enabled;
@@ -94,11 +94,11 @@ export default function JourneySources({ appSettings }: { appSettings: AppSettin
               ) : null}
 
               {flags?.codebase?.enabled && selectedService.name === 'codebase' ? (
-                <SourcesCodebase
-                  appSettings={appSettings}
-                  filters={filters}
-                  updateFilter={updateFilter}
-                />
+                <SourcesCodebase />
+              ) : null}
+
+              {flags?.document?.enabled && selectedService.name === 'document' ? (
+                <SourcesDocument />
               ) : null}
 
               {flags?.airtable?.enabled && selectedService.name === 'airtable' ? (

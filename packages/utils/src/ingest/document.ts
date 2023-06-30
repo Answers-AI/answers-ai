@@ -68,6 +68,7 @@ function calculateLineHeightRange(lines: (TextItem | TextMarkedContent)[]): [num
   let maxHeight = Number.MIN_VALUE;
 
   for (const line of lines) {
+    //@ts-ignore-next-line
     const height = line.height;
     if (height < minHeight) {
       minHeight = height;
@@ -99,20 +100,22 @@ const convertToValidHTML = (lines: (TextItem | TextMarkedContent)[]): string => 
   if (lines.length === 0) {
     return htmlString;
   }
-
+  //@ts-ignore-next-line
   const filteredLines = lines.filter((line) => line.height !== 0);
   if (filteredLines.length === 0) {
     return htmlString;
   }
 
   const lineHeightRange = calculateLineHeightRange(filteredLines);
-
+  //@ts-ignore-next-line
   let prevTransformY = filteredLines[0].transform?.[5];
+  //@ts-ignore-next-line
   let prevHeight = filteredLines[0]?.height;
   let prevHeaderTag;
 
   for (let i = 0; i < filteredLines.length; i++) {
     const line = filteredLines[i];
+    //@ts-ignore-next-line
     const isBulletPoint = line.str?.trim() === '●';
 
     if (isBulletPoint) {
@@ -121,14 +124,16 @@ const convertToValidHTML = (lines: (TextItem | TextMarkedContent)[]): string => 
         isBulletListOpen = true;
       }
 
+      //@ts-ignore-next-line
       htmlString += `<li>${line.str}</li>`;
     } else {
       if (isBulletListOpen) {
         htmlString += '</ul>';
         isBulletListOpen = false;
       }
-
+      //@ts-ignore-next-line
       const headerTag = getHeaderTag(line.height, lineHeightRange);
+      //@ts-ignore-next-line
       const isNewParagraph =
         !i || headerTag !== prevHeaderTag || line.transform?.[5] < prevTransformY - 2 * prevHeight;
 
@@ -155,10 +160,13 @@ const convertToValidHTML = (lines: (TextItem | TextMarkedContent)[]): string => 
         prevHeaderTag = headerTag;
       }
 
+      //@ts-ignore-next-line
       htmlString += `${line.str} `;
     }
 
+    //@ts-ignore-next-line
     prevTransformY = line.transform?.[5];
+    //@ts-ignore-next-line
     prevHeight = line.height;
   }
 
@@ -187,10 +195,12 @@ const convertPdfToHtml = async (pdfBuffer: Uint8Array): Promise<string> => {
 
     let textContent = await page.getTextContent({ includeMarkedContent: true });
 
+    //@ts-ignore-next-line
     pageLines = [...pageLines, ...textContent.items];
   }
 
   const validHtml = convertToValidHTML(pageLines);
+  //@ts-ignore-next-line
   return `<html><body><h1>${metadata?.info?.Title}</h1>${validHtml}</body></html>`;
 };
 
@@ -280,7 +290,7 @@ const getDocumentRecordsVectors = async (DocumentRecords: DocumentRecord[]) => {
 
 export const processDocument: EventVersionHandler<{
   documentName: string;
-  organizationId: string;
+  organizationId?: string;
 }> = {
   event: 'documents/aws.index',
   v: '1',
@@ -299,7 +309,7 @@ export const processDocument: EventVersionHandler<{
 
     const data = event.data;
     const { documentName: iDocumentName } = data;
-    let organizationId = user.organizationId;
+    let organizationId = user.organizationId ?? '';
     if (user.role === 'superadmin' && data.organizationId) {
       organizationId = data.organizationId;
     }

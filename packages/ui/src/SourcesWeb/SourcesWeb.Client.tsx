@@ -1,18 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import axios from 'axios';
-import {
-  Box,
-  Button,
-  Chip,
-  Collapse,
-  FormControlLabel,
-  List,
-  ListItem,
-  Switch,
-  TextField,
-  Typography
-} from '@mui/material';
+import { Box, Chip, TextField, Typography } from '@mui/material';
 import Autocomplete from '@ui/VirtualAutocomplete';
 import { WebUrlType, Document } from 'types';
 import { useAnswers } from '@ui/AnswersContext';

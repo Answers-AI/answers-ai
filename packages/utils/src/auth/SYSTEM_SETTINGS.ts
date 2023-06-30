@@ -48,7 +48,7 @@ export const SYSTEM_SETTINGS: AppSettings = {
 
     { id: 'airtable', name: 'airtable', imageURL: '/static/images/airtable.png', enabled: false },
 
-    { id: 'docubot', name: 'docubot', imageURL: '/static/images/docubot.png', enabled: false },
+    { id: 'codebase', name: 'codebase', imageURL: '/static/images/docubot.png', enabled: false },
 
     { id: 'zoom', name: 'zoom', imageURL: '/static/images/zoom.png', enabled: false },
 

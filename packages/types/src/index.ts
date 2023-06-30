@@ -82,7 +82,7 @@ export interface AppSettings {
     }[];
   };
   files?: {
-    docs?: {
+    url?: {
       id: string;
       fileId: string;
       enabled: boolean;
@@ -163,6 +163,11 @@ export interface AirtableFilters {
 export interface CodebaseFilters {
   repo?: Document[];
   path?: string[];
+}
+
+export interface DocumentUrlType {
+  title: string;
+  url?: string;
 }
 
 export interface DocumentFilters {
@@ -442,9 +447,9 @@ export type DocumentRecord = {
 };
 
 export type FileRecord = {
-  id: number;
   content: string;
   fileId: string;
+  title?: string;
 };
 
 export type ZoomRecord = {

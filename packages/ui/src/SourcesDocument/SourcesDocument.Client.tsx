@@ -2,10 +2,8 @@
 import React, { FormEvent, useState } from 'react';
 import axios from 'axios';
 import useSWR from 'swr';
-
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import Input from '@mui/material/Input';
 import Typography from '@mui/material/Typography';
 import { useAnswers } from '@ui/AnswersContext';
@@ -14,11 +12,11 @@ import AutocompleteSelect from '@ui/AutocompleteSelect';
 import { Document } from 'types';
 
 const SourcesDocument: React.FC<{}> = ({}) => {
+  const source = 'document';
   const { filters, updateFilter } = useAnswers();
-  const { data, error, isLoading, mutate } = useSWR<{
+  const { data, mutate } = useSWR<{
     sources: Document[];
-    domains: { domain: string; pageCount: number }[];
-  }>(`/api/sources?source=document`, (url) => fetch(url).then((res) => res.json()));
+  }>(`/api/sources?source=${source}`, (url) => fetch(url).then((res) => res.json()));
 
   const { sources } = data || {};
 
@@ -94,7 +92,7 @@ const SourcesDocument: React.FC<{}> = ({}) => {
       try {
         const newDocuments = [
           ...(filters?.datasources?.document?.url ?? []),
-          { title: documentName, url: slugify(documentName) }
+          { title: documentName, url: slugify(documentName) } as Document
         ];
 
         updateFilter({
@@ -107,15 +105,6 @@ const SourcesDocument: React.FC<{}> = ({}) => {
     }
   }
 
-  const handleRemoveDocument = async (f: Document) => {
-    const newDocuments = (filters?.datasources?.document?.url ?? []).filter((f) => {
-      return document?.name !== f.title && document?.name !== f.url;
-    });
-
-    updateFilter({
-      datasources: { document: { url: newDocuments } }
-    });
-  };
   const slugify = (text?: string) =>
     text
       ?.toLowerCase()
@@ -131,11 +120,9 @@ const SourcesDocument: React.FC<{}> = ({}) => {
         <Typography variant="overline">Choose Document</Typography>
         <AutocompleteSelect
           value={filters?.datasources?.document?.url ?? []}
-          onChange={(value: any) => {
-            updateFilter({ datasources: { document: { url: value } } });
-          }}
-          getOptionLabel={(option: { title: any; url: any }) => option?.title ?? option?.url}
-          getOptionValue={(option: { url: any }) => option?.url}
+          onChange={(value) => updateFilter({ datasources: { document: { url: value } } })}
+          getOptionLabel={(option) => option?.title ?? option?.url}
+          getOptionValue={(option) => option?.url}
           options={sources ?? []}
         />
         {showDocumentInput && (
