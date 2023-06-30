@@ -14,9 +14,7 @@ export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings
   const flags = useFlags(appSettings?.services?.map((s) => s.name) ?? []);
 
   const enabledServices: AppService[] | undefined = appSettings?.services?.filter((service) => {
-    const isServiceEnabledInFlags = (flags?.[service.name] as any)?.enabled;
-    console.log({ isServiceEnabledInFlags, service });
-    return isServiceEnabledInFlags || service.enabled;
+    return (flags?.[service.name] as any)?.enabled;
   });
 
   const [serviceOpen, setServiceOpen] = React.useState<string>('');
