@@ -1,14 +1,16 @@
 import { PrismaClient } from '../generated/prisma-client';
 
+const DEBUG_LEVEL = process.env.DEBUG_LEVEL;
+
 declare global {
   var prisma: PrismaClient | undefined;
 }
 
-export const prisma =
-  global.prisma ||
-  new PrismaClient({
-    log: ['warn', 'error']
-  });
+let prismaDebug = ['warn', 'error'];
+if (DEBUG_LEVEL === 'debug') prismaDebug = [...prismaDebug, ...['query', 'info']];
+
+// @ts-ignore
+export const prisma = global.prisma || new PrismaClient({ log: prismaDebug });
 
 if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
 
