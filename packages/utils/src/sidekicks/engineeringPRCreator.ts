@@ -4,7 +4,7 @@ const sidekick: Sidekick = {
   label: 'Pull Request Summary',
   value: 'engineeringPRCreator',
   temperature: 1,
-  maxCompletionTokens: 500,
+  maxCompletionTokens: 1000,
   placeholder:
     'Run `git diff main | pbcopy` create a new file, then I will analyze your pull request and provide feedback on it.',
   getSystemPromptTemplate: () => {
