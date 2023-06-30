@@ -14,9 +14,7 @@ export const JourneyAppsDrawer = ({
   appSettings: AppSettings;
   activeApp?: string;
 }) => {
-  // const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
-
-  const flags = useFlags(['airtable', 'codebase', 'confluence']);
+  const flags = useFlags(appSettings?.services?.map((s) => s.name) ?? []);
 
   const enabledServices: AppService[] | undefined = appSettings?.services?.filter((service) => {
     const isServiceEnabledInFlags = (flags?.[service.name] as any)?.enabled;
@@ -47,17 +45,13 @@ export const JourneyAppsDrawer = ({
               updateFilter={updateFilter}
               key={service?.id}
               {...service}
-              // expanded={selectedService?.name === service.name}
               expanded
-              // onClick={() => setServiceOpen(service.name)}
             />
           ))}
       </Box>
       <AnimatePresence>
         {selectedService && serviceOpen !== '' ? (
           <Box
-            // open={!!expanded}
-            // onClose={() => setExpanded(null)}
             component={motion.div}
             key="modal"
             sx={{
