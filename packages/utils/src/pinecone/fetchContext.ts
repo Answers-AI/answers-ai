@@ -1,10 +1,18 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
-import { Chat } from 'db/generated/prisma-client';
-import { AnswersFilters, Message, User, Sidekicks, Sidekick, WebUrlType } from 'types';
+import {
+  AnswersFilters,
+  Message,
+  User,
+  Sidekicks,
+  Sidekick,
+  WebUrlType,
+  Organization
+} from 'types';
 import OpenAIClient from '../openai/openai';
 import { countTokens } from '../utilities/countTokens';
 import { getUniqueUrls } from '../getUniqueUrls';
+import { renderContext } from '../utilities/renderContext';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
@@ -77,6 +85,7 @@ const getMaxContextTokens = (gptModel: string) => {
 
 export const fetchContext = async ({
   user,
+  organization,
   prompt,
   messages = [],
   filters: clientFilters = {},
@@ -84,6 +93,7 @@ export const fetchContext = async ({
   gptModel = 'gpt-3.5-turbo'
 }: {
   user?: User;
+  organization: Organization;
   prompt: string;
   messages?: Message[];
   filters?: AnswersFilters;
@@ -176,10 +186,16 @@ export const fetchContext = async ({
   let totalTokens = 0;
   const contextSourceFilesUsed: string[] = [];
   const maxContextTokens = getMaxContextTokens(gptModel);
+  // return an arroy of items in teh relevatn data that are less than the max context tokens
+  // count the total contextStringRender tokens plus the totalTokens in the
   const contextPromises = relevantData.map((item) => {
     let renderedContext = item?.metadata?.text;
     if (sidekick?.contextStringRender) {
-      renderedContext = sidekick?.contextStringRender(item.metadata); // TODO: get this from the database to give us more flexibility
+      renderedContext = renderContext(sidekick?.contextStringRender, {
+        result: item.metadata,
+        organization,
+        user
+      }); // TODO: get this from the database to give us more flexibility
     }
     const tokenCount = countTokens(renderedContext || '');
     if (totalTokens + tokenCount <= maxContextTokens) {

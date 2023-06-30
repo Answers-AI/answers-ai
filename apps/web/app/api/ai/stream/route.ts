@@ -66,6 +66,7 @@ export async function POST(req: Request) {
   try {
     ({ pineconeFilters, pineconeData, context, contextSourceFilesUsed } = await fetchContext({
       user,
+      organization: user?.currentOrganization,
       prompt,
       messages,
       filters,

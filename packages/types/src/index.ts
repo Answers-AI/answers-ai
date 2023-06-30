@@ -217,6 +217,7 @@ export type Flags = {
 
 export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
+  currentOrganization: Organization;
   // accounts: DB.Account[] | null;
 }
 export interface Organization extends Omit<DB.Organization, 'appSettings'> {
@@ -455,9 +456,10 @@ export type Sidekick = {
   presence?: number;
   defaultModel?: string;
   maxCompletionTokens?: number;
-  getSystemPromptTemplate?: (user?: User) => string;
-  getUserPromptTemplate?: (query: string, context: any) => string;
-  contextStringRender?: (item: any) => string;
+  precompiledUserPromptTemplate: string;
+  getSystemPromptTemplate?: string;
+  getUserPromptTemplate?: string;
+  contextStringRender?: string;
 };
 
 // Add the Sidekicks type
