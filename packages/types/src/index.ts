@@ -74,10 +74,17 @@ export interface AppSettings {
       enabled: boolean;
     }[];
   };
-  documents?: {
-    docs?: {
+  document?: {
+    url?: {
       id: string;
-      name: string;
+      title: string;
+      enabled: boolean;
+    }[];
+  };
+  files?: {
+    url?: {
+      id: string;
+      fileId: string;
       enabled: boolean;
     }[];
   };
@@ -144,6 +151,7 @@ export type SourceFilters =
   | AirtableFilters
   | CodebaseFilters
   | DocumentFilters
+  | FileFilters
   | ZoomFilters
   | YoutubeFilters;
 
@@ -155,6 +163,11 @@ export interface AirtableFilters {
 export interface CodebaseFilters {
   repo?: Document[];
   path?: string[];
+}
+
+export interface DocumentUrlType {
+  title: string;
+  url?: string;
 }
 
 export interface DocumentFilters {
@@ -182,6 +195,7 @@ export interface DataSourcesFilters {
   airtable?: AirtableFilters;
   codebase?: CodebaseFilters;
   document?: DocumentFilters;
+  files?: FileFilters;
   zoom?: ZoomFilters;
   youtube?: YoutubeFilters;
   file?: FileFilters;
@@ -202,6 +216,7 @@ type Models = {
   airtable: string[];
   codebase: string[];
   document: string[];
+  files: string[];
   zoom: string[];
   youtube: string[];
   [key: string]: string[];
@@ -319,7 +334,11 @@ export interface CodebaseSetting extends CodebaseRecord {
   enabled: boolean;
 }
 
-export interface DocumentsSetting extends DocumentRecord {
+export interface FilesSetting extends FileRecord {
+  enabled: boolean;
+}
+
+export interface DocumentSetting extends DocumentRecord {
   enabled: boolean;
 }
 
@@ -422,8 +441,15 @@ export type CodebaseRecord = {
 };
 
 export type DocumentRecord = {
-  id: number;
   title: string;
+  url: string;
+  content: string;
+};
+
+export type FileRecord = {
+  content: string;
+  fileId: string;
+  title?: string;
 };
 
 export type ZoomRecord = {

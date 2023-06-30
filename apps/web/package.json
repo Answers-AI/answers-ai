@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/s3-request-presigner": "^3.360.0",
+    "@aws-sdk/client-s3": "^3.360.0",
+    "@aws-sdk/signature-v4-crt": "^3.357.0",
     "@dqbd/tiktoken": "^1.0.6",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",

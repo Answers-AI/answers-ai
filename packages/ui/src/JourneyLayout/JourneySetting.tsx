@@ -3,13 +3,13 @@ import React from 'react';
 import SourcesAirtable from './SourcesAirtable';
 import SourcesConfluence from './SourcesConfluence';
 import SourcesCodebase from '../SourcesCodebase';
-import SourcesFile from '@ui/SourcesFile';
 import SourcesJira from './SourcesJira';
 import SourcesSlack from './SourcesSlack';
 import SourcesWeb from '../SourcesWeb';
 import SourcesYoutube from '../SourcesYoutube';
 import SourcesDocument from '../SourcesDocument';
 import SourcesZoom from '../SourcesZoom';
+import SourcesFile from '../SourcesFile';
 
 const JOURNEY_SETTINGS: { [key: string]: any } = {
   airtable: SourcesAirtable,
@@ -19,7 +19,7 @@ const JOURNEY_SETTINGS: { [key: string]: any } = {
   jira: SourcesJira,
   slack: SourcesSlack,
   web: SourcesWeb,
-  documents: SourcesDocument,
+  document: SourcesDocument,
   zoom: SourcesZoom,
   youtube: SourcesYoutube
 };

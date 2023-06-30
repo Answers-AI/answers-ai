@@ -43,40 +43,40 @@ const convertMarkdownToHtml = (markdown: string, options?: ConverterOptions): st
   return converter.makeHtml(markdown);
 };
 
-const removeDuplicateHeaders = (markdown: string): string => {
-  const regex = /^(#+)(.*)$/gm;
-  const headers: { level: number; start: number; end: number }[] = [];
+// const removeDuplicateHeaders = (markdown: string): string => {
+//   const regex = /^(#+)(.*)$/gm;
+//   const headers: { level: number; start: number; end: number }[] = [];
 
-  // Find all the headers and their positions
-  let match;
-  while ((match = regex.exec(markdown)) !== null) {
-    headers.push({
-      level: match[1].length,
-      start: match.index,
-      end: match.index + match[0].length
-    });
-  }
+//   // Find all the headers and their positions
+//   let match;
+//   while ((match = regex.exec(markdown)) !== null) {
+//     headers.push({
+//       level: match[1].length,
+//       start: match.index,
+//       end: match.index + match[0].length
+//     });
+//   }
 
-  // Loop through the headers and remove duplicates
-  for (let i = headers.length - 1; i >= 1; i--) {
-    const currentHeader = headers[i];
-    const prevHeader = headers[i - 1];
+//   // Loop through the headers and remove duplicates
+//   for (let i = headers.length - 1; i >= 1; i--) {
+//     const currentHeader = headers[i];
+//     const prevHeader = headers[i - 1];
 
-    if (currentHeader.level === prevHeader.level) {
-      // Check if there is non-white space content between the headers
-      const content = markdown.substring(prevHeader.end, currentHeader.start);
-      if (!/^\s*$/s.test(content)) {
-        continue;
-      }
+//     if (currentHeader.level === prevHeader.level) {
+//       // Check if there is non-white space content between the headers
+//       const content = markdown.substring(prevHeader.end, currentHeader.start);
+//       if (!/^\s*$/s.test(content)) {
+//         continue;
+//       }
 
-      // Remove the previous header
-      markdown = markdown.substring(0, prevHeader.start) + markdown.substring(prevHeader.end);
-      headers.splice(i - 1, 1);
-    }
-  }
+//       // Remove the previous header
+//       markdown = markdown.substring(0, prevHeader.start) + markdown.substring(prevHeader.end);
+//       headers.splice(i - 1, 1);
+//     }
+//   }
 
-  return markdown;
-};
+//   return markdown;
+// };
 
 const excludeSelectors: string[] = [
   'header',

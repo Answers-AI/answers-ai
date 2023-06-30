@@ -4,6 +4,7 @@ const coding: Sidekick = {
   departments: ['engineering'],
   label: 'Coding Expert',
   value: 'coding',
+  maxCompletionTokens: 2000,
   placeholder:
     'I can analyze your code and help you write code. Works best with Codebases, but can just as easily work with copy paste.',
   getSystemPromptTemplate: (user) => {

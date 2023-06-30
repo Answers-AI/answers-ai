@@ -11,19 +11,10 @@ import JourneySetting from './JourneySetting';
 export default function BadgeAvatars({ appSettings }: { appSettings: AppSettings }) {
   const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
 
-  const flags = useFlags([
-    'airtable',
-    'files',
-    'codebase',
-    'confluence',
-    'documents',
-    'zoom',
-    'youtube'
-  ]);
+  const flags = useFlags(appSettings?.services?.map((s) => s.name) ?? []);
 
   const enabledServices: AppService[] | undefined = appSettings?.services?.filter((service) => {
-    const isServiceEnabledInFlags = (flags?.[service.name] as any)?.enabled;
-    return isServiceEnabledInFlags || service.enabled;
+    return (flags?.[service.name] as any)?.enabled;
   });
 
   const [serviceOpen, setServiceOpen] = React.useState<string>('');

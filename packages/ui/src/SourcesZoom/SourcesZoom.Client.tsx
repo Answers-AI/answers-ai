@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import Autocomplete from '@ui/AutocompleteSelect';
 import { Document } from 'types';
 import { useAnswers } from '@ui/AnswersContext';

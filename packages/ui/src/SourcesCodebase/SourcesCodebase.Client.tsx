@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import Autocomplete from '@ui/AutocompleteSelect';
 import { Document } from 'types';
 import { useAnswers } from '@ui/AnswersContext';
@@ -9,7 +9,7 @@ import useSWR from 'swr';
 
 const SourcesCodebase: React.FC<{}> = ({}) => {
   const { filters, updateFilter } = useAnswers();
-  const { data, error, isLoading, mutate } = useSWR<{
+  const { data, mutate } = useSWR<{
     sources: Document[];
   }>(`/api/sources/codebase`, (doc) => fetch(doc).then((res) => res.json()));
 
@@ -19,8 +19,7 @@ const SourcesCodebase: React.FC<{}> = ({}) => {
     <>
       <Box marginBottom={1} sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
         <Autocomplete
-          label={'Choose a repo'}
-          placeholder={`My repo`}
+          label="Choose a repo"
           value={filters?.datasources?.codebase?.repo || []}
           onChange={(value) => updateFilter({ datasources: { codebase: { repo: value } } })}
           getOptionLabel={(option) => (option?.metadata as any)?.repo!}

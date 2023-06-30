@@ -70,8 +70,6 @@ const embedVectors = async (event: any, vectors: any[]) => {
   if (vectors?.length && vectors?.every((x: any) => !!x)) {
     outVectors = await Promise.all(
       chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map((batchVectors, i) => {
-        console.log('airtable' + ' batchVectors: ' + batchVectors.length);
-        // console.log(batchVectors);
         return inngest.send({
           v: '1',
           ts: new Date().valueOf(),

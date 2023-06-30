@@ -14,6 +14,7 @@ import * as jiraFunctions from '@utils/ingest/jira';
 import * as fileFunctions from '@utils/ingest/file';
 import * as airtableFunctions from '@utils/ingest/airtable';
 import * as codebaseFunctions from '@utils/ingest/codebase';
+import * as documentFunctions from '@utils/ingest/document';
 
 // Create a client to send and receive events
 
@@ -30,7 +31,8 @@ const handlers = {
   ...jiraFunctions,
   ...fileFunctions,
   ...airtableFunctions,
-  ...codebaseFunctions
+  ...codebaseFunctions,
+  ...documentFunctions
 };
 
 const functions = Object.values(handlers);

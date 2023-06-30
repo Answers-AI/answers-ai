@@ -13,7 +13,6 @@ class SlackApiClient {
   }
 
   async initDataLookups() {
-    console.log('start initDataLookups');
     await this.initUserCache();
     await this.initChannelCache();
     // await this.initGroupCache();
@@ -38,7 +37,6 @@ class SlackApiClient {
     const channels = [];
     let cursor;
 
-    console.log('start initChannelCache');
     do {
       const result = await this.client.conversations.list({
         types: 'public_channel,private_channel',
