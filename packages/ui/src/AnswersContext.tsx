@@ -286,7 +286,10 @@ export function AnswersProvider({
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
 
   const messageIdx = useRef(0);
-
+  React.useEffect(() => {
+    setChat(initialChat);
+    setJourney(initialJourney);
+  }, [initialChat, initialJourney]);
   const contextValue = {
     appSettings,
     chat,

@@ -1,14 +1,16 @@
 import { prisma } from '@db/client';
+import { User } from 'types';
 
 export async function upsertChat({
   id,
-  email = process.env.DEFAULT_USER_EMAIL!,
+  user,
   filters = {},
   prompt,
   journeyId
 }: {
   id?: string;
-  email: string;
+  user: User;
+
   filters?: object;
   prompt: string;
   journeyId?: string;
@@ -17,13 +19,13 @@ export async function upsertChat({
     ? null
     : prisma.journey.update({
         where: { id: journeyId },
-        data: { filters, users: { connect: { email } } }
+        data: { filters, users: { connect: { email: user.email! } } }
       }));
 
   const chatProperties = {
     users: {
       connect: {
-        email: email!
+        email: user.email!
       }
     },
     filters: filters,
@@ -33,12 +35,14 @@ export async function upsertChat({
   let chat;
   if (!id) {
     chat = await prisma.chat.create({
-      data: chatProperties
+      data: { ...chatProperties, organizationId: user.organizationId, ownerId: user.id },
+      include: { journey: true }
     });
   } else {
     chat = await prisma.chat.update({
       where: { id },
-      data: chatProperties
+      data: chatProperties,
+      include: { journey: true }
     });
   }
   return chat;

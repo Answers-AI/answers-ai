@@ -15,7 +15,7 @@ export default async function ChatUILayout({
   chatId: string;
   journeyId: string;
 }) {
-  const session = await getCachedSession(authOptions);
+  const session = await getCachedSession();
 
   if (!session?.user?.email) return null;
 

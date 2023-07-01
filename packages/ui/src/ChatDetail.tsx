@@ -1,12 +1,15 @@
 'use client';
 import React, { Suspense } from 'react';
 import Button from '@mui/material/Button';
-import { AppBar, Box, Toolbar, Typography } from '@mui/material';
+import NextLink from 'next/link';
+import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material';
 import { AppSettings } from 'types';
 import { MessageCard } from './Message';
 import { useAnswers } from './AnswersContext';
 import SourcesToolbar from './JourneyLayout/SourcesToolbar';
 import { ChatInput } from './ChatInput';
+import MenuIcon from '@mui/icons-material/Menu';
+import ShareIcon from '@mui/icons-material/Share';
 
 export const ChatDetail = ({
   appSettings,
@@ -25,7 +28,7 @@ export const ChatDetail = ({
     regenerateAnswer
   } = useAnswers();
   const messages = clientMessages || chat?.messages;
-
+  console.log('CHAT', { chat, journey });
   return (
     <>
       <Box
@@ -52,10 +55,21 @@ export const ChatDetail = ({
               ) : null}
             </Box>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-              <SourcesToolbar appSettings={appSettings} />
-              {/* <IconButton size="large" edge="start" color="inherit" aria-label="menu">
-              <MenuIcon />
-            </IconButton> */}
+              {/* <SourcesToolbar appSettings={appSettings} /> */}
+              {chat ? (
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="inherit"
+                  aria-label="share"
+                  component={NextLink}
+                  href={`?modal=share`}>
+                  <ShareIcon />
+                </IconButton>
+              ) : null}
+              <IconButton size="large" edge="start" color="inherit" aria-label="menu">
+                <MenuIcon />
+              </IconButton>
             </Box>
           </Toolbar>
         </AppBar>

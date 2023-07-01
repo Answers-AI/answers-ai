@@ -94,11 +94,7 @@ export default function JourneySources({ appSettings }: { appSettings: AppSettin
               ) : null}
 
               {flags?.codebase?.enabled && selectedService.name === 'codebase' ? (
-                <SourcesCodebase
-                  appSettings={appSettings}
-                  filters={filters}
-                  updateFilter={updateFilter}
-                />
+                <SourcesCodebase />
               ) : null}
 
               {flags?.airtable?.enabled && selectedService.name === 'airtable' ? (

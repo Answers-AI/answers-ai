@@ -5,6 +5,7 @@ import { prisma } from '@db/client';
 import { ChatDetail } from './ChatDetail';
 import { Chat, Journey } from 'types';
 import { AnswersProvider } from './AnswersContext';
+import Modal from '@ui/Modal';
 
 export interface Params {
   chat?: Chat;
@@ -40,6 +41,7 @@ const Chat = async ({ chat, journey }: Params) => {
 
   return (
     <AnswersProvider appSettings={appSettings} chat={chat} journey={journey}>
+      <Modal />
       <ChatDetail appSettings={appSettings} />
     </AnswersProvider>
   );

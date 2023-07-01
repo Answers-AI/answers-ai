@@ -28,7 +28,6 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
   const [showPrompts, setShowPrompts] = useState(
     !messages?.length && flags?.recommended_prompts_expand?.enabled
   );
-  React.useEffect(() => {}, []);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
   React.useEffect(() => {
@@ -46,7 +45,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
 
   const handleSubmit = () => {
     if (!inputValue) return;
-    sendMessage({content: inputValue, sidekick, gptModel});
+    sendMessage({ content: inputValue, sidekick, gptModel });
     setShowPrompts(false);
     setInputValue('');
   };
@@ -70,7 +69,6 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     setInputValue('');
     clearMessages();
   };
-  const isNewJourney = !!Object.keys(filters)?.length && !journey && !chat;
 
   const handleKeyPress = (e: any) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -80,6 +78,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
       return false;
     }
   };
+
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
       <AppSyncToolbar appSettings={appSettings} />

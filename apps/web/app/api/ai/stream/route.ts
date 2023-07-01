@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({
     id: chatId,
-    email: user?.email,
+    user,
     filters: filters,
     prompt,
     journeyId
@@ -63,8 +63,10 @@ export async function POST(req: Request) {
     pineconeFilters,
     context = '',
     contextSourceFilesUsed: string[] = [];
+
   try {
     ({ pineconeFilters, pineconeData, context, contextSourceFilesUsed } = await fetchContext({
+      organizationId: chat.organizationId ?? user.organizationId ?? '',
       user,
       prompt,
       messages,

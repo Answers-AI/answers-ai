@@ -39,6 +39,8 @@ model User {
 
   appSettings Json?
   chats       Chat[]
+  chatsCreated Chat[] @relation("UserChatsCreated")
+  
   messages    Message[]
 
   prompts Prompt[]
@@ -68,6 +70,9 @@ model Organization {
   usersSelected User[] @relation("UserOrganzationsSelected")
 
   documentPermissions DocumentPermission[]
+
+  journeys Journey[]
+  chats Chat[]
 
   appSettings Json?
 
@@ -166,8 +171,14 @@ model Chat {
   journey   Journey? @relation(fields: journeyId, references: id)
   journeyId String?
 
+  owner User? @relation("UserChatsCreated", fields: [ownerId], references: [id])
+  ownerId String?
+
   users    User[]
   messages Message[]
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
 
   filters Json
 
@@ -182,8 +193,12 @@ model Journey {
   goal  String?
 
   filters Json
-
+  
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+ 
   chats Chat[]
+
 
   users     User[]
   deleted   Boolean  @default(false)

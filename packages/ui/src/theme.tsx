@@ -142,6 +142,9 @@ export const darkModeTheme = createTheme({
         }
       }
     },
+    MuiTextField: {
+      defaultProps: { size: 'small' }
+    },
     MuiAccordion: {
       styleOverrides: {
         root: {
