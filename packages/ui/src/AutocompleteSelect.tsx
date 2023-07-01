@@ -33,6 +33,7 @@ export default function AutocompleteSelect<T>({
   const handleChange = (event: any, newValue: any) => {
     if (onChange) onChange(newValue);
   };
+
   return (
     <Autocomplete
       sx={{ width: '100%', ...sx }}

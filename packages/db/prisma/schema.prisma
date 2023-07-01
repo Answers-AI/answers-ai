@@ -33,7 +33,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  currentOrganization   Organization? @relation("UserOrganzationsSelected", fields: [organizationId], references: [id])
+  currentOrganization Organization? @relation("UserOrganzationsSelected", fields: [organizationId], references: [id])
 
   organizations Organization[] @relation("UserOrganzations")
 
@@ -45,35 +45,50 @@ model User {
 
   journeys Journey[]
 
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @default(now()) @updatedAt
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @default(now()) @updatedAt
   ChatApp        ChatApp[]
   organizationId String?
   apiKey         ApiKey?
+  sidekicks      Sidekick[]
 }
 
 model ApiKey {
-  id        String @id @default(cuid())
-  userId    String @unique
-  user User @relation(fields: [userId], references: [id])
-  key       String @unique
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+  key    String @unique
 }
 
 model Organization {
-  id    String  @id @default(cuid())
-  name  String?
-  image String?
-
-  users         User[] @relation("UserOrganzations")
-  usersSelected User[] @relation("UserOrganzationsSelected")
-
+  id                  String               @id @default(cuid())
+  name                String?
+  image               String?
+  users               User[]               @relation("UserOrganzations")
+  usersSelected       User[]               @relation("UserOrganzationsSelected")
   documentPermissions DocumentPermission[]
+  appSettings         Json?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @default(now()) @updatedAt
+  ChatApp             ChatApp[]
+}
 
-  appSettings Json?
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
-  ChatApp   ChatApp[]
+model Sidekick {
+  id                   Int      @id @default(autoincrement())
+  departments          String[]
+  label                String
+  placeholder          String?
+  temperature          Float    @default(1)
+  frequency            Float    @default(0)
+  presence             Float    @default(0)
+  maxCompletionTokens  Int      @default(500)
+  aiModel              String
+  systemPromptTemplate String?
+  userPromptTemplate   String?
+  contextStringRender  String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @default(now()) @updatedAt
+  user                 User[]
 }
 
 model WebDocument {
@@ -83,15 +98,14 @@ model WebDocument {
   content           String?
   pageTitle         String?
   pageLastUpdatedAt DateTime? @updatedAt
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now()) @updatedAt
 }
 
 model Document {
   id     String  @id @default(cuid())
   source String
-  title   String?
+  title  String?
   domain String?
   url    String  @unique
 

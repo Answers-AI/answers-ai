@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Select, MenuItem, SelectChangeEvent, Box, Typography } from '@mui/material';
-import { sidekicks } from '@utils/sidekicks';
+import { Select, MenuItem, SelectChangeEvent, Box, Typography, TextField } from '@mui/material';
 import Cookies from 'js-cookie';
 import { Sidekick } from 'types';
+import axios from 'axios';
 
 interface SidekickSelectProps {
   onSidekickSelected: (sidekick: Sidekick) => void;
@@ -21,6 +21,7 @@ export const SidekickSelect = ({
   selectedSidekick: initialSidekick
 }: SidekickSelectProps) => {
   const [departments, setDepartments] = useState<string[]>([]);
+  const [sidekicks, setSidekicks] = useState<Sidekick[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState<string>(
     toSentenceCase(Cookies.get('department') || 'Administrative')
   );
@@ -55,21 +56,34 @@ export const SidekickSelect = ({
   }, []);
 
   useEffect(() => {
-    const sidekicksInDepartment = sidekicks
-      .filter((s) => s.departments.includes(selectedDepartment.toLowerCase()))
-      .sort((a, b) => a.label.localeCompare(b.label));
-    setDepartmentSidekicks(sidekicksInDepartment);
+    const fetchSidekicks = async () => {
+      try {
+        const response = await axios.get('/api/sidekicks');
+        console.log('this is the data', response.data);
+        setSidekicks(response.data);
+      } catch (error) {
+        console.error('Error fetching sidekicks:', error);
+      }
+    };
 
-    const lastUsedSidekicks = JSON.parse(Cookies.get('lastUsedSidekicks') || '{}');
-    const lastUsedSidekick = lastUsedSidekicks[selectedDepartment.toLowerCase()];
-    if (lastUsedSidekick) {
-      setSelectedSidekick(lastUsedSidekick);
-      onSidekickSelected(lastUsedSidekick);
-    } else if (sidekicksInDepartment[0]) {
-      setSelectedSidekick(sidekicksInDepartment[0]);
-      onSidekickSelected(sidekicksInDepartment[0]);
-    }
-  }, [selectedDepartment]);
+    fetchSidekicks().then(() => {
+      console.log('sidekicks', sidekicks);
+      const sidekicksInDepartment = sidekicks
+        .filter((s) => s.departments.includes(selectedDepartment.toLowerCase()))
+        .sort((a, b) => a.label.localeCompare(b.label));
+      setDepartmentSidekicks(sidekicksInDepartment);
+
+      const lastUsedSidekicks = JSON.parse(Cookies.get('lastUsedSidekicks') || '{}');
+      const lastUsedSidekick = lastUsedSidekicks[selectedDepartment.toLowerCase()];
+      if (lastUsedSidekick) {
+        setSelectedSidekick(lastUsedSidekick);
+        onSidekickSelected(lastUsedSidekick);
+      } else if (sidekicksInDepartment[0]) {
+        setSelectedSidekick(sidekicksInDepartment[0]);
+        onSidekickSelected(sidekicksInDepartment[0]);
+      }
+    });
+  }, []);
 
   const handleDepartmentChange = (event: SelectChangeEvent<string>) => {
     const department = event.target.value;
@@ -79,7 +93,7 @@ export const SidekickSelect = ({
 
   const handleSidekickChange = (event: SelectChangeEvent<string>) => {
     const sidekickValue = event.target.value;
-    const selectedSidekick = departmentSidekicks.find((s) => s.value === sidekickValue);
+    const selectedSidekick = departmentSidekicks.find((s) => s.id === sidekickValue);
     if (!selectedSidekick) return; // If no matching sidekick, abort
 
     setSelectedSidekick(selectedSidekick);
@@ -114,10 +128,10 @@ export const SidekickSelect = ({
         labelId="sidekick-select-label"
         id="sidekick-select"
         label="Sidekick"
-        value={selectedSidekick.value || 'defaultPrompt'}
+        value={selectedSidekick.id || 'defaultPrompt'}
         onChange={handleSidekickChange}>
         {departmentSidekicks.map((sidekick) => (
-          <MenuItem key={sidekick.value} value={sidekick.value}>
+          <MenuItem key={sidekick.id} value={sidekick.id}>
             {sidekick.label}
           </MenuItem>
         ))}

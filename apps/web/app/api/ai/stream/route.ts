@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   // Get the chosen sidekick and its getContextFunction
   const sidekicksArray: Sidekicks = sidekicks;
   const sidekickValue = sidekick || 'default';
-  const sidekickObject = sidekicksArray.find((sidekick) => sidekick.value === sidekickValue);
+  const sidekickObject = sidekicksArray.find((sidekick) => sidekick.id === sidekickValue);
 
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({
@@ -66,6 +66,7 @@ export async function POST(req: Request) {
   try {
     ({ pineconeFilters, pineconeData, context, contextSourceFilesUsed } = await fetchContext({
       user,
+      organization: user?.currentOrganization,
       prompt,
       messages,
       filters,

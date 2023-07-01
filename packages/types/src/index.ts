@@ -232,6 +232,7 @@ export type Flags = {
 
 export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
+  currentOrganization: Organization;
   // accounts: DB.Account[] | null;
 }
 export interface Organization extends Omit<DB.Organization, 'appSettings'> {
@@ -474,16 +475,19 @@ export type JiraComment = { key: string; self: string; id: string; fields: any; 
 export type Sidekick = {
   departments: string[];
   label: string;
-  value: string;
+  id: string;
   placeholder: string;
   temperature?: number;
   frequency?: number;
   presence?: number;
-  defaultModel?: string;
+  aiModel?: string;
   maxCompletionTokens?: number;
-  getSystemPromptTemplate?: (user?: User) => string;
-  getUserPromptTemplate?: (query: string, context: any) => string;
-  contextStringRender?: (item: any) => string;
+  systemPromptTemplate?: string;
+  userPromptTemplate?: string;
+  precompiledUserPromptTemplate: string;
+  getSystemPromptTemplate?: string;
+  getUserPromptTemplate?: string;
+  contextStringRender?: string;
 };
 
 // Add the Sidekicks type

@@ -6,6 +6,7 @@ import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 
 import WifiTetheringIcon from '@mui/icons-material/WifiTethering';
+import SmartToy from '@mui/icons-material/SmartToy';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -15,6 +16,7 @@ import { ListItemIcon, ListSubheader } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import AppSyncToolbar from './AppSyncToolbar';
+import { m } from 'framer-motion';
 const drawerWidth = 200;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -82,6 +84,12 @@ const DEFAULT_SETTINGS = [
     link: '/settings/integrations',
     title: 'integrations',
     icon: <WifiTetheringIcon />
+  },
+  {
+    id: 'studio',
+    link: '/settings/sidekick-studio',
+    title: 'Sidekick Studio',
+    icon: <SmartToy />
   }
   // {
   //   id: 'general',

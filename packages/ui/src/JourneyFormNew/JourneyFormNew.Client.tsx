@@ -1,20 +1,21 @@
 'use client';
 import React, { useState } from 'react';
+import useSWR from 'swr';
+import { useRouter } from 'next/navigation';
 
+import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
-import { JourneyAppsDrawer } from '@ui/JourneyLayout/JourneyAppsDrawer';
+
+import { JourneyAppsDrawer } from '../JourneyLayout/JourneyAppsDrawer';
+import { AnswersProvider, useAnswers } from '../AnswersContext';
+import { debounce } from '@utils/debounce';
 
 import { AppSettings } from 'types';
-import { AnswersProvider, useAnswers } from '@ui/AnswersContext';
-import { debounce } from '@utils/debounce';
-import useSWR from 'swr';
-import { CircularProgress } from '@mui/material';
-import { useRouter } from 'next/navigation';
 
 const JourneyFormNew = ({ appSettings }: { appSettings: AppSettings }): JSX.Element => {
   return (

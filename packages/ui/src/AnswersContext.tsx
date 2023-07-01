@@ -149,7 +149,7 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
       gptModel?: string;
       retry?: boolean;
     }) => {
-      const sidekickValue = sidekick?.value || 'defaultPrompt';
+      const sidekickValue = sidekick?.id || 'defaultPrompt';
       setIsLoading(true);
       setError(null);
       if (!retry) addMessage({ role: 'user', content: content } as Message);
