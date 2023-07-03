@@ -165,7 +165,7 @@ export const fetchContext = async ({
           source,
           ...filter[source]
         },
-        topK: 200
+        topK: 500
       });
     })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());

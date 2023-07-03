@@ -1,6 +1,6 @@
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser';
+import { prisma } from '@db/client';
 import { inngest } from './ingest/client';
-
 interface CompletionResponse {
   text: string;
 }
@@ -26,9 +26,31 @@ export async function OpenAIStream(
     throw e;
   });
   let answer = '';
+  let message;
   const stream = new ReadableStream({
     async start(controller) {
       controller.enqueue(encoder.encode(JSON.stringify(extra) + 'JSON_END')); // TODO: Need to get this back in. Was breaking the response when code was added to the prompt
+      message = await prisma.message.create({
+        data: {
+          content: '',
+          chat: { connect: { id: extra.chat.id } },
+          role: 'assistant',
+          contextSourceFilesUsed: extra.contextSourceFilesUsed
+        }
+      });
+      await inngest.send({
+        v: '1',
+        ts: new Date().valueOf(),
+        name: 'answers/message.sent',
+        user: extra.user,
+        data: {
+          role: 'user',
+          chatId: extra.chat.id,
+          content: payload.prompt
+          //  sidekick,
+          // gptModel
+        }
+      });
 
       function onParse(event: ParsedEvent | ReconnectInterval) {
         if (event.type === 'event') {
@@ -46,6 +68,7 @@ export async function OpenAIStream(
             }
             answer += text ?? '';
             const queue = encoder.encode(text);
+
             controller.enqueue(queue);
             counter++;
           } catch (e) {
@@ -55,9 +78,15 @@ export async function OpenAIStream(
       }
 
       const parser = createParser(onParse);
+
       for await (const chunk of res.body as any) {
         let decoded = decoder.decode(chunk);
-
+        // console.log('Update MEssage', { answer });
+        // await prisma.message.update({
+        //   data: {
+        //     content: text
+        //   }
+        // });
         parser.feed(decoded);
       }
       // TODO: Add tokens consumed in this completion

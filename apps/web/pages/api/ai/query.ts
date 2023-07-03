@@ -42,7 +42,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({
     id: chatId,
-    email: user?.email,
+    user,
     filters,
     prompt,
     journeyId

@@ -27,14 +27,14 @@ export const answersMessageSent: EventVersionHandler<{
 
     await AIUpdateChatTitle(history, chatId);
     // TODO: Save more things from the message sent (i.e context, history, completion request, completion response)
-    return prisma.message.create({
-      data: {
-        ...(role == 'user' && user?.email ? { user: { connect: { email: user?.email } } } : {}),
-        chat: { connect: { id: chatId } },
-        role,
-        content: content
-      }
-    });
+    // return prisma.message.create({
+    //   data: {
+    //     ...(role == 'user' && user?.email ? { user: { connect: { email: user?.email } } } : {}),
+    //     chat: { connect: { id: chatId } },
+    //     role,
+    //     content: content
+    //   }
+    // });
   }
 };
 
@@ -47,6 +47,7 @@ async function AIUpdateChatTitle(history: string, chatId: string) {
     model: 'text-davinci-003'
   });
   const title = res?.data?.choices?.[0]?.text!;
+  console.log('AITITLE', { history, chatId, res });
   await prisma.chat.update({
     where: { id: chatId },
     data: {

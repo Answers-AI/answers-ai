@@ -1,4 +1,5 @@
 'use client';
+import NextLink from 'next/link';
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -107,7 +108,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
           </MenuItem>
         </Select>
       </Box>
-      {filters ? <Filters filters={filters} /> : null}
+      {/* {filters ? <Filters filters={filters} /> : null} */}
       <TextField
         id="user-chat-input"
         inputRef={inputRef}
@@ -161,7 +162,8 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
             <Button
               variant="outlined"
               color="primary"
-              onClick={handleNewChat}
+              component={NextLink}
+              href={'/chat'}
               data-test-id="new-chat-button">
               <AddIcon />
             </Button>

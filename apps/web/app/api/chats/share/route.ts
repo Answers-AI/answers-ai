@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 
-export async function PATCH(req: Request, res: Response) {
+export async function PATCH(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const user = session?.user;
@@ -41,7 +41,7 @@ export async function PATCH(req: Request, res: Response) {
       },
       include: { users: true }
     });
-    return NextResponse.json(chat);
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.log('[PATCH] error', error);
     throw error;

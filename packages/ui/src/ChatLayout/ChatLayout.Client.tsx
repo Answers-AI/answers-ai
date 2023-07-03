@@ -18,9 +18,8 @@ export default function ChatUILayout({
   return (
     <main style={{ display: 'flex', width: '100%', height: '100%' }}>
       <ChatDrawer journeys={journeys} chats={chats} />
-      <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
-        {children}
-      </div>
+
+      {children}
     </main>
   );
 }

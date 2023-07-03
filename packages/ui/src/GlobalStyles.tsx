@@ -5,13 +5,14 @@ const GlobalStyles = () => (
       'a': { textDecoration: 'none' },
       '*': {
         '::-webkit-scrollbar ': {
-          width: '2px'
+          width: '4px',
+          padding: '4px'
         },
         '::-webkit-scrollbar-track ': {
           background: 'transparent'
         },
         '::-webkit-scrollbar-thumb ': {
-          width: '1px',
+          width: '4px',
           backgroundColor: 'rgba(155, 155, 155, 0.5)',
           borderRadius: '20px,',
           border: 'transparent'

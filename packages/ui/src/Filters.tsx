@@ -14,19 +14,21 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
       });
 
   return filters ? (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, ...sx }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', ...sx }}>
       {datasources?.length ? (
         <>
-          <strong>
+          {/* <strong>
             <Typography variant="overline">Sources:</Typography>
-          </strong>
+          </strong> */}
           {datasources.map(([source, sourceFilters]) => {
             if (!sourceFilters || !Object.keys(sourceFilters).length) return null;
             return (
               <React.Fragment key={source}>
                 <Typography variant="overline">{source}</Typography>
                 {Object.entries(sourceFilters)?.map(([field, values]) => (
-                  <React.Fragment key={`${source}_${field}`}>
+                  <Box
+                    key={`${source}_${field}`}
+                    sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                     {!values
                       ? null
                       : (values as any[])?.map((value: any) => (
@@ -43,7 +45,7 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
                             }
                           />
                         ))}
-                  </React.Fragment>
+                  </Box>
                 ))}
               </React.Fragment>
             );
@@ -51,7 +53,7 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
         </>
       ) : (
         <Typography variant="overline">
-          <strong> Add a source to your journey by clicking on a source above</strong>
+          <strong> Add a source to your journey</strong>
         </Typography>
       )}
     </Box>

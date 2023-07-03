@@ -126,8 +126,9 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
       <Drawer
         sx={{
           'flexShrink': 0,
+          'zIndex': 1000,
           'position': { md: 'relative', xs: 'absolute' },
-          'zIndex': 1,
+
           '& .MuiDrawer-paper': {
             position: 'absolute',
             boxSizing: 'border-box'
@@ -165,7 +166,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
             sx={{ px: 2, width: '100%', textTransform: 'capitalize' }}
             color="primary">
             <ListItemText primary={'Start New Journey'} />
-            <Add />
+            {/* <Add /> */}
           </Button>
         </ListItem>
         <List disablePadding sx={{ flex: 1 }}>

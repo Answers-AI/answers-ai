@@ -40,14 +40,6 @@ export async function POST(req: Request) {
     journeyId
   });
 
-  await inngest.send({
-    v: '1',
-    ts: new Date().valueOf(),
-    name: 'answers/message.sent',
-    user: user,
-    data: { role: 'user', chatId: chat.id, content: prompt, sidekick, gptModel }
-  });
-
   if (user)
     await inngest.send({
       v: '1',
@@ -83,14 +75,14 @@ export async function POST(req: Request) {
 
     let message;
     if (prompt && answer) {
-      message = await prisma.message.create({
-        data: {
-          chat: { connect: { id: chat.id } },
-          role: 'assistant',
-          content: answer,
-          contextSourceFilesUsed
-        }
-      });
+      // message = await prisma.message.create({
+      //   data: {
+      //     chat: { connect: { id: chat.id } },
+      //     role: 'assistant',
+      //     content: answer,
+      //     contextSourceFilesUsed
+      //   }
+      // });
       await inngest.send({
         v: '1',
         ts: new Date().valueOf(),
@@ -116,6 +108,7 @@ export async function POST(req: Request) {
       stream: true
     },
     {
+      user,
       chat,
       contextSourceFilesUsed,
       filters: pineconeFilters,

@@ -1,18 +1,18 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
-import { AppSettings, ConfluenceSpace, AppService, Flags } from 'types';
+import { AppSettings, AppService } from 'types';
 
-import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
-import AutocompleteSelect from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
+import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
 import { useFlags } from 'flagsmith/react';
 import Image from 'next/image';
-import SourcesWeb from './SourcesWeb';
-import SourcesJira from './JourneyLayout/SourcesJira';
-import SourcesConfluence from './JourneyLayout/SourcesConfluence';
-import SourcesAirtable from './JourneyLayout/SourcesAirtable';
-import SourcesCodebase from './SourcesCodebase';
-import SourcesSlack from './JourneyLayout/SourcesSlack';
+
+import SourcesWeb from '@ui/SourcesWeb';
+import SourcesJira from '@ui/SourcesJira';
+import SourcesConfluence from '@ui/SourcesConfluence';
+import SourcesAirtable from '@ui/SourcesAirtable';
+import SourcesCodebase from '@ui/SourcesCodebase';
+import SourcesSlack from '@ui/SourcesSlack';
 
 export default function JourneySources({ appSettings }: { appSettings: AppSettings }) {
   const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});

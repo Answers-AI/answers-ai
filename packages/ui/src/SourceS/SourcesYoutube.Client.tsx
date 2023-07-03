@@ -19,7 +19,7 @@ const SourcesYoutube: React.FC<{}> = ({}) => {
 
   return (
     <>
-      <Box marginBottom={1} sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
+      <Box marginBottom={1} sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
         <Autocomplete
           label={'Choose youtube'}
           placeholder={`Youtube video`}

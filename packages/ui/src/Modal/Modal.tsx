@@ -6,7 +6,7 @@ const Modal = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const modal = searchParams.get('modal');
+  const modal = searchParams?.get('modal');
   const handleClose = () => {
     router.push(pathname, { shallow: true });
   };

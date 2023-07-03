@@ -69,7 +69,7 @@ const AnswersContext = createContext<AnswersContextType>({
   inputValue: '',
   useStreaming: true,
   setUseStreaming: () => {},
-  showFilters: false,
+  showFilters: true,
   setShowFilters: () => {},
   setInputValue: () => {},
   deleteChat: async () => {},
@@ -235,6 +235,7 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
 
   return {
     ...context,
+
     sendMessage,
     clearMessages,
     regenerateAnswer,
@@ -278,7 +279,7 @@ export function AnswersProvider({
   const [filters, setFilters] = useState<AnswersFilters>(
     deepmerge({}, appSettings?.filters, journey?.filters, chat?.filters)
   );
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
   const [chatId, setChatId] = useState<string | undefined>(chat?.id);
   const [journeyId, setJourneyId] = useState<string | undefined>(journey?.id);
