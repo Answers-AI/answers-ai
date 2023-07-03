@@ -1,2 +1,2 @@
-import SourcesFile from './SourcesFile.Server';
+import SourcesFile from './SourcesFile.Client';
 export default SourcesFile;

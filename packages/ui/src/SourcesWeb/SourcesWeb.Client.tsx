@@ -1,18 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import axios from 'axios';
-import {
-  Box,
-  Button,
-  Chip,
-  Collapse,
-  FormControlLabel,
-  List,
-  ListItem,
-  Switch,
-  TextField,
-  Typography
-} from '@mui/material';
+import { Box, Chip, TextField, Typography } from '@mui/material';
 import Autocomplete from '@ui/VirtualAutocomplete';
 import { WebUrlType, Document } from 'types';
 import { useAnswers } from '@ui/AnswersContext';
@@ -121,7 +110,6 @@ const SourcesWeb: React.FC<{}> = ({}) => {
   };
 
   const handleRemoveDomain = async (domain: string) => {
-    console.log('handleRemoveDomain', domain);
     const newDomain = (filters?.datasources?.web?.domain ?? []).filter((d) => {
       return domain !== d;
     });
@@ -157,7 +145,6 @@ const SourcesWeb: React.FC<{}> = ({}) => {
     await mutate();
   };
 
-  console.log('WebFilters', filters?.datasources?.web);
   return (
     <>
       <Box marginBottom={1} sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
@@ -197,7 +184,6 @@ const SourcesWeb: React.FC<{}> = ({}) => {
           }}
           onChange={(e: any, value: any) => {
             if (value) {
-              console.log('Change');
               handleAddUrl({ url: value, entireDomain: false });
 
               setNewUrl('');

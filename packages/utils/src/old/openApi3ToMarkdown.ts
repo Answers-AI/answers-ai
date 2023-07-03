@@ -10,8 +10,6 @@ const openApiToMarkdown = (openApiSpec: OpenAPIV3_1.Document): string => {
 
     const endPointHeading = `${specHeading} Endpoint "${pathName}"`;
     console.log('========');
-    console.log(pathName);
-    console.log(path.parameters);
     // Add path-level parameters
     if (path.parameters) {
       output += `#### ${endPointHeading} Parameters \n\n`;

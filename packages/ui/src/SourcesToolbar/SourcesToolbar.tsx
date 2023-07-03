@@ -24,22 +24,11 @@ import JourneySetting from '@ui/JourneySetting';
 import { ExpandLess, ExpandMore, Add } from '@mui/icons-material';
 
 export default function SourcesToolbar({ appSettings }: { appSettings: AppSettings }) {
-  const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});
+  const flags = useFlags(appSettings?.services?.map((s) => s.name) ?? []);
 
-  const flags = useFlags([
-    'airtable',
-    'files',
-    'codebase',
-    'confluence',
-    'documents',
-    'zoom',
-    'youtube'
-  ]);
-
-  const enabledServices =
+  const enabledServices: AppService[] | undefined =
     appSettings?.services?.filter((service) => {
-      const isServiceEnabledInFlags = (flags?.[service.name] as any)?.enabled;
-      return isServiceEnabledInFlags || service.enabled;
+      return (flags?.[service.name] as any)?.enabled;
     }) ?? [];
 
   const { filters, showFilters, updateFilter } = useAnswers();

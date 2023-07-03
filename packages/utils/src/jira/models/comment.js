@@ -2,8 +2,6 @@ import JiraObject from './jiraObject';
 class JiraComment extends JiraObject {
   constructor(comment) {
     const tidiedComment = JiraComment.tidy(comment);
-    console.log('TIDY');
-    console.log(tidiedComment);
     super(tidiedComment);
     this.object.objectType = 'JIRA Comment';
     this.object.uid = comment.id;

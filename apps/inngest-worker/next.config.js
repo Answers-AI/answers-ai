@@ -26,7 +26,14 @@ let nextConfig = withBundleAnalyzer({
   },
 
   webpack: (config, { isServer }) => {
-    config.externals = [...config.externals, 'db', 'puppeteer'];
+    config.externals = [
+      ...config.externals,
+      'db',
+      'puppeteer',
+      'canvas',
+      'pdfjs-dist',
+      'pdfjs-dist/legacy/build/pdf'
+    ];
     config.plugins = [
       ...config.plugins,
       // new PrismaPlugin(),

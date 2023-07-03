@@ -208,33 +208,32 @@ export const buildSettings = async (user: User, org?: Organization) => {
   //   console.log('JiraSettingsError', error);
   // }
 
+  const fileSettings =
+    (newSettings as any)?.files?.url?.reduce((acc: any, file: string) => {
+      acc[file] = { file };
+      return acc;
+    }, {}) || {};
+
   try {
-    newSettings.documents = {
-      docs: [
-        {
-          id: 'blueprint-for-an-ai-bill-of-rights',
-          name: 'blueprint-for-an-ai-bill-of-rights',
-          enabled: true
-        },
-        {
-          id: 'trends-in-ai-regulation',
-          name: 'trends-in-ai-regulation',
-          enabled: true
-        },
-        {
-          id: 'drata-soc2-policies',
-          name: 'drata-soc2-policies',
-          enabled: true
-        },
-        {
-          id: 'investor-deck',
-          name: 'investor-deck',
-          enabled: true
-        }
-      ]
+    newSettings.files = {
+      url: [...fileSettings]
     };
   } catch (error) {
-    console.log('JiraSettingsError', error);
+    console.log('FilesSettingsError', error);
+  }
+
+  const documentSettings =
+    (newSettings as any)?.document?.url?.reduce((acc: any, document: string) => {
+      acc[document] = { document };
+      return acc;
+    }, {}) || {};
+
+  try {
+    newSettings.document = {
+      url: [...documentSettings]
+    };
+  } catch (error) {
+    console.log('DocumenteSettingsError', error);
   }
 
   try {

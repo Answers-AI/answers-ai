@@ -19,7 +19,7 @@ const JOURNEY_SETTINGS: { [key: string]: any } = {
   jira: SourcesJira,
   slack: SourcesSlack,
   web: SourcesWeb,
-  documents: SourcesDocument,
+  document: SourcesDocument,
   zoom: SourcesZoom,
   youtube: SourcesYoutube
 };
