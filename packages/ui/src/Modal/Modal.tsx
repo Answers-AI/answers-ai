@@ -8,7 +8,7 @@ const Modal = () => {
   const searchParams = useSearchParams();
   const modal = searchParams?.get('modal');
   const handleClose = () => {
-    router.push(pathname, { shallow: true });
+    if (pathname) router.push(pathname, { shallow: true });
   };
   switch (modal) {
     case 'share':

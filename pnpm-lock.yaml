@@ -33,6 +33,133 @@ importers:
         specifier: ^4.8.4
         version: 4.9.5
 
+  apps/inngest-worker:
+    dependencies:
+      '@dqbd/tiktoken':
+        specifier: ^1.0.6
+        version: 1.0.6
+      '@huggingface/inference':
+        specifier: ^1.8.0
+        version: 1.8.0
+      '@pinecone-database/pinecone':
+        specifier: ^0.0.5
+        version: 0.0.5
+      axios:
+        specifier: ^1.3.5
+        version: 1.3.6
+      chromadb:
+        specifier: ^1.4.0
+        version: 1.4.1
+      cohere-ai:
+        specifier: ^6.1.0
+        version: 6.1.0
+      cors:
+        specifier: ^2.8.5
+        version: 2.8.5
+      db:
+        specifier: workspace:*
+        version: link:../../packages/db
+      encoding:
+        specifier: ^0.1.13
+        version: 0.1.13
+      experimental-prisma-webpack-plugin:
+        specifier: workspace:*
+        version: link:../../packages/experimental-prisma-webpack-plugin
+      hnswlib-node:
+        specifier: ^1.4.2
+        version: 1.4.2
+      inngest:
+        specifier: ^1.8.0
+        version: 1.8.0(encoding@0.1.13)(typescript@4.9.5)
+      ioredis:
+        specifier: ^5.3.1
+        version: 5.3.2
+      langchain:
+        specifier: 0.0.36
+        version: 0.0.36(@dqbd/tiktoken@1.0.6)(@huggingface/inference@1.8.0)(@pinecone-database/pinecone@0.0.5)(chromadb@1.4.1)(cohere-ai@6.1.0)(hnswlib-node@1.4.2)(puppeteer@19.11.0)(serpapi@1.1.1)(typeorm@0.3.15)
+      next:
+        specifier: ^13.4.7
+        version: 13.4.7(@babel/core@7.21.4)(react-dom@18.2.0)(react@18.2.0)
+      next-auth:
+        specifier: ^4.22.1
+        version: 4.22.1(next@13.4.7)(react-dom@18.2.0)(react@18.2.0)
+      openai:
+        specifier: ^3.2.1
+        version: 3.2.1
+      puppeteer:
+        specifier: ^19.8.2
+        version: 19.11.0(encoding@0.1.13)(typescript@4.9.5)
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
+      react-hook-form:
+        specifier: ^7.43.9
+        version: 7.43.9(react@18.2.0)
+      serpapi:
+        specifier: ^1.1.1
+        version: 1.1.1
+      typeorm:
+        specifier: ^0.3.15
+        version: 0.3.15(ioredis@5.3.2)
+      utils:
+        specifier: workspace:*
+        version: link:../../packages/utils
+    devDependencies:
+      '@babel/core':
+        specifier: ^7.21.4
+        version: 7.21.4
+      '@next/bundle-analyzer':
+        specifier: ^13.4.6
+        version: 13.4.6
+      '@types/cors':
+        specifier: ^2.8.13
+        version: 2.8.13
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.16.0
+      '@types/react':
+        specifier: ^18.0.31
+        version: 18.0.38
+      '@types/react-dom':
+        specifier: ^18.0.11
+        version: 18.0.11
+      copy-webpack-plugin:
+        specifier: ^11.0.0
+        version: 11.0.0(webpack@5.78.0)
+      eslint:
+        specifier: 7.32.0
+        version: 7.32.0
+      eslint-config-custom:
+        specifier: workspace:*
+        version: link:../../packages/eslint-config-custom
+      terser-webpack-plugin:
+        specifier: ^5.3.7
+        version: 5.3.7(webpack@5.78.0)
+      ts-loader:
+        specifier: ^9.4.2
+        version: 9.4.2(typescript@4.9.5)(webpack@5.78.0)
+      tsconfig:
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
+      types:
+        specifier: workspace:*
+        version: link:../../packages/types
+      typescript:
+        specifier: ^4.8.4
+        version: 4.9.5
+      webpack:
+        specifier: ^5.78.0
+        version: 5.78.0(webpack-cli@5.0.1)
+      webpack-cli:
+        specifier: ^5.0.1
+        version: 5.0.1(webpack@5.78.0)
+      webpack-node-externals:
+        specifier: ^3.0.0
+        version: 3.0.0
+
   apps/web:
     dependencies:
       '@dqbd/tiktoken':
@@ -103,7 +230,7 @@ importers:
         version: 3.0.5
       langchain:
         specifier: 0.0.36
-        version: 0.0.36(@dqbd/tiktoken@1.0.6)(@huggingface/inference@1.8.0)(@pinecone-database/pinecone@0.0.5)(chromadb@1.4.1)(cohere-ai@6.2.0)(hnswlib-node@1.4.2)(serpapi@1.1.1)(typeorm@0.3.15)
+        version: 0.0.36(@dqbd/tiktoken@1.0.6)(@huggingface/inference@1.8.0)(@pinecone-database/pinecone@0.0.5)(chromadb@1.4.1)(cohere-ai@6.1.0)(hnswlib-node@1.4.2)(puppeteer@19.11.0)(serpapi@1.1.1)(typeorm@0.3.15)
       next:
         specifier: ^13.4.7
         version: 13.4.7(@babel/core@7.21.4)(react-dom@18.2.0)(react@18.2.0)
@@ -3198,12 +3325,12 @@ packages:
     resolution: {integrity: sha512-9K4zoImiZc3HlIp6AVUDE4CWYx22a+lhSZMYNpbjW04+YF0KWj4pJXnEMjdnFTiQibFFmElcsasJXDbdI/EPhA==}
     dependencies:
       '@types/eslint': 8.21.1
-      '@types/estree': 0.0.51
+      '@types/estree': 1.0.1
 
   /@types/eslint@8.21.1:
     resolution: {integrity: sha512-rc9K8ZpVjNcLs8Fp0dkozd5Pt2Apk1glO4Vgz8ix1u6yFByxfqo5Yavpy65o+93TAe24jr7v+eSBtFLvOQtCRQ==}
     dependencies:
-      '@types/estree': 0.0.51
+      '@types/estree': 1.0.1
       '@types/json-schema': 7.0.11
 
   /@types/estree@0.0.51:
@@ -3211,7 +3338,6 @@ packages:
 
   /@types/estree@1.0.1:
     resolution: {integrity: sha512-LG4opVs2ANWZ1TJoKc937iMmNstM/d0ae1vNbnBvBhqCSezgVUOzcLCqbI5elV8Vy6WKwKjaqR+zO9VKirBBCA==}
-    dev: false
 
   /@types/filesystem@0.0.32:
     resolution: {integrity: sha512-Yuf4jR5YYMR2DVgwuCiP11s0xuVRyPKmz8vo6HBY3CGdeMj8af93CFZX+T82+VD1+UqHOxTq31lO7MI7lepBtQ==}
@@ -4531,6 +4657,10 @@ packages:
     resolution: {integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==}
     engines: {iojs: '>= 1.0.0', node: '>= 0.12.0'}
     dev: true
+
+  /cohere-ai@6.1.0:
+    resolution: {integrity: sha512-1hx13cEB0QqxkW213JhAOw8Q2jzCeo6GUFSQ5lsOQPNtDFhSZZusTD/+DcAvd8IVw2y/Cm+pfK3tofPngVG3BA==}
+    dev: false
 
   /cohere-ai@6.2.0:
     resolution: {integrity: sha512-nKUutFpbTQ1TJji3RAmKq9+UKQyf2MrI2qAeOPPZuGlch734XT5KltMUd/AXDY7IAdGHbB8v6VNIEO3qSVST5g==}
@@ -6837,7 +6967,7 @@ packages:
   /is-reference@1.2.1:
     resolution: {integrity: sha512-U82MsXXiFIrjCK4otLT+o2NA2Cd2g5MLoOVXUZjIOhLurrRxpEXzI8O0KZHr3IjLvlAH1kTPYSuqer5T9ZVBKQ==}
     dependencies:
-      '@types/estree': 0.0.51
+      '@types/estree': 1.0.1
     dev: false
 
   /is-regex@1.1.4:
@@ -7598,7 +7728,7 @@ packages:
     resolution: {integrity: sha512-ymToLHqL02udwVdbkowNpzjFd6UzozMtshPQKVi5k1EjKRqKqBrOnE9QbLEb0/pV76SAiIT13hdL8R6suc+f3g==}
     dev: true
 
-  /langchain@0.0.36(@dqbd/tiktoken@1.0.6)(@huggingface/inference@1.8.0)(@pinecone-database/pinecone@0.0.5)(chromadb@1.4.1)(cohere-ai@6.2.0)(hnswlib-node@1.4.2)(serpapi@1.1.1)(typeorm@0.3.15):
+  /langchain@0.0.36(@dqbd/tiktoken@1.0.6)(@huggingface/inference@1.8.0)(@pinecone-database/pinecone@0.0.5)(chromadb@1.4.1)(cohere-ai@6.1.0)(hnswlib-node@1.4.2)(puppeteer@19.11.0)(serpapi@1.1.1)(typeorm@0.3.15):
     resolution: {integrity: sha512-wBucnmDSWm+Fkjum7DBrkyr7pil1L6RPgv1flF40yHKrcnCPxvbbH5AgqL4rRH3e6r0WKIri/1K9VjWWty676w==}
     peerDependencies:
       '@dqbd/tiktoken': ^1.0.2
@@ -7653,7 +7783,7 @@ packages:
       '@pinecone-database/pinecone': 0.0.5
       browser-or-node: 2.1.1
       chromadb: 1.4.1
-      cohere-ai: 6.2.0
+      cohere-ai: 6.1.0
       eventsource-parser: 0.1.0
       exponential-backoff: 3.1.1
       expr-eval: 2.0.2
@@ -7663,8 +7793,9 @@ packages:
       object-hash: 3.0.0
       openai: 3.2.1
       p-queue: 7.3.4
+      puppeteer: 19.11.0(encoding@0.1.13)(typescript@4.9.5)
       serpapi: 1.1.1
-      typeorm: 0.3.15(ioredis@5.3.1)
+      typeorm: 0.3.15(ioredis@5.3.2)
       uuid: 9.0.0
       yaml: 2.2.1
       zod: 3.21.4
@@ -9244,6 +9375,34 @@ packages:
       - utf-8-validate
     dev: false
 
+  /puppeteer-core@19.11.0(encoding@0.1.13)(typescript@4.9.5):
+    resolution: {integrity: sha512-UBlwpyTEKcaOt7bIWWhlhIXDlFbR1wVBcxpMibBhImwagkwDB8ld8ehT5dOdfKIcCHjxXzVEaMtgDKzfwcf7Rg==}
+    engines: {node: '>=14.14.0'}
+    peerDependencies:
+      typescript: '>= 4.7.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      '@puppeteer/browsers': 0.5.0(typescript@4.9.5)
+      chromium-bidi: 0.4.7(devtools-protocol@0.0.1107588)
+      cross-fetch: 3.1.5(encoding@0.1.13)
+      debug: 4.3.4(supports-color@8.1.1)
+      devtools-protocol: 0.0.1107588
+      extract-zip: 2.0.1(supports-color@8.1.1)
+      https-proxy-agent: 5.0.1
+      proxy-from-env: 1.1.0
+      tar-fs: 2.1.1
+      typescript: 4.9.5
+      unbzip2-stream: 1.4.3
+      ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - supports-color
+      - utf-8-validate
+    dev: false
+
   /puppeteer@19.11.0(bufferutil@4.0.7)(typescript@4.9.5)(utf-8-validate@6.0.3):
     resolution: {integrity: sha512-xE0BTOFIR/fEXEHQNfGGMWGr3IQBB2AY760K+pE11kjBKe5P0jivzWG1LHr0TA1/xiHxu9nAhQzv5zh2Dy0YEQ==}
     requiresBuild: true
@@ -9254,6 +9413,24 @@ packages:
       progress: 2.0.3
       proxy-from-env: 1.1.0
       puppeteer-core: 19.11.0(bufferutil@4.0.7)(typescript@4.9.5)(utf-8-validate@6.0.3)
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - supports-color
+      - typescript
+      - utf-8-validate
+    dev: false
+
+  /puppeteer@19.11.0(encoding@0.1.13)(typescript@4.9.5):
+    resolution: {integrity: sha512-xE0BTOFIR/fEXEHQNfGGMWGr3IQBB2AY760K+pE11kjBKe5P0jivzWG1LHr0TA1/xiHxu9nAhQzv5zh2Dy0YEQ==}
+    requiresBuild: true
+    dependencies:
+      '@puppeteer/browsers': 0.5.0(typescript@4.9.5)
+      cosmiconfig: 8.1.3
+      https-proxy-agent: 5.0.1
+      progress: 2.0.3
+      proxy-from-env: 1.1.0
+      puppeteer-core: 19.11.0(encoding@0.1.13)(typescript@4.9.5)
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -10760,6 +10937,83 @@ packages:
       dotenv: 16.0.3
       glob: 8.1.0
       ioredis: 5.3.1
+      mkdirp: 2.1.5
+      reflect-metadata: 0.1.13
+      sha.js: 2.4.11
+      tslib: 2.5.0
+      uuid: 9.0.0
+      yargs: 17.7.1
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /typeorm@0.3.15(ioredis@5.3.2):
+    resolution: {integrity: sha512-R4JSw8QjDP1W+ypeRz/XrCXIqubrLSnNAzJAp9EQSQIPHTv+YmUHZis8g08lOwFpuhqL9m8jkPSz8GWEKlU/ow==}
+    engines: {node: '>= 12.9.0'}
+    hasBin: true
+    peerDependencies:
+      '@google-cloud/spanner': ^5.18.0
+      '@sap/hana-client': ^2.12.25
+      better-sqlite3: ^7.1.2 || ^8.0.0
+      hdb-pool: ^0.1.6
+      ioredis: ^5.0.4
+      mongodb: ^5.2.0
+      mssql: ^9.1.1
+      mysql2: ^2.2.5 || ^3.0.1
+      oracledb: ^5.1.0
+      pg: ^8.5.1
+      pg-native: ^3.0.0
+      pg-query-stream: ^4.0.0
+      redis: ^3.1.1 || ^4.0.0
+      sql.js: ^1.4.0
+      sqlite3: ^5.0.3
+      ts-node: ^10.7.0
+      typeorm-aurora-data-api-driver: ^2.0.0
+    peerDependenciesMeta:
+      '@google-cloud/spanner':
+        optional: true
+      '@sap/hana-client':
+        optional: true
+      better-sqlite3:
+        optional: true
+      hdb-pool:
+        optional: true
+      ioredis:
+        optional: true
+      mongodb:
+        optional: true
+      mssql:
+        optional: true
+      mysql2:
+        optional: true
+      oracledb:
+        optional: true
+      pg:
+        optional: true
+      pg-native:
+        optional: true
+      pg-query-stream:
+        optional: true
+      redis:
+        optional: true
+      sql.js:
+        optional: true
+      sqlite3:
+        optional: true
+      ts-node:
+        optional: true
+      typeorm-aurora-data-api-driver:
+        optional: true
+    dependencies:
+      '@sqltools/formatter': 1.2.5
+      app-root-path: 3.1.0
+      buffer: 6.0.3
+      chalk: 4.1.2
+      cli-highlight: 2.1.11
+      debug: 4.3.4(supports-color@8.1.1)
+      dotenv: 16.0.3
+      glob: 8.1.0
+      ioredis: 5.3.2
       mkdirp: 2.1.5
       reflect-metadata: 0.1.13
       sha.js: 2.4.11
