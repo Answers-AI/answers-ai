@@ -18,6 +18,7 @@ interface AnswersContextType {
   messages?: Array<Message>;
   prompts?: Array<Prompt>;
   chats?: Array<Chat>;
+  sidekick?: Sidekick;
   sendMessage: (
     content: string,
     isNewJourney?: boolean,
@@ -61,6 +62,7 @@ const AnswersContext = createContext<AnswersContextType>({
   chats: [],
   prompts: [],
   filters: {},
+  sidekick: undefined,
   updateFilter: () => {},
   sendMessage: () => {},
   regenerateAnswer: () => {},
@@ -91,6 +93,7 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
     useStreaming,
     messageIdx,
     setMessages,
+    sidekick,
     journeyId,
     chatId,
     setIsLoading,
@@ -113,6 +116,7 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
     journeyId,
     chatId,
     filters,
+    sidekick,
     messages,
     apiUrl,
     onChunk: (chunk: Message) => {
@@ -149,6 +153,7 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
       gptModel?: string;
       retry?: boolean;
     }) => {
+      console.log('in send message', { sidekick });
       const sidekickValue = sidekick?.id || 'defaultPrompt';
       setIsLoading(true);
       setError(null);

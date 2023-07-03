@@ -20,17 +20,18 @@ export async function getCompletionRequest({
   sidekick?: Sidekick;
   gptModel?: string;
 }) {
-  const systemPrompt = sidekick?.getSystemPromptTemplate
-    ? renderContext(sidekick.getSystemPromptTemplate, { input, context, user })
+  console.log({ sidekick });
+  const systemPrompt = sidekick?.systemPromptTemplate
+    ? renderContext(sidekick.systemPromptTemplate, { input, context, user })
     : '';
-  const userPrompt = sidekick?.getUserPromptTemplate
-    ? renderContext(sidekick.getUserPromptTemplate, { input, context })
+  const userPrompt = sidekick?.userPromptTemplate
+    ? renderContext(sidekick.userPromptTemplate, { input, context })
     : input;
 
   const temperature = sidekick?.temperature || 0.1;
   const frequency = sidekick?.frequency || 0;
   const presence = sidekick?.presence || 0;
-  const sidekickModel = sidekick?.defaultModel || gptModel || 'gpt-3.5-turbo';
+  const sidekickModel = sidekick?.aiModel || gptModel || 'gpt-3.5-turbo';
   const maxCompletionTokens = sidekick?.maxCompletionTokens || 500;
 
   const systemPromptTokens = await countTokens(systemPrompt);

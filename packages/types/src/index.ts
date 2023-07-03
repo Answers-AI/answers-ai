@@ -472,23 +472,21 @@ export type JiraIssue = { key: string; self: string; id: string; fields: any; ar
 export type JiraComment = { key: string; self: string; id: string; fields: any; archived: any };
 
 // Replace the Sidekick interface with the following type
-export type Sidekick = {
-  departments: string[];
-  label: string;
-  id: string;
-  placeholder: string;
-  temperature?: number;
-  frequency?: number;
-  presence?: number;
-  aiModel?: string;
-  maxCompletionTokens?: number;
-  systemPromptTemplate?: string;
-  userPromptTemplate?: string;
-  precompiledUserPromptTemplate: string;
-  getSystemPromptTemplate?: string;
-  getUserPromptTemplate?: string;
-  contextStringRender?: string;
-};
+export interface Sidekick extends DB.Sidekick {
+  // departments: string[];
+  // label: string;
+  // id: string;
+  // placeholder: string;
+  // temperature?: number;
+  // frequency?: number;
+  // presence?: number;
+  // aiModel?: string;
+  // maxCompletionTokens?: number;
+  // systemPromptTemplate?: string;
+  // userPromptTemplate?: string;
+  // precompiledUserPromptTemplate: string;
+  // contextStringRender?: string;
+}
 
 // Add the Sidekicks type
 export type Sidekicks = Sidekick[];

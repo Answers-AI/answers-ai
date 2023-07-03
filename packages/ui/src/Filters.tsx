@@ -2,6 +2,7 @@
 import React from 'react';
 import { Box, Chip, Typography } from '@mui/material';
 import { AnswersFilters } from 'types';
+import { SignalCellularNullSharp } from '@mui/icons-material';
 
 export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) => {
   const datasources = !filters?.datasources
@@ -49,11 +50,7 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
             );
           })}
         </>
-      ) : (
-        <Typography variant="overline">
-          <strong> Add a source to your journey by clicking on a source above</strong>
-        </Typography>
-      )}
+      ) : null}
     </Box>
   ) : null;
 };

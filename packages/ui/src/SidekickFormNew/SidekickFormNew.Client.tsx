@@ -30,6 +30,8 @@ const allDepartments = [
   'Legal'
 ];
 
+interface SidekickInput extends Omit<Sidekick, 'createdAt' | 'updatedAt' | 'id'> {}
+
 const SidekickFormNew = ({ appSettings }: { appSettings: AppSettings }): JSX.Element => {
   return (
     <AnswersProvider appSettings={appSettings}>
@@ -37,23 +39,23 @@ const SidekickFormNew = ({ appSettings }: { appSettings: AppSettings }): JSX.Ele
     </AnswersProvider>
   );
 };
+
 const SidekickForm = ({ appSettings }: { appSettings: AppSettings }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editorCode, setEditorCode] = useState('false');
   const [sidekicks, setSidekicks] = useState<Sidekick[]>([]);
-  const [sidekick, setSidekick] = useState<Sidekick>({
+  const [sidekick, setSidekick] = useState<SidekickInput>({
     departments: [],
-    id: '',
     label: '',
-    placeholder: undefined,
-    temperature: undefined,
-    frequency: undefined,
-    presence: undefined,
-    aiModel: undefined,
-    maxCompletionTokens: undefined,
-    systemPromptTemplate: undefined,
-    userPromptTemplate: undefined,
-    contextStringRender: undefined
+    placeholder: '',
+    temperature: 0,
+    frequency: 0,
+    presence: 0,
+    aiModel: '',
+    maxCompletionTokens: 500,
+    systemPromptTemplate: '',
+    userPromptTemplate: '',
+    contextStringRender: ''
   });
 
   const handleDepartmentsChange = (event: ChangeEvent<{}>, departmentValue: string[]) => {

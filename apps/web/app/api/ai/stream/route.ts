@@ -8,7 +8,7 @@ import { OpenAIStream } from '@utils/OpenAIStream';
 import { inngest } from '@utils/ingest/client';
 import { getCompletionRequest } from '@utils/llm/getCompletionRequest';
 import { fetchContext } from '@utils/pinecone/fetchContext';
-import { sidekicks } from '@utils/sidekicks';
+// import { sidekicks } from '@utils/sidekicks';
 import { upsertChat } from '@utils/upsertChat';
 import { prisma } from '@db/client';
 import { Sidekicks } from 'types';
@@ -21,15 +21,24 @@ export async function POST(req: Request) {
   }
 
   const { journeyId, chatId, filters, prompt, messages, sidekick, gptModel } = await req.json();
+  // TODO: Update for sharing in the future
+  const sidekickObject = !sidekick?.id
+    ? null
+    : await prisma.sidekick.findFirst({
+        where: {
+          id: sidekick.id,
+          user: { some: { email: user?.email } }
+        }
+      });
 
   let completionData, completionRequest;
 
   console.log('[AI][Stream]', { journeyId, chatId, filters, prompt, messages, sidekick, gptModel });
 
   // Get the chosen sidekick and its getContextFunction
-  const sidekicksArray: Sidekicks = sidekicks;
-  const sidekickValue = sidekick || 'default';
-  const sidekickObject = sidekicksArray.find((sidekick) => sidekick.id === sidekickValue);
+  // const sidekicksArray: Sidekicks = sidekicks;
+  // const sidekickValue = sidekick || 'default';
+  // const sidekickObject = sidekicksArray.find((sidekick) => sidekick.id === sidekickValue);
 
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({

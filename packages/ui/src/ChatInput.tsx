@@ -1,27 +1,31 @@
 'use client';
 import React, { useState } from 'react';
+import { useFlags } from 'flagsmith/react';
+
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import { Select, MenuItem, SelectChangeEvent, Typography } from '@mui/material';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
+import Tooltip from '@mui/material/Tooltip';
+import FormLabel from '@mui/material/FormLabel';
+import FormControl from '@mui/material/FormControl';
+
 import { debounce } from '@utils/debounce';
 import { useAnswers } from './AnswersContext';
-import { useFlags } from 'flagsmith/react';
 import { SidekickSelect } from './SidekickSelect';
 import { Filters } from './Filters';
-import { Tooltip } from '@mui/material';
-import AppSyncToolbar from './AppSyncToolbar';
-import defaultSidekick from '@utils/sidekicks/defaultPrompt';
+
+// import defaultSidekick from '@utils/sidekicks/defaultPrompt';
 import { Sidekick } from 'types';
 
 export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?: boolean }) => {
   const [inputValue, setInputValue] = useState('');
-
-  const [sidekick, setSidekick] = useState(defaultSidekick);
+  const [placeholder, setPlaceholder] = useState('How can you help me accomplish my goal?');
+  const [sidekick, setSidekick] = useState<Sidekick | undefined>();
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
-  const { appSettings, chat, journey, filters, messages, sendMessage, clearMessages, isLoading } =
-    useAnswers();
+  const { chat, journey, filters, messages, sendMessage, clearMessages, isLoading } = useAnswers();
 
   const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
 
@@ -46,13 +50,19 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
 
   const handleSubmit = () => {
     if (!inputValue) return;
-    sendMessage({content: inputValue, sidekick, gptModel});
+    console.log('sendMessage', { content: inputValue, sidekick, gptModel });
+
+    sendMessage({ content: inputValue, sidekick, gptModel });
     setShowPrompts(false);
     setInputValue('');
   };
 
   const handleSidekickSelected = (value: Sidekick) => {
+    console.log('handleSidekickSelected', value);
     setSidekick(value);
+    if (value?.placeholder) {
+      setPlaceholder(value.placeholder);
+    }
   };
 
   const handleGptModelSelected = (event: SelectChangeEvent<string>) => {
@@ -82,31 +92,33 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
   };
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
-      <AppSyncToolbar appSettings={appSettings} />
-      <Typography>{sidekick.placeholder}</Typography>
       <Box sx={{ display: 'flex', gap: 2 }}>
         <SidekickSelect
           onSidekickSelected={handleSidekickSelected}
-          selectedSidekick={sidekick}
-          initialSidekick={sidekick}
+          // selectedSidekick={sidekick}
+          // initialSidekick={sidekick}
         />
-
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          label="Sidekick"
-          value={gptModel}
-          onChange={handleGptModelSelected}>
-          <MenuItem key="gpt3" value="gpt-3.5-turbo">
-            GPT 3.5
-          </MenuItem>
-          <MenuItem key="gpt316k" value="gpt-3.5-turbo-16k">
-            GPT 3.5 16k
-          </MenuItem>
-          <MenuItem key="gpt4" value="gpt-4">
-            GPT 4
-          </MenuItem>
-        </Select>
+        <FormControl size="small">
+          <FormLabel id="model-select-label" sx={{ pb: 1 }}>
+            Model
+          </FormLabel>
+          <Select
+            labelId="model-select-label"
+            id="model-select"
+            size="small"
+            value={gptModel}
+            onChange={handleGptModelSelected}>
+            <MenuItem key="gpt3" value="gpt-3.5-turbo">
+              GPT 3.5
+            </MenuItem>
+            <MenuItem key="gpt316k" value="gpt-3.5-turbo-16k">
+              GPT 3.5 16k
+            </MenuItem>
+            <MenuItem key="gpt4" value="gpt-4">
+              GPT 4
+            </MenuItem>
+          </Select>
+        </FormControl>
       </Box>
       {filters ? <Filters filters={filters} /> : null}
       <TextField
@@ -123,7 +135,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
         })}
         variant="filled"
         fullWidth
-        placeholder="How can you help me accomplish my goal?"
+        placeholder={placeholder}
         value={inputValue}
         // onBlur={handleInputFocus}
         multiline
@@ -132,7 +144,6 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
       />
-
       <Box
         sx={{
           display: 'flex',

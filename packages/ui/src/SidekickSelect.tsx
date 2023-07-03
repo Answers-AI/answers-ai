@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Select, MenuItem, SelectChangeEvent, Box, Typography, TextField } from '@mui/material';
+import FormLabel from '@mui/material/FormLabel';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
 import Cookies from 'js-cookie';
 import { Sidekick } from 'types';
 import axios from 'axios';
 
 interface SidekickSelectProps {
   onSidekickSelected: (sidekick: Sidekick) => void;
-  initialSidekick: Sidekick;
-  selectedSidekick: Sidekick;
 }
 
 const toSentenceCase = (str: string) =>
@@ -16,74 +17,58 @@ const toSentenceCase = (str: string) =>
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(' ');
 
-export const SidekickSelect = ({
-  onSidekickSelected,
-  selectedSidekick: initialSidekick
-}: SidekickSelectProps) => {
+export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
   const [departments, setDepartments] = useState<string[]>([]);
   const [sidekicks, setSidekicks] = useState<Sidekick[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState<string>(
     toSentenceCase(Cookies.get('department') || 'Administrative')
   );
-  const [selectedPlaceholder, setSelectedPlaceholder] = useState<string>(
-    'Select a Sidekick for specialized tasks!'
-  );
-
-  let cookieSidekick: Sidekick;
-  try {
-    cookieSidekick = JSON.parse(Cookies.get('sidekick')!);
-  } catch (error) {
-    // If we can't parse the sidekick cookie, assume it's because it's an old string format.
-    // Clear the cookie and default to the initial sidekick.
-    // remove this after a while
-    Cookies.remove('sidekick');
-    cookieSidekick = initialSidekick || sidekicks[0];
-  }
-  const [selectedSidekick, setSelectedSidekick] = useState<Sidekick>(cookieSidekick);
-  const [departmentSidekicks, setDepartmentSidekicks] = useState<Sidekick[]>(sidekicks);
-
-  useEffect(() => {
-    const uniqueDepartments = Array.from(
-      new Set(
-        sidekicks
-          .flatMap((s) => s.departments) // flatMap will create a new array with all department values
-          .filter(Boolean) // filter out null or undefined values
-      )
-    )
-      .map(toSentenceCase)
-      .sort(); // sort alphabetically
-    setDepartments(uniqueDepartments);
-  }, []);
+  const [selectedSidekick, setSelectedSidekick] = useState<Sidekick | null>(null);
+  const [departmentSidekicks, setDepartmentSidekicks] = useState<Sidekick[]>([]);
 
   useEffect(() => {
     const fetchSidekicks = async () => {
       try {
         const response = await axios.get('/api/sidekicks');
-        console.log('this is the data', response.data);
-        setSidekicks(response.data);
+        const retrievedSidekicks = response.data;
+
+        // Determine the unique departments based on the retrieved sidekicks
+        const uniqueDepartments = Array.from(
+          new Set(retrievedSidekicks.flatMap((s: Sidekick) => s.departments).filter(Boolean))
+        )
+          .map(toSentenceCase)
+          .sort();
+
+        setDepartments(uniqueDepartments);
+        setSidekicks(retrievedSidekicks);
       } catch (error) {
         console.error('Error fetching sidekicks:', error);
       }
     };
 
-    fetchSidekicks().then(() => {
-      console.log('sidekicks', sidekicks);
+    fetchSidekicks();
+  }, []);
+
+  useEffect(() => {
+    if (!!sidekicks?.length && !!selectedDepartment) {
       const sidekicksInDepartment = sidekicks
-        .filter((s) => s.departments.includes(selectedDepartment.toLowerCase()))
+        .filter((s) => s.departments.includes(toSentenceCase(selectedDepartment)))
         .sort((a, b) => a.label.localeCompare(b.label));
       setDepartmentSidekicks(sidekicksInDepartment);
+      setSelectedSidekick(sidekicksInDepartment[0]);
+    }
+  }, [sidekicks, selectedDepartment]);
+
+  useEffect(() => {
+    if (selectedSidekick) {
+      onSidekickSelected(selectedSidekick);
+      Cookies.set('sidekick', JSON.stringify(selectedSidekick));
 
       const lastUsedSidekicks = JSON.parse(Cookies.get('lastUsedSidekicks') || '{}');
-      const lastUsedSidekick = lastUsedSidekicks[selectedDepartment.toLowerCase()];
-      if (lastUsedSidekick) {
-        setSelectedSidekick(lastUsedSidekick);
-        onSidekickSelected(lastUsedSidekick);
-      } else if (sidekicksInDepartment[0]) {
-        setSelectedSidekick(sidekicksInDepartment[0]);
-        onSidekickSelected(sidekicksInDepartment[0]);
-      }
-    });
-  }, []);
+      lastUsedSidekicks[selectedDepartment.toLowerCase()] = selectedSidekick;
+      Cookies.set('lastUsedSidekicks', JSON.stringify(lastUsedSidekicks));
+    }
+  }, [selectedSidekick, selectedDepartment, onSidekickSelected]);
 
   const handleDepartmentChange = (event: SelectChangeEvent<string>) => {
     const department = event.target.value;
@@ -94,48 +79,45 @@ export const SidekickSelect = ({
   const handleSidekickChange = (event: SelectChangeEvent<string>) => {
     const sidekickValue = event.target.value;
     const selectedSidekick = departmentSidekicks.find((s) => s.id === sidekickValue);
-    if (!selectedSidekick) return; // If no matching sidekick, abort
-
-    setSelectedSidekick(selectedSidekick);
-    Cookies.set('sidekick', JSON.stringify(selectedSidekick));
-
-    console.log('selectedSidekick', selectedSidekick);
-
-    // Save the last used sidekick for this department
-    const lastUsedSidekicks = JSON.parse(Cookies.get('lastUsedSidekicks') || '{}');
-    lastUsedSidekicks[selectedDepartment.toLowerCase()] = selectedSidekick;
-    Cookies.set('lastUsedSidekicks', JSON.stringify(lastUsedSidekicks));
-
-    setSelectedPlaceholder(selectedSidekick.placeholder);
-    onSidekickSelected(selectedSidekick);
+    setSelectedSidekick(selectedSidekick || null);
   };
 
   return departments.length ? (
     <>
-      <Select
-        labelId="department-select-label"
-        id="department-select"
-        label="Department"
-        value={selectedDepartment || 'administrative'}
-        onChange={handleDepartmentChange}>
-        {departments.map((department) => (
-          <MenuItem key={department} value={department}>
-            {department}
-          </MenuItem>
-        ))}
-      </Select>
-      <Select
-        labelId="sidekick-select-label"
-        id="sidekick-select"
-        label="Sidekick"
-        value={selectedSidekick.id || 'defaultPrompt'}
-        onChange={handleSidekickChange}>
-        {departmentSidekicks.map((sidekick) => (
-          <MenuItem key={sidekick.id} value={sidekick.id}>
-            {sidekick.label}
-          </MenuItem>
-        ))}
-      </Select>
+      <FormControl size="small">
+        <FormLabel id="department-select-label" sx={{ pb: 1 }}>
+          Department
+        </FormLabel>
+        <Select
+          labelId="department-select-label"
+          id="department-select"
+          size="small"
+          value={selectedDepartment}
+          onChange={handleDepartmentChange}>
+          {departments.map((department) => (
+            <MenuItem key={department} value={department}>
+              {department}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl size="small">
+        <FormLabel id="sidekick-select-label" sx={{ pb: 1 }}>
+          Sidekick
+        </FormLabel>
+        <Select
+          labelId="sidekick-select-label"
+          id="sidekick-select"
+          size="small"
+          value={selectedSidekick?.id?.toString() ?? ''}
+          onChange={handleSidekickChange}>
+          {departmentSidekicks.map((sidekick) => (
+            <MenuItem key={sidekick.id} value={sidekick.id}>
+              {sidekick.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     </>
   ) : null;
 };
