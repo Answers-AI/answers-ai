@@ -195,7 +195,6 @@ export interface DataSourcesFilters {
   airtable?: AirtableFilters;
   codebase?: CodebaseFilters;
   document?: DocumentFilters;
-  files?: FileFilters;
   zoom?: ZoomFilters;
   youtube?: YoutubeFilters;
   file?: FileFilters;

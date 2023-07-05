@@ -249,7 +249,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
                       selected={pathname === `/chat/${chat.id}`}
                       href={`/chat/${chat.id}`}
                       component={NextLink}>
-                      <ListItemText primary={chat.id} secondary={chat?.messages?.[0]?.content} />
+                      <ListItemText primary={chat.title} secondary={chat?.messages?.[0]?.content} />
                     </ListItemButton>
                   </ListItem>
                 ))}

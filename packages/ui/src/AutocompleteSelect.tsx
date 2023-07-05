@@ -18,7 +18,7 @@ interface Props<T> {
   onChange?: (value: T[]) => void;
   onFocus?: React.FocusEventHandler<HTMLDivElement>;
   getOptionLabel?: (value: T) => string;
-  getOptionValue?: (value: T) => string;
+  // getOptionValue?: (value: T) => string;
 }
 export default function AutocompleteSelect<T>({
   sx,
@@ -27,7 +27,7 @@ export default function AutocompleteSelect<T>({
   value,
   onChange,
   getOptionLabel,
-  getOptionValue,
+  // getOptionValue,
   placeholder,
   ...props
 }: Props<T>) {
@@ -37,6 +37,8 @@ export default function AutocompleteSelect<T>({
   return (
     <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
       <Autocomplete
+        {...props}
+        size="small"
         open={options?.length > 0}
         disablePortal
         sx={{
@@ -50,8 +52,6 @@ export default function AutocompleteSelect<T>({
           },
           '.MuiAutocomplete-popper': { position: 'relative!important', width: '100%' }
         }}
-        disableCloseOnSelect
-        freeSolo
         multiple
         id={`${label}`}
         options={options}
@@ -90,13 +90,18 @@ export default function AutocompleteSelect<T>({
               checkedIcon={checkedIcon}
               style={{ marginRight: 8 }}
               checked={selected}
+              size={'small'}
             />
             {getOptionLabel ? getOptionLabel(option) : (option as object).toString()}
           </li>
         )}
-        {...props}
         renderInput={(params) => (
-          <TextField {...params} label={label} placeholder={placeholder ?? `Enter ${label}`} />
+          <TextField
+            {...params}
+            label={label}
+            placeholder={placeholder ?? `Enter ${label}`}
+            size="small"
+          />
         )}
       />
     </Box>

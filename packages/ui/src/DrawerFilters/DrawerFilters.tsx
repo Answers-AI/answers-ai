@@ -70,7 +70,7 @@ export interface DrawerFiltersProps {
 export default function DrawerFilters({ appSettings }: DrawerFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { showFilters = true, setShowFilters } = useAnswers();
+  const { showFilters = true, setShowFilters, filters } = useAnswers();
   // const [open, setOpen] = React.useState(true);
   // const open = pathname?.includes('show-canvas=true') || true;
   const handleDrawerClose = () => {
@@ -123,6 +123,7 @@ export default function DrawerFilters({ appSettings }: DrawerFiltersProps) {
             zIndex: '10',
             ...(open ? {} : { opacity: 0 })
           }}></DrawerHeader> */}
+
         <SourcesToolbar appSettings={appSettings} />
       </Drawer>
     </>

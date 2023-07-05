@@ -66,7 +66,7 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
   const onSubmit = async (data: IFormInput) => {
     setLoading(true);
     try {
-      await axios.patch('/api/chats/share', {
+      await axios.post(`/api/chats/${chat?.id}/share`, {
         ...data,
         email: [...(chat?.users?.map((user: User) => user.email) ?? []), ...data.email]
       });

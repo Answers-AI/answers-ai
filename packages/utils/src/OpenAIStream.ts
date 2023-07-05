@@ -38,19 +38,6 @@ export async function OpenAIStream(
           contextSourceFilesUsed: extra.contextSourceFilesUsed
         }
       });
-      await inngest.send({
-        v: '1',
-        ts: new Date().valueOf(),
-        name: 'answers/message.sent',
-        user: extra.user,
-        data: {
-          role: 'user',
-          chatId: extra.chat.id,
-          content: payload.prompt
-          //  sidekick,
-          // gptModel
-        }
-      });
 
       function onParse(event: ParsedEvent | ReconnectInterval) {
         if (event.type === 'event') {
@@ -81,17 +68,31 @@ export async function OpenAIStream(
 
       for await (const chunk of res.body as any) {
         let decoded = decoder.decode(chunk);
-        // console.log('Update MEssage', { answer });
-        // await prisma.message.update({
-        //   data: {
-        //     content: text
-        //   }
-        // });
+        console.log('Update MEssage', { answer });
+        message = await prisma.message.update({
+          where: { id: message.id },
+          data: {
+            content: answer
+          }
+        });
         parser.feed(decoded);
       }
       // TODO: Add tokens consumed in this completion
-      onEnd({ ...extra, text: answer });
-
+      onEnd({ ...extra, text: answer, message });
+      await inngest.send({
+        v: '1',
+        ts: new Date().valueOf(),
+        name: 'answers/message.sent',
+        user: extra.user,
+        data: {
+          role: 'user',
+          messageId: message.id,
+          chatId: extra.chat.id,
+          content: payload.prompt
+          //  sidekick,
+          // gptModel
+        }
+      });
       controller.close();
     }
   });

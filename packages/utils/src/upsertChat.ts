@@ -23,19 +23,31 @@ export async function upsertChat({
       }));
 
   const chatProperties = {
+    title: prompt,
     users: {
       connect: {
         email: user.email!
       }
     },
     filters: filters,
-    ...(journey ? { journeyId: journey.id } : null)
+    ...(journey ? { journeyId: journey.id } : null),
+    messages: {
+      create: {
+        role: 'user',
+        content: prompt,
+        user: { connect: { email: user.email! } }
+      }
+    }
   };
 
   let chat;
   if (!id) {
     chat = await prisma.chat.create({
-      data: { ...chatProperties, organizationId: user.organizationId, ownerId: user.id },
+      data: {
+        ...chatProperties,
+        organizationId: user.organizationId,
+        ownerId: user.id
+      },
       include: { journey: true }
     });
   } else {

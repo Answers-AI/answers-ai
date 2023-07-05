@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 
-export async function PATCH(req: Request) {
+export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const user = session?.user;

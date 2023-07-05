@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Avatar, Box, Card, CardActions, CardContent, IconButton } from '@mui/material';
+import { Avatar, Box, Card, CardActions, CardContent, Chip, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { JsonViewer } from '@textea/json-viewer';
 // import { deepOrange, deepPurple } from '@mui/material/colors';
@@ -237,6 +237,11 @@ export const MessageCard = ({
             <ThumbDownIcon sx={{ fontSize: 16 }} />
           </IconButton>
         </CardActions>
+        <Box>
+          {context?.contextSourceFilesUsed?.map((url) => (
+            <Chip />
+          ))}
+        </Box>
       </Box>
       {context ? (
         // Use the @mui accordion component to wrap the context and response

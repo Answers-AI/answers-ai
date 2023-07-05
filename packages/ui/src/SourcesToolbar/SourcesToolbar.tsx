@@ -8,6 +8,7 @@ import {
   AvatarGroup,
   Box,
   Collapse,
+  Divider,
   IconButton,
   List,
   ListItem,
@@ -22,17 +23,29 @@ import { useFlags } from 'flagsmith/react';
 import Image from 'next/image';
 import JourneySetting from '@ui/JourneySetting';
 import { ExpandLess, ExpandMore, Add } from '@mui/icons-material';
+import { Filters } from '@ui/Filters';
 
 export default function SourcesToolbar({ appSettings }: { appSettings: AppSettings }) {
   const flags = useFlags(appSettings?.services?.map((s) => s.name) ?? []);
 
-  const enabledServices: AppService[] | undefined =
-    appSettings?.services?.filter((service) => {
-      return (flags?.[service.name] as any)?.enabled;
-    }) ?? [];
+  const enabledServices: AppService[] | undefined = React.useMemo(
+    () =>
+      appSettings?.services?.filter((service) => {
+        return (flags?.[service.name] as any)?.enabled;
+      }) ?? [],
+    [appSettings?.services, flags]
+  );
 
   const { filters, showFilters, updateFilter } = useAnswers();
-  const [opened, setOpened] = React.useState<{ [key: string]: any }>({});
+  const [opened, setOpened] = React.useState<{ [key: string]: any }>(
+    appSettings?.services?.reduce(
+      (acc, service) => ({
+        ...acc,
+        [service.id!]: false
+      }),
+      {}
+    ) ?? {}
+  );
 
   React.useEffect(() => {
     if (showFilters) {
@@ -46,7 +59,7 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
         )
       );
     }
-  }, [showFilters]);
+  }, [showFilters, enabledServices, filters]);
 
   const handleOpenToggle = (serviceId: string) =>
     setOpened((prev) => ({
@@ -57,6 +70,8 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
   return (
     <>
       <List disablePadding sx={{ flex: 1, gap: 1 }}>
+        <Filters filters={filters} />
+        <Divider />
         {enabledServices?.map((service, idx) => (
           <React.Fragment key={service.id}>
             <ListItem
@@ -93,12 +108,7 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
                     <Add />
                   </IconButton> */}
               </ListItemButton>
-              <Collapse
-                in={opened[service.id] ?? true}
-                timeout="auto"
-                unmountOnExit={false}
-                // unmountOnExit
-                sx={{ width: '100%' }}>
+              <Collapse in={opened[service.id]} sx={{ width: '100%' }}>
                 <JourneySetting
                   app={service.name}
                   appSettings={appSettings}

@@ -1,5 +1,6 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
+import { prisma } from '@db/client';
 import { Chat } from 'db/generated/prisma-client';
 import { AnswersFilters, Message, User, Sidekicks, Sidekick, WebUrlType } from 'types';
 import OpenAIClient from '../openai/openai';
@@ -197,10 +198,15 @@ export const fetchContext = async ({
   const filteredData = contextPromises;
   const context = filteredData.filter((result) => result !== null).join(' ');
 
+  const contextDocuments = await prisma.document.findMany({
+    where: {
+      url: { in: contextSourceFilesUsed }
+    }
+  });
+
   return {
     context,
-    // summary: context,
-    contextSourceFilesUsed,
+    contextDocuments,
     ...(process.env.NODE_ENV === 'development'
       ? {
           pineconeFilters: filters,

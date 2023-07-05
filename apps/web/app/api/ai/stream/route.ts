@@ -11,7 +11,7 @@ import { fetchContext } from '@utils/pinecone/fetchContext';
 import { sidekicks } from '@utils/sidekicks';
 import { upsertChat } from '@utils/upsertChat';
 import { prisma } from '@db/client';
-import { Sidekicks } from 'types';
+import { Document, Sidekicks } from 'types';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -39,6 +39,13 @@ export async function POST(req: Request) {
     prompt,
     journeyId
   });
+  // await inngest.send({
+  //   v: '1',
+  //   ts: new Date().valueOf(),
+  //   name: 'answers/message.sent',
+  //   user: user,
+  //   data: { role: 'user', chatId: chat.id, content: prompt, sidekick, gptModel }
+  // });
 
   if (user)
     await inngest.send({
@@ -54,10 +61,10 @@ export async function POST(req: Request) {
   let pineconeData,
     pineconeFilters,
     context = '',
-    contextSourceFilesUsed: string[] = [];
+    contextDocuments: Document[] = [];
 
   try {
-    ({ pineconeFilters, pineconeData, context, contextSourceFilesUsed } = await fetchContext({
+    ({ pineconeFilters, pineconeData, context, contextDocuments } = await fetchContext({
       organizationId: chat.organizationId ?? user.organizationId ?? '',
       user,
       prompt,
@@ -73,14 +80,13 @@ export async function POST(req: Request) {
     const answer = response.text;
     completionRequest = response.completionRequest;
 
-    let message;
     if (prompt && answer) {
       // message = await prisma.message.create({
       //   data: {
       //     chat: { connect: { id: chat.id } },
       //     role: 'assistant',
       //     content: answer,
-      //     contextSourceFilesUsed
+      //     contextDocuments
       //   }
       // });
       await inngest.send({
@@ -88,7 +94,7 @@ export async function POST(req: Request) {
         ts: new Date().valueOf(),
         name: 'answers/prompt.answered',
         user: user,
-        data: { chatId, message, prompt }
+        data: { chatId, message: response.message, prompt }
       });
     }
   };
@@ -110,7 +116,7 @@ export async function POST(req: Request) {
     {
       user,
       chat,
-      contextSourceFilesUsed,
+      contextDocuments,
       filters: pineconeFilters,
       context,
       ...(process.env.NODE_ENV === 'development' && {

@@ -12,7 +12,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { AppSettings } from 'types';
+import { AppService, AppSettings } from 'types';
 import { MessageCard } from './Message';
 import { useAnswers } from './AnswersContext';
 
@@ -49,10 +49,13 @@ export const ChatDetail = ({
   const searchParams = useSearchParams();
 
   const filteredServices = Object.keys((filters?.datasources as Object) ?? {});
-  const services = appSettings?.services?.filter((service) =>
-    filteredServices.includes(service.id)
-  );
+  const services: { [key: string]: AppService } =
+    appSettings?.services
+      ?.filter((service) => filteredServices.includes(service.id))
+      ?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};
+
   const pathname = usePathname();
+  console.log('Filters', { filters, services, filteredServices });
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
@@ -94,18 +97,23 @@ export const ChatDetail = ({
                 ) : null}
 
                 {!showFilters ? (
-                  <Tooltip title={!services?.length ? null : <Filters filters={filters} />}>
+                  <Tooltip
+                    PopperProps={{ placement: 'top-end' }}
+                    title={!Object.keys(services)?.length ? null : <Filters filters={filters} />}>
                     <Button
                       size="large"
                       color="inherit"
                       aria-label="manage sources"
                       onClick={() => setShowFilters(!showFilters)}
                       sx={{ display: 'flex', gap: 1 }}>
-                      {!services?.length ? 'Select sources' : null}
+                      {!Object.keys(services)?.length ? 'Select sources' : null}
                       <AvatarGroup
                         max={4}
                         sx={{ '.MuiAvatar-root': { ml: -2, width: 32, height: 32 } }}>
-                        {(services?.length ? services : appSettings.services)?.map((service) => (
+                        {(Object.keys(services)?.length
+                          ? Object.values(services)
+                          : appSettings.services
+                        )?.map((service) => (
                           <Avatar variant="source" src={service.imageURL} />
                         ))}
                       </AvatarGroup>

@@ -17,7 +17,7 @@ export const answersMessageSent: EventVersionHandler<{
   event: 'answers/message.sent',
   handler: async ({ event }) => {
     const { data, user } = event;
-    const { role, content, chatId } = data;
+    const { role, content, chatId, messageId } = data;
 
     const messages = await prisma.message.findMany({
       where: { chatId: chatId },
@@ -27,19 +27,20 @@ export const answersMessageSent: EventVersionHandler<{
 
     await AIUpdateChatTitle(history, chatId);
     // TODO: Save more things from the message sent (i.e context, history, completion request, completion response)
-    // return prisma.message.create({
-    //   data: {
-    //     ...(role == 'user' && user?.email ? { user: { connect: { email: user?.email } } } : {}),
-    //     chat: { connect: { id: chatId } },
-    //     role,
-    //     content: content
-    //   }
-    // });
+    if (!messageId)
+      return prisma.message.create({
+        data: {
+          ...(role == 'user' && user?.email ? { user: { connect: { email: user?.email } } } : {}),
+          chat: { connect: { id: chatId } },
+          role,
+          content: content
+        }
+      });
   }
 };
 
 async function AIUpdateChatTitle(history: string, chatId: string) {
-  const titlePrompt = `Use the following conversation between a human and an AI assistant. Create a short title that represents the human intention. ${history} TITLE:`;
+  const titlePrompt = `Use the following conversation between a human and an AI assistant. Create a very short title for a story about the human. ${history} TITLE:`;
   const res = await openai.createCompletion({
     max_tokens: 500,
     prompt: titlePrompt,
@@ -47,7 +48,7 @@ async function AIUpdateChatTitle(history: string, chatId: string) {
     model: 'text-davinci-003'
   });
   const title = res?.data?.choices?.[0]?.text!;
-  console.log('AITITLE', { history, chatId, res });
+  console.log('AITITLE', { history, chatId, title });
   await prisma.chat.update({
     where: { id: chatId },
     data: {

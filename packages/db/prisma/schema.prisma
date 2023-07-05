@@ -103,6 +103,7 @@ model Document {
   content  String @default("")
   metadata Json   @default("{}")
 
+  usedInMessages Message[]
   permissions DocumentPermission[]
 
   status       String    @default("pending")
@@ -235,6 +236,8 @@ model Message {
   role                   String   @default("assistant")
   content                String
   contextSourceFilesUsed String[]
+
+  contextDocuments Document[]
 
   prompt   Prompt? @relation(fields: promptId, references: id)
   promptId String?
