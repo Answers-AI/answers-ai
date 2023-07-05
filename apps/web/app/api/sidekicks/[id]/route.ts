@@ -3,10 +3,16 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 
-export async function POST(req: Request, res: Response) {
+export async function PATCH(req: Request, res: Response) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) return NextResponse.redirect('/auth');
+    const id = req.url.substring(req.url.lastIndexOf('/') + 1);
+    console.log({ id });
+    if (!id) {
+      return NextResponse.json({ error: 'Invalid ID param' });
+    }
+
     const { temperature, frequency, presence, maxCompletionTokens, ...data } = await req.json();
     const sliderValues = {
       temperature: parseInt(temperature, 10),
@@ -15,11 +21,13 @@ export async function POST(req: Request, res: Response) {
       maxCompletionTokens: parseInt(maxCompletionTokens, 10)
     };
 
-    const sidekick = await prisma.sidekick.create({
+    const sidekick = await prisma.sidekick.update({
+      where: {
+        id
+      },
       data: {
         ...data,
         ...sliderValues,
-        favoritedBy: { connect: { email: session?.user?.email } },
         createdByUser: { connect: { email: session?.user?.email } }
       }
     });
@@ -31,14 +39,24 @@ export async function POST(req: Request, res: Response) {
   }
 }
 
-export async function GET(req: Request) {
+export async function GET(req: Request, { params: { id } }: { params: { id: string } }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) return NextResponse.redirect('/auth');
 
-    // TODO: Only pull sidekicks for current user or isGlobal
-    const sidekicks = await prisma.sidekick.findMany();
-    return NextResponse.json(sidekicks);
+    if (!id) {
+      return NextResponse.json({ error: 'Sidekick ID not provided' });
+    }
+
+    const sidekick = await prisma.sidekick.findUnique({
+      where: { id: Number(id) }
+    });
+
+    if (!sidekick) {
+      return NextResponse.json({ error: 'Sidekick not found' });
+    }
+
+    return NextResponse.json(sidekick);
   } catch (error) {
     console.log('[GET] error', error);
     throw error;

@@ -84,12 +84,6 @@ const DEFAULT_SETTINGS = [
     link: '/settings/integrations',
     title: 'integrations',
     icon: <WifiTetheringIcon />
-  },
-  {
-    id: 'studio',
-    link: '/settings/sidekick-studio',
-    title: 'Sidekick Studio',
-    icon: <SmartToy />
   }
   // {
   //   id: 'general',

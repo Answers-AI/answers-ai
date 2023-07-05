@@ -529,6 +529,9 @@ importers:
       '@mui/material':
         specifier: ^5.11.9
         version: 5.11.12(@emotion/react@11.10.6)(@emotion/styled@11.10.6)(@types/react@18.0.38)(react-dom@18.2.0)(react@18.2.0)
+      '@mui/utils':
+        specifier: ^5.11.9
+        version: 5.11.13(react@18.2.0)
       '@next-auth/prisma-adapter':
         specifier: ^1.0.7
         version: 1.0.7(@prisma/client@4.16.1)(next-auth@4.22.1)
@@ -3476,7 +3479,7 @@ packages:
       '@mui/core-downloads-tracker': 5.11.12
       '@mui/system': 5.11.14(@emotion/react@11.10.6)(@emotion/styled@11.10.6)(@types/react@18.0.38)(react@18.2.0)
       '@mui/types': 7.2.3(@types/react@18.0.38)
-      '@mui/utils': 5.11.13(react@18.2.0)
+      '@mui/utils': 5.12.0(react@18.2.0)
       '@types/react': 18.0.38
       '@types/react-transition-group': 4.4.5
       clsx: 1.2.1

@@ -1,13 +1,13 @@
 import { getAppSettings } from '@ui/getAppSettings';
 import React from 'react';
-import SidekickFormNew from '@ui/SidekickFormNew';
+import SidekickList from '@ui/SidekickList';
 import { prisma } from '@db/client';
 
 const NewSidekickPage = async ({}: any) => {
   const appSettings = await getAppSettings();
   return (
     <>
-      <SidekickFormNew appSettings={appSettings}></SidekickFormNew>
+      <SidekickList appSettings={appSettings}></SidekickList>
     </>
   );
 };

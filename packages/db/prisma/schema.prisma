@@ -45,12 +45,14 @@ model User {
 
   journeys Journey[]
 
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @default(now()) @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now()) @updatedAt
   ChatApp        ChatApp[]
   organizationId String?
   apiKey         ApiKey?
-  sidekicks      Sidekick[]
+
+  favoritedSidekicks Sidekick[] @relation("SidekickFavoritedBy")
+  Sidekick           Sidekick[]
 }
 
 model ApiKey {
@@ -74,7 +76,8 @@ model Organization {
 }
 
 model Sidekick {
-  id                   Int      @id @default(autoincrement())
+  id                   String   @id @default(cuid())
+  isGlobal             Boolean? @default(false)
   departments          String[]
   label                String
   placeholder          String?
@@ -88,7 +91,9 @@ model Sidekick {
   contextStringRender  String?
   createdAt            DateTime @default(now())
   updatedAt            DateTime @default(now()) @updatedAt
-  user                 User[]
+  createdByUser        User     @relation(fields: [userId], references: [id])
+  userId               String
+  favoritedBy          User[]   @relation("SidekickFavoritedBy")
 }
 
 model WebDocument {

@@ -1,0 +1,237 @@
+'use client';
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Toolbar from '@mui/material/Toolbar';
+import Paper from '@mui/material/Paper';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import StarIcon from '@mui/icons-material/Star';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import { visuallyHidden } from '@mui/utils';
+import { Order, getComparator, stableSort } from '@utils/utilities/datatables';
+import { AppSettings, Sidekick } from 'types';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+
+interface SidekickListItem {
+  id: number;
+  departments: string[];
+  label: string;
+  aiModel: string;
+}
+
+const fetchStarAPI = (id: number) => {
+  console.log('fetchStarAPI');
+  // Replace this with your real fetch function
+  // fetch(`API_ENDPOINT/star/${id}`)
+  //   .then((response) => response.json())
+  //   .then((data) => console.log(data))
+  //   .catch((error) => console.error('Error:', error));
+};
+
+interface HeadCell {
+  disablePadding: boolean;
+  id: keyof Sidekick;
+  label: string;
+  numeric: boolean;
+}
+
+const headCells: readonly HeadCell[] = [
+  {
+    id: 'label',
+    numeric: false,
+    disablePadding: true,
+    label: 'Label'
+  },
+  {
+    id: 'departments',
+    numeric: false,
+    disablePadding: false,
+    label: 'Departments'
+  },
+  {
+    id: 'aiModel',
+    numeric: false,
+    disablePadding: false,
+    label: 'AI Model'
+  }
+];
+
+interface EnhancedTableProps {
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Sidekick) => void;
+  order: Order;
+  orderBy: string;
+}
+
+function EnhancedTableHead(props: EnhancedTableProps) {
+  const { order, orderBy, onRequestSort } = props;
+  const createSortHandler = (property: keyof Sidekick) => (event: React.MouseEvent<unknown>) => {
+    onRequestSort(event, property);
+  };
+
+  return (
+    <TableHead>
+      <TableRow>
+        <TableCell padding="checkbox"></TableCell>
+        {headCells.map((headCell) => (
+          <TableCell
+            key={headCell.id}
+            align={headCell.numeric ? 'right' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'normal'}
+            sortDirection={orderBy === headCell.id ? order : false}>
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : 'asc'}
+              onClick={createSortHandler(headCell.id)}>
+              {headCell.label}
+              {orderBy === headCell.id ? (
+                <Box component="span" sx={visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </Box>
+              ) : null}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+  );
+}
+
+function EnhancedTableToolbar() {
+  return (
+    <Toolbar
+      sx={{
+        pl: { sm: 2 },
+        pr: { xs: 1, sm: 1 }
+      }}>
+      <Tooltip title="Filter list">
+        <IconButton>
+          <FilterListIcon />
+        </IconButton>
+      </Tooltip>
+    </Toolbar>
+  );
+}
+
+const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
+  const [sidekickListItems, setsSidekickListItems] = useState<SidekickListItem[]>([]);
+  const [order, setOrder] = React.useState<Order>('asc');
+  const [orderBy, setOrderBy] = React.useState<keyof Sidekick>('label');
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(25);
+
+  useEffect(() => {
+    const fetchSidekicks = async () => {
+      try {
+        const response = await axios.get('/api/sidekicks');
+
+        const sidekicks: SidekickListItem[] = response.data.map((sidekick: Sidekick) => ({
+          id: sidekick.id,
+          departments: sidekick.departments?.join(', ') ?? '',
+          label: sidekick.label,
+          aiModel: sidekick.aiModel
+        }));
+
+        setsSidekickListItems(sidekicks);
+      } catch (error) {
+        console.error('Error fetching sidekicks:', error);
+      }
+    };
+
+    fetchSidekicks();
+  }, []);
+
+  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Sidekick) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Avoid a layout jump when reaching the last page with empty rows.
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - sidekickListItems.length) : 0;
+
+  const visibleRows = React.useMemo(
+    () =>
+      stableSort(sidekickListItems, getComparator(order, orderBy)).slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+      ),
+    [order, orderBy, page, rowsPerPage, sidekickListItems]
+  );
+
+  return (
+    <Box sx={{ width: '100%' }}>
+      <Paper sx={{ width: '100%', mb: 2 }}>
+        <EnhancedTableToolbar />
+        <TableContainer>
+          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
+            <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
+            <TableBody>
+              {visibleRows.map((row, index) => {
+                const labelId = `enhanced-table-checkbox-${index}`;
+
+                return (
+                  <TableRow
+                    hover
+                    // onClick={(event) => handleClick(event, row.name)}
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={row.label}
+                    sx={{ cursor: 'pointer' }}>
+                    <TableCell padding="checkbox">
+                      <IconButton onClick={() => fetchStarAPI(row.id as number)}>
+                        <StarIcon />
+                      </IconButton>
+                    </TableCell>
+
+                    <TableCell component="th" id={labelId} scope="row" padding="none">
+                      {row.label}
+                    </TableCell>
+                    <TableCell>{row.departments}</TableCell>
+                    <TableCell>{row.aiModel}</TableCell>
+                  </TableRow>
+                );
+              })}
+              {emptyRows > 0 && (
+                <TableRow
+                  style={{
+                    height: 33 * emptyRows
+                  }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[25, 50, 100]}
+          component="div"
+          count={sidekickListItems.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
+    </Box>
+  );
+};
+
+export default SidekickList;
