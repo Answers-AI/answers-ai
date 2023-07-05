@@ -8,18 +8,20 @@ export async function PATCH(req: Request, res: Response) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) return NextResponse.redirect('/auth');
     const id = req.url.substring(req.url.lastIndexOf('/') + 1);
-    console.log({ id });
     if (!id) {
       return NextResponse.json({ error: 'Invalid ID param' });
     }
 
-    const { temperature, frequency, presence, maxCompletionTokens, ...data } = await req.json();
+    const { temperature, frequency, presence, maxCompletionTokens, userId, ...data } =
+      await req.json();
     const sliderValues = {
       temperature: parseInt(temperature, 10),
       frequency: parseInt(frequency, 10),
       presence: parseInt(presence, 10),
       maxCompletionTokens: parseInt(maxCompletionTokens, 10)
     };
+
+    console.log({ ...data, ...sliderValues });
 
     const sidekick = await prisma.sidekick.update({
       where: {

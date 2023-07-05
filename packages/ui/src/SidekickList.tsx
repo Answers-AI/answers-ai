@@ -1,5 +1,7 @@
 'use client';
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import NextLink from 'next/link';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,21 +16,21 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import StarIcon from '@mui/icons-material/Star';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
+
 import { Order, getComparator, stableSort } from '@utils/utilities/datatables';
 import { AppSettings, Sidekick } from 'types';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 
 interface SidekickListItem {
-  id: number;
+  id: string;
   departments: string[];
   label: string;
   aiModel: string;
 }
 
-const fetchStarAPI = (id: number) => {
+const fetchStarAPI = (id: string) => {
   console.log('fetchStarAPI');
   // Replace this with your real fetch function
   // fetch(`API_ENDPOINT/star/${id}`)
@@ -105,22 +107,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-function EnhancedTableToolbar() {
-  return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 }
-      }}>
-      <Tooltip title="Filter list">
-        <IconButton>
-          <FilterListIcon />
-        </IconButton>
-      </Tooltip>
-    </Toolbar>
-  );
-}
-
 const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
   const [sidekickListItems, setsSidekickListItems] = useState<SidekickListItem[]>([]);
   const [order, setOrder] = React.useState<Order>('asc');
@@ -177,9 +163,14 @@ const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
   );
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box p={8}>
+      {/* <form action={handleSubmit}> */}
+      <Typography variant="h2" component="h1">
+        Sidekicks
+      </Typography>
+
+      <Divider sx={{ my: 2 }} />
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar />
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
             <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
@@ -202,7 +193,7 @@ const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
                     </TableCell>
 
                     <TableCell component="th" id={labelId} scope="row" padding="none">
-                      {row.label}
+                      <NextLink href={`/sidekick-studio/${row.id}`}>{row.label}</NextLink>
                     </TableCell>
                     <TableCell>{row.departments}</TableCell>
                     <TableCell>{row.aiModel}</TableCell>

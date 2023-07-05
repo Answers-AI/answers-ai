@@ -136,7 +136,9 @@ export default function SidekickStudioDrawer({
             zIndex: '10',
             ...(open ? {} : { opacity: 0 })
           }}>
-          <Typography variant="h5">Sidekicks</Typography>
+          <Typography variant="h5">
+            <NextLink href="/sidekick-studio">Sidekicks</NextLink>
+          </Typography>
           <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
             {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>

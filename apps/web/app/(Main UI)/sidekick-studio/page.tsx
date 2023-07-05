@@ -1,15 +1,15 @@
 import { getAppSettings } from '@ui/getAppSettings';
 import React from 'react';
 import SidekickList from '@ui/SidekickList';
-import { prisma } from '@db/client';
 
-const NewSidekickPage = async ({}: any) => {
+export const metadata = {
+  title: 'Sidekicks | Sidekick Studio | Answers AI',
+  description: 'Sidekick Studio'
+};
+
+const NewSidekickPage = async ({ params }: any) => {
   const appSettings = await getAppSettings();
-  return (
-    <>
-      <SidekickList appSettings={appSettings}></SidekickList>
-    </>
-  );
+  return <SidekickList {...params} appSettings={appSettings}></SidekickList>;
 };
 
 export default NewSidekickPage;

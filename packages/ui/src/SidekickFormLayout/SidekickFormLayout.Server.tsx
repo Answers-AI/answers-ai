@@ -30,6 +30,7 @@ export default async function ChatUILayout({
     .then((data: any) => JSON.parse(JSON.stringify(data)));
 
   const [sidekicks] = await Promise.all([sidekicksPromise]);
+
   return (
     <SidekickFormLayout sidekicks={sidekicks} appSettings={session.user.appSettings}>
       {children}

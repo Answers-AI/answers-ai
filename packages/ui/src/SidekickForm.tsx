@@ -1,22 +1,28 @@
 'use client';
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { ChangeEvent, useState } from 'react';
+import axios from 'axios';
+
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import { useRouter } from 'next/navigation';
-import { AnswersProvider, useAnswers } from './AnswersContext';
-import { useForm } from 'react-hook-form';
+import { AnswersProvider } from './AnswersContext';
+import { useForm, Controller } from 'react-hook-form';
 // import Modal from '@mui/material/Modal';
 // import Paper from '@mui/material/Paper';
 import FormLabel from '@mui/material/FormLabel';
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
+import Chip from '@mui/material/Chip';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 // import HandlebarsEditor from './HandlebarsEditor';
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
+
 import { Sidekick, AppSettings } from 'types';
-import axios from 'axios';
-import { Chip } from '@mui/material';
+import FormHelperText from '@mui/material/FormHelperText';
+import Input from '@mui/material/Input';
 
 const allDepartments = [
   'Marketing',
@@ -36,22 +42,41 @@ interface SidekickInput
 
 const SidekickForm = ({
   appSettings,
-  sidekick
+  sidekick,
+  allDepartments = []
 }: {
   appSettings: AppSettings;
   sidekick?: Sidekick;
+  allDepartments?: string[];
 }) => {
+  const defaultSliderValues = {
+    presence: 0,
+    temperature: 1,
+    frequency: 0,
+    maxCompletionTokens: 500
+  };
   const router = useRouter();
   // const [modalOpen, setModalOpen] = useState(false);
   // const [editorCode, setEditorCode] = useState('false');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sliderValues, setSliderValues] = useState(defaultSliderValues);
+
+  const handleSliderChange = (event: ChangeEvent<any>, slideValue: number | number[]) => {
+    const { name, value } = event.target;
+    // console.log('handleSliderChange', { name, value, num: Number(value) });
+    setSliderValues((prevSliderValues) => ({
+      ...prevSliderValues,
+      [name]: Number(value)
+    }));
+  };
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    control
   } = useForm<SidekickInput>({
     defaultValues: sidekick
   });
@@ -117,36 +142,47 @@ const SidekickForm = ({
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <Autocomplete
-                    multiple
-                    options={allDepartments}
-                    freeSolo
-                    renderTags={(value: readonly string[], getTagProps) =>
-                      value.map((option: string, index: number) => (
-                        <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-                      ))
-                    }
-                    // onChange={handleDepartmentsChange}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        {...register('departments')}
-                        error={Boolean(errors.departments)}
-                        variant="filled"
-                        label="Departments"
-                        placeholder="Departments"
+                  <Controller
+                    control={control}
+                    name="departments"
+                    rules={{
+                      required: 'required field'
+                    }}
+                    render={({ field: { onChange } }) => (
+                      <Autocomplete
+                        sx={{
+                          'width': '100%',
+                          'height': '100%',
+                          '& .MuiFormControl-root': {
+                            height: '100%'
+                          },
+                          '& .MuiInputBase-root': {
+                            height: '100%'
+                          }
+                        }}
+                        multiple
+                        defaultValue={sidekick?.departments || []}
+                        options={allDepartments}
+                        freeSolo
+                        renderTags={(value: readonly string[], getTagProps) =>
+                          value.map((option: string, index: number) => (
+                            <Chip
+                              variant="outlined"
+                              label={option}
+                              {...getTagProps({ index })}
+                              key={option}
+                            />
+                          ))
+                        }
+                        // getOptionLabel={(option) => option.label}
+                        onChange={(event, item) => {
+                          onChange(item);
+                        }}
+                        renderInput={(params) => (
+                          <TextField {...params} label="Departments" placeholder="Departments" />
+                        )}
                       />
                     )}
-                    sx={{
-                      'width': '100%',
-                      'height': '100%',
-                      '& .MuiFormControl-root': {
-                        height: '100%'
-                      },
-                      '& .MuiInputBase-root': {
-                        height: '100%'
-                      }
-                    }}
                   />
                 </Grid>
 
@@ -225,7 +261,7 @@ const SidekickForm = ({
                 <Grid item container direction="row" rowSpacing={4} columnSpacing={4}>
                   <Grid item xs={12}>
                     <Button type="submit" variant="contained" sx={{ margin: '0 auto' }}>
-                      Submit
+                      {sidekick?.id ? 'Save Sidekick' : 'Create Sidekick'}
                     </Button>
                   </Grid>
                 </Grid>
@@ -236,87 +272,184 @@ const SidekickForm = ({
               <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
                 <Grid item xs={12}>
                   <FormControl fullWidth size="small">
-                    <FormLabel id="temperature-label" sx={{ textAlign: 'center' }}>
+                    <FormLabel id="aiModel-label" sx={{ textAlign: 'center' }}>
                       AI Model
                     </FormLabel>
-                    <TextField
-                      {...register('aiModel')}
-                      size="small"
-                      required
-                      fullWidth
-                      error={Boolean(errors.aiModel)}
-                      sx={{ mt: 4, width: '100%', mx: 'auto' }}
+                    <Controller
+                      name="aiModel"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          labelId="aiModel-label"
+                          {...field}
+                          size="small"
+                          required
+                          defaultValue={sidekick?.aiModel ?? 'gpt-3.5-turbo'}
+                          fullWidth
+                          sx={{ mt: 4, width: '100%', mx: 'auto' }}>
+                          <MenuItem value="gpt-3.5-turbo">GPT 3.5</MenuItem>
+                          <MenuItem value="gpt-3.5-turbo-16k">GPT 3.5 16k</MenuItem>
+                          <MenuItem value="gpt-4">GPT 4</MenuItem>
+                        </Select>
+                      )}
                     />
+                    <FormHelperText error={true}>{errors.aiModel?.message}</FormHelperText>
                   </FormControl>
                 </Grid>
                 <Grid item xs={12}>
-                  <FormControl fullWidth size="small" error={Boolean(errors.temperature)}>
-                    <FormLabel id="temperature-label" sx={{ textAlign: 'center' }}>
-                      Temperature
-                    </FormLabel>
-                    <Slider
-                      aria-label="Always visible"
-                      valueLabelDisplay="on"
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                    <TextField
+                      name="temperature"
+                      value={sliderValues.temperature}
+                      onChange={handleSliderChange}
+                      type="number"
+                      fullWidth
                       size="small"
+                      label="Temperature"
+                      inputProps={{
+                        min: 0,
+                        max: 2,
+                        step: 0.01
+                      }}
+                    />
+                    <Slider
                       {...register('temperature')}
+                      value={sliderValues.temperature}
+                      name="temperature"
+                      onChange={handleSliderChange}
                       min={0}
+                      size="small"
                       max={2}
                       step={0.01}
-                      sx={{ mt: 4, width: '85%', mx: 'auto' }}
+                      sx={{ width: '85%' }}
                     />
-                  </FormControl>
+                  </Box>
                 </Grid>
 
                 <Grid item xs={12}>
-                  <FormControl fullWidth size="small" error={Boolean(errors.frequency)}>
-                    <FormLabel id="frequency-label" sx={{ textAlign: 'center' }}>
-                      Frequency
-                    </FormLabel>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                    <TextField
+                      name="frequency"
+                      value={sliderValues.frequency}
+                      onChange={handleSliderChange}
+                      type="number"
+                      fullWidth
+                      size="small"
+                      label="Frequency"
+                      inputProps={{
+                        min: 0,
+                        max: 2,
+                        step: 0.01
+                      }}
+                    />
                     <Slider
                       {...register('frequency')}
-                      valueLabelDisplay="on"
-                      // onChange={handleSliderChange}
+                      value={sliderValues.frequency}
+                      name="frequency"
+                      onChange={handleSliderChange}
                       min={0}
                       size="small"
                       max={2}
                       step={0.01}
-                      sx={{ mt: 4, width: '85%', mx: 'auto' }}
+                      sx={{ width: '85%' }}
                     />
-                  </FormControl>
+                  </Box>
                 </Grid>
                 <Grid item xs={12}>
-                  <FormControl fullWidth size="small" error={Boolean(errors.presence)}>
-                    <FormLabel id="presence-label" sx={{ textAlign: 'center' }}>
-                      Presence
-                    </FormLabel>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                    <TextField
+                      name="presence"
+                      value={sliderValues.presence}
+                      onChange={handleSliderChange}
+                      type="number"
+                      fullWidth
+                      size="small"
+                      label="Presence"
+                      inputProps={{
+                        min: 0,
+                        max: 2,
+                        step: 0.01
+                      }}
+                    />
                     <Slider
                       {...register('presence')}
-                      valueLabelDisplay="on"
-                      // onChange={handleSliderChange}
+                      value={sliderValues.presence}
+                      name="presence"
+                      onChange={handleSliderChange}
                       min={0}
                       size="small"
                       max={2}
                       step={0.01}
-                      sx={{ mt: 4, width: '85%', mx: 'auto' }}
+                      sx={{ width: '85%' }}
                     />
-                  </FormControl>
+                  </Box>
                 </Grid>
                 <Grid item xs={12}>
-                  <FormControl fullWidth size="small" error={Boolean(errors.maxCompletionTokens)}>
-                    <FormLabel id="maxTokens-label" sx={{ textAlign: 'center' }}>
-                      Max Tokens
-                    </FormLabel>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                    <TextField
+                      name="maxCompletionTokens"
+                      value={sliderValues.maxCompletionTokens}
+                      onChange={handleSliderChange}
+                      type="number"
+                      fullWidth
+                      size="small"
+                      label="Max Tokens"
+                      inputProps={{
+                        min: 200,
+                        max: 4000,
+                        step: 50
+                      }}
+                    />
                     <Slider
                       {...register('maxCompletionTokens')}
-                      valueLabelDisplay="on"
-                      // onChange={handleSliderChange}
+                      value={sliderValues.maxCompletionTokens}
+                      name="maxCompletionTokens"
+                      onChange={handleSliderChange}
                       min={200}
                       size="small"
                       max={4000}
-                      step={1}
-                      sx={{ mt: 4, width: '85%', mx: 'auto' }}
+                      step={50}
+                      sx={{ width: '85%' }}
                     />
-                  </FormControl>
+                  </Box>
+
+                  {/* <FormControl size="small" error={Boolean(errors.maxCompletionTokens)}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                      }}>
+                      <FormLabel id="maxTokens-label" sx={{ textAlign: 'left' }}>
+                        Max Tokens
+                      </FormLabel>
+                    </Box>
+                    
+                  </FormControl> */}
                 </Grid>
               </Grid>
             </Grid>

@@ -18,7 +18,7 @@ function JourneySection({ journeys }: Props) {
     return (
       <Box>
         <Typography variant="h6">No journeys yet</Typography>
-        <Typography>To stat a journey select your data sources and ask a question</Typography>
+        <Typography>To start a journey select your data sources and ask a question</Typography>
       </Box>
     );
   }
