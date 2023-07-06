@@ -15,14 +15,14 @@ import FormControl from '@mui/material/FormControl';
 import { debounce } from '@utils/debounce';
 import { useAnswers } from './AnswersContext';
 import { SidekickSelect } from './SidekickSelect';
-import { Filters } from './Filters';
 
 // import defaultSidekick from '@utils/sidekicks/defaultPrompt';
 import { Sidekick } from 'types';
 
 export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?: boolean }) => {
+  const defaultPlaceholderValue = 'How can you help me accomplish my goal?';
   const [inputValue, setInputValue] = useState('');
-  const [placeholder, setPlaceholder] = useState('How can you help me accomplish my goal?');
+  const [placeholder, setPlaceholder] = useState(defaultPlaceholderValue);
   const [sidekick, setSidekick] = useState<Sidekick | undefined>();
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
   const { chat, journey, filters, messages, sendMessage, clearMessages, isLoading } = useAnswers();
@@ -50,19 +50,14 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
 
   const handleSubmit = () => {
     if (!inputValue) return;
-    console.log('sendMessage', { content: inputValue, sidekick, gptModel });
-
     sendMessage({ content: inputValue, sidekick, gptModel });
     setShowPrompts(false);
     setInputValue('');
   };
 
   const handleSidekickSelected = (value: Sidekick) => {
-    console.log('handleSidekickSelected', value);
+    setPlaceholder(value?.placeholder ?? defaultPlaceholderValue);
     setSidekick(value);
-    if (value?.placeholder) {
-      setPlaceholder(value.placeholder);
-    }
   };
 
   const handleGptModelSelected = (event: SelectChangeEvent<string>) => {
@@ -120,7 +115,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
           </Select>
         </FormControl>
       </Box>
-      {filters ? <Filters filters={filters} /> : null}
+
       <TextField
         id="user-chat-input"
         inputRef={inputRef}

@@ -9,7 +9,7 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { pipeline } from 'stream';
 import { promisify } from 'util';
 import { Readable } from 'stream';
-import * as pdfjs from 'pdfjs-dist';
+import { getDocument } from 'pdfjs-dist';
 import { isAxiosError } from 'axios';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 import { prisma } from '@db/client';
@@ -185,7 +185,7 @@ const convertToValidHTML = (lines: (TextItem | TextMarkedContent)[]): string => 
 
 // Function to convert PDF to HTML
 const convertPdfToHtml = async (pdfBuffer: Uint8Array): Promise<string> => {
-  const loadingTask = pdfjs.getDocument({ data: pdfBuffer });
+  const loadingTask = getDocument({ data: pdfBuffer });
   const pdfDocument = await loadingTask.promise;
   const metadata: PDFMetadata = await pdfDocument.getMetadata();
 

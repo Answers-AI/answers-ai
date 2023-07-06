@@ -24,10 +24,7 @@ export const answersMessageSent: EventVersionHandler<{
       orderBy: { createdAt: 'asc' }
     });
     const history = messages?.map(({ role, content }) => `${role}: ${content}`).join('\n');
-
-    await AIUpdateChatTitle(history, chatId);
-    // TODO: Save more things from the message sent (i.e context, history, completion request, completion response)
-    return prisma.message.create({
+    const message = await prisma.message.create({
       data: {
         ...(role == 'user' && user?.email ? { user: { connect: { email: user?.email } } } : {}),
         chat: { connect: { id: chatId } },
@@ -35,6 +32,9 @@ export const answersMessageSent: EventVersionHandler<{
         content: content
       }
     });
+    await AIUpdateChatTitle(history, chatId);
+    return message;
+    // TODO: Save more things from the message sent (i.e context, history, completion request, completion response)
   }
 };
 
