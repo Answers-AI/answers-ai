@@ -25,7 +25,7 @@ importers:
         version: 0.11.0
       prettier:
         specifier: latest
-        version: 2.8.8
+        version: 2.8.7
       turbo:
         specifier: ^1.9.3
         version: 1.9.3
@@ -86,6 +86,9 @@ importers:
       openai:
         specifier: ^3.2.1
         version: 3.2.1
+      pdfjs-dist:
+        specifier: ^3.7.107
+        version: 3.7.107(encoding@0.1.13)
       puppeteer:
         specifier: ^19.8.2
         version: 19.11.0(encoding@0.1.13)(typescript@4.9.5)
@@ -465,7 +468,7 @@ importers:
         version: 8.8.0(eslint@7.32.0)
       eslint-config-turbo:
         specifier: latest
-        version: 1.9.3(eslint@7.32.0)
+        version: 1.8.8(eslint@7.32.0)
       eslint-plugin-react:
         specifier: 7.32.2
         version: 7.32.2(eslint@7.32.0)
@@ -478,7 +481,7 @@ importers:
     dependencies:
       eslint-config-turbo:
         specifier: latest
-        version: 1.9.3(eslint@7.32.0)
+        version: 1.8.8(eslint@7.32.0)
 
   packages/experimental-prisma-webpack-plugin:
     devDependencies:
@@ -673,7 +676,7 @@ importers:
         version: 4.0.7
       canvas:
         specifier: ^2.11.2
-        version: 2.11.2
+        version: 2.11.2(encoding@0.1.13)
       cheerio:
         specifier: ^1.0.0-rc.12
         version: 1.0.0-rc.12
@@ -754,7 +757,7 @@ importers:
         version: 6.2.1
       pdfjs-dist:
         specifier: ^3.7.107
-        version: 3.7.107
+        version: 3.7.107(encoding@0.1.13)
       puppeteer:
         specifier: ^19.8.2
         version: 19.11.0(bufferutil@4.0.7)(typescript@4.9.5)(utf-8-validate@6.0.3)
@@ -3274,7 +3277,7 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: false
 
-  /@mapbox/node-pre-gyp@1.0.10:
+  /@mapbox/node-pre-gyp@1.0.10(encoding@0.1.13):
     resolution: {integrity: sha512-4ySo4CjzStuprMwk35H5pPbkymjv1SF3jGLj6rAHp/xT/RF7TL7bd9CTm1xDY49K2qF7jmR/g7k+SkLETP6opA==}
     hasBin: true
     dependencies:
@@ -5530,12 +5533,12 @@ packages:
     resolution: {integrity: sha512-0CNTVCLZggSh7bc5VkX5WWPWO+cyZbNd07IHIsSXLia/eAq+r836hgk+8BKoEh7949Mda87VUOitx5OddVj64A==}
     dev: false
 
-  /canvas@2.11.2:
+  /canvas@2.11.2(encoding@0.1.13):
     resolution: {integrity: sha512-ItanGBMrmRV7Py2Z+Xhs7cT+FNt5K0vPL4p9EZ/UX/Mu7hFbkxSjKF2KVtPwX7UYWp7dRKnrTvReflgrItJbdw==}
     engines: {node: '>=6'}
     requiresBuild: true
     dependencies:
-      '@mapbox/node-pre-gyp': 1.0.10
+      '@mapbox/node-pre-gyp': 1.0.10(encoding@0.1.13)
       nan: 2.17.0
       simple-get: 3.1.1
     transitivePeerDependencies:
@@ -6773,13 +6776,13 @@ packages:
       eslint: 7.32.0
     dev: false
 
-  /eslint-config-turbo@1.9.3(eslint@7.32.0):
-    resolution: {integrity: sha512-QG6jxFQkrGSpQqlFKefPdtgUfr20EbU0s4tGGIuGFOcPuJEdsY6VYZpZUxNJvmMcTGqPgMyOPjAFBKhy/DPHLA==}
+  /eslint-config-turbo@1.8.8(eslint@7.32.0):
+    resolution: {integrity: sha512-+yT22sHOT5iC1sbBXfLIdXfbZuiv9bAyOXsxTxFCWelTeFFnANqmuKB3x274CFvf7WRuZ/vYP/VMjzU9xnFnxA==}
     peerDependencies:
       eslint: '>6.6.0'
     dependencies:
       eslint: 7.32.0
-      eslint-plugin-turbo: 1.9.3(eslint@7.32.0)
+      eslint-plugin-turbo: 1.8.8(eslint@7.32.0)
     dev: false
 
   /eslint-import-resolver-node@0.3.7:
@@ -6937,8 +6940,8 @@ packages:
       string.prototype.matchall: 4.0.8
     dev: false
 
-  /eslint-plugin-turbo@1.9.3(eslint@7.32.0):
-    resolution: {integrity: sha512-ZsRtksdzk3v+z5/I/K4E50E4lfZ7oYmLX395gkrUMBz4/spJlYbr+GC8hP9oVNLj9s5Pvnm9rLv/zoj5PVYaVw==}
+  /eslint-plugin-turbo@1.8.8(eslint@7.32.0):
+    resolution: {integrity: sha512-zqyTIvveOY4YU5jviDWw9GXHd4RiKmfEgwsjBrV/a965w0PpDwJgEUoSMB/C/dU310Sv9mF3DSdEjxjJLaw6rA==}
     peerDependencies:
       eslint: '>6.6.0'
     dependencies:
@@ -8870,7 +8873,7 @@ packages:
       abab: 2.0.6
       acorn: 8.8.2
       acorn-globals: 7.0.1
-      canvas: 2.11.2
+      canvas: 2.11.2(encoding@0.1.13)
       cssstyle: 3.0.0
       data-urls: 4.0.0
       decimal.js: 10.4.3
@@ -10604,11 +10607,11 @@ packages:
     dev: false
     optional: true
 
-  /pdfjs-dist@3.7.107:
+  /pdfjs-dist@3.7.107(encoding@0.1.13):
     resolution: {integrity: sha512-D0pZgz4u8VNjCCXfNCjzeFcenxKFGh2RnGlLIvDHgpT+ZvOlsBlHugpOfmcLQyKk7csHBhPalf+mCM6thiclSQ==}
     engines: {node: '>=18'}
     optionalDependencies:
-      canvas: 2.11.2
+      canvas: 2.11.2(encoding@0.1.13)
       path2d-polyfill: 2.0.1
     transitivePeerDependencies:
       - encoding
@@ -10698,8 +10701,8 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  /prettier@2.8.8:
-    resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
+  /prettier@2.8.7:
+    resolution: {integrity: sha512-yPngTo3aXUUmyuTjeTUT75txrf+aMh9FiD7q9ZE/i6r0bPb22g4FsE6Y338PQX1bmfy08i9QQCB7/rcUAVntfw==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
