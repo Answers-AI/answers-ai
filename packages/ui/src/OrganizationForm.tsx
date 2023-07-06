@@ -1,38 +1,25 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
-
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import IconButton from '@mui/material/IconButton';
-import EditIcon from '@mui/icons-material/Edit';
-
-import Grid from '@mui/material/Grid';
-import { AnswersProvider } from './AnswersContext';
+import { useRouter } from 'next/navigation';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
-
-import { Organization, AppSettings } from 'types';
-
-interface ContextField {
-  id: string;
-  helpText: string;
-  fieldType: string;
-  fieldTextValue: string;
-}
-
+import {
+  TextField,
+  Box,
+  Button,
+  Typography,
+  Divider,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  IconButton
+} from '@mui/material';
+import { Edit as EditIcon, Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
+import Grid from '@mui/material/Grid';
+import { Organization, AppSettings, ContextField } from 'types';
 interface OrgInput
   extends Omit<
     Organization,
@@ -55,183 +42,199 @@ const OrganizationForm = ({
   appSettings: AppSettings;
   organization?: Organization;
 }) => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+
   const {
-    register,
     handleSubmit,
     control,
     setValue,
+    register,
+    reset,
     formState: { errors }
   } = useForm<OrgInput>({
     defaultValues: {
+      ...organization,
       contextFields: organization?.contextFields || []
     }
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control,
     name: 'contextFields'
   });
 
-  const [showNewField, setShowNewField] = useState(false);
+  useEffect(() => {
+    if (fields.length > 0) {
+      setEditIndex(fields.length - 1);
+    }
+  }, [fields]);
 
-  const handleSaveNewField = () => {
-    append({ id: '', fieldType: '', fieldTextValue: '', helpText: '' });
-    setShowNewField(false);
+  const handleSaveField = (index: number) => {
+    const updatedField = {
+      fieldId: fields[index].fieldId,
+      fieldType: fields[index].fieldType,
+      fieldTextValue: fields[index].fieldTextValue,
+      helpText: fields[index].helpText
+    };
+
+    update(index, updatedField);
+    setEditIndex(null);
   };
 
-  const onSubmit = (data: OrgInput) => {
-    console.log(data);
-    // Here you can handle the submission of your form
+  const handleAddNewField = () => {
+    append({ fieldId: '', fieldType: '', fieldTextValue: '', helpText: '' });
+  };
+
+  const onSubmit = async (data: OrgInput) => {
+    setLoading(true);
+    try {
+      await axios.patch(`/api/organizations`, { ...data });
+      router.refresh();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+      reset();
+    }
   };
 
   return (
-    <AnswersProvider appSettings={appSettings}>
-      <Box p={8}>
-        <Typography variant="h2" component="h1">
-          Organization
-        </Typography>
+    <Box p={8}>
+      <Typography variant="h2" component="h1">
+        Organization
+      </Typography>
 
-        <Divider sx={{ my: 2 }} />
-        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-          <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
-            <Grid item sm={12}>
-              <TextField
-                {...register('name')}
-                rows={2}
-                label="Organization Name"
-                error={Boolean(errors.name)}
-                size="small"
-                required
-                sx={{ width: '100%' }}
-              />
-            </Grid>
-            <Grid item sm={12}>
-              {!showNewField && (
-                <Grid item sm={12}>
-                  <Button
-                    variant="outlined"
-                    onClick={() => {
-                      append({ id: '', fieldType: '', fieldTextValue: '', helpText: '' });
-                      setShowNewField(true);
-                    }}>
-                    Add New Context Field
-                  </Button>
-                </Grid>
-              )}
-              {showNewField &&
-                fields.map((item, index) => (
-                  <Grid item sm={12} key={item.id}>
-                    <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
-                      <Grid item sm={12} md={6}>
-                        <Controller
-                          control={control}
-                          name={`contextFields.${index}.id`}
-                          render={({ field }) => (
-                            <TextField
-                              {...field}
-                              label="ID"
-                              multiline
-                              rows={2}
-                              size="small"
-                              error={Boolean(errors?.contextFields?.[index]?.id)}
-                              required
-                              sx={{ width: '100%' }}
-                            />
-                          )}
-                        />
-                      </Grid>
-                      <Grid item sm={12} md={6} key={item.id}>
-                        <Controller
-                          control={control}
-                          name={`contextFields.${index}.helpText`}
-                          render={({ field }) => (
-                            <TextField
-                              {...field}
-                              label="Help Text"
-                              multiline
-                              rows={2}
-                              size="small"
-                              error={Boolean(errors?.contextFields?.[index]?.helpText)}
-                              sx={{ width: '100%' }}
-                            />
-                          )}
-                        />
-                      </Grid>
-                      <Grid item sm={12} key={item.id}>
-                        <Controller
-                          control={control}
-                          name={`contextFields.${index}.fieldType`}
-                          render={({ field }) => (
-                            <Select {...field} label="Field Type" sx={{ display: 'none' }}>
-                              <MenuItem value="number">Number</MenuItem>
-                              <MenuItem value="singleLine">Single Line Text</MenuItem>
-                              <MenuItem value="multiLine" selected>
-                                Multi Line Text
-                              </MenuItem>
-                            </Select>
-                          )}
-                        />
-
-                        <Controller
-                          control={control}
-                          name={`contextFields.${index}.fieldTextValue`}
-                          render={({ field }) => (
-                            <TextField
-                              {...field}
-                              label="Field Text Value"
-                              multiline
-                              rows={3}
-                              size="small"
-                              error={Boolean(errors?.contextFields?.[index]?.fieldTextValue)}
-                              required
-                              sx={{ width: '100%' }}
-                            />
-                          )}
-                        />
-                      </Grid>
-                      <Grid item sm={12} key={item.id}>
-                        <Button variant="outlined" onClick={() => setShowNewField(true)}>
-                          Save Field
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                ))}
-            </Grid>
-            <Grid item sm={12}>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>ID</TableCell>
-                      <TableCell>Help Text</TableCell>
-                      {/* <TableCell>Field Type</TableCell> */}
-                      <TableCell>Field Text Value</TableCell>
-                      <TableCell>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {fields.map((field, index) => (
-                      <TableRow key={field.id}>
-                        <TableCell>{field.id}</TableCell>
-                        <TableCell>{field.helpText}</TableCell>
-                        {/* <TableCell>{field.fieldType}</TableCell> */}
-                        <TableCell>{field.fieldTextValue}</TableCell>
-                        <TableCell>
-                          <IconButton onClick={() => editField(index)}>
+      <Divider sx={{ my: 2 }} />
+      <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
+          <Grid item sm={12}>
+            <TextField
+              {...register('name', { required: true })}
+              rows={2}
+              label="Organization Name"
+              error={Boolean(errors.name)}
+              size="small"
+              sx={{ width: '100%' }}
+            />
+          </Grid>
+          <Grid item sm={12} sx={{ textAlign: 'right' }}>
+            <Button variant="outlined" onClick={handleAddNewField}>
+              Add New Field
+            </Button>
+          </Grid>
+          <Grid item sm={12}>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>ID</TableCell>
+                    <TableCell>Help Text</TableCell>
+                    <TableCell>Field Text Value</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {fields.map((field, index) => (
+                    <TableRow key={field.fieldId}>
+                      <TableCell sx={{ width: '20%' }}>
+                        {editIndex === index ? (
+                          <TextField
+                            {...register(`contextFields.${index}.fieldId`, {
+                              required: true
+                            })}
+                            onChange={(e) => {
+                              const updatedFields = [...fields];
+                              updatedFields[index].fieldId = e.target.value;
+                              setValue(`contextFields.${index}.fieldId`, e.target.value);
+                            }}
+                            multiline
+                            rows={3}
+                            fullWidth
+                            size="small"
+                            error={Boolean(errors.contextFields?.[index]?.fieldId)}
+                          />
+                        ) : (
+                          field.fieldId
+                        )}
+                      </TableCell>
+                      <TableCell sx={{ width: '30%' }}>
+                        {editIndex === index ? (
+                          <TextField
+                            {...register(`contextFields.${index}.helpText`, {
+                              required: true
+                            })}
+                            onChange={(e) => {
+                              const updatedFields = [...fields];
+                              updatedFields[index].helpText = e.target.value;
+                              setValue(`contextFields.${index}.helpText`, e.target.value);
+                            }}
+                            multiline
+                            rows={3}
+                            fullWidth
+                            size="small"
+                            error={Boolean(errors.contextFields?.[index]?.helpText)}
+                          />
+                        ) : (
+                          field.helpText
+                        )}
+                      </TableCell>
+                      <TableCell sx={{ width: '40%' }}>
+                        {editIndex === index ? (
+                          <TextField
+                            {...register(`contextFields.${index}.fieldTextValue`, {
+                              required: true
+                            })}
+                            onChange={(e) => {
+                              const updatedFields = [...fields];
+                              updatedFields[index].fieldTextValue = e.target.value;
+                              setValue(`contextFields.${index}.fieldTextValue`, e.target.value);
+                            }}
+                            multiline
+                            rows={3}
+                            fullWidth
+                            size="small"
+                            error={Boolean(errors.contextFields?.[index]?.fieldTextValue)}
+                          />
+                        ) : (
+                          field.fieldTextValue
+                        )}
+                      </TableCell>
+                      <TableCell sx={{ width: '10%' }}>
+                        {editIndex === index ? (
+                          <>
+                            <IconButton onClick={() => handleSaveField(index)}>
+                              <SaveIcon />
+                            </IconButton>
+                            <IconButton onClick={() => setEditIndex(null)}>
+                              <CancelIcon />
+                            </IconButton>
+                          </>
+                        ) : (
+                          <IconButton onClick={() => setEditIndex(index)}>
                             <EditIcon />
                           </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Grid>
-        </Box>
+          <Grid item sm={12} sx={{ textAlign: 'right' }}>
+            <Button variant="outlined" onClick={handleAddNewField}>
+              Add New Field
+            </Button>
+          </Grid>
+        </Grid>
+        <Button variant="contained" type="submit">
+          Save Organization
+        </Button>
       </Box>
-    </AnswersProvider>
+    </Box>
   );
 };
 
