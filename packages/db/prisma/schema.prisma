@@ -73,6 +73,7 @@ model Organization {
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @default(now()) @updatedAt
   ChatApp             ChatApp[]
+  contextFields       Json?
 }
 
 model Sidekick {

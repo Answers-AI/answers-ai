@@ -235,16 +235,21 @@ export interface User extends Omit<DB.User, 'appSettings'> {
   currentOrganization: Organization;
   // accounts: DB.Account[] | null;
 }
-export interface Organization extends Omit<DB.Organization, 'appSettings'> {
-  appSettings: AppSettings;
+
+export interface ContextField {
+  id: string;
+  helpText: string;
+  fieldType: string;
+  fieldTextValue: string;
 }
 
 export interface ChatApp extends Omit<DB.ChatApp, 'appSettings'> {
   appSettings: AppSettings;
 }
 
-export interface Organization extends Omit<DB.Organization, 'appSettings'> {
+export interface Organization extends Omit<DB.Organization, 'appSettings' | 'contextFields'> {
   appSettings: AppSettings;
+  contextFields: ContextField[];
 }
 
 export interface Prompt extends DB.Prompt {
