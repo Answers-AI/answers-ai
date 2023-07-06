@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "dev": "concurrently \"prisma generate --watch\"",
-    "build": "prisma migrate deploy && prisma generate",
+    "build": "prisma generate",
     "prisma": "npx prisma",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
