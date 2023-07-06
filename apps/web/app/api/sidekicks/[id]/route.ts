@@ -12,7 +12,7 @@ export async function PATCH(req: Request, res: Response) {
       return NextResponse.json({ error: 'Invalid ID param' });
     }
 
-    const { temperature, frequency, presence, maxCompletionTokens, userId, ...data } =
+    const { temperature, frequency, presence, maxCompletionTokens, userId, sharedWith, ...data } =
       await req.json();
     const sliderValues = {
       temperature: parseInt(temperature, 10),
@@ -21,7 +21,19 @@ export async function PATCH(req: Request, res: Response) {
       maxCompletionTokens: parseInt(maxCompletionTokens, 10)
     };
 
-    console.log({ ...data, ...sliderValues });
+    switch (sharedWith) {
+      case 'global': {
+        data.isGlobal = true;
+        break;
+      }
+      case 'org': {
+        data.isSharedWithOrg = true;
+        break;
+      }
+    }
+    console.log({ sharedWith });
+
+    console.log({ ...data });
 
     const sidekick = await prisma.sidekick.update({
       where: {

@@ -174,8 +174,13 @@ export default function SidekickStudioDrawer({
                   href={`/sidekick-studio/${sidekick.id}`}
                   component={NextLink}
                   selected={pathname === `/sidekick-studio/${sidekick.id}`}
-                  sx={{ width: '100%', py: 2, paddingRight: 1 }}>
-                  <ListItemText primary={<strong>{sidekick.label}</strong>} />
+                  sx={{ width: '100%', py: 0, paddingRight: 1 }}>
+                  <ListItemText
+                    secondary={
+                      pathname === `/sidekick-studio/${sidekick.id}` ? null : sidekick.label
+                    }
+                    primary={pathname === `/sidekick-studio/${sidekick.id}` ? sidekick.label : null}
+                  />
                 </ListItemButton>
               </ListItem>
             </React.Fragment>

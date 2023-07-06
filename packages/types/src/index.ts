@@ -472,7 +472,9 @@ export type JiraIssue = { key: string; self: string; id: string; fields: any; ar
 export type JiraComment = { key: string; self: string; id: string; fields: any; archived: any };
 
 // Replace the Sidekick interface with the following type
-export interface Sidekick extends DB.Sidekick {}
+export interface Sidekick extends DB.Sidekick {
+  sharedWith?: string;
+}
 
 // Add the Sidekicks type
 export type Sidekicks = Sidekick[];

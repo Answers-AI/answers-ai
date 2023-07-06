@@ -11,10 +11,8 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import StarIcon from '@mui/icons-material/Star';
 import { visuallyHidden } from '@mui/utils';
 
@@ -25,9 +23,9 @@ import Divider from '@mui/material/Divider';
 
 interface SidekickListItem {
   id: string;
-  departments: string[];
+  tags: string[];
   label: string;
-  aiModel: string;
+  placeholder: string;
 }
 
 const fetchStarAPI = (id: string) => {
@@ -54,16 +52,22 @@ const headCells: readonly HeadCell[] = [
     label: 'Label'
   },
   {
-    id: 'departments',
+    id: 'placeholder',
     numeric: false,
     disablePadding: false,
-    label: 'Departments'
+    label: 'Help Text'
   },
   {
-    id: 'aiModel',
+    id: 'tags',
     numeric: false,
     disablePadding: false,
-    label: 'AI Model'
+    label: 'Tags'
+  },
+  {
+    id: 'sharedWith',
+    numeric: false,
+    disablePadding: false,
+    label: 'Shared With'
   }
 ];
 
@@ -121,9 +125,10 @@ const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
 
         const sidekicks: SidekickListItem[] = response.data.map((sidekick: Sidekick) => ({
           id: sidekick.id,
-          departments: sidekick.departments?.join(', ') ?? '',
-          label: sidekick.label,
-          aiModel: sidekick.aiModel
+          placeholder: sidekick.placeholder,
+          sharedWith: sidekick.sharedWith,
+          tags: sidekick.tags?.join(', ') ?? '',
+          label: sidekick.label
         }));
 
         setsSidekickListItems(sidekicks);
@@ -195,8 +200,9 @@ const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
                     <TableCell component="th" id={labelId} scope="row" padding="none">
                       <NextLink href={`/sidekick-studio/${row.id}`}>{row.label}</NextLink>
                     </TableCell>
-                    <TableCell>{row.departments}</TableCell>
-                    <TableCell>{row.aiModel}</TableCell>
+                    <TableCell>{row.placeholder}</TableCell>
+                    <TableCell>{row.tags}</TableCell>
+                    <TableCell sx={{ textTransform: 'capitalize' }}>{row.sharedWith}</TableCell>
                   </TableRow>
                 );
               })}

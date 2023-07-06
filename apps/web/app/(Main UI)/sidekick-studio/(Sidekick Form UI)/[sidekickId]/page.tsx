@@ -14,20 +14,20 @@ const SidekickFormPage = async ({ params }: any) => {
 
   if (!session?.user?.email) return null;
 
-  const uniqueDepartments = await prisma.sidekick.findMany({
-    select: { departments: true },
+  const uniqueTags = await prisma.sidekick.findMany({
+    select: { tags: true },
     where: {
       createdByUser: {
         email: session.user.email
       }
     },
-    distinct: ['departments']
+    distinct: ['tags']
   });
 
   // Flatten and get unique values
-  const allDepartments = Array.from(new Set(uniqueDepartments.flatMap((dep) => dep.departments)));
+  const allTags = Array.from(new Set(uniqueTags.flatMap((dep) => dep.tags)));
 
-  console.log({ allDepartments });
+  console.log({ allTags });
 
   const sidekick = await prisma.sidekick
     .findFirst({
@@ -40,7 +40,7 @@ const SidekickFormPage = async ({ params }: any) => {
     })
     .then((data: any) => JSON.parse(JSON.stringify(data)));
 
-  return <SidekickForm {...params} allDepartments={allDepartments} sidekick={sidekick} />;
+  return <SidekickForm {...params} allTags={allTags} sidekick={sidekick} />;
 };
 
 export default SidekickFormPage;

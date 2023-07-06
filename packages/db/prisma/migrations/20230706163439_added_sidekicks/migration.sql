@@ -1,8 +1,10 @@
 -- CreateTable
 CREATE TABLE "Sidekick" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "isGlobal" BOOLEAN DEFAULT false,
-    "departments" TEXT[],
+    "isSharedWithOrg" BOOLEAN DEFAULT false,
+    "isFavoriteByDefault" BOOLEAN DEFAULT false,
+    "tags" TEXT[],
     "label" TEXT NOT NULL,
     "placeholder" TEXT,
     "temperature" DOUBLE PRECISION NOT NULL DEFAULT 1,
@@ -22,7 +24,7 @@ CREATE TABLE "Sidekick" (
 
 -- CreateTable
 CREATE TABLE "_SidekickFavoritedBy" (
-    "A" INTEGER NOT NULL,
+    "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
 

@@ -78,7 +78,9 @@ model Organization {
 model Sidekick {
   id                   String   @id @default(cuid())
   isGlobal             Boolean? @default(false)
-  departments          String[]
+  isSharedWithOrg      Boolean? @default(false)
+  isFavoriteByDefault  Boolean? @default(false)
+  tags                 String[]
   label                String
   placeholder          String?
   temperature          Float    @default(1)

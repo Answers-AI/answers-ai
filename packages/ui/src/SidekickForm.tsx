@@ -22,32 +22,28 @@ import Autocomplete from '@mui/material/Autocomplete';
 
 import { Sidekick, AppSettings } from 'types';
 import FormHelperText from '@mui/material/FormHelperText';
-import Input from '@mui/material/Input';
-
-const allDepartments = [
-  'Marketing',
-  'Sales',
-  'Support',
-  'Engineering',
-  'Product',
-  'Finance',
-  'Legal'
-];
 
 interface SidekickInput
   extends Omit<
     Sidekick,
-    'createdAt' | 'updatedAt' | 'id' | 'createdByUser' | 'favoritedBy' | 'isGlobal'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'id'
+    | 'createdByUser'
+    | 'favoritedBy'
+    | 'isGlobal'
+    | 'isSharedWithOrg'
+    | 'isFavoriteByDefault'
   > {}
 
 const SidekickForm = ({
   appSettings,
   sidekick,
-  allDepartments = []
+  allTags = []
 }: {
   appSettings: AppSettings;
   sidekick?: Sidekick;
-  allDepartments?: string[];
+  allTags?: string[];
 }) => {
   const defaultSliderValues = {
     presence: 0,
@@ -80,29 +76,6 @@ const SidekickForm = ({
   } = useForm<SidekickInput>({
     defaultValues: sidekick
   });
-
-  // const handleDepartmentsChange = (event: ChangeEvent<{}>, departmentValue: string[]) => {
-  //   setSidekick((prevSidekick) => ({
-  //     ...prevSidekick,
-  //     departments: departmentValue
-  //   }));
-  // };
-
-  // const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = event.target;
-  //   setSidekick((prevSidekick) => ({
-  //     ...prevSidekick,
-  //     [name]: value
-  //   }));
-  // };
-
-  // const handleSliderChange = (event: Event, value: number | number[]) => {
-  //   const { name } = event.target;
-  //   setSidekick((prevSidekick) => ({
-  //     ...prevSidekick,
-  //     [name]: Array.isArray(value) ? value[0] : value
-  //   }));
-  // };
 
   const onSubmit = async (data: SidekickInput) => {
     setLoading(true);
@@ -144,7 +117,7 @@ const SidekickForm = ({
                 <Grid item xs={12} md={6}>
                   <Controller
                     control={control}
-                    name="departments"
+                    name="tags"
                     rules={{
                       required: 'required field'
                     }}
@@ -161,8 +134,8 @@ const SidekickForm = ({
                           }
                         }}
                         multiple
-                        defaultValue={sidekick?.departments || []}
-                        options={allDepartments}
+                        defaultValue={sidekick?.tags || []}
+                        options={allTags}
                         freeSolo
                         renderTags={(value: readonly string[], getTagProps) =>
                           value.map((option: string, index: number) => (
@@ -179,7 +152,7 @@ const SidekickForm = ({
                           onChange(item);
                         }}
                         renderInput={(params) => (
-                          <TextField {...params} label="Departments" placeholder="Departments" />
+                          <TextField {...params} label="Tags" placeholder="Tags" />
                         )}
                       />
                     )}
@@ -270,6 +243,32 @@ const SidekickForm = ({
 
             <Grid item xs={12} md={3}>
               <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
+                <Grid item xs={12}>
+                  <FormControl fullWidth size="small">
+                    <FormLabel id="sharedWith-label" sx={{ textAlign: 'center' }}>
+                      Shared With
+                    </FormLabel>
+                    <Controller
+                      name="sharedWith"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          labelId="sharedWith-label"
+                          {...field}
+                          size="small"
+                          required
+                          defaultValue={sidekick?.sharedWith ?? 'private'}
+                          fullWidth
+                          sx={{ mt: 4, width: '100%', mx: 'auto' }}>
+                          <MenuItem value="private">Private</MenuItem>
+                          <MenuItem value="org">My Org</MenuItem>
+                          <MenuItem value="global">Global</MenuItem>
+                        </Select>
+                      )}
+                    />
+                    <FormHelperText error={true}>{errors.aiModel?.message}</FormHelperText>
+                  </FormControl>
+                </Grid>
                 <Grid item xs={12}>
                   <FormControl fullWidth size="small">
                     <FormLabel id="aiModel-label" sx={{ textAlign: 'center' }}>

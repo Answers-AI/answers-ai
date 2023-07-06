@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
+import axios from 'axios';
+
 import FormLabel from '@mui/material/FormLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
-import Cookies from 'js-cookie';
+
 import { Sidekick } from 'types';
-import axios from 'axios';
 
 interface SidekickSelectProps {
   onSidekickSelected: (sidekick: Sidekick) => void;
@@ -18,13 +20,13 @@ const toSentenceCase = (str: string) =>
     .join(' ');
 
 export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
-  const [departments, setDepartments] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
   const [sidekicks, setSidekicks] = useState<Sidekick[]>([]);
-  const [selectedDepartment, setSelectedDepartment] = useState<string>(
-    toSentenceCase(Cookies.get('department') || 'Administrative')
+  const [selectedTag, setSelectedTag] = useState<string>(
+    toSentenceCase(Cookies.get('tag') || 'Administrative')
   );
   const [selectedSidekick, setSelectedSidekick] = useState<Sidekick | null>(null);
-  const [departmentSidekicks, setDepartmentSidekicks] = useState<Sidekick[]>([]);
+  const [tagSidekicks, setTagSidekicks] = useState<Sidekick[]>([]);
 
   useEffect(() => {
     const fetchSidekicks = async () => {
@@ -32,14 +34,14 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
         const response = await axios.get('/api/sidekicks');
         const retrievedSidekicks = response.data;
 
-        // Determine the unique departments based on the retrieved sidekicks
-        const uniqueDepartments = Array.from(
-          new Set(retrievedSidekicks.flatMap((s: Sidekick) => s.departments).filter(Boolean))
+        // Determine the unique tags based on the retrieved sidekicks
+        const uniqueTags = Array.from(
+          new Set(retrievedSidekicks.flatMap((s: Sidekick) => s.tags).filter(Boolean))
         )
           .map(toSentenceCase)
           .sort();
 
-        setDepartments(uniqueDepartments);
+        setTags(uniqueTags);
         setSidekicks(retrievedSidekicks);
       } catch (error) {
         console.error('Error fetching sidekicks:', error);
@@ -50,14 +52,14 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
   }, []);
 
   useEffect(() => {
-    if (!!sidekicks?.length && !!selectedDepartment) {
-      const sidekicksInDepartment = sidekicks
-        .filter((s) => s.departments.includes(toSentenceCase(selectedDepartment)))
+    if (!!sidekicks?.length && !!selectedTag) {
+      const sidekicksInTag = sidekicks
+        .filter((s) => s.tags.includes(toSentenceCase(selectedTag)))
         .sort((a, b) => a.label.localeCompare(b.label));
-      setDepartmentSidekicks(sidekicksInDepartment);
-      setSelectedSidekick(sidekicksInDepartment[0]);
+      setTagSidekicks(sidekicksInTag);
+      setSelectedSidekick(sidekicksInTag[0]);
     }
-  }, [sidekicks, selectedDepartment]);
+  }, [sidekicks, selectedTag]);
 
   useEffect(() => {
     if (selectedSidekick) {
@@ -65,38 +67,38 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
       Cookies.set('sidekick', JSON.stringify(selectedSidekick));
 
       const lastUsedSidekicks = JSON.parse(Cookies.get('lastUsedSidekicks') || '{}');
-      lastUsedSidekicks[selectedDepartment.toLowerCase()] = selectedSidekick;
+      lastUsedSidekicks[selectedTag.toLowerCase()] = selectedSidekick;
       Cookies.set('lastUsedSidekicks', JSON.stringify(lastUsedSidekicks));
     }
-  }, [selectedSidekick, selectedDepartment, onSidekickSelected]);
+  }, [selectedSidekick, selectedTag, onSidekickSelected]);
 
-  const handleDepartmentChange = (event: SelectChangeEvent<string>) => {
-    const department = event.target.value;
-    setSelectedDepartment(department);
-    Cookies.set('department', department.toLowerCase());
+  const handleTagChange = (event: SelectChangeEvent<string>) => {
+    const tag = event.target.value;
+    setSelectedTag(tag);
+    Cookies.set('tag', tag.toLowerCase());
   };
 
   const handleSidekickChange = (event: SelectChangeEvent<string>) => {
     const sidekickValue = event.target.value;
-    const selectedSidekick = departmentSidekicks.find((s) => s.id === sidekickValue);
+    const selectedSidekick = tagSidekicks.find((s) => s.id === sidekickValue);
     setSelectedSidekick(selectedSidekick || null);
   };
 
-  return departments.length ? (
+  return tags.length ? (
     <>
       <FormControl size="small">
-        <FormLabel id="department-select-label" sx={{ pb: 1 }}>
-          Department
+        <FormLabel id="tag-select-label" sx={{ pb: 1 }}>
+          Tag
         </FormLabel>
         <Select
-          labelId="department-select-label"
-          id="department-select"
+          labelId="tag-select-label"
+          id="tag-select"
           size="small"
-          value={selectedDepartment}
-          onChange={handleDepartmentChange}>
-          {departments.map((department) => (
-            <MenuItem key={department} value={department}>
-              {department}
+          value={selectedTag}
+          onChange={handleTagChange}>
+          {tags.map((tag) => (
+            <MenuItem key={tag} value={tag}>
+              {tag}
             </MenuItem>
           ))}
         </Select>
@@ -111,7 +113,7 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
           size="small"
           value={selectedSidekick?.id?.toString() ?? ''}
           onChange={handleSidekickChange}>
-          {departmentSidekicks.map((sidekick) => (
+          {tagSidekicks.map((sidekick) => (
             <MenuItem key={sidekick.id} value={sidekick.id}>
               {sidekick.label}
             </MenuItem>
