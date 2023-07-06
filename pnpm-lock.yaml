@@ -86,9 +86,6 @@ importers:
       openai:
         specifier: ^3.2.1
         version: 3.2.1
-      pdfjs-dist:
-        specifier: ^3.7.107
-        version: 3.7.107(encoding@0.1.13)
       puppeteer:
         specifier: ^19.8.2
         version: 19.11.0(encoding@0.1.13)(typescript@4.9.5)
@@ -754,7 +751,7 @@ importers:
         version: 6.2.1
       pdfjs-dist:
         specifier: ^3.7.107
-        version: 3.7.107(encoding@0.1.13)
+        version: 3.7.107
       puppeteer:
         specifier: ^19.8.2
         version: 19.11.0(bufferutil@4.0.7)(typescript@4.9.5)(utf-8-validate@6.0.3)
@@ -3274,7 +3271,7 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: false
 
-  /@mapbox/node-pre-gyp@1.0.10(encoding@0.1.13):
+  /@mapbox/node-pre-gyp@1.0.10:
     resolution: {integrity: sha512-4ySo4CjzStuprMwk35H5pPbkymjv1SF3jGLj6rAHp/xT/RF7TL7bd9CTm1xDY49K2qF7jmR/g7k+SkLETP6opA==}
     hasBin: true
     dependencies:
@@ -5534,12 +5531,12 @@ packages:
     resolution: {integrity: sha512-0CNTVCLZggSh7bc5VkX5WWPWO+cyZbNd07IHIsSXLia/eAq+r836hgk+8BKoEh7949Mda87VUOitx5OddVj64A==}
     dev: false
 
-  /canvas@2.11.2(encoding@0.1.13):
+  /canvas@2.11.2:
     resolution: {integrity: sha512-ItanGBMrmRV7Py2Z+Xhs7cT+FNt5K0vPL4p9EZ/UX/Mu7hFbkxSjKF2KVtPwX7UYWp7dRKnrTvReflgrItJbdw==}
     engines: {node: '>=6'}
     requiresBuild: true
     dependencies:
-      '@mapbox/node-pre-gyp': 1.0.10(encoding@0.1.13)
+      '@mapbox/node-pre-gyp': 1.0.10
       nan: 2.17.0
       simple-get: 3.1.1
     transitivePeerDependencies:
@@ -10617,11 +10614,11 @@ packages:
     dev: false
     optional: true
 
-  /pdfjs-dist@3.7.107(encoding@0.1.13):
+  /pdfjs-dist@3.7.107:
     resolution: {integrity: sha512-D0pZgz4u8VNjCCXfNCjzeFcenxKFGh2RnGlLIvDHgpT+ZvOlsBlHugpOfmcLQyKk7csHBhPalf+mCM6thiclSQ==}
     engines: {node: '>=18'}
     optionalDependencies:
-      canvas: 2.11.2(encoding@0.1.13)
+      canvas: 2.11.2
       path2d-polyfill: 2.0.1
     transitivePeerDependencies:
       - encoding
