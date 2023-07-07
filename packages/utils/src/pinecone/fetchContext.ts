@@ -27,8 +27,8 @@ const parseFilters = (filters: AnswersFilters) => {
     );
   }
 
-  if (parsedFilters?.datasources?.file?.url?.length) {
-    (parsedFilters.datasources.file.url as any) = parsedFilters?.datasources?.file?.url.map(
+  if (parsedFilters?.datasources?.files?.url?.length) {
+    (parsedFilters.datasources.files.url as any) = parsedFilters?.datasources?.files?.url.map(
       (url) => (url as any)?.url
     );
   }
