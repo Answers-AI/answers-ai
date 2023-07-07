@@ -20,6 +20,8 @@ import {
 import { Edit as EditIcon, Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import Grid from '@mui/material/Grid';
 import { Organization, AppSettings, ContextField } from 'types';
+
+interface ContextFieldInput extends Partial<ContextField> {}
 interface OrgInput
   extends Omit<
     Organization,
@@ -31,8 +33,9 @@ interface OrgInput
     | 'appSettings'
     | 'image'
     | 'isFavoriteByDefault'
+    | 'contextFields'
   > {
-  contextFields: ContextField[];
+  contextFields: ContextFieldInput[];
 }
 
 const OrganizationForm = ({
@@ -72,6 +75,8 @@ const OrganizationForm = ({
     }
   }, [fields]);
 
+  if (!organization) return null;
+
   const handleSaveField = (index: number) => {
     const updatedField = {
       fieldId: fields[index].fieldId,
@@ -85,7 +90,12 @@ const OrganizationForm = ({
   };
 
   const handleAddNewField = () => {
-    append({ fieldId: '', fieldType: '', fieldTextValue: '', helpText: '' });
+    append({
+      fieldId: '',
+      fieldType: '',
+      fieldTextValue: '',
+      helpText: ''
+    });
   };
 
   const onSubmit = async (data: OrgInput) => {

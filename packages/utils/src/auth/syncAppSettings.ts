@@ -29,6 +29,7 @@ export async function syncAppSettings({
         users: { connect: { id: userId } }
       }
     });
+
     await prisma.user.update({
       where: { id: userId },
       data: {

@@ -18,7 +18,8 @@ const OrganizationFormPage = async ({ params }: any) => {
     .findFirst({
       where: {
         id: session.user.organizationId
-      }
+      },
+      include: { contextFields: true }
     })
     .then((data: any) => JSON.parse(JSON.stringify(data)));
 

@@ -73,7 +73,17 @@ model Organization {
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @default(now()) @updatedAt
   ChatApp             ChatApp[]
-  contextFields       Json?
+  contextFields       ContextField[]
+}
+
+model ContextField {
+  id             String       @id @default(cuid())
+  fieldId        String
+  helpText       String?
+  fieldType      String?
+  fieldTextValue String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
 }
 
 model Sidekick {

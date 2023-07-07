@@ -230,26 +230,21 @@ export type Flags = {
   [key: string]: FeatureFlag;
 };
 
+export interface Organization extends Omit<DB.Organization, 'appSettings'> {
+  appSettings: AppSettings;
+  contextFields?: ContextField[];
+}
+
 export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
   currentOrganization: Organization;
   // accounts: DB.Account[] | null;
 }
 
-export interface ContextField {
-  id: string;
-  helpText: string;
-  fieldType: string;
-  fieldTextValue: string;
-}
+export interface ContextField extends DB.ContextField {}
 
 export interface ChatApp extends Omit<DB.ChatApp, 'appSettings'> {
   appSettings: AppSettings;
-}
-
-export interface Organization extends Omit<DB.Organization, 'appSettings' | 'contextFields'> {
-  appSettings: AppSettings;
-  contextFields: ContextField[];
 }
 
 export interface Prompt extends DB.Prompt {

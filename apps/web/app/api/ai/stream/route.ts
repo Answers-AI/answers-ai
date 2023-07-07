@@ -26,8 +26,7 @@ export async function POST(req: Request) {
     ? null
     : await prisma.sidekick.findFirst({
         where: {
-          id: sidekick.id,
-          user: { some: { email: user?.email } }
+          id: sidekick.id
         }
       });
 
