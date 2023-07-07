@@ -94,7 +94,7 @@ export const fetchContext = async ({
   gptModel = 'gpt-3.5-turbo'
 }: {
   user?: User;
-  organization: Organization;
+  organization?: Organization;
   prompt: string;
   messages?: Message[];
   filters?: AnswersFilters;

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import {
   TextField,
   Box,
@@ -150,7 +150,7 @@ const OrganizationForm = ({
                   {fields.map((field, index) => (
                     <TableRow key={field.fieldId}>
                       <TableCell sx={{ width: '20%' }}>
-                        {editIndex === index ? (
+                        {editIndex === index && !field.organizationId ? (
                           <TextField
                             {...register(`contextFields.${index}.fieldId`, {
                               required: true
@@ -160,6 +160,9 @@ const OrganizationForm = ({
                               updatedFields[index].fieldId = e.target.value;
                               setValue(`contextFields.${index}.fieldId`, e.target.value);
                             }}
+                            label="Field ID"
+                            required
+                            placeholder="Enter a Field ID that will be used to reference this field in your Sidekicks."
                             multiline
                             rows={3}
                             fullWidth
@@ -181,6 +184,8 @@ const OrganizationForm = ({
                               updatedFields[index].helpText = e.target.value;
                               setValue(`contextFields.${index}.helpText`, e.target.value);
                             }}
+                            label="Field Help Text"
+                            placeholder="Enter help text that will allow users to understand how this field could be used."
                             multiline
                             rows={3}
                             fullWidth
@@ -202,6 +207,9 @@ const OrganizationForm = ({
                               updatedFields[index].fieldTextValue = e.target.value;
                               setValue(`contextFields.${index}.fieldTextValue`, e.target.value);
                             }}
+                            label="Field Value"
+                            required
+                            placeholder="Enter the value that will be returned when the Field ID is referenced in a Sidekick."
                             multiline
                             rows={3}
                             fullWidth
@@ -213,15 +221,8 @@ const OrganizationForm = ({
                         )}
                       </TableCell>
                       <TableCell sx={{ width: '10%' }}>
-                        {editIndex === index ? (
-                          <>
-                            <IconButton onClick={() => handleSaveField(index)}>
-                              <SaveIcon />
-                            </IconButton>
-                            <IconButton onClick={() => setEditIndex(null)}>
-                              <CancelIcon />
-                            </IconButton>
-                          </>
+                        {editIndex == index ? (
+                          <></>
                         ) : (
                           <IconButton onClick={() => setEditIndex(index)}>
                             <EditIcon />

@@ -1,5 +1,5 @@
 'use client';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, ChangeEventHandler, SyntheticEvent, useState } from 'react';
 import axios from 'axios';
 
 import Button from '@mui/material/Button';
@@ -28,7 +28,6 @@ interface SidekickInput
     Sidekick,
     | 'createdAt'
     | 'updatedAt'
-    | 'id'
     | 'createdByUser'
     | 'favoritedBy'
     | 'isGlobal'
@@ -58,12 +57,19 @@ const SidekickForm = ({
   const [error, setError] = useState<string | null>(null);
   const [sliderValues, setSliderValues] = useState(defaultSliderValues);
 
-  const handleSliderChange = (event: ChangeEvent<any>, slideValue: number | number[]) => {
+  const handleSliderTextChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    // console.log('handleSliderChange', { name, value, num: Number(value) });
     setSliderValues((prevSliderValues) => ({
       ...prevSliderValues,
       [name]: Number(value)
+    }));
+  };
+
+  const handleSliderChange = (event: Event, value: number | number[]) => {
+    const { name } = event.target as HTMLInputElement;
+    setSliderValues((prevSidekick) => ({
+      ...prevSidekick,
+      [name]: Array.isArray(value) ? value[0] : value
     }));
   };
 
@@ -197,6 +203,7 @@ const SidekickForm = ({
                     {...register('userPromptTemplate')}
                     label="User Prompt Template"
                     error={Boolean(errors.userPromptTemplate)}
+                    required
                     fullWidth
                     size="small"
                     // onClick={() => {
@@ -285,7 +292,10 @@ const SidekickForm = ({
                           required
                           defaultValue={sidekick?.aiModel ?? 'gpt-3.5-turbo'}
                           fullWidth
+                          displayEmpty
+                          renderValue={(value) => (value !== '' ? value : 'Choose an AI Model')}
                           sx={{ mt: 4, width: '100%', mx: 'auto' }}>
+                          <MenuItem value="">Choose an AI Model</MenuItem>
                           <MenuItem value="gpt-3.5-turbo">GPT 3.5</MenuItem>
                           <MenuItem value="gpt-3.5-turbo-16k">GPT 3.5 16k</MenuItem>
                           <MenuItem value="gpt-4">GPT 4</MenuItem>
@@ -306,7 +316,7 @@ const SidekickForm = ({
                     <TextField
                       name="temperature"
                       value={sliderValues.temperature}
-                      onChange={handleSliderChange}
+                      onChange={handleSliderTextChange}
                       type="number"
                       fullWidth
                       size="small"
@@ -342,7 +352,7 @@ const SidekickForm = ({
                     <TextField
                       name="frequency"
                       value={sliderValues.frequency}
-                      onChange={handleSliderChange}
+                      onChange={handleSliderTextChange}
                       type="number"
                       fullWidth
                       size="small"
@@ -377,7 +387,7 @@ const SidekickForm = ({
                     <TextField
                       name="presence"
                       value={sliderValues.presence}
-                      onChange={handleSliderChange}
+                      onChange={handleSliderTextChange}
                       type="number"
                       fullWidth
                       size="small"
@@ -412,7 +422,7 @@ const SidekickForm = ({
                     <TextField
                       name="maxCompletionTokens"
                       value={sliderValues.maxCompletionTokens}
-                      onChange={handleSliderChange}
+                      onChange={handleSliderTextChange}
                       type="number"
                       fullWidth
                       size="small"

@@ -1,17 +1,11 @@
-import { getAppSettings } from '@ui/getAppSettings';
-import { User, getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
-// import { syncFromAirtable } from '@utils/ingest/airtable';
-import { NextResponse } from 'next/server';
-import { QueryRequest } from '@pinecone-database/pinecone';
 import { OpenAIStream } from '@utils/OpenAIStream';
 import { inngest } from '@utils/ingest/client';
 import { getCompletionRequest } from '@utils/llm/getCompletionRequest';
 import { fetchContext } from '@utils/pinecone/fetchContext';
-// import { sidekicks } from '@utils/sidekicks';
 import { upsertChat } from '@utils/upsertChat';
 import { prisma } from '@db/client';
-import { Sidekicks } from 'types';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -30,14 +24,9 @@ export async function POST(req: Request) {
         }
       });
 
-  let completionData, completionRequest;
+  let completionRequest;
 
   console.log('[AI][Stream]', { journeyId, chatId, filters, prompt, messages, sidekick, gptModel });
-
-  // Get the chosen sidekick and its getContextFunction
-  // const sidekicksArray: Sidekicks = sidekicks;
-  // const sidekickValue = sidekick || 'default';
-  // const sidekickObject = sidekicksArray.find((sidekick) => sidekick.id === sidekickValue);
 
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({
@@ -67,10 +56,12 @@ export async function POST(req: Request) {
         chat
       }
     });
+
   let pineconeData,
     pineconeFilters,
     context = '',
     contextSourceFilesUsed: string[] = [];
+
   try {
     ({ pineconeFilters, pineconeData, context, contextSourceFilesUsed } = await fetchContext({
       user,
@@ -78,12 +69,13 @@ export async function POST(req: Request) {
       prompt,
       messages,
       filters,
-      sidekick: sidekickObject
+      sidekick: sidekickObject!
     }));
   } catch (contextError) {
     console.log('fetchContext', contextError);
     throw contextError;
   }
+
   const handleResponse = async (response: any) => {
     const answer = response.text;
     completionRequest = response.completionRequest;
@@ -113,7 +105,7 @@ export async function POST(req: Request) {
     user, // Add this line
     input: prompt,
     messages,
-    sidekick: sidekickObject,
+    sidekick: sidekickObject!,
     gptModel
   });
 
@@ -134,6 +126,7 @@ export async function POST(req: Request) {
     },
     handleResponse
   );
+
   return new Response(stream, {
     headers: { 'Content-Type': 'text/html; charset=utf-8' }
   });

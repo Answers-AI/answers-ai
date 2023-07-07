@@ -237,7 +237,7 @@ export interface Organization extends Omit<DB.Organization, 'appSettings'> {
 
 export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
-  currentOrganization: Organization;
+  currentOrganization?: Organization;
   // accounts: DB.Account[] | null;
 }
 

@@ -20,17 +20,10 @@ import { Order, getComparator, stableSort } from '@utils/utilities/datatables';
 import { AppSettings, Sidekick } from 'types';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-
-interface SidekickListItem {
-  id: string;
-  tags: string[];
-  label: string;
-  placeholder: string;
-}
+import Button from '@mui/material/Button';
 
 const fetchStarAPI = (id: string) => {
-  console.log('fetchStarAPI');
-  // Replace this with your real fetch function
+  // TODO: Implement this
   // fetch(`API_ENDPOINT/star/${id}`)
   //   .then((response) => response.json())
   //   .then((data) => console.log(data))
@@ -112,7 +105,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
-  const [sidekickListItems, setsSidekickListItems] = useState<SidekickListItem[]>([]);
+  const [sidekicks, setSidekicks] = useState<Sidekick[]>([]);
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Sidekick>('label');
   const [page, setPage] = React.useState(0);
@@ -122,16 +115,7 @@ const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
     const fetchSidekicks = async () => {
       try {
         const response = await axios.get('/api/sidekicks');
-
-        const sidekicks: SidekickListItem[] = response.data.map((sidekick: Sidekick) => ({
-          id: sidekick.id,
-          placeholder: sidekick.placeholder,
-          sharedWith: sidekick.sharedWith,
-          tags: sidekick.tags?.join(', ') ?? '',
-          label: sidekick.label
-        }));
-
-        setsSidekickListItems(sidekicks);
+        setSidekicks(response.data);
       } catch (error) {
         console.error('Error fetching sidekicks:', error);
       }
@@ -156,25 +140,30 @@ const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
   };
 
   // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - sidekickListItems.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - sidekicks.length) : 0;
 
   const visibleRows = React.useMemo(
     () =>
-      stableSort(sidekickListItems, getComparator(order, orderBy)).slice(
+      stableSort(sidekicks as any[], getComparator(order, orderBy)).slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage
       ),
-    [order, orderBy, page, rowsPerPage, sidekickListItems]
+    [order, orderBy, page, rowsPerPage, sidekicks]
   );
 
   return (
     <Box p={8}>
-      {/* <form action={handleSubmit}> */}
       <Typography variant="h2" component="h1">
         Sidekicks
       </Typography>
 
       <Divider sx={{ my: 2 }} />
+
+      <Box sx={{ textAlign: 'right', mb: 2 }}>
+        <NextLink href="/sidekick-studio/new" passHref>
+          <Button variant="outlined">Add New Sidekick</Button>
+        </NextLink>
+      </Box>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
@@ -184,15 +173,9 @@ const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
-                  <TableRow
-                    hover
-                    // onClick={(event) => handleClick(event, row.name)}
-                    role="checkbox"
-                    tabIndex={-1}
-                    key={row.label}
-                    sx={{ cursor: 'pointer' }}>
+                  <TableRow hover tabIndex={-1} key={row.label} sx={{ cursor: 'pointer' }}>
                     <TableCell padding="checkbox">
-                      <IconButton onClick={() => fetchStarAPI(row.id as number)}>
+                      <IconButton onClick={() => fetchStarAPI(row.id as string)}>
                         <StarIcon />
                       </IconButton>
                     </TableCell>
@@ -220,7 +203,7 @@ const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
         <TablePagination
           rowsPerPageOptions={[25, 50, 100]}
           component="div"
-          count={sidekickListItems.length}
+          count={sidekicks.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

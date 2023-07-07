@@ -63,7 +63,7 @@ export async function GET(req: Request, { params: { id } }: { params: { id: stri
     }
 
     const sidekick = await prisma.sidekick.findUnique({
-      where: { id: Number(id) }
+      where: { id }
     });
 
     if (!sidekick) {

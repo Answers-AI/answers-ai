@@ -7,24 +7,18 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 
+import toSentenceCase from '@utils/utilities/toSentenceCase';
 import { Sidekick } from 'types';
 
 interface SidekickSelectProps {
   onSidekickSelected: (sidekick: Sidekick) => void;
 }
 
-const toSentenceCase = (str: string) =>
-  str
-    .split(' ')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
-
 export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
   const [tags, setTags] = useState<string[]>([]);
   const [sidekicks, setSidekicks] = useState<Sidekick[]>([]);
-  const [selectedTag, setSelectedTag] = useState<string>(
-    toSentenceCase(Cookies.get('tag') || 'Administrative')
-  );
+  const defaultTag = toSentenceCase(Cookies.get('tag') || 'Administrative');
+  const [selectedTag, setSelectedTag] = useState<string>(toSentenceCase(defaultTag));
   const [selectedSidekick, setSelectedSidekick] = useState<Sidekick | null>(null);
   const [tagSidekicks, setTagSidekicks] = useState<Sidekick[]>([]);
 
@@ -35,11 +29,15 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
         const retrievedSidekicks = response.data;
 
         // Determine the unique tags based on the retrieved sidekicks
-        const uniqueTags = Array.from(
-          new Set(retrievedSidekicks.flatMap((s: Sidekick) => s.tags).filter(Boolean))
-        )
-          .map(toSentenceCase)
-          .sort();
+        const iUuniqueTags: string[] = Array.from(
+          new Set(
+            retrievedSidekicks
+              .flatMap((s: Sidekick) => s.tags)
+              .filter((tag: string | null): tag is string => tag !== null)
+          )
+        );
+
+        const uniqueTags = iUuniqueTags.map((tag: string) => toSentenceCase(tag)).sort();
 
         setTags(uniqueTags);
         setSidekicks(retrievedSidekicks);
