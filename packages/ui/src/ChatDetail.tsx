@@ -56,7 +56,14 @@ export const ChatDetail = ({
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          height: '100%',
+          overflow: 'hiden'
+        }}>
         <Box
           sx={{
             display: 'flex',
@@ -105,6 +112,7 @@ export const ChatDetail = ({
                       onClick={() => setShowFilters(!showFilters)}
                       sx={{ display: 'flex', minWidth: 0, borderRadius: 20 }}>
                       {!Object.keys(services)?.length ? 'Select sources' : null}
+
                       <AvatarGroup
                         max={4}
                         sx={{ '.MuiAvatar-root': { ml: -2, width: 28, height: 28 } }}>

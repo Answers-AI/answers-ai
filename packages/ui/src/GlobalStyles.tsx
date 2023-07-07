@@ -5,8 +5,10 @@ const GlobalStyles = () => (
       'a': { textDecoration: 'none' },
       '*': {
         'boxSizing': 'border-box',
+
         'padding': 0,
         'margin': 0,
+
         '::-webkit-scrollbar ': {
           width: '4px',
           padding: '4px'

@@ -159,15 +159,18 @@ export const MessageCard = ({
                   variant="body1"
                   color="text.secondary"
                   component="div"
-                  sx={
-                    {
-                      // 'p, ul, li, pre, h1, h2, h3, h4 , h5, h6': {
-                      //   ':not(only-child)': {
-                      //     marginBottom: '1em'
-                      //   }
-                      // }
+                  sx={{
+                    'p,pre,h1,h2,h3,h4,h5,h6,ul,ol': {
+                      ':not(:first-child)': {
+                        mt: 2
+                      }
+                    },
+                    'ul,ol': {
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 1
                     }
-                  }>
+                  }}>
                   <ReactMarkdown
                     components={{
                       code({ node, inline, className, children, ...props }) {
@@ -210,6 +213,7 @@ export const MessageCard = ({
                 <Typography variant="body2">View more:</Typography>
                 {contextDocuments?.map((doc) => (
                   <Button
+                    key={doc.id}
                     size="small"
                     component={NextLink}
                     variant="outlined"
@@ -219,7 +223,7 @@ export const MessageCard = ({
                     sx={{
                       'textTransform': 'none',
                       'borderRadius': 20,
-                      'px': 1.5,
+
                       '&:hover': { textDecoration: 'underline' }
                     }}
                     startIcon={

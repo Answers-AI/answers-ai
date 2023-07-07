@@ -74,7 +74,11 @@ export const darkModeTheme = createTheme({
   components: {
     MuiTypography: {
       styleOverrides: {
-        root: {}
+        root: {
+          'ul, ol': {
+            paddingLeft: theme.spacing(3)
+          }
+        }
       }
     },
     MuiDrawer: {
