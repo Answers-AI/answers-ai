@@ -68,8 +68,6 @@ export async function OpenAIStream(
 
       for await (const chunk of res.body as any) {
         let decoded = decoder.decode(chunk);
-        console.log('Update MEssage', { answer });
-
         parser.feed(decoded);
       }
       // TODO: Add tokens consumed in this completion

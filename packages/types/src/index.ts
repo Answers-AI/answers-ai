@@ -197,7 +197,7 @@ export interface DataSourcesFilters {
   document?: DocumentFilters;
   zoom?: ZoomFilters;
   youtube?: YoutubeFilters;
-  file?: FileFilters;
+  files?: FileFilters;
 }
 export interface AnswersFilters {
   models?: {

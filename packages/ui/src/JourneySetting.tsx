@@ -15,7 +15,7 @@ const JOURNEY_SETTINGS: { [key: string]: any } = {
   airtable: SourcesAirtable,
   confluence: SourcesConfluence,
   codebase: SourcesCodebase,
-  file: SourcesFile,
+  files: SourcesFile,
   jira: SourcesJira,
   slack: SourcesSlack,
   web: SourcesWeb,
