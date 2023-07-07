@@ -48,7 +48,20 @@ export default async function ChatUILayout({
         createdAt: 'desc'
       },
       include: {
-        chats: { include: { prompt: true, messages: { take: 1 } } }
+        chats: {
+          orderBy: {
+            createdAt: 'desc'
+          },
+          include: {
+            prompt: true,
+            messages: {
+              orderBy: {
+                createdAt: 'desc'
+              },
+              take: 1
+            }
+          }
+        }
       }
     })
     .then((data: any) => JSON.parse(JSON.stringify(data)));
