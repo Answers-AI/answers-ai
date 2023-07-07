@@ -54,8 +54,6 @@ export const ChatDetail = ({
       ?.filter((service) => filteredServices.includes(service.id))
       ?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};
 
-  const pathname = usePathname();
-  console.log('Filters', { filters, services, filteredServices });
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>

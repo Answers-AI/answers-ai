@@ -188,7 +188,6 @@ export function AnswersProvider({
   const updateFilter = React.useCallback(
     (newFilter: AnswersFilters) => {
       const mergedSettings = clearEmptyValues(deepmerge({}, filters, newFilter));
-      console.log('Update filters', { filters, newFilter, mergedSettings });
 
       setFilters(mergedSettings);
     },

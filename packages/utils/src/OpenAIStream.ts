@@ -69,16 +69,17 @@ export async function OpenAIStream(
       for await (const chunk of res.body as any) {
         let decoded = decoder.decode(chunk);
         console.log('Update MEssage', { answer });
-        message = await prisma.message.update({
-          where: { id: message.id },
-          data: {
-            content: answer
-          }
-        });
+
         parser.feed(decoded);
       }
       // TODO: Add tokens consumed in this completion
       onEnd({ ...extra, text: answer, message });
+      message = await prisma.message.update({
+        where: { id: message.id },
+        data: {
+          content: answer
+        }
+      });
       await inngest.send({
         v: '1',
         ts: new Date().valueOf(),
