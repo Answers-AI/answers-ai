@@ -86,7 +86,7 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
                 py: 1
               }
             }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ minHeight: '64px!important' }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ minHeight: '48px!important' }}>
               <Typography variant="overline">Selected sources</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ padding: '8px!important', px: 1 }}>
