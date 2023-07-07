@@ -103,16 +103,16 @@ export const ChatDetail = ({
                       color="inherit"
                       aria-label="manage sources"
                       onClick={() => setShowFilters(!showFilters)}
-                      sx={{ display: 'flex', gap: 1 }}>
+                      sx={{ display: 'flex', minWidth: 0, borderRadius: 20 }}>
                       {!Object.keys(services)?.length ? 'Select sources' : null}
                       <AvatarGroup
                         max={4}
-                        sx={{ '.MuiAvatar-root': { ml: -2, width: 32, height: 32 } }}>
+                        sx={{ '.MuiAvatar-root': { ml: -2, width: 28, height: 28 } }}>
                         {(Object.keys(services)?.length
                           ? Object.values(services)
                           : appSettings.services
                         )?.map((service) => (
-                          <Avatar variant="source" src={service.imageURL} />
+                          <Avatar key={service.name} variant="source" src={service.imageURL} />
                         ))}
                       </AvatarGroup>
                     </Button>
@@ -125,7 +125,7 @@ export const ChatDetail = ({
                     edge="end"
                     onClick={() => setShowFilters(!showFilters)}
                     sx={{}}>
-                    {!showFilters ? <FilterIcon /> : <ArrowBackIcon />}
+                    <ArrowBackIcon />
                   </IconButton>
                 )}
                 {/* <IconButton
@@ -200,7 +200,9 @@ export const ChatDetail = ({
         </Box>
         <ChatInput />
       </div>
-      <DrawerFilters appSettings={appSettings} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <DrawerFilters appSettings={appSettings} />
+      </Suspense>
     </>
   );
 };

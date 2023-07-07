@@ -1,15 +1,25 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Avatar, Box, Card, CardActions, CardContent, Chip, IconButton } from '@mui/material';
+import NextLink from 'next/link';
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Chip,
+  Divider,
+  IconButton
+} from '@mui/material';
 import { JsonViewer } from '@textea/json-viewer';
 // import { deepOrange, deepPurple } from '@mui/material/colors';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ContentCopy from '@mui/icons-material/ContentCopy';
-
 import Typography from '@mui/material/Typography';
-import { Message, User } from 'types';
+import { AppService, Document, Message } from 'types';
 import { useFlags } from 'flagsmith/react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -30,9 +40,11 @@ interface MessageExtra {
   completionRequest?: object;
   filters?: object;
   isWidget?: boolean;
+  contextDocuments?: Document[];
 }
 interface MessageCardProps extends Partial<Message>, MessageExtra {
   error?: AxiosError<MessageExtra>;
+
   role: string;
 }
 
@@ -55,10 +67,14 @@ export const MessageCard = ({
   likes,
   dislikes,
   isWidget,
+  contextDocuments,
   ...other
 }: MessageCardProps) => {
   const { developer_mode } = useFlags(['developer_mode']); // only causes re-render if specified flag values / traits change
-  const { updateMessage } = useAnswers();
+  const { user: currentUser, updateMessage, appSettings } = useAnswers();
+  const services: { [key: string]: AppService } =
+    appSettings?.services?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};
+
   const [lastInteraction, setLastInteraction] = React.useState<string>('');
   const [codeStyle, setCodeStyle] = useState({});
   // useEffect(() => {
@@ -109,64 +125,114 @@ export const MessageCard = ({
         sx={{
           position: 'relative',
           display: 'flex',
-          px: isWidget ? 1 : 2,
-          py: isWidget ? 1 : 2,
+          gap: 1,
+          // px: isWidget ? 1 : 1,
+          // py: isWidget ? 1 : 1,
           width: '100%',
           flexDirection: isWidget ? 'column' : 'row'
         }}>
-        <Avatar
-          sx={{
-            bgcolor: role == 'user' ? 'secondary.main' : 'primary.main',
-            height: isWidget ? '24px' : '32px',
-            width: isWidget ? '24px' : '32px'
-          }}>
-          {role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
-        </Avatar>
         <CardContent
           sx={{
             position: 'relative',
-            py: 0,
-            px: isWidget ? 1 : 2,
+            gap: 2,
             width: '100%',
             display: 'flex',
             flexDirection: 'column'
+            // p: 0
           }}>
-          {content ? (
-            <>
-              <Typography
-                variant="body1"
-                color="text.secondary"
-                component="div"
-                sx={{
-                  'p, ul, li, pre, h1, h2, h3, h4 , h5, h6': {
-                    marginBottom: '1em'
-                  }
-                }}>
-                <ReactMarkdown
-                  components={{
-                    code({ node, inline, className, children, ...props }) {
-                      const codeExample = String(children).replace(/\n$/, '');
-                      return !inline ? (
-                        <Box sx={{ position: 'relative' }}>
-                          <SyntaxHighlighter style={duotoneDark as any} PreTag="div" {...props}>
-                            {codeExample}
-                          </SyntaxHighlighter>
-                          <IconButton
-                            sx={{ position: 'absolute', bottom: 16, right: 16 }}
-                            onClick={() => handleCopyCodeClick(codeExample)}>
-                            <ContentCopy />
-                          </IconButton>
-                        </Box>
-                      ) : (
-                        <code className={className} {...props}>
-                          {children}
-                        </code>
-                      );
+          <Box sx={{ gap: 2, display: 'flex' }}>
+            <Avatar
+              src={role == 'user' ? currentUser?.image! : '/logos/answerai-logo.png'}
+              sx={{
+                bgcolor: role == 'user' ? 'secondary.main' : 'primary.main',
+                height: isWidget ? '24px' : '32px',
+                width: isWidget ? '24px' : '32px',
+                ...(role !== 'user' && {
+                  padding: 1,
+                  background: 'white'
+                })
+              }}
+              title={role == 'assistant' ? 'AI' : user?.name?.charAt(0)}></Avatar>
+            {content ? (
+              <>
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  component="div"
+                  sx={
+                    {
+                      // 'p, ul, li, pre, h1, h2, h3, h4 , h5, h6': {
+                      //   ':not(only-child)': {
+                      //     marginBottom: '1em'
+                      //   }
+                      // }
                     }
-                  }}>
-                  {content}
-                </ReactMarkdown>
-              </Typography>
+                  }>
+                  <ReactMarkdown
+                    components={{
+                      code({ node, inline, className, children, ...props }) {
+                        const codeExample = String(children).replace(/\n$/, '');
+                        return !inline ? (
+                          <Box sx={{ position: 'relative' }}>
+                            <SyntaxHighlighter style={duotoneDark as any} PreTag="div" {...props}>
+                              {codeExample}
+                            </SyntaxHighlighter>
+                            <IconButton
+                              sx={{ position: 'absolute', bottom: 16, right: 16 }}
+                              onClick={() => handleCopyCodeClick(codeExample)}>
+                              <ContentCopy />
+                            </IconButton>
+                          </Box>
+                        ) : (
+                          <code className={className} {...props}>
+                            {children}
+                          </code>
+                        );
+                      }
+                    }}>
+                    {content}
+                  </ReactMarkdown>
+                </Typography>
+              </>
+            ) : null}
+          </Box>
+          {contextDocuments?.length ? (
+            <>
+              <Divider />
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: 1
+                }}>
+                <Typography variant="body2">View more:</Typography>
+                {contextDocuments?.map((doc) => (
+                  <Button
+                    size="small"
+                    component={NextLink}
+                    variant="outlined"
+                    color="inherit"
+                    href={doc.url}
+                    target="_blank"
+                    sx={{
+                      'textTransform': 'none',
+                      'borderRadius': 20,
+                      'px': 1.5,
+                      '&:hover': { textDecoration: 'underline' }
+                    }}
+                    startIcon={
+                      <Avatar
+                        variant="source"
+                        src={services[doc.source]?.imageURL}
+                        sx={{ width: 20, height: 20 }}
+                      />
+                    }>
+                    {doc.title ?? doc.url}
+                  </Button>
+                ))}
+              </Box>
             </>
           ) : null}
         </CardContent>
@@ -175,8 +241,8 @@ export const MessageCard = ({
           sx={{
             position: 'absolute',
             bottom: isWidget ? 'auto' : 0,
-            top: isWidget ? 0 : 'auto',
-            right: 0
+            top: isWidget ? 0 : '100%',
+            right: 8
           }}>
           <IconButton
             color={lastInteraction === 'like' ? 'secondary' : 'default'}
@@ -192,12 +258,8 @@ export const MessageCard = ({
             <ThumbDownIcon sx={{ fontSize: 16 }} />
           </IconButton>
         </CardActions>
-        {/* <Box>
-          {context?.contextSourceFilesUsed?.map((url) => (
-            <Chip />
-          ))}
-        </Box> */}
       </Box>
+
       {context ? (
         // Use the @mui accordion component to wrap the context and response
         <Accordion TransitionProps={{ unmountOnExit: true }}>

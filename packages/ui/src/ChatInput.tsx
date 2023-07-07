@@ -12,7 +12,7 @@ import { useFlags } from 'flagsmith/react';
 import { SidekickSelect } from './SidekickSelect';
 
 import { Tooltip } from '@mui/material';
-import defaultSidekick from '@utils/sidekicks/defaultPrompt';
+
 import { Sidekick } from 'types';
 
 export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?: boolean }) => {
@@ -20,9 +20,18 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
   const [inputValue, setInputValue] = useState('');
   const [placeholder, setPlaceholder] = useState(defaultPlaceholderValue);
 
-  const [sidekick, setSidekick] = useState(defaultSidekick);
-  const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
-  const { chat, journey, messages, sendMessage, clearMessages, isLoading } = useAnswers();
+  const {
+    chat,
+    journey,
+    messages,
+    sendMessage,
+    clearMessages,
+    isLoading,
+    sidekick,
+    setSidekick,
+    gptModel,
+    setGptModel
+  } = useAnswers();
 
   const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
 

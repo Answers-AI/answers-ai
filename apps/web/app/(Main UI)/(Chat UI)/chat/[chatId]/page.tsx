@@ -20,7 +20,14 @@ const ChatDetailPage = async ({ params }: any) => {
       include: {
         prompt: true,
         journey: true,
-        messages: { include: { user: true }, orderBy: { createdAt: 'asc' } },
+
+        messages: {
+          include: {
+            user: { select: { id: true, email: true, image: true, name: true } },
+            contextDocuments: true
+          },
+          orderBy: { createdAt: 'asc' }
+        },
         users: { select: { id: true, email: true, image: true, name: true } }
       }
     })

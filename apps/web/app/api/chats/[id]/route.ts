@@ -22,6 +22,10 @@ export async function GET(
       users: { select: { id: true, name: true, email: true } },
       prompt: true,
       messages: {
+        include: {
+          user: { select: { id: true, email: true, image: true, name: true } },
+          contextDocuments: true
+        },
         orderBy: {
           createdAt: 'asc'
         }

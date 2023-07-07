@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 
 import { SetStateAction, createContext, useCallback, useContext, useRef, useState } from 'react';
-import { AnswersFilters, AppSettings, Chat, Journey, Message, Prompt, Sidekick } from 'types';
+import { AnswersFilters, AppSettings, Chat, Journey, Message, Prompt, Sidekick, User } from 'types';
 import { deepmerge } from '@utils/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
 import { clearEmptyValues } from './clearEmptyValues';
-
+import defaultSidekick from '@utils/sidekicks/defaultPrompt';
 interface AnswersContextType {
+  user: User;
   appSettings: AppSettings;
   error?: any;
   chat?: Chat | null;
@@ -54,6 +55,10 @@ interface AnswersContextType {
   setError: any;
   setChatId: any;
   setJourneyId: any;
+  setSidekick: any;
+  sidekick: Sidekick;
+  gptModel: string;
+  setGptModel: any;
 }
 // @ts-ignore
 const AnswersContext = createContext<AnswersContextType>({
@@ -89,6 +94,7 @@ export function useAnswers() {
 
 interface AnswersProviderProps {
   children: React.ReactNode;
+  user: User;
   appSettings: AppSettings;
   apiUrl?: string;
   useStreaming?: boolean;
@@ -102,11 +108,12 @@ const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 export function AnswersProvider({
   chat: initialChat,
   journey: initialJourney,
+  user,
   appSettings,
   children,
   prompts,
   useStreaming: initialUseStreaming = true,
-  apiUrl = ''
+  apiUrl = '/api'
 }: AnswersProviderProps) {
   const router = useRouter();
   const [error, setError] = useState(null);
@@ -119,7 +126,7 @@ export function AnswersProvider({
   const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
 
   const [journeyId, setJourneyId] = useState<string | undefined>(journey?.id);
-  const [sidekick, setSidekick] = useState('defaultPrompt');
+  const [sidekick, setSidekick] = useState(defaultSidekick);
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
   const messageIdx = useRef(0);
 
@@ -149,9 +156,11 @@ export function AnswersProvider({
   });
 
   const { data: chat } = useSWR<Chat>(
-    initialChat?.id ? `${apiUrl}/api/chats/${initialChat?.id}` : null,
+    initialChat?.id ? `${apiUrl}/chats/${initialChat?.id}` : null,
     fetcher,
     {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
       // refreshInterval: isStreaming ? 0 : 1000,
       fallbackData: initialChat,
       onSuccess(data, key, config) {
@@ -195,7 +204,7 @@ export function AnswersProvider({
     // if (messages[messages.length - 1].role === ChatCompletionRequestMessageRoleEnum.Assistant) {
     //   setMessages(messages.slice(0, -1));
     // }
-    sendMessage({ content: message.content, retry });
+    sendMessage({ content: message.content, retry, sidekick, gptModel });
   };
 
   const clearMessages = () => {
@@ -294,6 +303,7 @@ export function AnswersProvider({
   }, [initialChat, initialJourney, appSettings.filters]);
 
   const contextValue = {
+    user,
     appSettings,
     chat,
     journey,

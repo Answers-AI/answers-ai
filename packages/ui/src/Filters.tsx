@@ -29,7 +29,7 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
           gap: 1,
           flexDirection: 'column',
           flexWrap: 'wrap',
-          minWidth: 320,
+          width: '100%',
           ...sx
         }}>
         {datasources?.length ? (

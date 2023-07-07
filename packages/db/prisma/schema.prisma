@@ -237,6 +237,7 @@ model Message {
   content                String
   contextSourceFilesUsed String[]
 
+  context String @default("")
   contextDocuments Document[]
 
   prompt   Prompt? @relation(fields: promptId, references: id)

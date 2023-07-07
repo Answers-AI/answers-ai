@@ -197,7 +197,7 @@ export interface DataSourcesFilters {
   document?: DocumentFilters;
   zoom?: ZoomFilters;
   youtube?: YoutubeFilters;
-  files?: FileFilters;
+  file?: FileFilters;
 }
 export interface AnswersFilters {
   models?: {
@@ -215,7 +215,7 @@ type Models = {
   airtable: string[];
   codebase: string[];
   document: string[];
-  files: string[];
+  file: string[];
   zoom: string[];
   youtube: string[];
   [key: string]: string[];

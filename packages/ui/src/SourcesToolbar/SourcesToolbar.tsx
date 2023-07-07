@@ -63,7 +63,8 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
   //   }
   // }, [showFilters, enabledServices, filters]);
 
-  const handleOpenToggle = (serviceId: string) => setOpened(serviceId);
+  const handleOpenToggle = (serviceId: string) =>
+    opened != serviceId ? setOpened(serviceId) : setOpened('');
 
   return (
     <Box
@@ -92,55 +93,66 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
           </Accordion>
         </>
       ) : null}
-      <List disablePadding sx={{ gap: 1, py: 1 }}>
-        {enabledServices?.map((service, idx) => (
-          <React.Fragment key={service.id}>
-            <ListItem
-              key={service.id}
-              disablePadding
-              sx={{
-                'gap': 1,
-                'flexDirection': 'column',
-                '.MuiIconButton-root': { opacity: 1, transition: '.1s', overflow: 'hidden' },
-                '&:not(:hover)': {
-                  '.MuiIconButton-root': {
-                    opacity: 0,
-                    px: 0,
-                    width: 0
-                  }
-                }
-              }}>
-              <ListItemButton
-                onClick={() => handleOpenToggle(service.id)}
-                // component={NextLink}
-                sx={{ width: '100%', paddingRight: 1 }}>
-                <ListItemIcon sx={{ minWidth: 0, mr: 2 }}>
-                  <Avatar variant="source" src={service.imageURL} sx={{ width: 24, height: 24 }} />
-                </ListItemIcon>
-                <ListItemText primary={service.name} sx={{ textTransform: 'capitalize' }} />
+      <Accordion defaultExpanded={!Object.keys(filters)?.length} sx={{}}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ minHeight: '48px!important' }}>
+          <Typography variant="overline">Add new sources</Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{ padding: '0px!important' }}>
+          <List disablePadding sx={{ gap: 1 }}>
+            {enabledServices?.map((service, idx) => (
+              <React.Fragment key={service.id}>
+                <ListItem
+                  key={service.id}
+                  disablePadding
+                  sx={{
+                    'gap': 1,
+                    'flexDirection': 'column',
+                    '.MuiIconButton-root': { opacity: 1, transition: '.1s', overflow: 'hidden' },
+                    '&:not(:hover)': {
+                      '.MuiIconButton-root': {
+                        opacity: 0,
+                        px: 0,
+                        width: 0
+                      }
+                    }
+                  }}>
+                  <ListItemButton
+                    onClick={() => handleOpenToggle(service.id)}
+                    // component={NextLink}
+                    sx={{ width: '100%', paddingRight: 1 }}>
+                    <ListItemIcon sx={{ minWidth: 0, mr: 2 }}>
+                      <Avatar
+                        variant="source"
+                        src={service.imageURL}
+                        sx={{ width: 24, height: 24 }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText primary={service.name} sx={{ textTransform: 'capitalize' }} />
 
-                {opened == service.id ? <ExpandLess /> : <ExpandMore />}
-                {/* {journey?.chats?.length ? (
+                    {opened == service.id ? <ExpandLess /> : <ExpandMore />}
+                    {/* {journey?.chats?.length ? (
                     <IconButton onClick={handleExpandJourney(idx)}>
                       {opened[idx] ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
                   ) : null} */}
-                {/* <IconButton onClick={() => handleAddChat({ journey })}>
+                    {/* <IconButton onClick={() => handleAddChat({ journey })}>
                     <Add />
                   </IconButton> */}
-              </ListItemButton>
-              <Collapse in={opened == service.id} sx={{ width: '100%' }}>
-                <JourneySetting
-                  app={service.name}
-                  appSettings={appSettings}
-                  filters={filters}
-                  updateFilter={updateFilter}
-                />
-              </Collapse>
-            </ListItem>
-          </React.Fragment>
-        ))}
-      </List>
+                  </ListItemButton>
+                  <Collapse in={opened == service.id} sx={{ width: '100%' }}>
+                    <JourneySetting
+                      app={service.name}
+                      appSettings={appSettings}
+                      filters={filters}
+                      updateFilter={updateFilter}
+                    />
+                  </Collapse>
+                </ListItem>
+              </React.Fragment>
+            ))}
+          </List>
+        </AccordionDetails>
+      </Accordion>
     </Box>
   );
 }

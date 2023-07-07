@@ -94,7 +94,7 @@ export async function POST(req: Request) {
         ts: new Date().valueOf(),
         name: 'answers/prompt.answered',
         user: user,
-        data: { chatId, message: response.message, prompt }
+        data: { chatId, message: response.message, prompt, contextDocuments }
       });
     }
   };
