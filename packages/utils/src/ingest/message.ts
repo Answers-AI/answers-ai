@@ -8,6 +8,7 @@ import { openai } from '../openai/client';
 
 export const answersMessageSent: EventVersionHandler<{
   chatId: string;
+  messageId?: string;
   filters: AnswersFilters;
   user: User;
   role: string;

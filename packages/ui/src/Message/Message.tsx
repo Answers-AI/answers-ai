@@ -1,18 +1,13 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Avatar, Box, Card, CardActions, CardContent, Chip, IconButton } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { JsonViewer } from '@textea/json-viewer';
 // import { deepOrange, deepPurple } from '@mui/material/colors';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 
-import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
-import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
-import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import { Message, User } from 'types';
 import { useFlags } from 'flagsmith/react';
@@ -21,47 +16,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { duotoneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useAnswers } from '@ui/AnswersContext';
 import { AxiosError } from 'axios';
-
-const Accordion = styled((props: AccordionProps) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
-))(({ theme }) => ({
-  'border': `none`,
-  // 'border': `1px solid ${theme.palette.divider}`,
-  '&:not(:last-child)': {
-    borderBottom: 0
-  },
-  '&:before': {
-    display: 'none'
-  },
-  '.MuiAccordionDetails-root': {
-    padding: theme.spacing(2),
-    background: 'rgba(24,24,24)'
-  }
-}));
-
-const AccordionSummary = styled((props: AccordionSummaryProps) => (
-  <MuiAccordionSummary
-    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
-    {...props}
-  />
-))(({ theme }) => ({
-  'backgroundColor': 'transparent',
-  'padding': theme.spacing(0, 2),
-  // 'backgroundColor':
-  //   theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, .05)' : 'rgba(0, 0, 0, .03)',
-
-  'flexDirection': 'row-reverse',
-  '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
-    transform: 'rotate(180deg)'
-  },
-  '& .MuiAccordionSummary-content': {
-    marginLeft: theme.spacing(0)
-  }
-}));
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderTop: '1px solid rgba(0, 0, 0, .125)'
-}));
+import { Accordion, AccordionSummary, AccordionDetails } from '@ui/Accordion';
 
 interface MessageExtra {
   prompt?: string;

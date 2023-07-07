@@ -10,7 +10,7 @@ import { debounce } from '@utils/debounce';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import { SidekickSelect } from './SidekickSelect';
-import { Filters } from './Filters';
+
 import { Tooltip } from '@mui/material';
 import defaultSidekick from '@utils/sidekicks/defaultPrompt';
 import { Sidekick } from 'types';
@@ -22,8 +22,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
 
   const [sidekick, setSidekick] = useState(defaultSidekick);
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
-  const { appSettings, chat, journey, filters, messages, sendMessage, clearMessages, isLoading } =
-    useAnswers();
+  const { chat, journey, messages, sendMessage, clearMessages, isLoading } = useAnswers();
 
   const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
 
@@ -84,7 +83,6 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
 
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
-      {filters ? <Filters filters={filters} /> : null}
       <Box sx={{ display: 'flex', gap: 2 }}>
         <SidekickSelect
           onSidekickSelected={handleSidekickSelected}

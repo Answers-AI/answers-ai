@@ -20,10 +20,18 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
 
   return filters ? (
     <>
-      <strong>
+      {/* <strong>
         <Typography variant="overline">Selected sources</Typography>
-      </strong>
-      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', ...sx }}>
+      </strong> */}
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 1,
+          flexDirection: 'column',
+          flexWrap: 'wrap',
+          minWidth: 320,
+          ...sx
+        }}>
         {datasources?.length ? (
           <>
             {datasources.map(([source, sourceFilters]) => {
@@ -37,11 +45,16 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
                         : (values as any[])?.map((value: any) => (
                             <Button
                               color="inherit"
-                              variant="outlined"
+                              variant="text"
                               size="small"
-                              sx={{ borderRadius: '24px', textTransform: 'none' }}
+                              sx={{
+                                width: '100%',
+                                borderRadius: '24px',
+                                textTransform: 'none'
+                              }}
                               startIcon={
                                 <Avatar
+                                  variant="source"
                                   sx={{ height: 20, width: 20 }}
                                   src={services[source].imageURL}
                                 />
@@ -54,7 +67,7 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
                                         ((filters?.datasources as any)?.[source]?.[
                                           field
                                         ] as any[]) ?? []
-                                      )?.filter((v) => v !== value)
+                                      )?.filter((v) => JSON.stringify(v) !== JSON.stringify(value))
                                     }
                                   }
                                 });
@@ -63,11 +76,22 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
                               key={`${field}:${
                                 value?.title ?? value?.name ?? value?.id ?? value.url ?? value
                               }`}>
-                              {value?.title ??
-                                value?.name ??
-                                value.url ??
-                                value?.id ??
-                                JSON.stringify(value)}
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  textAlign: 'left',
+                                  width: '100%',
+
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap'
+                                }}>
+                                {value?.title ??
+                                  value?.name ??
+                                  value.url ??
+                                  value?.id ??
+                                  JSON.stringify(value)}
+                              </Typography>
                             </Button>
                           ))}
                     </React.Fragment>
@@ -76,11 +100,7 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
               );
             })}
           </>
-        ) : (
-          <Typography variant="overline">
-            <strong> Add a source to your journey</strong>
-          </Typography>
-        )}
+        ) : null}
       </Box>
     </>
   ) : null;

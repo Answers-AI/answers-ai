@@ -70,7 +70,7 @@ export interface DrawerFiltersProps {
 export default function DrawerFilters({ appSettings }: DrawerFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { showFilters = true, setShowFilters, filters } = useAnswers();
+  const { showFilters, setShowFilters, filters } = useAnswers();
   // const [open, setOpen] = React.useState(true);
   // const open = pathname?.includes('show-canvas=true') || true;
   const handleDrawerClose = () => {

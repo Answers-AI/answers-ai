@@ -8,6 +8,7 @@ import { SetStateAction, createContext, useCallback, useContext, useRef, useStat
 import { AnswersFilters, AppSettings, Chat, Journey, Message, Prompt, Sidekick } from 'types';
 import { deepmerge } from '@utils/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
+import { clearEmptyValues } from './clearEmptyValues';
 
 interface AnswersContextType {
   appSettings: AppSettings;
@@ -70,7 +71,7 @@ const AnswersContext = createContext<AnswersContextType>({
   inputValue: '',
   useStreaming: true,
   setUseStreaming: () => {},
-  showFilters: true,
+  showFilters: false,
   setShowFilters: () => {},
   setInputValue: () => {},
   deleteChat: async () => {},
@@ -118,7 +119,7 @@ export function AnswersProvider({
   const [journey, setJourney] = useState<Journey | undefined>(initialJourney);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
   const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
 
   const [journeyId, setJourneyId] = useState<string | undefined>(journey?.id);
@@ -151,25 +152,29 @@ export function AnswersProvider({
     }
   });
 
-  const { data: chat } = useSWR<Chat>(`${apiUrl}/api/chats/${initialChat?.id}`, fetcher, {
-    // refreshInterval: isStreaming ? 0 : 1000,
-    fallbackData: initialChat,
-    onSuccess(data, key, config) {
-      setMessages(data.messages!);
+  const { data: chat } = useSWR<Chat>(
+    initialChat?.id ? `${apiUrl}/api/chats/${initialChat?.id}` : null,
+    fetcher,
+    {
+      // refreshInterval: isStreaming ? 0 : 1000,
+      fallbackData: initialChat,
+      onSuccess(data, key, config) {
+        setMessages(data.messages!);
+      }
     }
-  });
+  );
   const [messages, setMessages] = useState<Array<Message>>(chat?.messages ?? []);
-  const [filters, setFiltersState] = useState<AnswersFilters>(
+  const [filters, setFilters] = useState<AnswersFilters>(
     deepmerge({}, appSettings?.filters, journey?.filters, chat?.filters)
   );
   const [chatId, setChatId] = useState<string | undefined>(chat?.id);
 
-  const setFilters = (filters: SetStateAction<AnswersFilters>) => {
-    setFiltersState((currentFilters) => {
-      const newFilters = typeof filters === 'function' ? filters(currentFilters) : filters;
-      return deepmerge({}, currentFilters, newFilters);
-    });
-  };
+  // const setFilters = (filters: SetStateAction<AnswersFilters>) => {
+  //   setFiltersState((currentFilters) => {
+  //     const newFilters = typeof filters === 'function' ? filters(currentFilters) : filters;
+  //     return deepmerge({}, currentFilters, newFilters);
+  //   });
+  // };
   const addMessage = useCallback(
     (message: Message) => {
       setMessages((currentMessages) => {
@@ -180,11 +185,15 @@ export function AnswersProvider({
     [messageIdx, setMessages]
   );
 
-  const updateFilter = (newFilter: AnswersFilters) => {
-    const mergedSettings = deepmerge({}, filters, newFilter);
+  const updateFilter = React.useCallback(
+    (newFilter: AnswersFilters) => {
+      const mergedSettings = clearEmptyValues(deepmerge({}, filters, newFilter));
+      console.log('Update filters', { filters, newFilter, mergedSettings });
 
-    setFilters(mergedSettings);
-  };
+      setFilters(mergedSettings);
+    },
+    [filters]
+  );
 
   const regenerateAnswer = (retry?: boolean) => {
     const [message] = messages?.filter((m) => m.role === 'user').slice(-1) ?? [];

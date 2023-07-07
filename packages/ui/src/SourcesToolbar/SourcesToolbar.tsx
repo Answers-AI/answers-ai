@@ -3,7 +3,6 @@ import Avatar from '@mui/material/Avatar';
 
 import NextLink from 'next/link';
 import { AppSettings, AppService } from 'types';
-
 import {
   AvatarGroup,
   Box,
@@ -18,12 +17,14 @@ import {
   Popover,
   Typography
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useAnswers } from '../AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import Image from 'next/image';
 import JourneySetting from '@ui/JourneySetting';
 import { ExpandLess, ExpandMore, Add } from '@mui/icons-material';
 import { Filters } from '@ui/Filters';
+import { Accordion, AccordionDetails, AccordionSummary } from '@ui/Accordion';
 
 export default function SourcesToolbar({ appSettings }: { appSettings: AppSettings }) {
   const flags = useFlags(appSettings?.services?.map((s) => s.name) ?? []);
@@ -68,10 +69,33 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
     }));
 
   return (
-    <>
-      <List disablePadding sx={{ flex: 1, gap: 1 }}>
-        <Filters filters={filters} />
-        <Divider />
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1
+      }}>
+      {Object.keys(filters)?.length ? (
+        <>
+          <Accordion
+            defaultExpanded
+            sx={{
+              '&.MuiPaper-root': {
+                borderBottom: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 0,
+                py: 1
+              }
+            }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ minHeight: '64px!important' }}>
+              <Typography variant="overline">Selected sources</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ padding: '8px!important', px: 1 }}>
+              <Filters filters={filters} />
+            </AccordionDetails>
+          </Accordion>
+        </>
+      ) : null}
+      <List disablePadding sx={{ gap: 1, py: 1 }}>
         {enabledServices?.map((service, idx) => (
           <React.Fragment key={service.id}>
             <ListItem
@@ -120,6 +144,6 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
           </React.Fragment>
         ))}
       </List>
-    </>
+    </Box>
   );
 }
