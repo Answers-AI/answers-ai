@@ -26,7 +26,6 @@ const SourcesZoom: React.FC<{}> = ({}) => {
           value={filters?.datasources?.[source]?.url || []}
           onChange={(value) => updateFilter({ datasources: { [source]: { url: value } } })}
           getOptionLabel={(option) => option?.title ?? option?.url}
-          getOptionValue={(option) => option?.url}
           options={sources ?? []}
           onFocus={() => mutate()}
         />

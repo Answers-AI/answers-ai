@@ -192,11 +192,11 @@ export const MessageCard = ({
             <ThumbDownIcon sx={{ fontSize: 16 }} />
           </IconButton>
         </CardActions>
-        <Box>
+        {/* <Box>
           {context?.contextSourceFilesUsed?.map((url) => (
             <Chip />
           ))}
-        </Box>
+        </Box> */}
       </Box>
       {context ? (
         // Use the @mui accordion component to wrap the context and response

@@ -20,12 +20,12 @@ interface AnswersContextType {
   messages?: Array<Message>;
   prompts?: Array<Prompt>;
   chats?: Array<Chat>;
-  sendMessage: (
-    content: string,
-    isNewJourney?: boolean,
-    sidekick?: Sidekick,
-    gptModel?: string
-  ) => void;
+  sendMessage: (args: {
+    content: string;
+    isNewJourney?: boolean;
+    sidekick?: Sidekick;
+    gptModel?: string;
+  }) => void;
   clearMessages: () => void;
   regenerateAnswer: () => void;
   isLoading: boolean;
@@ -41,10 +41,10 @@ interface AnswersContextType {
   deleteChat: (id: string) => Promise<void>;
   deletePrompt: (id: string) => Promise<void>;
   deleteJourney: (id: string) => Promise<void>;
-  updateMessage: (message: Partial<Message>) => Promise<void>;
-  updateChat: (chat: Partial<Chat>) => Promise<void>;
-  updatePrompt: (prompt: Partial<Prompt>) => Promise<void>;
-  upsertJourney: (journey: Partial<Journey>) => Promise<void>;
+  updateMessage: (message: Partial<Message>) => Promise<{ data: Message }>;
+  updateChat: (chat: Partial<Chat>) => Promise<{ data: Chat }>;
+  updatePrompt: (prompt: Partial<Prompt>) => Promise<{ data: Prompt }>;
+  upsertJourney: (journey: Partial<Journey>) => Promise<{ data: Journey }>;
 
   messageIdx: any;
   setMessages: (arg: SetStateAction<Message[]>) => void;
@@ -76,11 +76,7 @@ const AnswersContext = createContext<AnswersContextType>({
   setInputValue: () => {},
   deleteChat: async () => {},
   deletePrompt: async () => {},
-  deleteJourney: async () => {},
-  updateMessage: async () => {},
-  updateChat: async () => {},
-  updatePrompt: async () => {},
-  upsertJourney: async () => {}
+  deleteJourney: async () => {}
 });
 
 export function useAnswers() {

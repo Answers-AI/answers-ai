@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { Message, Sidekick } from 'types';
 interface GenerateResponseArgs {
   content: string;
-  sidekick?: Sidekick;
-  gptModel?: string;
   journeyId?: string;
   chatId?: string;
   messages?: any[];

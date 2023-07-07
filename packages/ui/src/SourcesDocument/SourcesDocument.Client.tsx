@@ -122,16 +122,14 @@ const SourcesDocument: React.FC<{}> = ({}) => {
           value={filters?.datasources?.document?.url ?? []}
           onChange={(value) => updateFilter({ datasources: { document: { url: value } } })}
           getOptionLabel={(option) => option?.title ?? option?.url}
-          getOptionValue={(option) => option?.url}
           options={sources ?? []}
         />
         {showDocumentInput && (
           <Box sx={{ width: '100%' }}>
             <Typography variant="overline">Upload New Document</Typography>
             <Box
-              component="form"
+              component={`form`}
               sx={{ px: 1 }}
-              form
               method="POST"
               onSubmit={handleSubmit}
               encType="multipart/form-data">

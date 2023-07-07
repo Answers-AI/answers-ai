@@ -23,7 +23,6 @@ const SourcesCodebase: React.FC<{}> = ({}) => {
           value={filters?.datasources?.codebase?.repo || []}
           onChange={(value) => updateFilter({ datasources: { codebase: { repo: value } } })}
           getOptionLabel={(option) => (option?.metadata as any)?.repo!}
-          getOptionValue={(option) => (option?.metadata as any)?.repo!}
           options={sources ?? []}
           onFocus={() => mutate()}
         />
