@@ -38,35 +38,32 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
   );
 
   const { filters, showFilters, updateFilter } = useAnswers();
-  const [opened, setOpened] = React.useState<{ [key: string]: any }>(
-    appSettings?.services?.reduce(
-      (acc, service) => ({
-        ...acc,
-        [service.id!]: false
-      }),
-      {}
-    ) ?? {}
-  );
+  // const [opened, setOpened] = React.useState<{ [key: string]: any }>(
+  //   appSettings?.services?.reduce(
+  //     (acc, service) => ({
+  //       ...acc,
+  //       [service.id!]: false
+  //     }),
+  //     {}
+  //   ) ?? {}
+  // );
+  const [opened, setOpened] = React.useState<string>('');
 
-  React.useEffect(() => {
-    if (showFilters) {
-      setOpened(
-        enabledServices?.reduce(
-          (acc, service) => ({
-            ...acc,
-            [service.id!]: !!(filters?.datasources as any)?.[service.id]
-          }),
-          {}
-        )
-      );
-    }
-  }, [showFilters, enabledServices, filters]);
+  // React.useEffect(() => {
+  //   if (showFilters) {
+  //     setOpened(
+  //       enabledServices?.reduce(
+  //         (acc, service) => ({
+  //           ...acc,
+  //           [service.id!]: !!(filters?.datasources as any)?.[service.id]
+  //         }),
+  //         {}
+  //       )
+  //     );
+  //   }
+  // }, [showFilters, enabledServices, filters]);
 
-  const handleOpenToggle = (serviceId: string) =>
-    setOpened((prev) => ({
-      ...prev,
-      [serviceId]: !prev[serviceId]
-    }));
+  const handleOpenToggle = (serviceId: string) => setOpened(serviceId);
 
   return (
     <Box
@@ -122,7 +119,7 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
                 </ListItemIcon>
                 <ListItemText primary={service.name} sx={{ textTransform: 'capitalize' }} />
 
-                {opened[service.id] ? <ExpandLess /> : <ExpandMore />}
+                {opened == service.id ? <ExpandLess /> : <ExpandMore />}
                 {/* {journey?.chats?.length ? (
                     <IconButton onClick={handleExpandJourney(idx)}>
                       {opened[idx] ? <ExpandLess /> : <ExpandMore />}
@@ -132,7 +129,7 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
                     <Add />
                   </IconButton> */}
               </ListItemButton>
-              <Collapse in={opened[service.id]} sx={{ width: '100%' }}>
+              <Collapse in={opened == service.id} sx={{ width: '100%' }}>
                 <JourneySetting
                   app={service.name}
                   appSettings={appSettings}

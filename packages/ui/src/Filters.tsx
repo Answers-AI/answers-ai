@@ -56,7 +56,7 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
                                 <Avatar
                                   variant="source"
                                   sx={{ height: 20, width: 20 }}
-                                  src={services[source].imageURL}
+                                  src={services[source]?.imageURL}
                                 />
                               }
                               onClick={() => {
