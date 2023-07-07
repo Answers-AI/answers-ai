@@ -94,7 +94,7 @@ export function useAnswers() {
 
 interface AnswersProviderProps {
   children: React.ReactNode;
-  user: User;
+  user?: User;
   appSettings: AppSettings;
   apiUrl?: string;
   useStreaming?: boolean;

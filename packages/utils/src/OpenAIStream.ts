@@ -1,15 +1,17 @@
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser';
 import { prisma } from '@db/client';
 import { inngest } from './ingest/client';
-import { Chat, User, Document } from 'types';
+import { Chat, User, Document, Message } from 'types';
 interface CompletionResponse {
   text: string;
+  message: Message;
 }
 interface StreamExtra {
   user: User;
   chat: Chat;
   context: string;
   contextDocuments: Document[];
+  [key: string]: any;
 }
 export async function OpenAIStream(
   payload: any,

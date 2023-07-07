@@ -11,7 +11,7 @@ import { fetchContext } from '@utils/pinecone/fetchContext';
 import { sidekicks } from '@utils/sidekicks';
 import { upsertChat } from '@utils/upsertChat';
 import { prisma } from '@db/client';
-import { Document, Sidekicks } from 'types';
+import { Chat, Document, Sidekicks } from 'types';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -115,7 +115,7 @@ export async function POST(req: Request) {
     },
     {
       user,
-      chat,
+      chat: chat as any,
       contextDocuments,
       filters: pineconeFilters,
       context,

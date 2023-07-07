@@ -58,7 +58,10 @@ export default function AutocompleteSelect<T>({
         getOptionLabel={getOptionLabel as any}
         value={value ?? []}
         onChange={handleChange}
-        PopperComponent={({ children, props: { anchorEl, ...props } = {} }: any) => (
+        PopperComponent={({
+          children,
+          props: { anchorEl: _anchorEl = null, ...props } = {}
+        }: any) => (
           <Box
             {...props}
             sx={{
