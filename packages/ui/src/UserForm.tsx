@@ -19,17 +19,17 @@ import {
 } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 import Grid from '@mui/material/Grid';
-import { Organization, AppSettings, ContextField } from 'types';
+import { User, AppSettings, ContextField } from 'types';
 
 interface ContextFieldInput extends Partial<ContextField> {}
 interface OrgInput
   extends Omit<
-    Organization,
-    | 'createdAt'
-    | 'updatedAt'
-    | 'users'
-    | 'usersSelected'
-    | 'documentPermissions'
+    User,
+    | 'role'
+    | 'name'
+    | 'emailVerified'
+    | 'invited'
+    | 'image'
     | 'appSettings'
     | 'image'
     | 'isFavoriteByDefault'
@@ -39,13 +39,7 @@ interface OrgInput
   [key: string]: any;
 }
 
-const OrganizationForm = ({
-  appSettings,
-  organization
-}: {
-  appSettings: AppSettings;
-  organization?: Organization;
-}) => {
+const UserForm = ({ appSettings, user }: { appSettings: AppSettings; user?: User }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,8 +55,8 @@ const OrganizationForm = ({
     getValues
   } = useForm<OrgInput>({
     defaultValues: {
-      ...organization,
-      contextFields: organization?.contextFields || []
+      ...user,
+      contextFields: user?.contextFields || []
     }
   });
 
@@ -77,7 +71,7 @@ const OrganizationForm = ({
     }
   }, [fields]);
 
-  if (!organization) return null;
+  if (!user) return null;
 
   const handleAddNewField = () => {
     append({
@@ -103,7 +97,7 @@ const OrganizationForm = ({
     }
 
     try {
-      await axios.patch(`/api/organizations`, { ...formData });
+      await axios.patch(`/api/users`, { ...formData });
       router.refresh();
     } catch (err: any) {
       setError(err.message);
@@ -116,22 +110,12 @@ const OrganizationForm = ({
   return (
     <Box p={8}>
       <Typography variant="h2" component="h1">
-        Edit Organization
+        Edit User
       </Typography>
 
       <Divider sx={{ my: 2 }} />
       <Box component="form" onSubmit={handleSubmit(onSubmit)}>
         <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
-          <Grid item sm={12}>
-            <TextField
-              {...register('name', { required: true })}
-              rows={2}
-              label="Organization Name"
-              error={Boolean(errors.name)}
-              size="small"
-              sx={{ width: '100%' }}
-            />
-          </Grid>
           <Grid item sm={12} sx={{ textAlign: 'right' }}>
             <Button variant="outlined" onClick={handleAddNewField}>
               Add New Field
@@ -152,7 +136,7 @@ const OrganizationForm = ({
                   {fields.map((field, index) => (
                     <TableRow key={field.fieldId}>
                       <TableCell sx={{ width: '20%' }}>
-                        {editIndex === index && !field.organizationId ? (
+                        {editIndex === index && !field.userId ? (
                           <TextField
                             {...register(`contextFields.${index}.fieldId`, {
                               required: true
@@ -243,11 +227,11 @@ const OrganizationForm = ({
         </Grid>
         {/* Need to check both because the context fields don't trigger dirtyFields unless a new one is added */}
         <Button variant="contained" type="submit">
-          Save Organization
+          Save User
         </Button>
       </Box>
     </Box>
   );
 };
 
-export default OrganizationForm;
+export default UserForm;

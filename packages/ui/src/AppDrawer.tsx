@@ -19,6 +19,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import StorageIcon from '@mui/icons-material/Storage';
 import SettingsIcon from '@mui/icons-material/Settings';
 import BusinessIcon from '@mui/icons-material/Business';
+import UserIcon from '@mui/icons-material/ManageAccounts';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import SmartToy from '@mui/icons-material/SmartToy';
 import AIIcon from '@mui/icons-material/SmartButton';
@@ -39,6 +40,7 @@ export const AppDrawer = ({ params }: any) => {
         {[
           { text: 'Message', link: '/', icon: <HomeIcon /> },
           { text: 'Organization Settings', link: '/organization', icon: <BusinessIcon /> },
+          { text: 'User Settings', link: '/user', icon: <UserIcon /> },
           { text: 'Sidekick Studio', link: '/sidekick-studio', icon: <SmartToy /> },
           ...(flags?.settings?.enabled
             ? [{ text: 'Settings', link: '/settings', icon: <SettingsIcon /> }]

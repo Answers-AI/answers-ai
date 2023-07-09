@@ -11,12 +11,11 @@ export async function PATCH(req: Request, res: Response) {
 
     const { id, contextFields, ...data } = await req.json();
 
-    if (!session?.user?.id || session?.user?.organizationId !== id)
-      return NextResponse.redirect('/auth');
+    if (!session?.user?.id || session?.user?.id !== id) return NextResponse.redirect('/auth');
 
     // @ts-ignore-next-line
     const dbFields = prisma._dmmf.datamodel.models
-      .find((model: any) => model.name === 'Organization')
+      .find((model: any) => model.name === 'User')
       .fields.map((field: any) => field.name);
 
     const newData: Record<string, any> = {};
@@ -28,7 +27,7 @@ export async function PATCH(req: Request, res: Response) {
     if (!!contextFields?.length) {
       newData.contextFields = {
         upsert: contextFields.map((field: any) => {
-          delete field.organizationId;
+          delete field.userId;
           const { fieldId, helpText, fieldType, fieldTextValue } = field;
           const contextFieldID = field.id ?? randomUUID();
           return {
@@ -45,7 +44,7 @@ export async function PATCH(req: Request, res: Response) {
       };
     }
 
-    const organization = await prisma.organization.update({
+    const user = await prisma.user.update({
       where: {
         id
       },
@@ -58,7 +57,7 @@ export async function PATCH(req: Request, res: Response) {
       }
     });
 
-    return NextResponse.json(organization);
+    return NextResponse.json(user);
   } catch (error) {
     console.log('[POST] error', error);
     throw error;

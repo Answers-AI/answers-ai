@@ -19,7 +19,14 @@ export async function syncAppSettings({
   }
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { accounts: true, organizations: true, currentOrganization: true }
+    include: {
+      accounts: true,
+      organizations: true,
+      currentOrganization: {
+        include: { contextFields: true }
+      },
+      contextFields: true
+    }
   });
   let organization;
   if (!user?.organizations?.length) {

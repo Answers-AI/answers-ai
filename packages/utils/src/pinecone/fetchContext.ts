@@ -1,14 +1,6 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
-import {
-  AnswersFilters,
-  Message,
-  User,
-  Sidekicks,
-  Sidekick,
-  WebUrlType,
-  Organization
-} from 'types';
+import { AnswersFilters, Message, User, Sidekick, WebUrlType, Organization } from 'types';
 import OpenAIClient from '../openai/openai';
 import { countTokens } from '../utilities/countTokens';
 import { getUniqueUrls } from '../getUniqueUrls';
@@ -189,14 +181,48 @@ export const fetchContext = async ({
   const maxContextTokens = getMaxContextTokens(gptModel);
   // return an arroy of items in teh relevatn data that are less than the max context tokens
   // count the total contextStringRender tokens plus the totalTokens in the
+
   const contextPromises = relevantData.map((item) => {
     let renderedContext = item?.metadata?.text;
+
+    // Add organization's custom contact fields
+    const organizationContext: Record<string, any> = (organization?.contextFields ?? []).reduce(
+      (result, { fieldId, fieldTextValue }) => ({
+        ...result,
+        [fieldId]: fieldTextValue
+      }),
+      {}
+    );
+
+    organizationContext.name = organization?.name;
+
+    // Add user's custom contect fields
+    const userContext: Record<string, any> = (user?.contextFields ?? []).reduce(
+      (result, { fieldId, fieldTextValue }) => ({
+        ...result,
+        [fieldId]: fieldTextValue
+      }),
+      {}
+    );
+
+    // Add relative user fields that should be available in the context
+    userContext.name = user?.name;
+    userContext.role = user?.role;
+    userContext.email = user?.email;
+
+    // console.log('===============');
+    // console.log({
+    //   organization: organizationContext,
+    //   user: userContext
+    // });
+
     if (sidekick?.contextStringRender) {
       renderedContext = renderContext(sidekick?.contextStringRender, {
         result: item.metadata,
-        organization,
-        user
+        organization: organizationContext,
+        user: userContext
       }); // TODO: get this from the database to give us more flexibility
+      // console.log({ renderedContext });
     }
     const tokenCount = countTokens(renderedContext || '');
     if (totalTokens + tokenCount <= maxContextTokens) {

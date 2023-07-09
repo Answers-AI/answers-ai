@@ -5,8 +5,8 @@ import { authOptions } from '@ui/authOptions';
 import { getCachedSession } from '@ui/getCachedSession';
 
 export const metadata = {
-  title: 'Organization Studio | Answers AI',
-  description: 'Organization Studio'
+  title: 'Organization Settings | Answers AI',
+  description: 'Organization Settings'
 };
 
 const OrganizationFormPage = async ({ params }: any) => {
@@ -14,12 +14,13 @@ const OrganizationFormPage = async ({ params }: any) => {
 
   if (!session?.user?.organizationId) return null;
 
+  // Only returns the fields we'll be editing
   const organization = await prisma.organization
     .findFirst({
       where: {
         id: session.user.organizationId
       },
-      include: { contextFields: true }
+      select: { id: true, name: true, contextFields: true }
     })
     .then((data: any) => JSON.parse(JSON.stringify(data)));
 
