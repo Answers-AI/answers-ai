@@ -12,7 +12,7 @@ import { authOptions } from '@ui/authOptions';
 
 import { Document } from 'types';
 
-const IS_DEVELOPMENT = true; //process.env.NODE_ENV === 'development';
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
