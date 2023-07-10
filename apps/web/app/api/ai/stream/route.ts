@@ -12,6 +12,8 @@ import { authOptions } from '@ui/authOptions';
 
 import { Document } from 'types';
 
+const IS_DEVELOPMENT = true; //process.env.NODE_ENV === 'development';
+
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   const user = session?.user!;
@@ -68,6 +70,7 @@ export async function POST(req: Request) {
 
   try {
     ({ pineconeFilters, pineconeData, context, contextDocuments } = await fetchContext({
+      organizationId: chat.organizationId ?? user.organizationId ?? '',
       user,
       organization: user?.currentOrganization,
       prompt,
@@ -123,7 +126,7 @@ export async function POST(req: Request) {
       contextDocuments,
       filters: pineconeFilters,
       context,
-      ...(process.env.NODE_ENV === 'development' && {
+      ...(IS_DEVELOPMENT && {
         pineconeData,
         completionRequest
       })

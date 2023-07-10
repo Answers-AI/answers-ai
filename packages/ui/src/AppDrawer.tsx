@@ -31,6 +31,7 @@ import closedMixin from './theme/closedMixin';
 import openedMixin from './theme/openedMixin';
 
 const drawerWidth = 240;
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 export const AppDrawer = ({ session }: any) => {
   const flags = useFlags(['settings']);
@@ -52,7 +53,7 @@ export const AppDrawer = ({ session }: any) => {
           ...(flags?.settings?.enabled
             ? [{ text: 'Settings', link: '/settings', icon: <SettingsIcon /> }]
             : []),
-          ...(process.env.NODE_ENV === 'development'
+          ...(IS_DEVELOPMENT
             ? [
                 { text: 'Inngest', link: '/events', icon: <MessageIcon /> },
                 { text: 'Store', link: '/store', icon: <StorageIcon /> },

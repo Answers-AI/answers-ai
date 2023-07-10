@@ -49,8 +49,9 @@ async function AIUpdateChatTitle(history: string, chatId: string) {
     temperature: 0.1,
     model: 'text-davinci-003'
   });
+
   const title = res?.data?.choices?.[0]?.text!;
-  console.log('AITITLE', { history, chatId, title });
+  // console.log('AITITLE', { history, chatId, title });
   await prisma.chat.update({
     where: { id: chatId },
     data: {
