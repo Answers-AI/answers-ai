@@ -68,7 +68,6 @@ export async function POST(req: Request) {
 
   try {
     ({ pineconeFilters, pineconeData, context, contextDocuments } = await fetchContext({
-      organizationId: chat.organizationId ?? user.organizationId ?? '',
       user,
       organization: user?.currentOrganization,
       prompt,

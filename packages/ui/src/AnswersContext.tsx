@@ -312,7 +312,7 @@ export function AnswersProvider({
   React.useEffect(() => {
     setJourney(initialJourney);
     setFilters(deepmerge({}, appSettings?.filters, initialJourney?.filters, initialChat?.filters));
-  }, [initialChat, initialJourney, appSettings.filters]);
+  }, [initialChat, initialJourney, appSettings]);
 
   const contextValue = {
     user,

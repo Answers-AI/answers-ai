@@ -96,7 +96,6 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
       setLoading(false);
     }
   };
-  console.log('Chat', chat);
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -133,7 +132,6 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
               fullWidth
               placeholder="Email, comma separated"
               onChange={(event, value) => {
-                console.log('Change');
                 if (value.some((email: string) => !/\S+@\S+\.\S+/.test(email))) {
                   setError('email', { message: 'Enter valid emails' });
                 } else {
