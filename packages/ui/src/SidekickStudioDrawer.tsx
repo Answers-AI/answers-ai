@@ -22,7 +22,7 @@ import openedMixin from './theme/openedMixin';
 
 import { Sidekick } from 'types';
 
-const drawerWidth = 400;
+const drawerWidth = 300;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -47,8 +47,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 
     ...(!open && {
-      ...closedMixin({ theme }),
-      '& .MuiDrawer-paper': closedMixin({ theme })
+      ...closedMixin({ theme, spacing: 0 }),
+      '& .MuiDrawer-paper': closedMixin({ theme, spacing: 0 })
     })
   })
 );

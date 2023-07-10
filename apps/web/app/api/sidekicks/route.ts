@@ -3,34 +3,39 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { Sidekick } from 'types';
+import { respond401 } from '@utils/auth/respond401';
 
 export async function POST(req: Request, res: Response) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) return NextResponse.redirect('/auth');
-    const { temperature, frequency, presence, maxCompletionTokens, sharedWith, ...data } =
-      await req.json();
-    const sliderValues = {
-      temperature: parseInt(temperature, 10),
-      frequency: parseInt(frequency, 10),
-      presence: parseInt(presence, 10),
-      maxCompletionTokens: parseInt(maxCompletionTokens, 10)
-    };
+  const session = await getServerSession(authOptions);
 
-    console.log({ temperature, frequency, presence, maxCompletionTokens, sharedWith, ...data });
+  if (!session?.user?.email) {
+    return respond401();
+  }
 
-    switch (sharedWith) {
-      case 'global': {
-        data.isGlobal = true;
-        break;
-      }
-      case 'org': {
-        data.isSharedWithOrg = true;
-        break;
-      }
+  const { temperature, frequency, presence, maxCompletionTokens, sharedWith, ...data } =
+    await req.json();
+
+  const sliderValues = {
+    temperature: parseInt(temperature, 10),
+    frequency: parseInt(frequency, 10),
+    presence: parseInt(presence, 10),
+    maxCompletionTokens: parseInt(maxCompletionTokens, 10)
+  };
+
+  switch (sharedWith) {
+    case 'global': {
+      data.isGlobal = true;
+      break;
     }
+    case 'org': {
+      data.isSharedWithOrg = true;
+      break;
+    }
+  }
 
-    const sidekick = await prisma.sidekick.create({
+  let sidekick;
+  try {
+    sidekick = await prisma.sidekick.create({
       data: {
         ...data,
         ...sliderValues,
@@ -38,12 +43,15 @@ export async function POST(req: Request, res: Response) {
         createdByUser: { connect: { email: session?.user?.email } }
       }
     });
-
-    return NextResponse.json(sidekick);
   } catch (error) {
     console.log('[POST] error', error);
-    throw error;
+    return NextResponse.json(
+      { error: 'There was an error creating your sidekick.' },
+      { status: 422 }
+    );
   }
+
+  return NextResponse.json(sidekick);
 }
 
 export async function GET(req: Request) {

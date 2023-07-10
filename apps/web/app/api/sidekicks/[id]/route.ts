@@ -31,9 +31,6 @@ export async function PATCH(req: Request, res: Response) {
         break;
       }
     }
-    console.log({ sharedWith });
-
-    console.log({ ...data });
 
     const sidekick = await prisma.sidekick.update({
       where: {

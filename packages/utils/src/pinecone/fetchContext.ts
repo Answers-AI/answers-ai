@@ -94,7 +94,6 @@ export const fetchContext = async ({
   sidekick?: Sidekick;
   gptModel?: string;
 }) => {
-  console.log({ clientFilters });
   const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
   const filters = parseFilters(clientFilters);
@@ -178,7 +177,6 @@ export const fetchContext = async ({
 
   // Filter out any results that are above the relavance threshold, sort by score and retunr the max number based on gptModel
   let relevantData = filterPineconeDataRelevanceThreshhold(pineconeData, DEFAULT_THRESHOLD);
-  console.log({ relevantData });
 
   let context: string = '';
   const contextSourceFilesUsed = new Set<string>();
@@ -208,13 +206,19 @@ export const fetchContext = async ({
       const contextStringRender =
         sidekick?.contextStringRender?.trim() !== '' ? sidekick?.contextStringRender : null;
 
+      // console.log('BEFORE', renderedContext);
       if (contextStringRender && totalTokens + preTokenCount <= maxTokens) {
+        // console.log('item.metadata', item.metadata);
         renderedContext = renderContext(contextStringRender, {
           result: item.metadata,
           organization: organizationContext,
           user: userContext
         }).trim();
+        // console.log(totalTokens);
       }
+
+      // console.log('AFTER', renderedContext);
+      // console.log('====================================');
 
       if (renderedContext === '') return null;
 
@@ -230,12 +234,12 @@ export const fetchContext = async ({
     });
 
     filteredData = contextPromises;
-    let fullContext = filteredData.filter((result) => result !== null).join(' ');
-    const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: maxTokens });
-    const contextArray = await textSplitter.createDocuments([fullContext]);
+    context = filteredData.filter((result) => result !== null).join('\n\n');
+    // const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: maxTokens });
+    // const contextArray = await textSplitter.createDocuments([fullContext]);
 
     // Get the first chunk that is under the max token size
-    context = contextArray?.[0]?.pageContent?.trim() ?? '';
+    // context = contextArray?.[0]?.pageContent?.trim() ?? '';
   }
 
   return {

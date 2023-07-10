@@ -27,8 +27,6 @@ const SidekickFormPage = async ({ params }: any) => {
   // Flatten and get unique values
   const allTags = Array.from(new Set(uniqueTags.flatMap((dep) => dep.tags)));
 
-  console.log({ allTags });
-
   const sidekick = await prisma.sidekick
     .findFirst({
       where: {

@@ -50,7 +50,7 @@ export const createChatChain = ({ messages }: { messages?: Message[] }) => {
       messages?: Message[];
       agent_scratchpad: string;
     }) => {
-      console.log('[ChatChain] context', context?.length);
+      // console.log('[ChatChain] context', context?.length);
       const completionRequest = await getCompletionRequest({ context, user, messages, input });
       const response = await openai.createChatCompletion(completionRequest as any);
       const text = response.data.choices[0].message?.content;

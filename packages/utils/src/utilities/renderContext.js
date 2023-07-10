@@ -15,6 +15,7 @@ export function getTemplate(precompiled) {
 }
 
 export function renderContext(templateString, context) {
+  // console.log(JSON.stringify(context, null, 2));
   const template = Handlebars.compile(templateString);
   const renderedTemplate = template(context);
   return renderedTemplate;

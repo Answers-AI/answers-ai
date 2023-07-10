@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
   let completionRequest;
 
-  console.log('[AI][Stream]', { journeyId, chatId, filters, prompt, messages, sidekick, gptModel });
+  // console.log('[AI][Stream]', { journeyId, chatId, filters, prompt, messages, sidekick, gptModel });
 
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({

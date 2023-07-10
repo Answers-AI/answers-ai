@@ -1,5 +1,5 @@
 import { Message, Sidekick, User, Organization } from 'types';
-import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
+import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { countTokens } from '../utilities/countTokens';
 import { renderContext } from '../utilities/renderContext';
 import getMaxTokensByModel from '../utilities/getMaxTokensByModel';
@@ -21,13 +21,12 @@ export async function getCompletionRequest({
   sidekick?: Sidekick;
   gptModel?: string;
 }) {
-  console.log({ sidekick });
   const systemPrompt = sidekick?.systemPromptTemplate
     ? renderContext(sidekick.systemPromptTemplate, { input, context, user })
     : '';
 
   const userPrompt = sidekick?.userPromptTemplate
-    ? renderContext(sidekick.userPromptTemplate, { input, context })
+    ? renderContext(sidekick.userPromptTemplate, { userInput: input, context })
     : input;
 
   const temperature = sidekick?.temperature || 0.1;

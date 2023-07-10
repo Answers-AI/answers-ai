@@ -23,7 +23,7 @@ const HandlebarsEditor: React.FC<HandlebarsEditorProps> = ({
   }, [monaco]);
 
   const handleSave = () => {
-    console.log({ code });
+    // console.log({ code });
     onSave(code);
   };
 

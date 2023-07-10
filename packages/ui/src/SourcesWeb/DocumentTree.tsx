@@ -82,7 +82,7 @@ function CustomTreeItem(props: TreeItemProps) {
 export default function DocumentTree({ documents }: { documents: Document[] }) {
   const tree = React.useMemo(() => {
     const newTree = buildTree(documents);
-    console.log(newTree);
+    // console.log(newTree);
     return newTree;
   }, [documents]);
 

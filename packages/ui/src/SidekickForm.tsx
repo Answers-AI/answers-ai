@@ -1,5 +1,5 @@
 'use client';
-import React, { ChangeEvent, ChangeEventHandler, SyntheticEvent, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import axios from 'axios';
 
 import Button from '@mui/material/Button';
@@ -94,10 +94,20 @@ const SidekickForm = ({
         router.push(`/sidekick-studio/${sidekick.id}`);
       }
     } catch (err: any) {
-      setError(err.message);
+      console.log('error', err);
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        setError(err.response.data);
+      } else if (err.request) {
+        // The request was made but no response was received
+        setError('No response received from the server');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
-      reset();
     }
   };
 
@@ -258,13 +268,14 @@ const SidekickForm = ({
                     <Controller
                       name="sharedWith"
                       control={control}
+                      defaultValue={sidekick?.sharedWith ?? 'private'}
                       render={({ field }) => (
                         <Select
                           labelId="sharedWith-label"
                           {...field}
                           size="small"
-                          required
                           defaultValue={sidekick?.sharedWith ?? 'private'}
+                          required
                           fullWidth
                           sx={{ mt: 4, width: '100%', mx: 'auto' }}>
                           <MenuItem value="private">Private</MenuItem>
@@ -284,6 +295,7 @@ const SidekickForm = ({
                     <Controller
                       name="aiModel"
                       control={control}
+                      defaultValue={sidekick?.aiModel ?? 'gpt-3.5-turbo'}
                       render={({ field }) => (
                         <Select
                           labelId="aiModel-label"
@@ -292,10 +304,7 @@ const SidekickForm = ({
                           required
                           defaultValue={sidekick?.aiModel ?? 'gpt-3.5-turbo'}
                           fullWidth
-                          displayEmpty
-                          renderValue={(value) => (value !== '' ? value : 'Choose an AI Model')}
                           sx={{ mt: 4, width: '100%', mx: 'auto' }}>
-                          <MenuItem value="">Choose an AI Model</MenuItem>
                           <MenuItem value="gpt-3.5-turbo">GPT 3.5</MenuItem>
                           <MenuItem value="gpt-3.5-turbo-16k">GPT 3.5 16k</MenuItem>
                           <MenuItem value="gpt-4">GPT 4</MenuItem>
