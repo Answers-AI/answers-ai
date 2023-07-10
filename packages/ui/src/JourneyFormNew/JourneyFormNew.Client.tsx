@@ -86,6 +86,7 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
         <TextField
           // label="What is the goal of your journey?"
           variant="outlined"
+          data-cy="new-journey-goal-input"
           fullWidth
           multiline
           rows={3}
@@ -130,6 +131,7 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
           <Button
             sx={{}}
             variant="contained"
+            data-cy="create-new-journey-button"
             color="primary"
             type="submit"
             size="large"

@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Avatar, Box, Button, Chip, Typography } from '@mui/material';
+import { Avatar, Box, Button, Typography } from '@mui/material';
 import { AnswersFilters, AppService } from 'types';
 import { useAnswers } from './AnswersContext';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -46,6 +46,7 @@ export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) 
                             <Button
                               color="inherit"
                               variant="text"
+                              data-cy={`source-${source}-button`}
                               size="small"
                               sx={{
                                 width: '100%',

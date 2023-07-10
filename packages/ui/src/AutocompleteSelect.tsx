@@ -90,6 +90,7 @@ export default function AutocompleteSelect<T>({
           <li key={key} {...itemProps}>
             <Checkbox
               icon={icon}
+              data-cy="autocomplete-select-checkbox"
               checkedIcon={checkedIcon}
               style={{ marginRight: 8 }}
               checked={selected}
