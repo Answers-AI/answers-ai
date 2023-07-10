@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { Message, Sidekick } from 'types';
 interface GenerateResponseArgs {
   content: string;
+  journeyId?: string;
+  chatId?: string;
+  messages?: any[];
+  filters?: any;
   sidekick?: Sidekick;
   gptModel?: string;
 }
@@ -11,31 +15,29 @@ interface GenerateResponseArgs {
 const parseMessages = (messages?: any[]) =>
   messages?.map(({ role, content }) => ({ role, content }));
 export const useStreamedResponse = ({
-  chatId,
-  journeyId,
-  messages,
-  filters,
   apiUrl,
   onChunk,
-  onEnd,
-  sidekick,
-  gptModel
-}: {
-  journeyId?: string;
-  chatId?: string;
-  messages?: any[];
-  filters?: any;
+  onEnd
+}: // setChat
+{
   apiUrl: string;
   onChunk: (chunk: Message) => void;
-  sidekick?: Sidekick;
-  gptModel?: string;
   onEnd: (chunk: Message) => void;
+  // setChat: (chat: Chat) => void;
 }) => {
   const [isStreaming, setIsStreaming] = useState(false);
 
   const [generatedResponse, setGeneratedResponse] = useState<any>({});
 
-  const generateResponse = async ({ content, sidekick, gptModel }: GenerateResponseArgs) => {
+  const generateResponse = async ({
+    content,
+    chatId,
+    journeyId,
+    messages,
+    filters,
+    sidekick,
+    gptModel
+  }: GenerateResponseArgs) => {
     setGeneratedResponse('');
     setIsStreaming(true);
 
@@ -80,6 +82,7 @@ export const useStreamedResponse = ({
         if (jsonData && rest?.length) {
           try {
             extra = JSON.parse(jsonData);
+            // if (extra.chat) setChat(extra.chat);
           } catch (e) {
             console.log('ParseError', e);
           }
@@ -94,5 +97,5 @@ export const useStreamedResponse = ({
     setIsStreaming(false);
     onEnd({ role: 'assistant', content, ...extra });
   };
-  return { isLoading: isStreaming, generatedResponse, generateResponse };
+  return { isStreaming, generatedResponse, generateResponse };
 };

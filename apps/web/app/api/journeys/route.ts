@@ -51,15 +51,17 @@ export async function PATCH(req: Request, res: Response) {
     if (!session?.user?.email) return NextResponse.redirect('/auth');
     const { id, ...data } = await req.json();
 
+    const organizationId = session?.user?.organizationId;
+
     const journey = id
       ? await prisma.journey.update({
           where: {
             id
           },
-          data: { ...data, users: { connect: { email: session?.user?.email } } }
+          data: { ...data, organizationId, users: { connect: { email: session?.user?.email } } }
         })
       : await prisma.journey.create({
-          data: { ...data, users: { connect: { email: session?.user?.email } } }
+          data: { ...data, organizationId, users: { connect: { email: session?.user?.email } } }
         });
     return NextResponse.json(journey);
   } catch (error) {

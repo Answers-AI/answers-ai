@@ -77,6 +77,7 @@ export const authOptions: AuthOptions = {
       if (user) {
         token.id = user.id!;
       }
+
       refresAccessToken({ token, user, account });
       return token;
     },

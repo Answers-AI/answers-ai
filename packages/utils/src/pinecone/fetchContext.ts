@@ -1,5 +1,6 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
+import { prisma } from '@db/client';
 import { Chat } from 'db/generated/prisma-client';
 import { AnswersFilters, Message, User, Sidekicks, Sidekick, WebUrlType } from 'types';
 import OpenAIClient from '../openai/openai';
@@ -78,6 +79,7 @@ const getMaxContextTokens = (gptModel: string) => {
 
 export const fetchContext = async ({
   user,
+  organizationId,
   prompt,
   messages = [],
   filters: clientFilters = {},
@@ -85,6 +87,7 @@ export const fetchContext = async ({
   gptModel = 'gpt-3.5-turbo'
 }: {
   user?: User;
+  organizationId?: string;
   prompt: string;
   messages?: Message[];
   filters?: AnswersFilters;
@@ -157,14 +160,14 @@ export const fetchContext = async ({
       if (!filter[source]) return Promise.resolve(null);
 
       return pineconeQuery(promptEmbedding, {
-        // TODO: Figure how to filter by namespace without having to re-index per user
-        // namespace: `org-${user?.organizationId}`,
-        ...(!PUBLIC_SOURCES.includes(source) && { namespace: `org-${user?.organizationId}` }),
+        ...(!PUBLIC_SOURCES.includes(source) && organizationId
+          ? { namespace: `org-${organizationId}` }
+          : {}),
         filter: {
           source,
           ...filter[source]
         },
-        topK: 200
+        topK: 500
       });
     })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
@@ -195,10 +198,15 @@ export const fetchContext = async ({
   const filteredData = contextPromises;
   const context = filteredData.filter((result) => result !== null).join(' ');
 
+  const contextDocuments = await prisma.document.findMany({
+    where: {
+      url: { in: contextSourceFilesUsed }
+    }
+  });
+
   return {
     context,
-    // summary: context,
-    contextSourceFilesUsed,
+    contextDocuments,
     ...(process.env.NODE_ENV === 'development'
       ? {
           pineconeFilters: filters,

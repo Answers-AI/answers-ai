@@ -122,24 +122,29 @@ const SourcesDocument: React.FC<{}> = ({}) => {
           value={filters?.datasources?.document?.url ?? []}
           onChange={(value) => updateFilter({ datasources: { document: { url: value } } })}
           getOptionLabel={(option) => option?.title ?? option?.url}
-          getOptionValue={(option) => option?.url}
           options={sources ?? []}
         />
         {showDocumentInput && (
-          <>
+          <Box sx={{ width: '100%' }}>
             <Typography variant="overline">Upload New Document</Typography>
-            <form method="POST" onSubmit={handleSubmit} encType="multipart/form-data">
+            <Box
+              component={`form`}
+              sx={{ px: 1 }}
+              method="POST"
+              onSubmit={handleSubmit}
+              encType="multipart/form-data">
               <Input
                 onChange={handleDocuments}
                 type="file"
+                fullWidth
                 inputProps={{ multiple: true, accept: '.pdf,.doc,.docx' }}
               />
 
               <Button variant="contained" size="small" type="submit">
                 Upload Document
               </Button>
-            </form>
-          </>
+            </Box>
+          </Box>
         )}
       </Box>
     </>

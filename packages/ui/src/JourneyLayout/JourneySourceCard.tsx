@@ -15,7 +15,7 @@ import Avatar from '@mui/material/Avatar';
 import { useAnswers } from '../AnswersContext';
 import { AnswersFilters, AppService, AppSettings } from 'types';
 
-import JourneySetting from './JourneySetting';
+import JourneySetting from '@ui/JourneySetting';
 
 interface JourneySourceCardProps extends AppService {
   appSettings: AppSettings;
@@ -91,15 +91,9 @@ const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
               }}>
               <CardHeader
                 avatar={
-                  <Avatar>
+                  <Avatar variant="source">
                     {imageURL ? (
-                      <Image
-                        style={{ background: 'white', padding: '8px' }}
-                        src={imageURL}
-                        alt={`${name} logo`}
-                        width={40}
-                        height={40}
-                      />
+                      <Image src={imageURL} alt={`${name} logo`} width={24} height={24} />
                     ) : (
                       name[0]?.toUpperCase()
                     )}

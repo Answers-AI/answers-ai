@@ -14,8 +14,12 @@ const HomepageServer = async () => {
   const journeysPromise = prisma.journey
     .findMany({
       where: {
-        users: {
-          some: { email: session.user.email }
+        chats: {
+          some: {
+            users: {
+              some: { email: session.user.email }
+            }
+          }
         },
         goal: {
           not: null

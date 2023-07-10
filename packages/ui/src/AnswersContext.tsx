@@ -2,13 +2,16 @@
 import React from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import useSWR from 'swr';
 
 import { SetStateAction, createContext, useCallback, useContext, useRef, useState } from 'react';
-import { AnswersFilters, AppSettings, Chat, Journey, Message, Prompt, Sidekick } from 'types';
+import { AnswersFilters, AppSettings, Chat, Journey, Message, Prompt, Sidekick, User } from 'types';
 import { deepmerge } from '@utils/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
-
+import { clearEmptyValues } from './clearEmptyValues';
+import defaultSidekick from '@utils/sidekicks/defaultPrompt';
 interface AnswersContextType {
+  user: User;
   appSettings: AppSettings;
   error?: any;
   chat?: Chat | null;
@@ -18,12 +21,12 @@ interface AnswersContextType {
   messages?: Array<Message>;
   prompts?: Array<Prompt>;
   chats?: Array<Chat>;
-  sendMessage: (
-    content: string,
-    isNewJourney?: boolean,
-    sidekick?: Sidekick,
-    gptModel?: string
-  ) => void;
+  sendMessage: (args: {
+    content: string;
+    isNewJourney?: boolean;
+    sidekick?: Sidekick;
+    gptModel?: string;
+  }) => void;
   clearMessages: () => void;
   regenerateAnswer: () => void;
   isLoading: boolean;
@@ -39,10 +42,10 @@ interface AnswersContextType {
   deleteChat: (id: string) => Promise<void>;
   deletePrompt: (id: string) => Promise<void>;
   deleteJourney: (id: string) => Promise<void>;
-  updateMessage: (message: Partial<Message>) => Promise<void>;
-  updateChat: (chat: Partial<Chat>) => Promise<void>;
-  updatePrompt: (prompt: Partial<Prompt>) => Promise<void>;
-  upsertJourney: (journey: Partial<Journey>) => Promise<void>;
+  updateMessage: (message: Partial<Message>) => Promise<{ data: Message }>;
+  updateChat: (chat: Partial<Chat>) => Promise<{ data: Chat }>;
+  updatePrompt: (prompt: Partial<Prompt>) => Promise<{ data: Prompt }>;
+  upsertJourney: (journey: Partial<Journey>) => Promise<{ data: Journey }>;
 
   messageIdx: any;
   setMessages: (arg: SetStateAction<Message[]>) => void;
@@ -52,6 +55,10 @@ interface AnswersContextType {
   setError: any;
   setChatId: any;
   setJourneyId: any;
+  setSidekick: any;
+  sidekick: Sidekick;
+  gptModel: string;
+  setGptModel: any;
 }
 // @ts-ignore
 const AnswersContext = createContext<AnswersContextType>({
@@ -74,31 +81,108 @@ const AnswersContext = createContext<AnswersContextType>({
   setInputValue: () => {},
   deleteChat: async () => {},
   deletePrompt: async () => {},
-  deleteJourney: async () => {},
-  updateMessage: async () => {},
-  updateChat: async () => {},
-  updatePrompt: async () => {},
-  upsertJourney: async () => {}
+  deleteJourney: async () => {}
 });
 
-export function useAnswers({ apiUrl = '/api' }: any = {}) {
-  const router = useRouter();
+export function useAnswers() {
   const context = useContext(AnswersContext);
-  const {
-    filters,
-    setFilters,
-    messages,
-    useStreaming,
-    messageIdx,
-    setMessages,
-    journeyId,
-    chatId,
-    setIsLoading,
-    setError,
-    setChatId,
-    setJourneyId
-  } = context;
 
+  return {
+    ...context
+  };
+}
+
+interface AnswersProviderProps {
+  children: React.ReactNode;
+  user?: User;
+  appSettings: AppSettings;
+  apiUrl?: string;
+  useStreaming?: boolean;
+  chat?: Chat;
+  journey?: Journey;
+  prompts?: Prompt[];
+  // chats?: Chat[];
+}
+
+const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+export function AnswersProvider({
+  chat: initialChat,
+  journey: initialJourney,
+  user,
+  appSettings,
+  children,
+  prompts,
+  useStreaming: initialUseStreaming = true,
+  apiUrl = '/api'
+}: AnswersProviderProps) {
+  const router = useRouter();
+  const [error, setError] = useState(null);
+  const [inputValue, setInputValue] = useState('');
+  // const [chat, setChat] = useState<Chat | undefined>(initialChat);
+  const [journey, setJourney] = useState<Journey | undefined>(initialJourney);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [showFilters, setShowFilters] = useState(false);
+  const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
+
+  const [journeyId, setJourneyId] = useState<string | undefined>(journey?.id);
+  const [sidekick, setSidekick] = useState(defaultSidekick);
+  const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
+  const messageIdx = useRef(0);
+
+  const { isStreaming, generateResponse } = useStreamedResponse({
+    apiUrl,
+    // setChat,
+    onChunk: (chunk: Message) => {
+      // const idx = messages?.length;
+      setMessages((currentMessages) => {
+        const newMessages = [...currentMessages];
+        newMessages[messageIdx.current] = chunk;
+        if (chunk?.chat) {
+          if (chunk.chat?.id !== chatId) {
+            setChatId(chunk.chat.id);
+          }
+          if (chunk.chat.journeyId && chunk.chat?.journeyId !== journeyId) {
+            setJourneyId(chunk.chat.journeyId);
+          }
+        }
+        return newMessages;
+      });
+    },
+    onEnd: ({ chat: newChat }) => {
+      // Check if the current route is the chat
+      setIsLoading(false);
+      if (newChat) {
+        router.push(`/chat/${newChat?.id}`, { shallow: true });
+      }
+    }
+  });
+
+  const { data: chat } = useSWR<Chat>(
+    initialChat?.id ? `${apiUrl}/chats/${initialChat?.id}` : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      // refreshInterval: isStreaming ? 0 : 1000,
+      fallbackData: initialChat,
+      onSuccess(data, key, config) {
+        setMessages(data.messages!);
+      }
+    }
+  );
+  const [messages, setMessages] = useState<Array<Message>>(chat?.messages ?? []);
+  const [filters, setFilters] = useState<AnswersFilters>(
+    deepmerge({}, appSettings?.filters, journey?.filters, chat?.filters)
+  );
+  const [chatId, setChatId] = useState<string | undefined>(chat?.id);
+
+  // const setFilters = (filters: SetStateAction<AnswersFilters>) => {
+  //   setFiltersState((currentFilters) => {
+  //     const newFilters = typeof filters === 'function' ? filters(currentFilters) : filters;
+  //     return deepmerge({}, currentFilters, newFilters);
+  //   });
+  // };
   const addMessage = useCallback(
     (message: Message) => {
       setMessages((currentMessages) => {
@@ -109,33 +193,48 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
     [messageIdx, setMessages]
   );
 
-  const { generateResponse } = useStreamedResponse({
-    journeyId,
-    chatId,
-    filters,
-    messages,
-    apiUrl,
-    onChunk: (chunk: Message) => {
-      // const idx = messages?.length;
-      setMessages((currentMessages) => {
-        const newMessages = [...currentMessages];
-        newMessages[messageIdx.current] = chunk;
-        if (chunk?.chat) {
-          if (chunk.chat?.id !== chatId) {
-            setChatId(chunk.chat.id);
-          }
-          if (chunk.chat?.journeyId !== journeyId) {
-            setJourneyId(chunk.chat.journeyId);
-          }
-        }
-        return newMessages;
-      });
+  const updateFilter = React.useCallback(
+    (newFilter: AnswersFilters) => {
+      const mergedSettings = clearEmptyValues(deepmerge({}, filters, newFilter));
+
+      setFilters(mergedSettings);
     },
-    onEnd: () => {
-      // Check if the current route is the chat
-      setIsLoading(false);
+    [filters]
+  );
+
+  const regenerateAnswer = (retry?: boolean) => {
+    const [message] = messages?.filter((m) => m.role === 'user').slice(-1) ?? [];
+    // if (messages[messages.length - 1].role === ChatCompletionRequestMessageRoleEnum.Assistant) {
+    //   setMessages(messages.slice(0, -1));
+    // }
+    sendMessage({ content: message.content, retry, sidekick, gptModel });
+  };
+
+  const clearMessages = () => {
+    setMessages([]);
+    setChatId(undefined);
+    setError(null);
+    setIsLoading(false);
+    if (chatId) {
+      router.push('/journey/' + journeyId);
     }
-  });
+  };
+
+  const deleteChat = async (id: string) =>
+    axios.delete(`${apiUrl}/chats?id=${id}`).then(() => router.refresh());
+  const deletePrompt = async (id: string) =>
+    axios.delete(`${apiUrl}/prompts?id=${id}`).then(() => router.refresh());
+  const deleteJourney = async (id: string) =>
+    axios.delete(`${apiUrl}/journeys?id=${id}`).then(() => router.refresh());
+  const updateChat = async (chat: Partial<Chat>) =>
+    axios.patch(`${apiUrl}/chats`, chat).then(() => router.refresh());
+  const updatePrompt = async (prompt: Partial<Prompt>) =>
+    axios.patch(`${apiUrl}/prompts`, prompt).then(() => router.refresh());
+  const upsertJourney = async (journey: Partial<Journey>) =>
+    axios.patch(`${apiUrl}/journeys`, journey);
+
+  const updateMessage = async (message: Partial<Message>) =>
+    axios.patch(`${apiUrl}/messages`, message).then(() => router.refresh());
 
   const sendMessage = useCallback(
     async ({
@@ -155,7 +254,15 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
       if (!retry) addMessage({ role: 'user', content: content } as Message);
       try {
         if (useStreaming) {
-          await generateResponse({ content, sidekick, gptModel }); // Pass sidekick and gptModel here
+          await generateResponse({
+            content,
+            sidekick,
+            gptModel,
+            chatId,
+            journeyId,
+            messages,
+            filters
+          }); // Pass sidekick and gptModel here
         } else {
           const { data } = await axios.post(`${apiUrl}/ai/query`, {
             journeyId,
@@ -193,105 +300,15 @@ export function useAnswers({ apiUrl = '/api' }: any = {}) {
     ]
   );
 
-  const updateFilter = (newFilter: AnswersFilters) => {
-    const mergedSettings = deepmerge({}, filters, newFilter);
-
-    setFilters(mergedSettings);
-  };
-
-  const regenerateAnswer = (retry?: boolean) => {
-    const [message] = messages?.filter((m) => m.role === 'user').slice(-1) ?? [];
-    // if (messages[messages.length - 1].role === ChatCompletionRequestMessageRoleEnum.Assistant) {
-    //   setMessages(messages.slice(0, -1));
-    // }
-    sendMessage({ content: message.content, retry });
-  };
-
-  const clearMessages = () => {
-    setMessages([]);
-    setChatId(undefined);
-    setError(null);
-    setIsLoading(false);
-    if (chatId) {
-      router.push('/journey/' + journeyId);
-    }
-  };
-
-  const deleteChat = async (id: string) =>
-    axios.delete(`${apiUrl}/chats?id=${id}`).then(() => router.refresh());
-  const deletePrompt = async (id: string) =>
-    axios.delete(`${apiUrl}/prompts?id=${id}`).then(() => router.refresh());
-  const deleteJourney = async (id: string) =>
-    axios.delete(`${apiUrl}/journeys?id=${id}`).then(() => router.refresh());
-  const updateChat = async (chat: Partial<Chat>) =>
-    axios.patch(`${apiUrl}/chats`, chat).then(() => router.refresh());
-  const updatePrompt = async (prompt: Partial<Prompt>) =>
-    axios.patch(`${apiUrl}/prompts`, prompt).then(() => router.refresh());
-  const upsertJourney = async (journey: Partial<Journey>) =>
-    axios.patch(`${apiUrl}/journeys`, journey);
-
-  const updateMessage = async (message: Partial<Message>) =>
-    axios.patch(`${apiUrl}/messages`, message).then(() => router.refresh());
-
-  return {
-    ...context,
-    sendMessage,
-    clearMessages,
-    regenerateAnswer,
-    updateFilter,
-    addMessage,
-    deleteChat,
-    deletePrompt,
-    deleteJourney,
-    updateChat,
-    updatePrompt,
-    upsertJourney,
-    updateMessage
-  };
-}
-
-interface AnswersProviderProps {
-  children: React.ReactNode;
-  appSettings: AppSettings;
-  apiUrl?: string;
-  useStreaming?: boolean;
-  chat?: Chat;
-  journey?: Journey;
-  prompts?: Prompt[];
-  // chats?: Chat[];
-}
-
-export function AnswersProvider({
-  chat: initialChat,
-  journey: initialJourney,
-  appSettings,
-  children,
-  prompts,
-  useStreaming: initialUseStreaming = true
-}: AnswersProviderProps) {
-  const [error, setError] = useState(null);
-  const [inputValue, setInputValue] = useState('');
-  const [chat, setChat] = useState<Chat | undefined>(initialChat);
-  const [journey, setJourney] = useState<Journey | undefined>(initialJourney);
-  const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Array<Message>>(chat?.messages ?? []);
-  const [filters, setFilters] = useState<AnswersFilters>(
-    deepmerge({}, appSettings?.filters, journey?.filters, chat?.filters)
-  );
-  const [showFilters, setShowFilters] = useState(false);
-  const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
-  const [chatId, setChatId] = useState<string | undefined>(chat?.id);
-  const [journeyId, setJourneyId] = useState<string | undefined>(journey?.id);
-  const [sidekick, setSidekick] = useState('defaultPrompt');
-  const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
-
-  const messageIdx = useRef(0);
+  React.useEffect(() => {
+    setJourney(initialJourney);
+    setFilters(deepmerge({}, appSettings?.filters, initialJourney?.filters, initialChat?.filters));
+  }, [initialChat, initialJourney, appSettings.filters]);
 
   const contextValue = {
+    user,
     appSettings,
     chat,
-    setChat,
-    // chats,
     journey,
     messages,
     setJourney,
@@ -317,7 +334,19 @@ export function AnswersProvider({
     sidekick,
     setSidekick,
     gptModel,
-    setGptModel
+    setGptModel,
+    sendMessage,
+    clearMessages,
+    regenerateAnswer,
+    updateFilter,
+    addMessage,
+    deleteChat,
+    deletePrompt,
+    deleteJourney,
+    updateChat,
+    updatePrompt,
+    upsertJourney,
+    updateMessage
   };
   // @ts-ignore
   return <AnswersContext.Provider value={contextValue}>{children}</AnswersContext.Provider>;

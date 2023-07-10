@@ -164,7 +164,12 @@ const SourcesWeb: React.FC<{}> = ({}) => {
             <Typography variant="overline">Pages</Typography>
             <Box sx={{ gap: 1, display: 'flex', flexWrap: 'wrap' }}>
               {filters?.datasources?.web?.url?.map((url) => (
-                <Chip size="small" label={url.url} onDelete={() => handleRemoveUrl(url)} />
+                <Chip
+                  key={url.url}
+                  size="small"
+                  label={url.url}
+                  onDelete={() => handleRemoveUrl(url)}
+                />
               ))}
             </Box>
           </Box>
@@ -212,6 +217,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
           {domains.map(({ domain, pageCount }) =>
             filters?.datasources?.web?.domain?.includes(domain) ? null : (
               <DomainCard
+                key={domain}
                 domain={domain}
                 pageCount={pageCount}
                 onClick={() => addDomainFilter(domain)}

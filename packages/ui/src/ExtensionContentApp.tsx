@@ -9,7 +9,7 @@ import { darkModeTheme } from './theme';
 import { AnswersProvider } from './AnswersContext';
 const ExtensionContentApp = ({ apiUrl }: { apiUrl: string }) => {
   return (
-    <AnswersProvider appSettings={{}} apiUrl={apiUrl}>
+    <AnswersProvider user={{}} appSettings={{}} apiUrl={apiUrl}>
       <FlagsmithProvider
         options={{
           // @ts-expect-error

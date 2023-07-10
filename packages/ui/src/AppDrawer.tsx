@@ -20,18 +20,20 @@ import StorageIcon from '@mui/icons-material/Storage';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import AIIcon from '@mui/icons-material/SmartButton';
+import { Tooltip, Typography } from '@mui/material';
 
-export const AppDrawer = ({ params }: any) => {
+export const AppDrawer = ({ session }: any) => {
   const flags = useFlags(['settings']);
+  const user = session.user;
   // TODO - Use params from request: https://github.com/vercel/next.js/issues/43704
   const pathname = usePathname();
   return (
     <Drawer variant="permanent" sx={{ sm: { width: 0 } }}>
-      <DrawerHeader sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      {/* <DrawerHeader sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <NextLink href="/">
           <Avatar sx={{ objectFit: 'contain' }}>AI</Avatar>
         </NextLink>
-      </DrawerHeader>
+      </DrawerHeader> */}
 
       <List sx={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
         {[
@@ -79,6 +81,36 @@ export const AppDrawer = ({ params }: any) => {
           </ListItem>
         ))}
         <Box sx={{ flex: 1 }}> </Box>
+
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          <ListItemIcon
+            sx={{
+              minWidth: 0,
+              justifyContent: 'center',
+              alignItems: 'center',
+              // minHeight: 48,
+              width: 48
+            }}>
+            <Tooltip
+              title={
+                <Typography variant="body2">
+                  {user?.name}
+                  <br />
+                  {user?.email}
+                </Typography>
+              }>
+              <Avatar
+                src={user?.image}
+                sx={{
+                  bgcolor: 'secondary.main',
+                  height: '32px',
+                  width: '32px'
+                }}
+                title={user?.name?.charAt(0)}
+              />
+            </Tooltip>
+          </ListItemIcon>
+        </ListItem>
         <ListItem disablePadding sx={{ display: 'block' }}>
           <ListItemButton
             aria-label={'sign out'}

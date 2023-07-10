@@ -14,7 +14,7 @@ import {
 import React, { useState } from 'react';
 import { AnswersFilters, AppSettings } from 'types';
 import useAppSettings from './useAppSettings';
-import AutocompleteSelect from './AutocompleteSelect';
+import AutocompleteSelect from '@ui/AutocompleteSelect';
 export interface JiraSettingsProps {
   appSettings: AppSettings;
   editable: boolean;

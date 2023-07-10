@@ -6,13 +6,14 @@ import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import Image from 'next/image';
-import SourcesWeb from './SourcesWeb';
-import SourcesJira from './JourneyLayout/SourcesJira';
-import SourcesConfluence from './JourneyLayout/SourcesConfluence';
-import SourcesAirtable from './JourneyLayout/SourcesAirtable';
-import SourcesCodebase from './SourcesCodebase';
-import SourcesSlack from './JourneyLayout/SourcesSlack';
-import SourcesDocument from './SourcesDocument';
+
+import SourcesWeb from '@ui/SourcesWeb';
+import SourcesJira from '@ui/SourcesJira';
+import SourcesConfluence from '@ui/SourcesConfluence';
+import SourcesAirtable from '@ui/SourcesAirtable';
+import SourcesCodebase from '@ui/SourcesCodebase';
+import SourcesSlack from '@ui/SourcesSlack';
+import SourcesDocument from '@ui/SourcesDocument';
 
 export default function JourneySources({ appSettings }: { appSettings: AppSettings }) {
   const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});

@@ -39,6 +39,8 @@ model User {
 
   appSettings Json?
   chats       Chat[]
+  chatsCreated Chat[] @relation("UserChatsCreated")
+  
   messages    Message[]
 
   prompts Prompt[]
@@ -69,6 +71,9 @@ model Organization {
 
   documentPermissions DocumentPermission[]
 
+  journeys Journey[]
+  chats Chat[]
+
   appSettings Json?
 
   createdAt DateTime  @default(now())
@@ -98,6 +103,7 @@ model Document {
   content  String @default("")
   metadata Json   @default("{}")
 
+  usedInMessages Message[]
   permissions DocumentPermission[]
 
   status       String    @default("pending")
@@ -166,8 +172,14 @@ model Chat {
   journey   Journey? @relation(fields: journeyId, references: id)
   journeyId String?
 
+  owner User? @relation("UserChatsCreated", fields: [ownerId], references: [id])
+  ownerId String?
+
   users    User[]
   messages Message[]
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
 
   filters Json
 
@@ -182,8 +194,12 @@ model Journey {
   goal  String?
 
   filters Json
-
+  
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+ 
   chats Chat[]
+
 
   users     User[]
   deleted   Boolean  @default(false)
@@ -220,6 +236,9 @@ model Message {
   role                   String   @default("assistant")
   content                String
   contextSourceFilesUsed String[]
+
+  context String @default("")
+  contextDocuments Document[]
 
   prompt   Prompt? @relation(fields: promptId, references: id)
   promptId String?

@@ -9,16 +9,22 @@ import Divider from '@mui/material/Divider';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import { JourneyAppsDrawer } from '@ui/JourneyLayout/JourneyAppsDrawer';
 
-import { AppSettings } from 'types';
+import { AppSettings, User } from 'types';
 import { AnswersProvider, useAnswers } from '@ui/AnswersContext';
 import { debounce } from '@utils/debounce';
 import useSWR from 'swr';
 import { CircularProgress } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
-const JourneyFormNew = ({ appSettings }: { appSettings: AppSettings }): JSX.Element => {
+const JourneyFormNew = ({
+  appSettings,
+  user
+}: {
+  appSettings: AppSettings;
+  user: User;
+}): JSX.Element => {
   return (
-    <AnswersProvider appSettings={appSettings}>
+    <AnswersProvider user={user} appSettings={appSettings}>
       <JourneyForm appSettings={appSettings} />
     </AnswersProvider>
   );
@@ -62,7 +68,7 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
     router.push(`/journey/${journey.id}`);
   };
   return (
-    <Box p={8}>
+    <Box p={8} width="100%">
       {/* <form action={handleSubmit}> */}
       <Typography variant="h2" component="h1">
         Create New Journey
