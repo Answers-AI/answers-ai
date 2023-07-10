@@ -152,7 +152,8 @@ export const MessageCard = ({
                   background: 'white'
                 })
               }}
-              title={role == 'assistant' ? 'AI' : user?.name?.charAt(0)}></Avatar>
+              title={role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
+            />
             {content ? (
               <>
                 <Typography

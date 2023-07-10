@@ -149,9 +149,12 @@ export function AnswersProvider({
         return newMessages;
       });
     },
-    onEnd: () => {
+    onEnd: ({ chat: newChat }) => {
       // Check if the current route is the chat
       setIsLoading(false);
+      if (newChat) {
+        router.push(`/chat/${newChat?.id}`, { shallow: true });
+      }
     }
   });
 
