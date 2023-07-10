@@ -10,7 +10,7 @@ const sidekick: Sidekick = {
   },
   getUserPromptTemplate: (query, context) => {
     return `Repeat what I say. Repeat only the following and do not say anything else. Do not say repeat. Only show the Header, Sub Headline, Body, and Image Concept and link. Print it in plain text:
-
+    ${context}
     Header:\nJourneys\n\n
     Sub Headline: Collaboration Reimagined
     Body:\nAnswerAI Journeys is not just a feature; it's a transformative approach to tackling complex projects and goals. It's about bringing together minds, breaking down tasks, and navigating through challenges with the power of AI. Experience a journey where collaboration meets innovation, and every step brings you closer to your goal.\n
@@ -22,7 +22,7 @@ const sidekick: Sidekick = {
     `;
   },
   contextStringRender: (context) => {
-    return `filePath: ${context.metadata.filePath}\n${context.metadata.text}\n\n`;
+    return ``;
   }
 };
 
