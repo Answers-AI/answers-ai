@@ -80,6 +80,7 @@ const filterPineconeDataRelevanceThreshhold = (data: any[], threshold: number) =
 
 export const fetchContext = async ({
   user,
+  organizationId,
   organization,
   prompt,
   messages = [],
@@ -88,6 +89,7 @@ export const fetchContext = async ({
   gptModel = 'gpt-3.5-turbo'
 }: {
   user?: User;
+  organizationId?: string;
   organization?: Organization;
   prompt: string;
   messages?: Message[];
@@ -163,8 +165,8 @@ export const fetchContext = async ({
       if (!filter[source]) return Promise.resolve(null);
 
       return pineconeQuery(promptEmbedding, {
-        ...(!PUBLIC_SOURCES.includes(source) && organization?.id
-          ? { namespace: `org-${organization?.id}` }
+        ...(!PUBLIC_SOURCES.includes(source) && organizationId
+          ? { namespace: `org-${organizationId}` }
           : {}),
         filter: {
           source,
