@@ -208,33 +208,33 @@ export const buildSettings = async (user: User, org?: Organization) => {
   //   console.log('JiraSettingsError', error);
   // }
 
-  const fileSettings =
-    (newSettings as any)?.files?.url?.reduce((acc: any, file: string) => {
-      acc[file] = { file };
-      return acc;
-    }, {}) || {};
+  // const fileSettings =
+  //   (newSettings as any)?.files?.url?.reduce((acc: any, file: string) => {
+  //     acc[file] = { file };
+  //     return acc;
+  //   }, {}) || {};
 
-  try {
-    newSettings.files = {
-      url: [...fileSettings]
-    };
-  } catch (error) {
-    console.log('FilesSettingsError', error);
-  }
+  // try {
+  //   newSettings.files = {
+  //     url: [...fileSettings]
+  //   };
+  // } catch (error) {
+  //   console.log('FilesSettingsError', error);
+  // }
 
-  const documentSettings =
-    (newSettings as any)?.document?.url?.reduce((acc: any, document: string) => {
-      acc[document] = { document };
-      return acc;
-    }, {}) || {};
+  // const documentSettings =
+  //   (newSettings as any)?.document?.url?.reduce((acc: any, document: string) => {
+  //     acc[document] = { document };
+  //     return acc;
+  //   }, {}) || {};
 
-  try {
-    newSettings.document = {
-      url: [...documentSettings]
-    };
-  } catch (error) {
-    console.log('DocumenteSettingsError', error);
-  }
+  // try {
+  //   newSettings.document = {
+  //     url: [...documentSettings]
+  //   };
+  // } catch (error) {
+  //   console.log('DocumenteSettingsError', error);
+  // }
 
   try {
     newSettings.zoom = {

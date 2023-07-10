@@ -1,5 +1,5 @@
 import React from 'react';
-import AutocompleteSelect from '../AutocompleteSelect';
+import AutocompleteSelect from './AutocompleteSelect';
 import { AppSettings, AnswersFilters } from 'types';
 
 interface Props {

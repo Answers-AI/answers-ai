@@ -1,4 +1,5 @@
 'use client';
+import NextLink from 'next/link';
 import React, { useState } from 'react';
 import { useFlags } from 'flagsmith/react';
 
@@ -16,23 +17,31 @@ import { debounce } from '@utils/debounce';
 import { useAnswers } from './AnswersContext';
 import { SidekickSelect } from './SidekickSelect';
 
-// import defaultSidekick from '@utils/sidekicks/defaultPrompt';
 import { Sidekick } from 'types';
 
 export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?: boolean }) => {
   const defaultPlaceholderValue = 'How can you help me accomplish my goal?';
   const [inputValue, setInputValue] = useState('');
   const [placeholder, setPlaceholder] = useState(defaultPlaceholderValue);
-  const [sidekick, setSidekick] = useState<Sidekick | undefined>();
-  const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
-  const { chat, journey, filters, messages, sendMessage, clearMessages, isLoading } = useAnswers();
+
+  const {
+    chat,
+    journey,
+    messages,
+    sendMessage,
+    clearMessages,
+    isLoading,
+    sidekick,
+    setSidekick,
+    gptModel,
+    setGptModel
+  } = useAnswers();
 
   const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
 
   const [showPrompts, setShowPrompts] = useState(
     !messages?.length && flags?.recommended_prompts_expand?.enabled
   );
-  React.useEffect(() => {}, []);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
   React.useEffect(() => {
@@ -75,7 +84,6 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     setInputValue('');
     clearMessages();
   };
-  const isNewJourney = !!Object.keys(filters)?.length && !journey && !chat;
 
   const handleKeyPress = (e: any) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -85,14 +93,11 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
       return false;
     }
   };
+
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
       <Box sx={{ display: 'flex', gap: 2 }}>
-        <SidekickSelect
-          onSidekickSelected={handleSidekickSelected}
-          // selectedSidekick={sidekick}
-          // initialSidekick={sidekick}
-        />
+        <SidekickSelect onSidekickSelected={handleSidekickSelected} />
         <FormControl size="small">
           <FormLabel id="model-select-label" sx={{ pb: 1 }}>
             Model
@@ -115,7 +120,6 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
           </Select>
         </FormControl>
       </Box>
-
       <TextField
         id="user-chat-input"
         inputRef={inputRef}
@@ -168,7 +172,8 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
             <Button
               variant="outlined"
               color="primary"
-              onClick={handleNewChat}
+              component={NextLink}
+              href={'/chat'}
               data-test-id="new-chat-button">
               <AddIcon />
             </Button>

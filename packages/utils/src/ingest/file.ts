@@ -49,7 +49,9 @@ export const indexText: EventVersionHandler<{
     // TODO: Use a provided
     const fileTextId = uuidV4();
     const slug = slugify(title);
-    const url = data.url ?? `file://${user.organizationId}/${slug}-${fileTextId}`;
+    const url =
+      data.url ??
+      `https://files.theanswerai.com/files/${user.organizationId}/${slug}-${fileTextId}`;
 
     await prisma.document.create({
       data: {

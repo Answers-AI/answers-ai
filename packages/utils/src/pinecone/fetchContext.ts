@@ -1,6 +1,7 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { pineconeQuery } from './pineconeQuery';
+
+import { prisma } from '@db/client';
 
 import OpenAIClient from '../openai/openai';
 import { countTokens } from '../utilities/countTokens';
@@ -162,14 +163,14 @@ export const fetchContext = async ({
       if (!filter[source]) return Promise.resolve(null);
 
       return pineconeQuery(promptEmbedding, {
-        // TODO: Figure how to filter by namespace without having to re-index per user
-        // namespace: `org-${user?.organizationId}`,
-        ...(!PUBLIC_SOURCES.includes(source) && { namespace: `org-${user?.organizationId}` }),
+        ...(!PUBLIC_SOURCES.includes(source) && organization?.id
+          ? { namespace: `org-${organization?.id}` }
+          : {}),
         filter: {
           source,
           ...filter[source]
         },
-        topK: 200
+        topK: 500
       });
     })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
@@ -206,19 +207,13 @@ export const fetchContext = async ({
       const contextStringRender =
         sidekick?.contextStringRender?.trim() !== '' ? sidekick?.contextStringRender : null;
 
-      // console.log('BEFORE', renderedContext);
       if (contextStringRender && totalTokens + preTokenCount <= maxTokens) {
-        // console.log('item.metadata', item.metadata);
         renderedContext = renderContext(contextStringRender, {
           result: item.metadata,
           organization: organizationContext,
           user: userContext
         }).trim();
-        // console.log(totalTokens);
       }
-
-      // console.log('AFTER', renderedContext);
-      // console.log('====================================');
 
       if (renderedContext === '') return null;
 
@@ -235,17 +230,17 @@ export const fetchContext = async ({
 
     filteredData = contextPromises;
     context = filteredData.filter((result) => result !== null).join('\n\n');
-    // const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: maxTokens });
-    // const contextArray = await textSplitter.createDocuments([fullContext]);
-
-    // Get the first chunk that is under the max token size
-    // context = contextArray?.[0]?.pageContent?.trim() ?? '';
   }
+
+  const contextDocuments = await prisma.document.findMany({
+    where: {
+      url: { in: Array.from(contextSourceFilesUsed) }
+    }
+  });
 
   return {
     context,
-    // summary: context,
-    contextSourceFilesUsed: Array.from(contextSourceFilesUsed),
+    contextDocuments,
     ...(IS_DEVELOPMENT
       ? {
           pineconeFilters: filters,

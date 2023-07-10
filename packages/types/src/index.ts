@@ -195,7 +195,6 @@ export interface DataSourcesFilters {
   airtable?: AirtableFilters;
   codebase?: CodebaseFilters;
   document?: DocumentFilters;
-  files?: FileFilters;
   zoom?: ZoomFilters;
   youtube?: YoutubeFilters;
   file?: FileFilters;
@@ -216,7 +215,7 @@ type Models = {
   airtable: string[];
   codebase: string[];
   document: string[];
-  files: string[];
+  file: string[];
   zoom: string[];
   youtube: string[];
   [key: string]: string[];
@@ -256,6 +255,7 @@ export interface Chat extends Omit<DB.Chat, 'filters'> {
   filters: AnswersFilters;
   prompt: Prompt | null;
   messages: Message[] | null;
+  users: User[] | null;
 }
 
 export interface Journey extends Omit<DB.Journey, 'filters'> {

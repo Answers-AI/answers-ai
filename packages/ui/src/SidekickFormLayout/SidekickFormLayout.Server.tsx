@@ -1,8 +1,8 @@
 import React from 'react';
-import { authOptions } from '@ui/authOptions';
+import { authOptions } from '../authOptions';
 import { prisma } from '@db/client';
 import SidekickFormLayout from './SidekickFormLayout.Client';
-import { getCachedSession } from '@ui/getCachedSession';
+import getCachedSession from '../getCachedSession';
 
 export default async function ChatUILayout({
   // This will be populated with nested layouts or pages

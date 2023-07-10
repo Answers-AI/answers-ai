@@ -1,8 +1,9 @@
-import React, { Component, ElementType } from 'react';
+import React, { ElementType } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { signIn } from 'next-auth/react';
 import { useFlags } from 'flagsmith/react';
+
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
@@ -13,9 +14,9 @@ import CardHeader from '@mui/material/CardHeader';
 import Avatar from '@mui/material/Avatar';
 
 import { useAnswers } from '../AnswersContext';
-import { AnswersFilters, AppService, AppSettings } from 'types';
+import JourneySetting from '../JourneySetting';
 
-import JourneySetting from './JourneySetting';
+import { AnswersFilters, AppService, AppSettings } from 'types';
 
 interface JourneySourceCardProps extends AppService {
   appSettings: AppSettings;
@@ -91,15 +92,9 @@ const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
               }}>
               <CardHeader
                 avatar={
-                  <Avatar>
+                  <Avatar variant="source">
                     {imageURL ? (
-                      <Image
-                        style={{ background: 'white', padding: '8px' }}
-                        src={imageURL}
-                        alt={`${name} logo`}
-                        width={40}
-                        height={40}
-                      />
+                      <Image src={imageURL} alt={`${name} logo`} width={24} height={24} />
                     ) : (
                       name[0]?.toUpperCase()
                     )}

@@ -2,7 +2,7 @@ import React from 'react';
 import { prisma } from '@db/client';
 import UserForm from '@ui/UserForm';
 import { authOptions } from '@ui/authOptions';
-import { getCachedSession } from '@ui/getCachedSession';
+import getCachedSession from '@ui/getCachedSession';
 
 export const metadata = {
   title: 'User Settings | Answers AI',

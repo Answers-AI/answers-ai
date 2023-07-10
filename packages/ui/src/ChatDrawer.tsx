@@ -112,8 +112,9 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
       <Drawer
         sx={{
           'flexShrink': 0,
+          'zIndex': 1000,
           'position': { md: 'relative', xs: 'absolute' },
-          'zIndex': 1,
+
           '& .MuiDrawer-paper': {
             position: 'absolute',
             boxSizing: 'border-box'
@@ -153,7 +154,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
             sx={{ px: 2, width: '100%', textTransform: 'capitalize' }}
             color="primary">
             <ListItemText primary={'Start New Journey'} />
-            <Add />
+            {/* <Add /> */}
           </Button>
         </ListItem>
 
@@ -239,7 +240,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
                       selected={pathname === `/chat/${chat.id}`}
                       href={`/chat/${chat.id}`}
                       component={NextLink}>
-                      <ListItemText primary={chat.id} secondary={chat?.messages?.[0]?.content} />
+                      <ListItemText primary={chat.title} secondary={chat?.messages?.[0]?.content} />
                     </ListItemButton>
                   </ListItem>
                 ))}

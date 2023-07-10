@@ -1,8 +1,7 @@
 import React from 'react';
 
-import ChatDrawer from '@ui/ChatDrawer';
+import ChatDrawer from '../ChatDrawer';
 import { AppSettings, Chat, Journey } from 'types';
-import { AnswersProvider } from '@ui/AnswersContext';
 
 export default function ChatUILayout({
   // This will be populated with nested layouts or pages
@@ -19,9 +18,8 @@ export default function ChatUILayout({
   return (
     <main style={{ display: 'flex', width: '100%', height: '100%' }}>
       <ChatDrawer journeys={journeys} chats={chats} />
-      <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
-        {children}
-      </div>
+
+      {children}
     </main>
   );
 }

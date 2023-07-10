@@ -1,11 +1,13 @@
 'use client';
 import React from 'react';
-import Box from '@mui/material/Box';
-import Autocomplete from '@ui/AutocompleteSelect';
-import { Document } from 'types';
-import { useAnswers } from '@ui/AnswersContext';
-
 import useSWR from 'swr';
+
+import Box from '@mui/material/Box';
+
+import Autocomplete from '../AutocompleteSelect';
+import { useAnswers } from '../AnswersContext';
+
+import { Document } from 'types';
 
 const SourcesCodebase: React.FC<{}> = ({}) => {
   const { filters, updateFilter } = useAnswers();
@@ -23,7 +25,6 @@ const SourcesCodebase: React.FC<{}> = ({}) => {
           value={filters?.datasources?.codebase?.repo || []}
           onChange={(value) => updateFilter({ datasources: { codebase: { repo: value } } })}
           getOptionLabel={(option) => (option?.metadata as any)?.repo!}
-          getOptionValue={(option) => (option?.metadata as any)?.repo!}
           options={sources ?? []}
           onFocus={() => mutate()}
         />

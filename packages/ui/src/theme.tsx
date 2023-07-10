@@ -3,6 +3,12 @@ import { PaletteMode } from '@mui/material';
 import createTheme from '@mui/material/styles/createTheme';
 import { teal, grey, deepOrange } from '@mui/material/colors';
 
+declare module '@mui/material/Avatar' {
+  interface AvatarPropsVariantOverrides {
+    source: true;
+  }
+}
+
 const getDesignTokens = (mode: PaletteMode) => ({
   typography: {
     fontFamily: ['var(--font-poppins)']
@@ -68,7 +74,11 @@ export const darkModeTheme = createTheme({
   components: {
     MuiTypography: {
       styleOverrides: {
-        root: {}
+        root: {
+          'ul, ol': {
+            paddingLeft: theme.spacing(3)
+          }
+        }
       }
     },
     MuiDrawer: {
@@ -141,6 +151,17 @@ export const darkModeTheme = createTheme({
           whiteSpace: 'nowrap'
         }
       }
+    },
+    MuiTextField: {
+      defaultProps: { size: 'small' }
+    },
+    MuiAvatar: {
+      variants: [
+        {
+          props: { variant: 'source' },
+          style: { backgroundColor: 'white', img: { padding: 4, objectFit: 'contain' } }
+        }
+      ]
     },
     MuiAccordion: {
       styleOverrides: {

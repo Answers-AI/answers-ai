@@ -1,10 +1,9 @@
 import React from 'react';
 import { Session } from 'next-auth';
-import { authOptions } from '@ui/authOptions';
 import AppLayout from '@ui/AppLayout';
 import flagsmith from 'flagsmith/isomorphic';
 
-import { getCachedSession } from '@ui/getCachedSession';
+import getCachedSession from '@ui/getCachedSession';
 
 const MainUiLayout = async (props: {
   children: React.ReactNode;
@@ -12,7 +11,7 @@ const MainUiLayout = async (props: {
     slug: string;
   };
 }) => {
-  const [session] = await Promise.all([getCachedSession(authOptions)]);
+  const [session] = await Promise.all([getCachedSession()]);
 
   await flagsmith.init({
     // fetches flags on the server and passes them to the App

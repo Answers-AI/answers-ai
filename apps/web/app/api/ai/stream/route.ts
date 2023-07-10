@@ -1,11 +1,16 @@
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@ui/authOptions';
+
 import { OpenAIStream } from '@utils/OpenAIStream';
 import { inngest } from '@utils/ingest/client';
 import { getCompletionRequest } from '@utils/llm/getCompletionRequest';
 import { fetchContext } from '@utils/pinecone/fetchContext';
 import { upsertChat } from '@utils/upsertChat';
+
 import { prisma } from '@db/client';
+
+import { authOptions } from '@ui/authOptions';
+
+import { Document } from 'types';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -31,19 +36,18 @@ export async function POST(req: Request) {
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({
     id: chatId,
-    email: user?.email,
+    user,
     filters: filters,
     prompt,
     journeyId
   });
-
-  await inngest.send({
-    v: '1',
-    ts: new Date().valueOf(),
-    name: 'answers/message.sent',
-    user: user,
-    data: { role: 'user', chatId: chat.id, content: prompt, sidekick, gptModel }
-  });
+  // await inngest.send({
+  //   v: '1',
+  //   ts: new Date().valueOf(),
+  //   name: 'answers/message.sent',
+  //   user: user,
+  //   data: { role: 'user', chatId: chat.id, content: prompt, sidekick, gptModel }
+  // });
 
   if (user)
     await inngest.send({
@@ -60,10 +64,11 @@ export async function POST(req: Request) {
   let pineconeData;
   let pineconeFilters;
   let context = '';
-  let contextSourceFilesUsed: string[] = [];
+  let contextDocuments: Document[] = [];
 
   try {
-    ({ pineconeFilters, pineconeData, context, contextSourceFilesUsed } = await fetchContext({
+    ({ pineconeFilters, pineconeData, context, contextDocuments } = await fetchContext({
+      organizationId: chat.organizationId ?? user.organizationId ?? '',
       user,
       organization: user?.currentOrganization,
       prompt,
@@ -80,22 +85,21 @@ export async function POST(req: Request) {
     const answer = response.text;
     completionRequest = response.completionRequest;
 
-    let message;
     if (prompt && answer) {
-      message = await prisma.message.create({
-        data: {
-          chat: { connect: { id: chat.id } },
-          role: 'assistant',
-          content: answer,
-          contextSourceFilesUsed
-        }
-      });
+      // message = await prisma.message.create({
+      //   data: {
+      //     chat: { connect: { id: chat.id } },
+      //     role: 'assistant',
+      //     content: answer,
+      //     contextDocuments
+      //   }
+      // });
       await inngest.send({
         v: '1',
         ts: new Date().valueOf(),
         name: 'answers/prompt.answered',
         user: user,
-        data: { chatId, message, prompt }
+        data: { chatId, message: response.message, prompt, contextDocuments }
       });
     }
   };
@@ -115,8 +119,9 @@ export async function POST(req: Request) {
       stream: true
     },
     {
-      chat,
-      contextSourceFilesUsed,
+      user,
+      chat: chat as any,
+      contextDocuments,
       filters: pineconeFilters,
       context,
       ...(process.env.NODE_ENV === 'development' && {

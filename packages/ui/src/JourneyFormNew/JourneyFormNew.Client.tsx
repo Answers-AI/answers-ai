@@ -15,11 +15,17 @@ import { JourneyAppsDrawer } from '../JourneyLayout/JourneyAppsDrawer';
 import { AnswersProvider, useAnswers } from '../AnswersContext';
 import { debounce } from '@utils/debounce';
 
-import { AppSettings } from 'types';
+import { AppSettings, User } from 'types';
 
-const JourneyFormNew = ({ appSettings }: { appSettings: AppSettings }): JSX.Element => {
+const JourneyFormNew = ({
+  appSettings,
+  user
+}: {
+  appSettings: AppSettings;
+  user: User;
+}): JSX.Element => {
   return (
-    <AnswersProvider appSettings={appSettings}>
+    <AnswersProvider user={user} appSettings={appSettings}>
       <JourneyForm appSettings={appSettings} />
     </AnswersProvider>
   );
@@ -63,7 +69,7 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
     router.push(`/journey/${journey.id}`);
   };
   return (
-    <Box p={8}>
+    <Box p={8} width="100%">
       {/* <form action={handleSubmit}> */}
       <Typography variant="h2" component="h1">
         Create New Journey

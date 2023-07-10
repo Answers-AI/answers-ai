@@ -2,20 +2,20 @@ import React from 'react';
 
 import SourcesAirtable from './SourcesAirtable';
 import SourcesConfluence from './SourcesConfluence';
-import SourcesCodebase from '../SourcesCodebase';
+import SourcesCodebase from './SourcesCodebase';
+import SourcesFile from './SourcesFile';
 import SourcesJira from './SourcesJira';
 import SourcesSlack from './SourcesSlack';
-import SourcesWeb from '../SourcesWeb';
-import SourcesYoutube from '../SourcesYoutube';
-import SourcesDocument from '../SourcesDocument';
-import SourcesZoom from '../SourcesZoom';
-import SourcesFile from '../SourcesFile';
+import SourcesWeb from './SourcesWeb';
+import SourcesYoutube from './SourcesYoutube';
+import SourcesDocument from './SourcesDocument';
+import SourcesZoom from './SourcesZoom';
 
 const JOURNEY_SETTINGS: { [key: string]: any } = {
   airtable: SourcesAirtable,
   confluence: SourcesConfluence,
   codebase: SourcesCodebase,
-  files: SourcesFile,
+  file: SourcesFile,
   jira: SourcesJira,
   slack: SourcesSlack,
   web: SourcesWeb,

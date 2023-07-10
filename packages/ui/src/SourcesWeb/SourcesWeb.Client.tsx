@@ -1,15 +1,22 @@
 'use client';
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Box, Chip, TextField, Typography } from '@mui/material';
-import Autocomplete from '@ui/VirtualAutocomplete';
-import { WebUrlType, Document } from 'types';
-import { useAnswers } from '@ui/AnswersContext';
-import { getUrlDomain } from '@utils/getUrlDomain';
-
-import { throttle } from '@utils/throttle';
 import useSWR from 'swr';
+
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+
+import { getUrlDomain } from '@utils/getUrlDomain';
+import { throttle } from '@utils/throttle';
+
+import Autocomplete from '../VirtualAutocomplete';
+import { useAnswers } from '../AnswersContext';
+
 import DomainCard from './DomainCard';
+
+import { WebUrlType, Document } from 'types';
 
 const isDomain = (url?: string) => {
   try {
@@ -164,7 +171,12 @@ const SourcesWeb: React.FC<{}> = ({}) => {
             <Typography variant="overline">Pages</Typography>
             <Box sx={{ gap: 1, display: 'flex', flexWrap: 'wrap' }}>
               {filters?.datasources?.web?.url?.map((url) => (
-                <Chip size="small" label={url.url} onDelete={() => handleRemoveUrl(url)} />
+                <Chip
+                  key={url.url}
+                  size="small"
+                  label={url.url}
+                  onDelete={() => handleRemoveUrl(url)}
+                />
               ))}
             </Box>
           </Box>
@@ -212,6 +224,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
           {domains.map(({ domain, pageCount }) =>
             filters?.datasources?.web?.domain?.includes(domain) ? null : (
               <DomainCard
+                key={domain}
                 domain={domain}
                 pageCount={pageCount}
                 onClick={() => addDomainFilter(domain)}

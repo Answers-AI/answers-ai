@@ -6,11 +6,11 @@ import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { FlagsmithProvider } from 'flagsmith/react';
 import flagsmith from 'flagsmith/isomorphic';
 import { Session } from 'next-auth';
-import { AppDrawer } from '@ui/AppDrawer';
-import { darkModeTheme } from '@ui/theme';
-import GlobalStyles from '@ui/GlobalStyles';
+import { AppDrawer } from '../AppDrawer';
+import { darkModeTheme } from '../theme';
+import GlobalStyles from '../GlobalStyles';
 import { AppSettings } from 'types';
-import { NotInvitedPage } from './NotInvitedPage';
+import { NotInvitedPage } from '../NotInvitedPage';
 
 export default function AppLayout({
   session,

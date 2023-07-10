@@ -1,18 +1,22 @@
 'use client';
 import React from 'react';
-import { signOut } from 'next-auth/react';
 import { useFlags } from 'flagsmith/react';
+
+import { signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { styled, Theme, CSSObject } from '@mui/material/styles';
+import NextLink from 'next/link';
+
+import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import NextLink from 'next/link';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import MuiDrawer from '@mui/material/Drawer';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import MuiAppBar from '@mui/material/AppBar';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 
 import MessageIcon from '@mui/icons-material/QueryBuilder';
@@ -28,17 +32,18 @@ import openedMixin from './theme/openedMixin';
 
 const drawerWidth = 240;
 
-export const AppDrawer = ({ params }: any) => {
+export const AppDrawer = ({ session }: any) => {
   const flags = useFlags(['settings']);
+  const user = session.user;
   // TODO - Use params from request: https://github.com/vercel/next.js/issues/43704
   const pathname = usePathname();
   return (
     <Drawer variant="permanent" sx={{ sm: { width: 0 } }}>
-      <DrawerHeader sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      {/* <DrawerHeader sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <NextLink href="/">
           <Avatar sx={{ objectFit: 'contain' }}>AI</Avatar>
         </NextLink>
-      </DrawerHeader>
+      </DrawerHeader> */}
 
       <List sx={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
         {[
@@ -87,6 +92,36 @@ export const AppDrawer = ({ params }: any) => {
           </ListItem>
         ))}
         <Box sx={{ flex: 1 }}> </Box>
+
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          <ListItemIcon
+            sx={{
+              minWidth: 0,
+              justifyContent: 'center',
+              alignItems: 'center',
+              // minHeight: 48,
+              width: 48
+            }}>
+            <Tooltip
+              title={
+                <Typography variant="body2">
+                  {user?.name}
+                  <br />
+                  {user?.email}
+                </Typography>
+              }>
+              <Avatar
+                src={user?.image}
+                sx={{
+                  bgcolor: 'secondary.main',
+                  height: '32px',
+                  width: '32px'
+                }}
+                title={user?.name?.charAt(0)}
+              />
+            </Tooltip>
+          </ListItemIcon>
+        </ListItem>
         <ListItem disablePadding sx={{ display: 'block' }}>
           <ListItemButton
             aria-label={'sign out'}

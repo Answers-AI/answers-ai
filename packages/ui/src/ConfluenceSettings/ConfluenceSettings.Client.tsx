@@ -1,24 +1,26 @@
 'use client';
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-  Button,
-  Typography,
-  LinearProgress
-} from '@mui/material';
 import React, { useState } from 'react';
+
+import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import LinearProgress from '@mui/material/LinearProgress';
+
+import useAppSettings from '../useAppSettings';
+import AutocompleteSelect from '../AutocompleteSelect';
+
 import {
   AnswersFilters,
   AppSettings,
   ConfluenceSettings as ConfluenceSettingsType,
   ConfluenceSpaceSetting
 } from 'types';
-import useAppSettings from '@ui/useAppSettings';
-import AutocompleteSelect from '@ui/AutocompleteSelect';
+
 export interface ConfluenceSettingsProps {
   appSettings: AppSettings;
   editable?: boolean;

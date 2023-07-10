@@ -6,12 +6,13 @@ import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
 import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import Image from 'next/image';
+
 import SourcesWeb from './SourcesWeb';
-import SourcesJira from './JourneyLayout/SourcesJira';
-import SourcesConfluence from './JourneyLayout/SourcesConfluence';
-import SourcesAirtable from './JourneyLayout/SourcesAirtable';
+import SourcesJira from './SourcesJira';
+import SourcesConfluence from './SourcesConfluence';
+import SourcesAirtable from './SourcesAirtable';
 import SourcesCodebase from './SourcesCodebase';
-import SourcesSlack from './JourneyLayout/SourcesSlack';
+import SourcesSlack from './SourcesSlack';
 import SourcesDocument from './SourcesDocument';
 
 export default function JourneySources({ appSettings }: { appSettings: AppSettings }) {

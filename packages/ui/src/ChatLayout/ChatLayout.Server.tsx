@@ -1,9 +1,8 @@
 import React from 'react';
-import { authOptions } from '@ui/authOptions';
 import { prisma } from '@db/client';
 
 import ChatLayout from './ChatLayout.Client';
-import { getCachedSession } from '@ui/getCachedSession';
+import getCachedSession from '../getCachedSession';
 
 export default async function ChatUILayout({
   // This will be populated with nested layouts or pages
@@ -15,7 +14,7 @@ export default async function ChatUILayout({
   chatId: string;
   journeyId: string;
 }) {
-  const session = await getCachedSession(authOptions);
+  const session = await getCachedSession();
 
   if (!session?.user?.email) return null;
 
@@ -48,7 +47,20 @@ export default async function ChatUILayout({
         createdAt: 'desc'
       },
       include: {
-        chats: { include: { prompt: true, messages: { take: 1 } } }
+        chats: {
+          orderBy: {
+            createdAt: 'desc'
+          },
+          include: {
+            prompt: true,
+            messages: {
+              orderBy: {
+                createdAt: 'desc'
+              },
+              take: 1
+            }
+          }
+        }
       }
     })
     .then((data: any) => JSON.parse(JSON.stringify(data)));

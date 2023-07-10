@@ -2,7 +2,7 @@ import React from 'react';
 import { prisma } from '@db/client';
 import OrganizationForm from '@ui/OrganizationForm';
 import { authOptions } from '@ui/authOptions';
-import { getCachedSession } from '@ui/getCachedSession';
+import getCachedSession from '@ui/getCachedSession';
 
 export const metadata = {
   title: 'Organization Settings | Answers AI',

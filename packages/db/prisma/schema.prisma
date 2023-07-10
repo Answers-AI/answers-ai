@@ -37,9 +37,11 @@ model User {
 
   organizations Organization[] @relation("UserOrganzations")
 
-  appSettings Json?
-  chats       Chat[]
-  messages    Message[]
+  appSettings  Json?
+  chats        Chat[]
+  chatsCreated Chat[] @relation("UserChatsCreated")
+
+  messages Message[]
 
   prompts Prompt[]
 
@@ -70,11 +72,13 @@ model Organization {
   users               User[]               @relation("UserOrganzations")
   usersSelected       User[]               @relation("UserOrganzationsSelected")
   documentPermissions DocumentPermission[]
-  appSettings         Json?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @default(now()) @updatedAt
   ChatApp             ChatApp[]
   contextFields       ContextField[]
+  journeys            Journey[]
+  chats               Chat[]
+  appSettings         Json?
 }
 
 model ContextField {
@@ -133,7 +137,8 @@ model Document {
   content  String @default("")
   metadata Json   @default("{}")
 
-  permissions DocumentPermission[]
+  usedInMessages Message[]
+  permissions    DocumentPermission[]
 
   status       String    @default("pending")
   lastSyncedAt DateTime?
@@ -201,8 +206,14 @@ model Chat {
   journey   Journey? @relation(fields: journeyId, references: id)
   journeyId String?
 
+  owner   User?   @relation("UserChatsCreated", fields: [ownerId], references: [id])
+  ownerId String?
+
   users    User[]
   messages Message[]
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
 
   filters Json
 
@@ -217,6 +228,9 @@ model Journey {
   goal  String?
 
   filters Json
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
 
   chats Chat[]
 
@@ -255,6 +269,9 @@ model Message {
   role                   String   @default("assistant")
   content                String
   contextSourceFilesUsed String[]
+
+  context          String     @default("")
+  contextDocuments Document[]
 
   prompt   Prompt? @relation(fields: promptId, references: id)
   promptId String?

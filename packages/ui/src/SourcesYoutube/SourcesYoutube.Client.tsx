@@ -1,12 +1,14 @@
 'use client';
 import React from 'react';
-import Box from '@mui/material/Box';
-import Autocomplete from '@ui/AutocompleteSelect';
-import { Document } from 'types';
-import { useAnswers } from '@ui/AnswersContext';
-import NewDocumentModal from '@ui/NewDocumentModal';
-
 import useSWR from 'swr';
+
+import Box from '@mui/material/Box';
+
+import Autocomplete from '../AutocompleteSelect';
+import { useAnswers } from '../AnswersContext';
+import NewDocumentModal from '../NewDocumentModal';
+
+import { Document } from 'types';
 
 const SourcesYoutube: React.FC<{}> = ({}) => {
   const source = 'youtube';
@@ -26,7 +28,6 @@ const SourcesYoutube: React.FC<{}> = ({}) => {
           value={filters?.datasources?.[source]?.url || []}
           onChange={(value) => updateFilter({ datasources: { [source]: { url: value } } })}
           getOptionLabel={(option) => option?.title ?? option?.url}
-          getOptionValue={(option) => option?.url}
           options={sources ?? []}
           onFocus={() => mutate()}
         />
