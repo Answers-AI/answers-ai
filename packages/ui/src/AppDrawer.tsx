@@ -14,15 +14,19 @@ import MuiDrawer from '@mui/material/Drawer';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import MuiAppBar from '@mui/material/AppBar';
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+
 import MessageIcon from '@mui/icons-material/QueryBuilder';
 import HomeIcon from '@mui/icons-material/Home';
 import StorageIcon from '@mui/icons-material/Storage';
 import SettingsIcon from '@mui/icons-material/Settings';
-import BusinessIcon from '@mui/icons-material/Business';
-import UserIcon from '@mui/icons-material/ManageAccounts';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import SmartToy from '@mui/icons-material/SmartToy';
 import AIIcon from '@mui/icons-material/SmartButton';
+
+import closedMixin from './theme/closedMixin';
+import openedMixin from './theme/openedMixin';
+
+const drawerWidth = 240;
 
 export const AppDrawer = ({ params }: any) => {
   const flags = useFlags(['settings']);
@@ -39,8 +43,6 @@ export const AppDrawer = ({ params }: any) => {
       <List sx={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
         {[
           { text: 'Message', link: '/', icon: <HomeIcon /> },
-          { text: 'Organization Settings', link: '/organization', icon: <BusinessIcon /> },
-          { text: 'User Settings', link: '/user', icon: <UserIcon /> },
           { text: 'Sidekick Studio', link: '/sidekick-studio', icon: <SmartToy /> },
           ...(flags?.settings?.enabled
             ? [{ text: 'Settings', link: '/settings', icon: <SettingsIcon /> }]
@@ -104,29 +106,6 @@ export const AppDrawer = ({ params }: any) => {
   );
 };
 
-const drawerWidth = 240;
-
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: drawerWidth,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen
-  }),
-  overflowX: 'hidden'
-});
-
-const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen
-  }),
-  overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`
-  }
-});
-
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -164,14 +143,17 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     'whiteSpace': 'nowrap',
     'boxSizing': 'border-box',
     'border': 'none',
+
     ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme)
+      ...openedMixin({ theme, width: drawerWidth }),
+      '& .MuiDrawer-paper': openedMixin({ theme, width: drawerWidth })
     }),
+
     ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme)
+      ...closedMixin({ theme }),
+      '& .MuiDrawer-paper': closedMixin({ theme })
     }),
+
     '@media (max-width: 600px)': {
       'width': 0,
       '& .MuiDrawer-paper': { width: 0 }

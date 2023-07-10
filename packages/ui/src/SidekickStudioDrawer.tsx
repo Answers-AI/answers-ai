@@ -1,8 +1,9 @@
 'use client';
 import * as React from 'react';
 import NextLink from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { styled, Theme, CSSObject } from '@mui/material/styles';
+import { usePathname } from 'next/navigation';
+
+import { styled } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
@@ -11,36 +12,17 @@ import Button from '@mui/material/Button';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+
 import Add from '@mui/icons-material/Add';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+
+import closedMixin from './theme/closedMixin';
+import openedMixin from './theme/openedMixin';
+
 import { Sidekick } from 'types';
 
 const drawerWidth = 400;
-
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    width: drawerWidth
-  },
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen
-  }),
-  overflowX: 'hidden'
-});
-
-const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen
-  }),
-  overflowX: 'hidden',
-  width: `calc(${theme.spacing(0)} + 0px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(0)} + 0px)`
-  }
-});
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -58,13 +40,15 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',
+
     ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme)
+      ...openedMixin({ theme, width: drawerWidth }),
+      '& .MuiDrawer-paper': openedMixin({ theme, width: drawerWidth })
     }),
+
     ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme)
+      ...closedMixin({ theme }),
+      '& .MuiDrawer-paper': closedMixin({ theme })
     })
   })
 );
@@ -77,7 +61,6 @@ export default function SidekickStudioDrawer({
   sidekicks,
   defaultOpen
 }: SidekickStudioDrawerProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen);
   const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({
@@ -143,6 +126,7 @@ export default function SidekickStudioDrawer({
             {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </DrawerHeader>
+
         <ListItem sx={{ flexDirection: 'column' }} disablePadding>
           <Button
             href={`/sidekick-studio/new`}
@@ -153,6 +137,7 @@ export default function SidekickStudioDrawer({
             <Add />
           </Button>
         </ListItem>
+
         <List disablePadding sx={{ flex: 1 }}>
           {sidekicks?.map((sidekick, idx) => (
             <React.Fragment key={sidekick.id}>

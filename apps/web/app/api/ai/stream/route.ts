@@ -57,10 +57,10 @@ export async function POST(req: Request) {
       }
     });
 
-  let pineconeData,
-    pineconeFilters,
-    context = '',
-    contextSourceFilesUsed: string[] = [];
+  let pineconeData;
+  let pineconeFilters;
+  let context = '';
+  let contextSourceFilesUsed: string[] = [];
 
   try {
     ({ pineconeFilters, pineconeData, context, contextSourceFilesUsed } = await fetchContext({

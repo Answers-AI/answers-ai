@@ -1,17 +1,27 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { pineconeQuery } from './pineconeQuery';
-import { AnswersFilters, Message, User, Sidekick, WebUrlType, Organization } from 'types';
+
 import OpenAIClient from '../openai/openai';
 import { countTokens } from '../utilities/countTokens';
-import { getUniqueUrls } from '../getUniqueUrls';
 import { renderContext } from '../utilities/renderContext';
+import getUserContextFields from '../utilities/getUserContextFields';
+import getOrganizationContextFields from '../utilities/getOrganizationContextFields';
+import getMaxTokensByModel from '../utilities/getMaxTokensByModel';
+import { getUniqueUrls } from '../getUniqueUrls';
+
+import { AnswersFilters, Message, User, Sidekick, WebUrlType, Organization } from 'types';
+
+const EMBEDDING_MODEL = 'text-embedding-ada-002';
+const DEFAULT_THRESHOLD = 0.68;
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
-
 // TODO: find a more dynamic way to parse the filters into Pinecone
 const parseFilters = (filters: AnswersFilters) => {
   let parsedFilters = { ...filters };
+
   if (parsedFilters?.datasources?.confluence?.spaces) {
     parsedFilters.datasources.confluence.spaceId = parsedFilters.datasources.confluence.spaces.map(
       (space) => space.id
@@ -58,22 +68,13 @@ const parseFilters = (filters: AnswersFilters) => {
 };
 
 const filterPineconeDataRelevanceThreshhold = (data: any[], threshold: number) => {
+  if (!data) return [];
+
   const sortedData = data
     .filter((x: { score: number }) => x.score > threshold)
     .sort((a: { score: number }, b: { score: number }) => b.score - a.score);
 
   return sortedData;
-};
-
-const getMaxContextTokens = (gptModel: string) => {
-  switch (gptModel) {
-    case 'gpt-3.5-turbo':
-      return 3500;
-    case 'gpt-4':
-      return 7000;
-    default:
-      return 3500;
-  }
 };
 
 export const fetchContext = async ({
@@ -93,12 +94,13 @@ export const fetchContext = async ({
   sidekick?: Sidekick;
   gptModel?: string;
 }) => {
+  console.log({ clientFilters });
   const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
   const filters = parseFilters(clientFilters);
   const promptEmbedding = await openai.createEmbedding({
     input: prompt?.toLowerCase(),
-    model: 'text-embedding-ada-002'
+    model: EMBEDDING_MODEL
   });
 
   // if (!hasDefaultFilter) {
@@ -119,6 +121,7 @@ export const fetchContext = async ({
         .flat()
     };
   }
+
   if (datasources) {
     Object.entries(datasources).forEach(([source, sourceFilter]) => {
       if (sourceFilter && Object.keys(sourceFilter)?.length) {
@@ -143,13 +146,14 @@ export const fetchContext = async ({
       }
     });
   }
+
   Object.keys(filter)?.forEach((source) => {
     if (Object.keys(filter[source])?.length === 0) {
       delete filter[source];
     }
   });
 
-  // console.log('[FetchContext]', JSON.stringify({ datasources, filters, filter }));
+  console.log('[FetchContext]', JSON.stringify({ datasources, filters, filter }));
 
   console.time(`[${ts}] Pineconedata`);
   console.time(`[${ts}] Pineconedata get`);
@@ -173,75 +177,72 @@ export const fetchContext = async ({
   console.timeEnd(`[${ts}] Pineconedata get`);
 
   // Filter out any results that are above the relavance threshold, sort by score and retunr the max number based on gptModel
-  let relevantData = filterPineconeDataRelevanceThreshhold(pineconeData, 0.68);
+  let relevantData = filterPineconeDataRelevanceThreshhold(pineconeData, DEFAULT_THRESHOLD);
+  console.log({ relevantData });
 
-  // Render the context string based on the sidekick and number of tokens
-  let totalTokens = 0;
-  const contextSourceFilesUsed: string[] = [];
-  const maxContextTokens = getMaxContextTokens(gptModel);
-  // return an arroy of items in teh relevatn data that are less than the max context tokens
-  // count the total contextStringRender tokens plus the totalTokens in the
+  let context: string = '';
+  const contextSourceFilesUsed = new Set<string>();
+  let filteredData: Array<string | null> = [];
 
-  const contextPromises = relevantData.map((item) => {
-    let renderedContext = item?.metadata?.text;
+  if (!!relevantData?.length) {
+    // Render the context string based on the sidekick and number of tokens
+    let totalTokens = 0;
 
-    // Add organization's custom contact fields
-    const organizationContext: Record<string, any> = (organization?.contextFields ?? []).reduce(
-      (result, { fieldId, fieldTextValue }) => ({
-        ...result,
-        [fieldId]: fieldTextValue
-      }),
-      {}
-    );
+    const maxTokens = getMaxTokensByModel(gptModel);
 
-    organizationContext.name = organization?.name;
+    // Get organization's custom contact fields
+    const organizationContext: Record<string, any> = getOrganizationContextFields(organization);
 
-    // Add user's custom contect fields
-    const userContext: Record<string, any> = (user?.contextFields ?? []).reduce(
-      (result, { fieldId, fieldTextValue }) => ({
-        ...result,
-        [fieldId]: fieldTextValue
-      }),
-      {}
-    );
+    // Get user's custom contect fields
+    const userContext: Record<string, any> = getUserContextFields(user);
 
-    // Add relative user fields that should be available in the context
-    userContext.name = user?.name;
-    userContext.role = user?.role;
-    userContext.email = user?.email;
+    const contextPromises = relevantData.map((item) => {
+      if (totalTokens > maxTokens) {
+        return null;
+      }
 
-    // console.log('===============');
-    // console.log({
-    //   organization: organizationContext,
-    //   user: userContext
-    // });
+      let renderedContext: string = item?.metadata?.text?.trim() ?? '';
 
-    if (sidekick?.contextStringRender) {
-      renderedContext = renderContext(sidekick?.contextStringRender, {
-        result: item.metadata,
-        organization: organizationContext,
-        user: userContext
-      }); // TODO: get this from the database to give us more flexibility
-      // console.log({ renderedContext });
-    }
-    const tokenCount = countTokens(renderedContext || '');
-    if (totalTokens + tokenCount <= maxContextTokens) {
-      contextSourceFilesUsed.push(item?.metadata?.filePath || item.metadata?.url); // TODO: standardize teh canonical location (UUID) of the file
+      const preTokenCount = renderedContext !== '' ? countTokens(renderedContext) : 0;
+
+      const contextStringRender =
+        sidekick?.contextStringRender?.trim() !== '' ? sidekick?.contextStringRender : null;
+
+      if (contextStringRender && totalTokens + preTokenCount <= maxTokens) {
+        renderedContext = renderContext(contextStringRender, {
+          result: item.metadata,
+          organization: organizationContext,
+          user: userContext
+        }).trim();
+      }
+
+      if (renderedContext === '') return null;
+
+      const tokenCount = countTokens(renderedContext);
+      if (tokenCount && totalTokens + tokenCount > maxTokens) {
+        return null;
+      }
+
+      // TODO: standardize the canonical location (UUID) of the file
+      contextSourceFilesUsed.add(item?.metadata?.filePath || item?.metadata?.url);
       totalTokens += tokenCount;
       return renderedContext;
-    } else {
-      return null;
-    }
-  });
+    });
 
-  const filteredData = contextPromises;
-  const context = filteredData.filter((result) => result !== null).join(' ');
+    filteredData = contextPromises;
+    let fullContext = filteredData.filter((result) => result !== null).join(' ');
+    const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: maxTokens });
+    const contextArray = await textSplitter.createDocuments([fullContext]);
+
+    // Get the first chunk that is under the max token size
+    context = contextArray?.[0]?.pageContent?.trim() ?? '';
+  }
 
   return {
     context,
     // summary: context,
-    contextSourceFilesUsed,
-    ...(process.env.NODE_ENV === 'development'
+    contextSourceFilesUsed: Array.from(contextSourceFilesUsed),
+    ...(IS_DEVELOPMENT
       ? {
           pineconeFilters: filters,
           filteredData,

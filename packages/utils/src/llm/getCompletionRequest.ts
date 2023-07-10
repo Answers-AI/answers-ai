@@ -2,6 +2,7 @@ import { Message, Sidekick, User, Organization } from 'types';
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { countTokens } from '../utilities/countTokens';
 import { renderContext } from '../utilities/renderContext';
+import getMaxTokensByModel from '../utilities/getMaxTokensByModel';
 
 export async function getCompletionRequest({
   context,
@@ -24,6 +25,7 @@ export async function getCompletionRequest({
   const systemPrompt = sidekick?.systemPromptTemplate
     ? renderContext(sidekick.systemPromptTemplate, { input, context, user })
     : '';
+
   const userPrompt = sidekick?.userPromptTemplate
     ? renderContext(sidekick.userPromptTemplate, { input, context })
     : input;
@@ -37,7 +39,7 @@ export async function getCompletionRequest({
   const systemPromptTokens = await countTokens(systemPrompt);
   const userPromptTokens = await countTokens(userPrompt);
 
-  const maxTokens = getMaxTokensByModel(maxCompletionTokens, gptModel);
+  const maxTokens = getMaxTokensByModel(gptModel) - maxCompletionTokens;
   let filteredMessages: Message[] = [];
   let currentTokenCount = systemPromptTokens + userPromptTokens;
 
@@ -76,16 +78,3 @@ export async function getCompletionRequest({
     model: sidekickModel
   };
 }
-
-const getMaxTokensByModel = (maxCompletionTokens: number, gptModel?: string) => {
-  switch (gptModel) {
-    case 'gpt-3.5-turbo':
-      return 4000 - maxCompletionTokens;
-    case 'gpt-4':
-      return 8192 - maxCompletionTokens;
-    case 'gpt-3.5-turbo-16k':
-      return 16000 - maxCompletionTokens;
-    default:
-      return 4000 - maxCompletionTokens;
-  }
-};
