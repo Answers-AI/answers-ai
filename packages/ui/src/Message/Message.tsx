@@ -160,6 +160,12 @@ export const MessageCard = ({
                   color="text.secondary"
                   component="div"
                   sx={{
+                    'overflow': 'hidden',
+                    'img': {
+                      maxWidth: '100%',
+                      margin: 'auto',
+                      mt: 2
+                    },
                     'p,pre,h1,h2,h3,h4,h5,h6,ul,ol': {
                       ':not(:first-child)': {
                         mt: 2

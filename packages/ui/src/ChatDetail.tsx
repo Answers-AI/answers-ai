@@ -62,7 +62,7 @@ export const ChatDetail = ({
           flexDirection: 'column',
           width: '100%',
           height: '100%',
-          overflow: 'hiden'
+          overflow: 'hidden'
         }}>
         <Box
           sx={{
