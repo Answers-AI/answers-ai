@@ -1,18 +1,13 @@
-import styled from '@emotion/styled';
-import {
-  ListSubheader,
-  Typography,
-  useMediaQuery,
-  Popper,
-  autocompleteClasses,
-  Autocomplete,
-  TextField,
-  createFilterOptions,
-  useTheme
-} from '@mui/material';
 import React from 'react';
-
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
+
+import styled from '@emotion/styled';
+
+import ListSubheader from '@mui/material/ListSubheader';
+import Typography from '@mui/material/Typography';
+import Popper from '@mui/material/Popper';
+import Autocomplete from '@mui/material/Autocomplete';
+import { autocompleteClasses, useTheme, createFilterOptions, useMediaQuery } from '@mui/material';
 
 const LISTBOX_PADDING = 8; // px
 

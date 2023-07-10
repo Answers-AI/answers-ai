@@ -1,12 +1,9 @@
-import { Box, Button, Chip, Typography } from '@mui/material';
-import MessageIcon from '@mui/icons-material/Message';
-import ChatCard from './ChatCard';
 import React from 'react';
-import NextLink from 'next/link';
-import { AnswersFilters, Chat, Journey } from 'types';
-import TreeView from '@mui/lab/TreeView';
-import TreeItem from '@mui/lab/TreeItem';
-// import ChatDrawer from './ChatDrawer';
+
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+
+import { Chat, Journey } from 'types';
 
 interface Props {
   journeys?: Journey[];

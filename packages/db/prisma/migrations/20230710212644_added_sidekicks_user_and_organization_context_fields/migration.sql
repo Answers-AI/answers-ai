@@ -5,7 +5,8 @@ CREATE TABLE "ContextField" (
     "helpText" TEXT,
     "fieldType" TEXT,
     "fieldTextValue" TEXT NOT NULL,
-    "organizationId" TEXT NOT NULL,
+    "organizationId" TEXT,
+    "userId" TEXT,
 
     CONSTRAINT "ContextField_pkey" PRIMARY KEY ("id")
 );
@@ -47,7 +48,10 @@ CREATE UNIQUE INDEX "_SidekickFavoritedBy_AB_unique" ON "_SidekickFavoritedBy"("
 CREATE INDEX "_SidekickFavoritedBy_B_index" ON "_SidekickFavoritedBy"("B");
 
 -- AddForeignKey
-ALTER TABLE "ContextField" ADD CONSTRAINT "ContextField_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ContextField" ADD CONSTRAINT "ContextField_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ContextField" ADD CONSTRAINT "ContextField_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Sidekick" ADD CONSTRAINT "Sidekick_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

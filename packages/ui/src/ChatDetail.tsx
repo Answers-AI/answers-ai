@@ -1,29 +1,29 @@
 'use client';
 import React, { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+
 import Button from '@mui/material/Button';
 import NextLink from 'next/link';
-import {
-  AppBar,
-  Avatar,
-  AvatarGroup,
-  Box,
-  IconButton,
-  Toolbar,
-  Tooltip,
-  Typography
-} from '@mui/material';
-import { AppService, AppSettings } from 'types';
+
+import AppBar from '@mui/material/AppBar';
+import Avatar from '@mui/material/Avatar';
+import AvatarGroup from '@mui/material/AvatarGroup';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+
+import ArrowBackIcon from '@mui/icons-material/ArrowForward';
+import ShareIcon from '@mui/icons-material/IosShare';
+
 import { MessageCard } from './Message';
 import { useAnswers } from './AnswersContext';
-
 import { ChatInput } from './ChatInput';
-import ShareIcon from '@mui/icons-material/IosShare';
-import { usePathname, useSearchParams } from 'next/navigation';
 import DrawerFilters from './DrawerFilters/DrawerFilters';
-
-import FilterIcon from '@mui/icons-material/FilterList';
-import ArrowBackIcon from '@mui/icons-material/ArrowForward';
 import { Filters } from './Filters';
+
+import { AppService, AppSettings } from 'types';
 
 export const ChatDetail = ({
   appSettings,

@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { Button, TextField, Modal, Box, CircularProgress, Typography, Paper } from '@mui/material';
 import { useFlags } from 'flagsmith/react';
+
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
 
 interface IFormInput {
   title: string;

@@ -1,23 +1,23 @@
-import React, { Component, ElementType } from 'react';
-import NextLink from 'next/link';
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-  CardActionArea,
-  CardHeader,
-  Avatar
-} from '@mui/material';
+import React, { ElementType } from 'react';
 
-import { useAnswers } from './AnswersContext';
-import { AppService, AppSettings } from 'types';
-import { useFlags } from 'flagsmith/react';
-import IntegrationSetting from './IntegrationSetting';
+import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { signIn } from 'next-auth/react';
+import { useFlags } from 'flagsmith/react';
+
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import CardActionArea from '@mui/material/CardActionArea';
+import CardHeader from '@mui/material/CardHeader';
+import Avatar from '@mui/material/Avatar';
+
+import { useAnswers } from './AnswersContext';
+import IntegrationSetting from './IntegrationSetting';
+
+import { AppService, AppSettings } from 'types';
 
 interface IntegrationCardProps extends AppService {
   appSettings: AppSettings;

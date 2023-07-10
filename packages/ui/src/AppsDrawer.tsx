@@ -1,10 +1,14 @@
 'use client';
 import React from 'react';
-import { Box, ClickAwayListener } from '@mui/material';
-import { AnimatePresence, motion } from 'framer-motion';
-import { AppSettings } from 'types';
 import { useRouter } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
+
+import Box from '@mui/material/Box';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+
 import IntegrationCard from './IntegrationCard';
+
+import { AppSettings } from 'types';
 
 export const AppsDrawer = ({
   appSettings,

@@ -1,6 +1,7 @@
-import { GlobalStyles as MuiGlobalStyles } from '@mui/material';
-const GlobalStyles = () => (
-  <MuiGlobalStyles
+import GlobalStyles from '@mui/material/GlobalStyles';
+
+const Styles = () => (
+  <GlobalStyles
     styles={{
       'a': { textDecoration: 'none' },
       '*': {
@@ -26,4 +27,4 @@ const GlobalStyles = () => (
     }}
   />
 );
-export default GlobalStyles;
+export default Styles;

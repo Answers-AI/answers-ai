@@ -1,15 +1,18 @@
 'use client';
 import React from 'react';
-import NextLink from 'next/link';
-import { Journey } from 'types';
-import Box from '@mui/material/Box';
 import Image from 'next/image';
+import NextLink from 'next/link';
+
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import JourneyCard from '../JourneyLayout/JourneyCard';
-import AddIcon from '@mui/icons-material/EditRoad';
+import Button from '@mui/material/Button';
+
 import MessageIcon from '@mui/icons-material/Message';
-import { Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/EditRoad';
+
+import JourneyCard from '../JourneyLayout/JourneyCard';
+import { Journey } from 'types';
 
 const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
   return (

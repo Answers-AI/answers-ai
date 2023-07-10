@@ -1,18 +1,17 @@
 'use client';
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-  Button,
-  Typography,
-  Paper
-} from '@mui/material';
 import React, { useState } from 'react';
-import { AppSettings, SlackChannelSetting } from 'types';
+
+import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Button from '@mui/material/Button';
+
 import useAppSettings from './useAppSettings';
+
+import { AppSettings, SlackChannelSetting } from 'types';
 export interface SlackSettingsProps {
   appSettings: AppSettings;
 }

@@ -1,20 +1,20 @@
 'use client';
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-  Button,
-  Typography,
-  Paper,
-  LinearProgress
-} from '@mui/material';
 import React, { useState } from 'react';
-import { AnswersFilters, AppSettings } from 'types';
+
+import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import LinearProgress from '@mui/material/LinearProgress';
+
 import useAppSettings from './useAppSettings';
 import AutocompleteSelect from './AutocompleteSelect';
+
+import { AnswersFilters, AppSettings } from 'types';
 export interface JiraSettingsProps {
   appSettings: AppSettings;
   editable: boolean;

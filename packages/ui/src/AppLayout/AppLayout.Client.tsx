@@ -1,16 +1,20 @@
 'use client';
 import React from 'react';
-import { CssBaseline } from '@mui/material';
-import * as Sentry from '@sentry/browser';
-import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { FlagsmithProvider } from 'flagsmith/react';
 import flagsmith from 'flagsmith/isomorphic';
 import { Session } from 'next-auth';
+
+import CssBaseline from '@mui/material/CssBaseline';
+import * as Sentry from '@sentry/browser';
+import ThemeProvider from '@mui/material/styles/ThemeProvider';
+
 import { AppDrawer } from '../AppDrawer';
 import { darkModeTheme } from '../theme';
 import GlobalStyles from '../GlobalStyles';
+
+import { NotInvitedPage } from './NotInvitedPage';
+
 import { AppSettings } from 'types';
-import { NotInvitedPage } from '../NotInvitedPage';
 
 export default function AppLayout({
   session,

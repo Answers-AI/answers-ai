@@ -1,5 +1,11 @@
 import React from 'react';
-import { Box, Button, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Typography from '@mui/material/Typography';
+
 import useAI, { syncAi } from '../../../apps/web-extension/src/useAI';
 var activeTabId: any;
 //@ts-ignore
@@ -10,7 +16,6 @@ const getCleanedUrl = (url?: string) =>
 chrome.tabs.onActivated.addListener(function (activeInfo) {
   activeTabId = activeInfo.tabId;
 });
-
 
 async function getActiveTab() {
   //@ts-ignore

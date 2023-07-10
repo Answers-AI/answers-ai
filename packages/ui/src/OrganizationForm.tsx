@@ -18,7 +18,7 @@ import TableRow from '@mui/material/TableRow';
 import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 
-import { Edit as EditIcon } from '@mui/icons-material';
+import Edit from '@mui/icons-material/Edit';
 
 import { Organization, AppSettings, ContextField } from 'types';
 
@@ -226,7 +226,7 @@ const OrganizationForm = ({
                       <TableCell sx={{ width: '10%' }}>
                         {editIndex !== index ? (
                           <IconButton onClick={() => setEditIndex(index)}>
-                            <EditIcon />
+                            <Edit />
                           </IconButton>
                         ) : null}
                       </TableCell>

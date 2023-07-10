@@ -1,18 +1,18 @@
 'use client';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Button,
-  Typography
-} from '@mui/material';
-
-import { useAnswers } from './AnswersContext';
 import axios from 'axios';
-import { AppSettings } from 'types';
 import { useFlags } from 'flagsmith/react';
+
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+
 import ExpandMoreIcon from '@mui/icons-material/ExpandLess';
+import { useAnswers } from './AnswersContext';
+
+import { AppSettings } from 'types';
 
 const useSync = ({ onSync }: { onSync?: (a: string) => void }) => {
   const { filters } = useAnswers();

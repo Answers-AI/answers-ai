@@ -1,11 +1,12 @@
 'use client';
-import { useRouter } from 'next/navigation';
-import { Box, Button, Container, TextField, Typography } from '@mui/material';
 import { Session } from 'next-auth';
-
-import { AppSettings } from 'types';
-
 import { ClientSafeProvider, signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 
 type AuthFormInputs = {
   email: string;
