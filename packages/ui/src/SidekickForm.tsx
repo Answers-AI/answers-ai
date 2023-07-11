@@ -8,7 +8,7 @@ import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import { useRouter } from 'next/navigation';
 import { AnswersProvider } from './AnswersContext';
-import { useForm, Controller, ControllerRenderProps } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import FormLabel from '@mui/material/FormLabel';
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
