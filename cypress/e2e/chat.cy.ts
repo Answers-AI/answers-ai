@@ -34,6 +34,7 @@ describe('chat spec', () => {
     cy.intercept('/api/ai/stream').as('completionRequest');
 
     cy.get('[data-cy="source-files-button"]').click();
+    cy.get('[data-cy="select-sources-button"]').click();
     cy.get('[data-cy="new-document-modal-add-button"]').click();
     cy.get('[data-cy="new-document-modal-title-input"]').type('Test File');
     cy.get('[data-cy="new-document-modal-content-input"]').type('Test Content');

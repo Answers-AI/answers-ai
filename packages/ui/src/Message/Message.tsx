@@ -247,7 +247,6 @@ export const MessageCard = ({
             </>
           ) : null}
         </CardContent>
-
         <CardActions
           sx={{
             position: 'absolute',
