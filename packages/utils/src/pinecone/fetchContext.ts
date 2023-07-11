@@ -160,6 +160,7 @@ export const fetchContext = async ({
   console.time(`[${ts}] Pineconedata`);
   console.time(`[${ts}] Pineconedata get`);
   const PUBLIC_SOURCES = ['web', 'drive', 'github', 'notion', 'airtable'];
+
   const pineconeData = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
       if (!filter[source]) return Promise.resolve(null);

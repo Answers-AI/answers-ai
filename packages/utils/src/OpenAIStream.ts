@@ -13,6 +13,7 @@ interface StreamExtra {
   contextDocuments: Document[];
   [key: string]: any;
 }
+
 export async function OpenAIStream(
   payload: any,
   extra: StreamExtra,
@@ -34,8 +35,10 @@ export async function OpenAIStream(
     console.log('OpenAIStream', e);
     throw e;
   });
+
   let answer = '';
   let message;
+
   const stream = new ReadableStream({
     async start(controller) {
       controller.enqueue(encoder.encode(JSON.stringify(extra) + 'JSON_END')); // TODO: Need to get this back in. Was breaking the response when code was added to the prompt
@@ -82,14 +85,17 @@ export async function OpenAIStream(
         let decoded = decoder.decode(chunk);
         parser.feed(decoded);
       }
+
       // TODO: Add tokens consumed in this completion
       onEnd({ ...extra, text: answer, message });
+
       message = await prisma.message.update({
         where: { id: message.id },
         data: {
           content: answer
         }
       });
+
       await inngest.send({
         v: '1',
         ts: new Date().valueOf(),
@@ -104,6 +110,7 @@ export async function OpenAIStream(
           // gptModel
         }
       });
+
       controller.close();
     }
   });

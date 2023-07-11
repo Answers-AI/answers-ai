@@ -93,6 +93,7 @@ export const MessageCard = ({
     filters = error?.response?.data.filters;
     prompt = error?.response?.data.prompt;
   }
+
   const handleLike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.stopPropagation();
     evt.preventDefault();
@@ -103,9 +104,11 @@ export const MessageCard = ({
         likes: (likes ?? 0) + 1
       });
   };
+
   const handleCopyCodeClick = (codeString: string) => {
     navigator.clipboard.writeText(codeString);
   };
+
   const handleDislike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.stopPropagation();
     evt.preventDefault();
@@ -116,6 +119,7 @@ export const MessageCard = ({
         dislikes: (dislikes ?? 0) + 1
       });
   };
+
   return (
     <Card
       data-cy="message"

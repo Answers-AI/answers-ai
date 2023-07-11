@@ -28,8 +28,13 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
         const response = await axios.get('/api/sidekicks');
         const retrievedSidekicks = response.data;
 
+        retrievedSidekicks.map((s: Sidekick) => {
+          s.tags = s.tags.map((t) => toSentenceCase(t));
+          return s;
+        });
+
         // Determine the unique tags based on the retrieved sidekicks
-        const iUuniqueTags: string[] = Array.from(
+        const iUniqueTags: string[] = Array.from(
           new Set(
             retrievedSidekicks
               .flatMap((s: Sidekick) => s.tags)
@@ -37,7 +42,7 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
           )
         );
 
-        const uniqueTags = iUuniqueTags.map((tag: string) => toSentenceCase(tag)).sort();
+        const uniqueTags = iUniqueTags.sort();
 
         setTags(uniqueTags);
         setSidekicks(retrievedSidekicks);

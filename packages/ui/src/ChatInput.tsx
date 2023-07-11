@@ -67,6 +67,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
   const handleSidekickSelected = (value: Sidekick) => {
     setPlaceholder(value?.placeholder ?? defaultPlaceholderValue);
     setSidekick(value);
+    setGptModel(value.aiModel || gptModel);
   };
 
   const handleGptModelSelected = (event: SelectChangeEvent<string>) => {

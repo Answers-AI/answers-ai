@@ -21,6 +21,7 @@ import { AppSettings, Sidekick } from 'types';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
+import toSentenceCase from '../../utils/src/utilities/toSentenceCase';
 
 const fetchStarAPI = (id: string) => {
   // TODO: Implement this
@@ -171,6 +172,8 @@ const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
             <TableBody>
               {visibleRows.map((row, index) => {
                 const labelId = `enhanced-table-checkbox-${index}`;
+                // @ts-ignore-next-line Data table is typing tags as a string even though it's an array of strings
+                const tags = (row.tags ?? []).map((t) => toSentenceCase(t)).join(', ');
 
                 return (
                   <TableRow hover tabIndex={-1} key={row.label} sx={{ cursor: 'pointer' }}>
@@ -184,7 +187,7 @@ const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
                       <NextLink href={`/sidekick-studio/${row.id}`}>{row.label}</NextLink>
                     </TableCell>
                     <TableCell>{row.placeholder}</TableCell>
-                    <TableCell>{row.tags}</TableCell>
+                    <TableCell>{tags}</TableCell>
                     <TableCell sx={{ textTransform: 'capitalize' }}>{row.sharedWith}</TableCell>
                   </TableRow>
                 );
