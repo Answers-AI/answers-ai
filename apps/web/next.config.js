@@ -27,7 +27,7 @@ let nextConfig = withBundleAnalyzer({
   },
 
   webpack: (config, { isServer }) => {
-    config.externals = [...config.externals, 'db', 'puppeteer', 'handlebars'];
+    config.externals = [...config.externals, 'db', 'puppeteer'];
     config.plugins = [
       ...config.plugins,
       // new PrismaPlugin(),
