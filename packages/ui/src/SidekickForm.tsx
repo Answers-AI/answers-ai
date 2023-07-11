@@ -9,19 +9,18 @@ import Slider from '@mui/material/Slider';
 import { useRouter } from 'next/navigation';
 import { AnswersProvider } from './AnswersContext';
 import { useForm, Controller } from 'react-hook-form';
-// import Modal from '@mui/material/Modal';
-// import Paper from '@mui/material/Paper';
 import FormLabel from '@mui/material/FormLabel';
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
 import Chip from '@mui/material/Chip';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-// import HandlebarsEditor from './HandlebarsEditor';
+import HandlebarsEditor, { MonacoOnInitializePane } from './HandlebarsEditor';
 import Autocomplete from '@mui/material/Autocomplete';
+import FormHelperText from '@mui/material/FormHelperText';
 
 import { Sidekick, AppSettings } from 'types';
-import FormHelperText from '@mui/material/FormHelperText';
+import Typography from '@mui/material/Typography';
 
 interface SidekickInput
   extends Omit<
@@ -38,11 +37,13 @@ interface SidekickInput
 const SidekickForm = ({
   appSettings,
   sidekick,
-  allTags = []
+  allTags = [],
+  contextFields
 }: {
   appSettings: AppSettings;
   sidekick?: Sidekick;
   allTags?: string[];
+  contextFields?: any;
 }) => {
   const defaultSliderValues = {
     presence: 0,
@@ -51,11 +52,23 @@ const SidekickForm = ({
     maxCompletionTokens: 500
   };
   const router = useRouter();
-  // const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   // const [editorCode, setEditorCode] = useState('false');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sliderValues, setSliderValues] = useState(defaultSliderValues);
+  const [code, setCode] = useState<string>('');
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    reset,
+    control
+  } = useForm<SidekickInput>({
+    defaultValues: sidekick
+  });
 
   const handleSliderTextChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -73,15 +86,10 @@ const SidekickForm = ({
     }));
   };
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    control
-  } = useForm<SidekickInput>({
-    defaultValues: sidekick
-  });
+  const onInitializePane: MonacoOnInitializePane = (monacoEditorRef, editorRef, model) => {
+    // editorRef.current.focus();
+    // monacoEditorRef.current.setModelMarkers(model[0], 'owner', null);
+  };
 
   const onSubmit = async (data: SidekickInput) => {
     setLoading(true);
@@ -111,6 +119,19 @@ const SidekickForm = ({
     }
   };
 
+  const editorOptions = {
+    minimap: {
+      enabled: false
+    },
+    wordWrap: 'on',
+    scrollbar: {
+      horizontalScrollbarSize: 4,
+      verticalScrollbarSize: 4
+    },
+    padding: '50px',
+    scrollBeyondLastLine: false
+  };
+
   return (
     <AnswersProvider appSettings={appSettings}>
       <Box p={8}>
@@ -138,114 +159,143 @@ const SidekickForm = ({
                       required: 'required field'
                     }}
                     render={({ field: { onChange } }) => (
-                      <Autocomplete
-                        sx={{
-                          'width': '100%',
-                          'height': '100%',
-                          '& .MuiFormControl-root': {
-                            height: '100%'
-                          },
-                          '& .MuiInputBase-root': {
-                            height: '100%'
+                      <div>
+                        <Autocomplete
+                          sx={{
+                            'width': '100%',
+                            'height': '100%',
+                            '& .MuiFormControl-root': {
+                              height: '100%'
+                            },
+                            '& .MuiInputBase-root': {
+                              height: '100%'
+                            }
+                          }}
+                          multiple
+                          defaultValue={sidekick?.tags || []}
+                          options={allTags}
+                          freeSolo
+                          renderTags={(value: readonly string[], getTagProps) =>
+                            value.map((option: string, index: number) => (
+                              <Chip
+                                variant="outlined"
+                                label={option}
+                                {...getTagProps({ index })}
+                                key={option}
+                              />
+                            ))
                           }
-                        }}
-                        multiple
-                        defaultValue={sidekick?.tags || []}
-                        options={allTags}
-                        freeSolo
-                        renderTags={(value: readonly string[], getTagProps) =>
-                          value.map((option: string, index: number) => (
-                            <Chip
-                              variant="outlined"
-                              label={option}
-                              {...getTagProps({ index })}
-                              key={option}
-                            />
-                          ))
-                        }
-                        // getOptionLabel={(option) => option.label}
-                        onChange={(event, item) => {
-                          onChange(item);
-                        }}
-                        renderInput={(params) => (
-                          <TextField {...params} label="Tags" placeholder="Tags" />
-                        )}
-                      />
+                          onChange={(event, item) => {
+                            onChange(item);
+                          }}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Tags" placeholder="Tags" />
+                          )}
+                        />
+                        {errors.tags && <span>{errors.tags.message}</span>}
+                      </div>
                     )}
                   />
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <TextField
-                    multiline
-                    rows={3}
-                    size="small"
-                    label="Help Text"
-                    {...register('placeholder')}
-                    error={Boolean(errors.placeholder)}
-                    required
-                    sx={{ width: '100%' }}
+                  <Controller
+                    name="placeholder"
+                    control={control}
+                    defaultValue={sidekick?.placeholder ?? ''}
+                    render={({ field }) => (
+                      <TextField
+                        {...register('placeholder')}
+                        size="small"
+                        label="Help Text"
+                        fullWidth
+                        error={Boolean(errors.placeholder)}
+                        required
+                      />
+                    )}
                   />
                 </Grid>
 
                 <Grid item xs={12}>
-                  <TextField
-                    {...register('systemPromptTemplate')}
-                    label="System Prompt Template"
-                    error={Boolean(errors.systemPromptTemplate)}
-                    fullWidth
-                    size="small"
-                    required
-                    // onClick={() => {
-                    //   setEditorCode(sidekick.systemPromptTemplate || '');
-                    //   setModalOpen(true);
-                    // }}
-                    // InputProps={{
-                    //   readOnly: true
-                    // }}
-                    multiline
-                    rows={6}
-                  />
+                  <Box
+                    component="fieldset"
+                    py={2}
+                    sx={{
+                      'borderRadius': 2,
+                      'overflow': 'hidden',
+                      '& .handlebars-editor .monaco-editor': {
+                        '--vscode-editor-background': 'transparent',
+                        '--vscode-editorGutter-background': 'transparent'
+                      }
+                    }}>
+                    <legend>
+                      <Typography variant="body2" sx={{ px: 1 }}>
+                        System Prompt Template
+                      </Typography>
+                    </legend>
+                    <HandlebarsEditor
+                      key="systemPromptTemplate"
+                      code={sidekick?.systemPromptTemplate ?? ''}
+                      setCode={(value: string) => setValue('systemPromptTemplate', value)}
+                      contextFields={contextFields}
+                      editorOptions={editorOptions}
+                      onInitializePane={onInitializePane}
+                    />
+                  </Box>
                 </Grid>
 
                 <Grid item xs={12}>
-                  <TextField
-                    {...register('userPromptTemplate')}
-                    label="User Prompt Template"
-                    error={Boolean(errors.userPromptTemplate)}
-                    required
-                    fullWidth
-                    size="small"
-                    // onClick={() => {
-                    //   setEditorCode(sidekick.userPromptTemplate || '');
-                    //   setModalOpen(true);
-                    // }}
-                    // InputProps={{
-                    //   readOnly: true
-                    // }}
-                    multiline
-                    rows={6}
-                  />
+                  <Box
+                    component="fieldset"
+                    py={2}
+                    sx={{
+                      'borderRadius': 2,
+                      'overflow': 'hidden',
+                      '& .handlebars-editor .monaco-editor': {
+                        '--vscode-editor-background': 'transparent',
+                        '--vscode-editorGutter-background': 'transparent'
+                      }
+                    }}>
+                    <legend>
+                      <Typography variant="body2" sx={{ px: 1 }}>
+                        User Prompt Template
+                      </Typography>
+                    </legend>
+                    <HandlebarsEditor
+                      key="userPromptTemplate"
+                      code={sidekick?.userPromptTemplate ?? ''}
+                      setCode={(value: string) => setValue('userPromptTemplate', value)}
+                      editorOptions={editorOptions}
+                      onInitializePane={onInitializePane}
+                    />
+                  </Box>
                 </Grid>
 
                 <Grid item xs={12}>
-                  <TextField
-                    {...register('contextStringRender')}
-                    label="Context String Render"
-                    error={Boolean(errors.contextStringRender)}
-                    // onChange={handleChange}
-                    fullWidth
-                    size="small"
-                    // onClick={() => {
-                    //   setEditorCode(sidekick.contextStringRender || '');
-                    //   setModalOpen(true);
-                    // }}
-                    // InputProps={{
-                    //   readOnly: true
-                    // }}
-                    multiline
-                    rows={6}
-                  />
+                  <Box
+                    component="fieldset"
+                    py={2}
+                    sx={{
+                      'borderRadius': 2,
+                      'overflow': 'hidden',
+                      '& .handlebars-editor .monaco-editor': {
+                        '--vscode-editor-background': 'transparent',
+                        '--vscode-editorGutter-background': 'transparent'
+                      }
+                    }}>
+                    <legend>
+                      <Typography variant="body2" sx={{ px: 1 }}>
+                        Context String Render
+                      </Typography>
+                    </legend>
+                    <HandlebarsEditor
+                      key="contextStringRender"
+                      code={sidekick?.contextStringRender ?? ''}
+                      setCode={(value: string) => setValue('contextStringRender', value)}
+                      editorOptions={editorOptions}
+                      onInitializePane={onInitializePane}
+                    />
+                  </Box>
                 </Grid>
 
                 <Grid item container direction="row" rowSpacing={4} columnSpacing={4}>
@@ -490,7 +540,7 @@ const SidekickForm = ({
                 flexDirection: 'column'
               }}>
               <HandlebarsEditor
-                typeaheads={[]}
+                contextFields={contextFields}
                 editorCode={editorCode}
                 onSave={() => setModalOpen(false)}
                 onCancel={() => setModalOpen(false)}

@@ -3,6 +3,8 @@ import { prisma } from '@db/client';
 import SidekickForm from '@ui/SidekickForm';
 import { authOptions } from '@ui/authOptions';
 import getCachedSession from '@ui/getCachedSession';
+import getUserContextFields from '@utils/utilities/getUserContextFields';
+import getOrganizationContextFields from '@utils/utilities/getOrganizationContextFields';
 
 export const metadata = {
   title: 'Sidekick Studio | Answers AI',
@@ -38,7 +40,14 @@ const SidekickFormPage = async ({ params }: any) => {
     })
     .then((data: any) => JSON.parse(JSON.stringify(data)));
 
-  return <SidekickForm {...params} allTags={allTags} sidekick={sidekick} />;
+  const contextFields = {
+    user: getUserContextFields(session.user),
+    organization: getOrganizationContextFields(session.user?.currentOrganization)
+  };
+
+  return (
+    <SidekickForm {...params} allTags={allTags} contextFields={contextFields} sidekick={sidekick} />
+  );
 };
 
 export default SidekickFormPage;

@@ -118,7 +118,6 @@ export const AppDrawer = ({ session }: any) => {
                   height: '32px',
                   width: '32px'
                 }}
-                title={user?.name?.charAt(0)}
               />
             </Tooltip>
           </ListItemIcon>
