@@ -1,10 +1,15 @@
 'use client';
 import React from 'react';
-import { Box, ClickAwayListener } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AppSettings } from 'types';
+
 import { useRouter } from 'next/navigation';
+import Box from '@mui/material/Box';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+
 import IntegrationCard from './IntegrationCard';
+import { useFlags } from 'flagsmith/react';
+
+import { AppService, AppSettings } from 'types';
 
 export const AppsDrawer = ({
   appSettings,
@@ -18,7 +23,15 @@ export const AppsDrawer = ({
   // });
   const router = useRouter();
   const selected = appSettings?.services?.find((item) => item.id === activeApp);
+  const flags = useFlags(appSettings?.services?.map((s) => s.id) ?? []);
 
+  const enabledServices: AppService[] | undefined = React.useMemo(
+    () =>
+      appSettings?.services?.filter((service) => {
+        return (flags?.[service.id] as any)?.enabled;
+      }) ?? [],
+    [appSettings?.services, flags]
+  );
   // console.log('Expanded', expanded);
   return (
     <>
@@ -40,7 +53,7 @@ export const AppsDrawer = ({
           //   {}
           // )
         }}>
-        {appSettings?.services?.map((item, idx) => (
+        {enabledServices?.map((item, idx) => (
           <IntegrationCard
             appSettings={appSettings}
             key={item?.id}

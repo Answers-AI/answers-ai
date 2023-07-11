@@ -21,13 +21,13 @@ export default function JourneySources({ appSettings }: { appSettings: AppSettin
   const flags = useFlags(appSettings?.services?.map((s) => s.name) ?? []);
 
   const enabledServices: AppService[] | undefined = appSettings?.services?.filter((service) => {
-    const isServiceEnabledInFlags = (flags?.[service.name] as any)?.enabled;
+    const isServiceEnabledInFlags = (flags?.[service.id] as any)?.enabled;
     return isServiceEnabledInFlags || service.enabled;
   });
 
   const [serviceOpen, setServiceOpen] = React.useState<string>('');
   const { filters, updateFilter } = useAnswers();
-  const selectedService = enabledServices?.find((service) => service.name === serviceOpen);
+  const selectedService = enabledServices?.find((service) => service.id === serviceOpen);
 
   return (
     <>
@@ -35,12 +35,12 @@ export default function JourneySources({ appSettings }: { appSettings: AppSettin
         {enabledServices
           ?.map((service, idx) => [
             <Avatar
-              key={service.name}
+              key={service.id}
               alt={service.name}
               ref={(ref) => {
-                if (ref) serviceRefs.current[service.name] = ref;
+                if (ref) serviceRefs.current[service.id] = ref;
               }}
-              onClick={() => setServiceOpen(service.name)}>
+              onClick={() => setServiceOpen(service.id)}>
               {service.imageURL ? (
                 <Image
                   style={{ background: 'white', padding: '8px' }}
@@ -86,7 +86,7 @@ export default function JourneySources({ appSettings }: { appSettings: AppSettin
                 gap: 2,
                 flexDirection: 'column'
               }}>
-              {selectedService.name === 'slack' ? (
+              {selectedService.id === 'slack' ? (
                 <SourcesSlack
                   appSettings={appSettings}
                   filters={filters}
@@ -94,15 +94,15 @@ export default function JourneySources({ appSettings }: { appSettings: AppSettin
                 />
               ) : null}
 
-              {flags?.codebase?.enabled && selectedService.name === 'codebase' ? (
+              {flags?.codebase?.enabled && selectedService.id === 'codebase' ? (
                 <SourcesCodebase />
               ) : null}
 
-              {flags?.document?.enabled && selectedService.name === 'document' ? (
+              {flags?.document?.enabled && selectedService.id === 'document' ? (
                 <SourcesDocument />
               ) : null}
 
-              {flags?.airtable?.enabled && selectedService.name === 'airtable' ? (
+              {flags?.airtable?.enabled && selectedService.id === 'airtable' ? (
                 <SourcesAirtable
                   appSettings={appSettings}
                   filters={filters}
