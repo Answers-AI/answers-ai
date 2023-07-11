@@ -108,7 +108,8 @@ export async function POST(req: Request) {
 
   completionRequest = await getCompletionRequest({
     context,
-    user, // Add this line
+    user,
+    organization: user?.currentOrganization,
     input: prompt,
     messages,
     sidekick: sidekickObject!,

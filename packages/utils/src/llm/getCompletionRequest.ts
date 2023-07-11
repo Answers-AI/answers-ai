@@ -3,6 +3,8 @@ import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { countTokens } from '../utilities/countTokens';
 import { renderContext } from '../utilities/renderContext';
 import getMaxTokensByModel from '../utilities/getMaxTokensByModel';
+import getUserContextFields from '../utilities/getUserContextFields';
+import getOrganizationContextFields from '../utilities/getOrganizationContextFields';
 
 export async function getCompletionRequest({
   context,
@@ -21,13 +23,31 @@ export async function getCompletionRequest({
   sidekick?: Sidekick;
   gptModel?: string;
 }) {
+  // Get organization's custom contact fields
+  const organizationContext: Record<string, any> = getOrganizationContextFields(organization);
+
+  // Get user's custom contect fields
+  const userContext: Record<string, any> = getUserContextFields(user);
+
   const systemPrompt = sidekick?.systemPromptTemplate
-    ? renderContext(sidekick.systemPromptTemplate, { input, context, user })
+    ? renderContext(sidekick.systemPromptTemplate, {
+        input,
+        context,
+        user: userContext,
+        organization: organizationContext
+      })
     : '';
 
   const userPrompt = sidekick?.userPromptTemplate
-    ? renderContext(sidekick.userPromptTemplate, { userInput: input, context })
+    ? renderContext(sidekick.userPromptTemplate, {
+        userInput: input,
+        context,
+        user: userContext,
+        organization: organizationContext
+      })
     : input;
+
+  // console.log({ systemPrompt, userPrompt, user: userContext, organization: organizationContext });
 
   const temperature = sidekick?.temperature || 0.1;
   const frequency = sidekick?.frequency || 0;
