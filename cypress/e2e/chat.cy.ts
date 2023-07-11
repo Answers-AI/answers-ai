@@ -2,8 +2,6 @@ describe('chat spec', () => {
   beforeEach(() => {
     cy.login();
     cy.visit('/chat');
-    // cy.visit('/');
-    // cy.get('[data-cy="quick-chat-button"]').click();
   });
 
   it('visits /chat and chats with the AI', () => {
