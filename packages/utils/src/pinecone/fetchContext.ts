@@ -189,7 +189,9 @@ export const fetchContext = async ({
     // Render the context string based on the sidekick and number of tokens
     let totalTokens = 0;
 
-    const maxTokens = getMaxTokensByModel(gptModel);
+    const maxCompletionTokens = sidekick?.maxCompletionTokens || 500;
+    const model = sidekick?.aiModel || gptModel;
+    const maxTokens = getMaxTokensByModel(model) - maxCompletionTokens;
 
     // Get organization's custom contact fields
     const organizationContext: Record<string, any> = getOrganizationContextFields(organization);

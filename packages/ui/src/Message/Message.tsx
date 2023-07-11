@@ -24,6 +24,8 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 
+import { countTokens } from '@utils/utilities/countTokens';
+
 import { useAnswers } from '../AnswersContext';
 import { Accordion, AccordionSummary, AccordionDetails } from '../Accordion';
 
@@ -207,6 +209,7 @@ export const MessageCard = ({
               </>
             ) : null}
           </Box>
+
           {contextDocuments?.length ? (
             <>
               <Divider />
@@ -218,7 +221,7 @@ export const MessageCard = ({
                   flexWrap: 'wrap',
                   gap: 1
                 }}>
-                <Typography variant="body2">View more:</Typography>
+                <Typography variant="body2">References:</Typography>
                 {contextDocuments?.map((doc) => (
                   <Button
                     key={doc.id}
@@ -231,8 +234,7 @@ export const MessageCard = ({
                     sx={{
                       'textTransform': 'none',
                       'borderRadius': 20,
-
-                      '&:hover': { textDecoration: 'underline' }
+                      '&:hover': { textDecoration: 'none' }
                     }}
                     startIcon={
                       <Avatar
@@ -279,7 +281,7 @@ export const MessageCard = ({
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
             id="panel1a-header">
-            <Typography variant="overline">Context ({context?.length})</Typography>
+            <Typography variant="overline">Context ({countTokens(context)} Tokens)</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Typography
@@ -292,6 +294,7 @@ export const MessageCard = ({
           </AccordionDetails>
         </Accordion>
       ) : null}
+
       {developer_mode?.enabled ? (
         <Box>
           {error ? (
@@ -314,6 +317,7 @@ export const MessageCard = ({
               </Accordion>
             </>
           ) : null}
+
           {summary ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
@@ -356,6 +360,7 @@ export const MessageCard = ({
               </AccordionDetails>
             </Accordion>
           ) : null}
+
           {completionRequest ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
@@ -375,6 +380,7 @@ export const MessageCard = ({
               </AccordionDetails>
             </Accordion>
           ) : null}
+
           {completionData ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
@@ -394,6 +400,7 @@ export const MessageCard = ({
               </AccordionDetails>
             </Accordion>
           ) : null}
+
           {Object.keys(other)?.length ? (
             // Use the @mui accordion component to wrap the extra and response
             <Accordion TransitionProps={{ unmountOnExit: true }}>
@@ -401,7 +408,7 @@ export const MessageCard = ({
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header">
-                <Typography variant="overline">extra</Typography>
+                <Typography variant="overline">Extra</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <JsonViewer

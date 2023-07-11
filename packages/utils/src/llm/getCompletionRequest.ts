@@ -32,15 +32,27 @@ export async function getCompletionRequest({
   const temperature = sidekick?.temperature || 0.1;
   const frequency = sidekick?.frequency || 0;
   const presence = sidekick?.presence || 0;
-  const sidekickModel = sidekick?.aiModel || gptModel || 'gpt-3.5-turbo';
+  const sidekickModel = gptModel || sidekick?.aiModel || 'gpt-3.5-turbo';
   const maxCompletionTokens = sidekick?.maxCompletionTokens || 500;
 
   const systemPromptTokens = await countTokens(systemPrompt);
   const userPromptTokens = await countTokens(userPrompt);
 
-  const maxTokens = getMaxTokensByModel(gptModel) - maxCompletionTokens;
+  const maxTokens = getMaxTokensByModel(sidekickModel) - maxCompletionTokens;
+
   let filteredMessages: Message[] = [];
   let currentTokenCount = systemPromptTokens + userPromptTokens;
+  // console.log({
+  //   contextCount: countTokens(context),
+  //   currentTokenCount,
+  //   systemPromptTokens,
+  //   userPromptTokens,
+  //   maxTokens,
+  //   sidekickModel,
+  //   gptModel,
+  //   sidekickAiModel: sidekick?.aiModel,
+  //   maxCompletionTokens
+  // });
 
   if (messages) {
     for (const message of messages) {
