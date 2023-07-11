@@ -120,7 +120,7 @@ export const ChatDetail = ({
                           ? Object.values(services)
                           : appSettings.services
                         )?.map((service) => (
-                          <Avatar key={service.name} variant="source" src={service.imageURL} />
+                          <Avatar key={service.id} variant="source" src={service.imageURL} />
                         ))}
                       </AvatarGroup>
                     </Button>

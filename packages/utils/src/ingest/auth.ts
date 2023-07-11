@@ -1,8 +1,9 @@
-// import { prisma } from '@db/client';
+import { prisma } from '@db/client';
 // import { Session } from 'next-auth/core/types';
 import { syncAppSettings } from '../auth/syncAppSettings';
 
 import { EventVersionHandler } from './EventVersionHandler';
+import { inngest } from './client';
 
 // export const USER_EVENTS = ['signIn', 'signOut', 'createUser', 'updateUser', 'linkAccount'];
 
@@ -19,6 +20,23 @@ export const authSession: EventVersionHandler<{
       const settings = await syncAppSettings({ userId: user.id });
       return { settings };
     }
+  }
+};
+export const syncAllSettings: EventVersionHandler<{}> = {
+  v: '1',
+  event: 'auth/settings.syncAll',
+  handler: async ({ event }) => {
+    const users = await prisma.user.findMany();
+
+    const events = users?.map((user) => ({
+      v: '1',
+      ts: new Date().valueOf(),
+      name: 'auth/settings.sync',
+      user: { id: user.id },
+      data: { user: { id: user.id } }
+    }));
+
+    await inngest.send(events);
   }
 };
 
