@@ -8,7 +8,7 @@ import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import { useRouter } from 'next/navigation';
 import { AnswersProvider } from './AnswersContext';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, ControllerRenderProps } from 'react-hook-form';
 import FormLabel from '@mui/material/FormLabel';
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
@@ -18,6 +18,7 @@ import Select from '@mui/material/Select';
 import HandlebarsEditor, { MonacoOnInitializePane } from './HandlebarsEditor';
 import Autocomplete from '@mui/material/Autocomplete';
 import FormHelperText from '@mui/material/FormHelperText';
+import { ErrorMessage } from '@hookform/error-message';
 
 import { Sidekick, AppSettings } from 'types';
 import Typography from '@mui/material/Typography';
@@ -55,7 +56,6 @@ const SidekickForm = ({
   const [modalOpen, setModalOpen] = useState(false);
   // const [editorCode, setEditorCode] = useState('false');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [sliderValues, setSliderValues] = useState(defaultSliderValues);
   const [code, setCode] = useState<string>('');
 
@@ -65,6 +65,7 @@ const SidekickForm = ({
     formState: { errors },
     setValue,
     reset,
+    setError,
     control
   } = useForm<SidekickInput>({
     defaultValues: sidekick
@@ -95,6 +96,25 @@ const SidekickForm = ({
     setLoading(true);
     try {
       const { id, ...rest } = data;
+
+      if ((data?.systemPromptTemplate?.trim() ?? '') === '') {
+        setError('systemPromptTemplate', {
+          type: 'required',
+          message: 'Please enter a non-space character.'
+        });
+
+        throw new Error('Invalid Fields');
+      }
+
+      if ((data?.userPromptTemplate?.trim() ?? '') === '') {
+        setError('userPromptTemplate', {
+          type: 'required',
+          message: 'Please enter a non-space character.'
+        });
+
+        throw new Error('Invalid Fields');
+      }
+
       if (id) {
         await axios.patch(`/api/sidekicks/${id}`, { ...rest });
       } else {
@@ -106,13 +126,16 @@ const SidekickForm = ({
       if (err.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        setError(err.response.data);
+        setError('root.serverError', { type: 'custom', message: err.response.data });
       } else if (err.request) {
         // The request was made but no response was received
-        setError('No response received from the server');
+        setError('root.serverError', {
+          type: 'custom',
+          message: 'No response received from the server'
+        });
       } else {
         // Something happened in setting up the request that triggered an Error
-        setError(err.message);
+        setError('root.serverError', { type: 'custom', message: err.message });
       }
     } finally {
       setLoading(false);
@@ -129,25 +152,44 @@ const SidekickForm = ({
       verticalScrollbarSize: 4
     },
     padding: '50px',
-    scrollBeyondLastLine: false
+    scrollBeyondLastLine: false,
+    autoIndent: 'full',
+    contextmenu: true,
+    fontFamily: 'monospace',
+    fontSize: 13,
+    lineHeight: 24,
+    hideCursorInOverviewRuler: true,
+    matchBrackets: 'always',
+    selectOnLineNumbers: true,
+    roundedSelection: false,
+    readOnly: false,
+    cursorStyle: 'line',
+    automaticLayout: true
   };
 
   return (
     <AnswersProvider appSettings={appSettings}>
       <Box p={8}>
-        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
           <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
             <Grid item xs={12} md={9}>
               <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
                 <Grid item sm={12}>
-                  <TextField
-                    {...register('label')}
-                    rows={2}
-                    label="Sidekick Name"
-                    error={Boolean(errors.label)}
-                    size="small"
-                    required
-                    sx={{ width: '100%' }}
+                  <Controller
+                    name="label"
+                    control={control}
+                    defaultValue={sidekick?.label ?? ''}
+                    rules={{ required: true }}
+                    render={({ field: { ref, ...field } }) => (
+                      <TextField
+                        {...field}
+                        label="Sidekick Name"
+                        size="small"
+                        sx={{ width: '100%' }}
+                        error={!!errors.label}
+                        helperText={errors.label && 'Required'}
+                      />
+                    )}
                   />
                 </Grid>
 
@@ -155,45 +197,50 @@ const SidekickForm = ({
                   <Controller
                     control={control}
                     name="tags"
-                    rules={{
-                      required: 'required field'
-                    }}
-                    render={({ field: { onChange } }) => (
-                      <div>
-                        <Autocomplete
-                          sx={{
-                            'width': '100%',
-                            'height': '100%',
-                            '& .MuiFormControl-root': {
-                              height: '100%'
-                            },
-                            '& .MuiInputBase-root': {
-                              height: '100%'
-                            }
-                          }}
-                          multiple
-                          defaultValue={sidekick?.tags || []}
-                          options={allTags}
-                          freeSolo
-                          renderTags={(value: readonly string[], getTagProps) =>
-                            value.map((option: string, index: number) => (
-                              <Chip
-                                variant="outlined"
-                                label={option}
-                                {...getTagProps({ index })}
-                                key={option}
-                              />
-                            ))
+                    rules={{ required: true }}
+                    defaultValue={sidekick?.tags || []}
+                    render={({ field: { onChange, value } }) => (
+                      <Autocomplete
+                        onChange={(event, item) => {
+                          onChange(item);
+                        }}
+                        freeSolo
+                        multiple
+                        value={value ?? []}
+                        options={allTags}
+                        renderTags={(value, getTagProps) =>
+                          value.map((option, index) => (
+                            <Chip
+                              variant="outlined"
+                              label={option}
+                              {...getTagProps({ index })}
+                              key={option}
+                            />
+                          ))
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            fullWidth
+                            label="Tags"
+                            placeholder="Add tags"
+                            variant="outlined"
+                            error={!!errors.tags}
+                            helperText={errors.tags && 'At least one (1) tag required'}
+                            required
+                          />
+                        )}
+                        sx={{
+                          'width': '100%',
+                          'height': '100%',
+                          '& .MuiFormControl-root': {
+                            height: '100%'
+                          },
+                          '& .MuiInputBase-root': {
+                            height: '100%'
                           }
-                          onChange={(event, item) => {
-                            onChange(item);
-                          }}
-                          renderInput={(params) => (
-                            <TextField {...params} label="Tags" placeholder="Tags" />
-                          )}
-                        />
-                        {errors.tags && <span>{errors.tags.message}</span>}
-                      </div>
+                        }}
+                      />
                     )}
                   />
                 </Grid>
@@ -203,14 +250,17 @@ const SidekickForm = ({
                     name="placeholder"
                     control={control}
                     defaultValue={sidekick?.placeholder ?? ''}
-                    render={({ field }) => (
+                    rules={{ required: true }}
+                    render={({ field: { ref, ...field } }) => (
                       <TextField
-                        {...register('placeholder')}
-                        size="small"
+                        {...field}
+                        multiline
+                        rows={2}
                         label="Help Text"
+                        size="small"
                         fullWidth
-                        error={Boolean(errors.placeholder)}
-                        required
+                        error={!!errors.placeholder}
+                        helperText={errors.placeholder && 'Required'}
                       />
                     )}
                   />
@@ -233,13 +283,26 @@ const SidekickForm = ({
                         System Prompt Template
                       </Typography>
                     </legend>
-                    <HandlebarsEditor
-                      key="systemPromptTemplate"
-                      code={sidekick?.systemPromptTemplate ?? ''}
-                      setCode={(value: string) => setValue('systemPromptTemplate', value)}
-                      contextFields={contextFields}
-                      editorOptions={editorOptions}
-                      onInitializePane={onInitializePane}
+                    <Controller
+                      name="systemPromptTemplate"
+                      control={control}
+                      defaultValue={sidekick?.systemPromptTemplate ?? ''}
+                      rules={{ required: true }}
+                      render={({ field: { ref, ...field } }) => (
+                        <FormControl fullWidth error={!!errors.systemPromptTemplate}>
+                          <HandlebarsEditor
+                            key="systemPromptTemplate"
+                            code={sidekick?.systemPromptTemplate ?? ''}
+                            setCode={(value: string) => setValue('systemPromptTemplate', value)}
+                            contextFields={contextFields}
+                            editorOptions={editorOptions}
+                            onInitializePane={onInitializePane}
+                          />
+                          {errors.systemPromptTemplate && (
+                            <FormHelperText error>Required.</FormHelperText>
+                          )}
+                        </FormControl>
+                      )}
                     />
                   </Box>
                 </Grid>
@@ -300,6 +363,16 @@ const SidekickForm = ({
 
                 <Grid item container direction="row" rowSpacing={4} columnSpacing={4}>
                   <Grid item xs={12}>
+                    <ErrorMessage
+                      errors={errors}
+                      name="multipleErrorInput"
+                      render={({ messages }) =>
+                        messages &&
+                        Object.entries(messages).map(([type, message]) => (
+                          <p key={type}>{message}</p>
+                        ))
+                      }
+                    />
                     <Button type="submit" variant="contained" sx={{ margin: '0 auto' }}>
                       {sidekick?.id ? 'Save Sidekick' : 'Create Sidekick'}
                     </Button>
@@ -504,49 +577,10 @@ const SidekickForm = ({
                       sx={{ width: '85%' }}
                     />
                   </Box>
-
-                  {/* <FormControl size="small" error={Boolean(errors.maxCompletionTokens)}>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between'
-                      }}>
-                      <FormLabel id="maxTokens-label" sx={{ textAlign: 'left' }}>
-                        Max Tokens
-                      </FormLabel>
-                    </Box>
-                    
-                  </FormControl> */}
                 </Grid>
               </Grid>
             </Grid>
           </Grid>
-          {/* <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-            <Paper
-              sx={{
-                width: '100%',
-                height: 'calc(100% - 32px)',
-                maxWidth: 800,
-                padding: 2,
-                backgroundColor: 'background.paper',
-                margin: 'auto',
-                outline: 'none',
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                display: 'flex',
-                flexDirection: 'column'
-              }}>
-              <HandlebarsEditor
-                contextFields={contextFields}
-                editorCode={editorCode}
-                onSave={() => setModalOpen(false)}
-                onCancel={() => setModalOpen(false)}
-              />
-            </Paper>
-          </Modal> */}
         </Box>
       </Box>
     </AnswersProvider>

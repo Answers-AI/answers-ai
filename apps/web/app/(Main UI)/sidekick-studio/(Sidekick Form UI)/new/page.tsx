@@ -30,7 +30,13 @@ const SidekickFormPage = async ({ params }: any) => {
 
   const contextFields = {
     user: getUserContextFields(session.user),
-    organization: getOrganizationContextFields(session.user?.currentOrganization)
+    organization: getOrganizationContextFields(session.user?.currentOrganization),
+    result: {
+      text: '',
+      code: '',
+      filePath: '',
+      url: ''
+    }
   };
 
   return <SidekickForm {...params} allTags={allTags} contextFields={contextFields} />;
