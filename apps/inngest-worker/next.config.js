@@ -1,5 +1,5 @@
 const { PrismaPlugin } = require('experimental-prisma-webpack-plugin');
-
+const path = require('path');
 const webpack = require('webpack');
 const { withSentryConfig } = require('@sentry/nextjs');
 
@@ -12,7 +12,13 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
  */
 let nextConfig = withBundleAnalyzer({
   experimental: {
-    appDir: true
+    appDir: true,
+    // Didn't work
+    // outputFileTracingRoot: path.join(__dirname, '../../'),
+    // outputFileTracingExcludes: {
+    //   '*': ['node_modules/canvas']
+    // }
+    outputFileTracingIgnores: ['**canvas**']
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],
