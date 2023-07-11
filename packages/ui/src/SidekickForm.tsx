@@ -9,7 +9,6 @@ import Slider from '@mui/material/Slider';
 import { useRouter } from 'next/navigation';
 import { AnswersProvider } from './AnswersContext';
 import { useForm, Controller } from 'react-hook-form';
-import FormLabel from '@mui/material/FormLabel';
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
 import Chip from '@mui/material/Chip';
@@ -19,9 +18,16 @@ import HandlebarsEditor, { MonacoOnInitializePane } from './HandlebarsEditor';
 import Autocomplete from '@mui/material/Autocomplete';
 import FormHelperText from '@mui/material/FormHelperText';
 import { ErrorMessage } from '@hookform/error-message';
+import Snackbar from '@mui/material/Snackbar';
+import Slide, { SlideProps } from '@mui/material/Slide';
+
+type TransitionProps = Omit<SlideProps, 'direction'>;
+
+function TransitionLeft(props: TransitionProps) {
+  return <Slide {...props} direction="left" />;
+}
 
 import { Sidekick, AppSettings } from 'types';
-import Typography from '@mui/material/Typography';
 
 interface SidekickInput
   extends Omit<
@@ -53,18 +59,33 @@ const SidekickForm = ({
     maxCompletionTokens: 500
   };
   const router = useRouter();
-  const [modalOpen, setModalOpen] = useState(false);
-  // const [editorCode, setEditorCode] = useState('false');
   const [loading, setLoading] = useState(false);
   const [sliderValues, setSliderValues] = useState(defaultSliderValues);
-  const [code, setCode] = useState<string>('');
+  const [message, setMessage] = useState('');
+  const [messageOpen, setMessageOpen] = React.useState(false);
+  const [messageTransition, setMessageTransition] = React.useState<
+    React.ComponentType<TransitionProps> | undefined
+  >(undefined);
+
+  const createMessage = (message: string) => {
+    setMessage(message);
+    setMessageOpen(true);
+  };
+
+  const hideMessage = () => {
+    setMessage('');
+    setMessageOpen(false);
+  };
+
+  const handleMessageClose = () => {
+    setMessageOpen(false);
+  };
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
-    reset,
     setError,
     control
   } = useForm<SidekickInput>({
@@ -87,9 +108,8 @@ const SidekickForm = ({
     }));
   };
 
-  const onInitializePane: MonacoOnInitializePane = (monacoEditorRef, editorRef, model) => {
-    // editorRef.current.focus();
-    // monacoEditorRef.current.setModelMarkers(model[0], 'owner', null);
+  const onInitializePane: MonacoOnInitializePane = (_monacoEditorRef, _editorRef, _model) => {
+    // Just need this callback in case we want to change anything after initialization
   };
 
   const onSubmit = async (data: SidekickInput) => {
@@ -116,13 +136,17 @@ const SidekickForm = ({
       }
 
       if (id) {
+        createMessage('... Updating your Sidekick');
         await axios.patch(`/api/sidekicks/${id}`, { ...rest });
+        createMessage('Your sidekick was saved successfully.');
       } else {
+        createMessage('... Creating your Sidekick');
         const { data: sidekick } = await axios.post('/api/sidekicks', { ...rest });
-        router.push(`/sidekick-studio/${sidekick.id}`);
+        createMessage('Your sidekick was saved successfully.');
+        router.replace(`/sidekick-studio/${sidekick.id}`);
       }
     } catch (err: any) {
-      console.log('error', err);
+      hideMessage();
       if (err.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
@@ -142,6 +166,63 @@ const SidekickForm = ({
     }
   };
 
+  const selectStyles = {
+    '& legend': {
+      color: '#9e9e9e',
+      // fontWeight: 400,
+      // fontSize: '.75rem',
+      // lineHeight: '1.4375em',
+      // position: 'relative',
+      // display: 'block',
+      // maxWidth: 'calc(75%)',
+      // whiteSpace: 'nowrap',
+      // overflow: 'hidden',
+      // textOverflow: 'ellipsis',
+
+      span: {
+        opacity: 1,
+        transform: 'translateY(-25%)'
+      }
+    }
+  };
+
+  const editorStyles = {
+    'borderRadius': 1.5,
+    'textAlign': 'left',
+    'margin': 0,
+    'borderStyle': 'solid',
+    'borderWidth': '1px',
+    'minWidth': '0%',
+    'paddingRight': 1,
+    'paddingLeft': 1.5,
+    'py': 2,
+    'position': 'relative',
+    'borderColor': 'rgba(255, 255, 255, .23)',
+
+    '&:hover': {
+      borderColor: 'rgba(255, 255, 255, 1)'
+    },
+
+    '& legend': {
+      color: '#9e9e9e',
+      fontWeight: 400,
+      fontSize: '.75rem',
+      lineHeight: '1.4375em',
+      px: 1,
+      position: 'relative',
+      display: 'block',
+      maxWidth: 'calc(75%)',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis'
+    },
+
+    '& .handlebars-editor .monaco-editor': {
+      '--vscode-editor-background': 'transparent',
+      '--vscode-editorGutter-background': 'transparent'
+    }
+  };
+
   const editorOptions = {
     minimap: {
       enabled: false
@@ -151,7 +232,7 @@ const SidekickForm = ({
       horizontalScrollbarSize: 4,
       verticalScrollbarSize: 4
     },
-    padding: '50px',
+    padding: '16px',
     scrollBeyondLastLine: false,
     autoIndent: 'full',
     contextmenu: true,
@@ -169,7 +250,18 @@ const SidekickForm = ({
 
   return (
     <AnswersProvider appSettings={appSettings}>
-      <Box p={8}>
+      <Box p={8} sx={{ position: 'relative' }}>
+        {message?.trim() !== '' && (
+          <Snackbar
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={messageOpen}
+            autoHideDuration={6000}
+            onClose={handleMessageClose}
+            TransitionComponent={messageTransition}
+            message={message}
+            key={messageTransition ? messageTransition.name : ''}
+          />
+        )}
         <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
           <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
             <Grid item xs={12} md={9}>
@@ -267,22 +359,8 @@ const SidekickForm = ({
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Box
-                    component="fieldset"
-                    py={2}
-                    sx={{
-                      'borderRadius': 2,
-                      'overflow': 'hidden',
-                      '& .handlebars-editor .monaco-editor': {
-                        '--vscode-editor-background': 'transparent',
-                        '--vscode-editorGutter-background': 'transparent'
-                      }
-                    }}>
-                    <legend>
-                      <Typography variant="body2" sx={{ px: 1 }}>
-                        System Prompt Template
-                      </Typography>
-                    </legend>
+                  <Box component="fieldset" sx={editorStyles}>
+                    <legend>System Prompt Template *</legend>
                     <Controller
                       name="systemPromptTemplate"
                       control={control}
@@ -308,55 +386,52 @@ const SidekickForm = ({
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Box
-                    component="fieldset"
-                    py={2}
-                    sx={{
-                      'borderRadius': 2,
-                      'overflow': 'hidden',
-                      '& .handlebars-editor .monaco-editor': {
-                        '--vscode-editor-background': 'transparent',
-                        '--vscode-editorGutter-background': 'transparent'
-                      }
-                    }}>
-                    <legend>
-                      <Typography variant="body2" sx={{ px: 1 }}>
-                        User Prompt Template
-                      </Typography>
-                    </legend>
-                    <HandlebarsEditor
-                      key="userPromptTemplate"
-                      code={sidekick?.userPromptTemplate ?? ''}
-                      setCode={(value: string) => setValue('userPromptTemplate', value)}
-                      editorOptions={editorOptions}
-                      onInitializePane={onInitializePane}
+                  <Box component="fieldset" sx={editorStyles}>
+                    <legend>User Prompt Template *</legend>
+                    <Controller
+                      name="userPromptTemplate"
+                      control={control}
+                      defaultValue={sidekick?.systemPromptTemplate ?? ''}
+                      rules={{ required: true }}
+                      render={({ field: { ref, ...field } }) => (
+                        <FormControl fullWidth error={!!errors.userPromptTemplate}>
+                          <HandlebarsEditor
+                            key="userPromptTemplate"
+                            code={sidekick?.userPromptTemplate ?? ''}
+                            setCode={(value: string) => setValue('userPromptTemplate', value)}
+                            editorOptions={editorOptions}
+                            onInitializePane={onInitializePane}
+                          />
+                          {errors.userPromptTemplate && (
+                            <FormHelperText error>Required.</FormHelperText>
+                          )}
+                        </FormControl>
+                      )}
                     />
                   </Box>
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Box
-                    component="fieldset"
-                    py={2}
-                    sx={{
-                      'borderRadius': 2,
-                      'overflow': 'hidden',
-                      '& .handlebars-editor .monaco-editor': {
-                        '--vscode-editor-background': 'transparent',
-                        '--vscode-editorGutter-background': 'transparent'
-                      }
-                    }}>
-                    <legend>
-                      <Typography variant="body2" sx={{ px: 1 }}>
-                        Context String Render
-                      </Typography>
-                    </legend>
-                    <HandlebarsEditor
-                      key="contextStringRender"
-                      code={sidekick?.contextStringRender ?? ''}
-                      setCode={(value: string) => setValue('contextStringRender', value)}
-                      editorOptions={editorOptions}
-                      onInitializePane={onInitializePane}
+                  <Box component="fieldset" sx={editorStyles}>
+                    <legend>Context String Render</legend>
+                    <Controller
+                      name="contextStringRender"
+                      control={control}
+                      defaultValue={sidekick?.contextStringRender ?? ''}
+                      render={({ field: { ref, ...field } }) => (
+                        <FormControl fullWidth error={!!errors.contextStringRender}>
+                          <HandlebarsEditor
+                            key="contextStringRender"
+                            code={sidekick?.contextStringRender ?? ''}
+                            setCode={(value: string) => setValue('contextStringRender', value)}
+                            editorOptions={editorOptions}
+                            onInitializePane={onInitializePane}
+                          />
+                          {errors.contextStringRender && (
+                            <FormHelperText error>Required.</FormHelperText>
+                          )}
+                        </FormControl>
+                      )}
                     />
                   </Box>
                 </Grid>
@@ -385,9 +460,6 @@ const SidekickForm = ({
               <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
                 <Grid item xs={12}>
                   <FormControl fullWidth size="small">
-                    <FormLabel id="sharedWith-label" sx={{ textAlign: 'center' }}>
-                      Shared With
-                    </FormLabel>
                     <Controller
                       name="sharedWith"
                       control={control}
@@ -400,7 +472,8 @@ const SidekickForm = ({
                           defaultValue={sidekick?.sharedWith ?? 'private'}
                           required
                           fullWidth
-                          sx={{ mt: 4, width: '100%', mx: 'auto' }}>
+                          label="Shared With"
+                          sx={{ ...selectStyles, pt: 1, pb: 0, width: '100%', mx: 'auto' }}>
                           <MenuItem value="private">Private</MenuItem>
                           <MenuItem value="org">My Org</MenuItem>
                           <MenuItem value="global">Global</MenuItem>
@@ -412,9 +485,6 @@ const SidekickForm = ({
                 </Grid>
                 <Grid item xs={12}>
                   <FormControl fullWidth size="small">
-                    <FormLabel id="aiModel-label" sx={{ textAlign: 'center' }}>
-                      AI Model
-                    </FormLabel>
                     <Controller
                       name="aiModel"
                       control={control}
@@ -427,7 +497,8 @@ const SidekickForm = ({
                           required
                           defaultValue={sidekick?.aiModel ?? 'gpt-3.5-turbo'}
                           fullWidth
-                          sx={{ mt: 4, width: '100%', mx: 'auto' }}>
+                          label="AI Model"
+                          sx={{ ...selectStyles, pt: 1, pb: 0, width: '100%', mx: 'auto' }}>
                           <MenuItem value="gpt-3.5-turbo">GPT 3.5</MenuItem>
                           <MenuItem value="gpt-3.5-turbo-16k">GPT 3.5 16k</MenuItem>
                           <MenuItem value="gpt-4">GPT 4</MenuItem>
