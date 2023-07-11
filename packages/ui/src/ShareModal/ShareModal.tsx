@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import axios from 'axios';
 import {
   Autocomplete,
@@ -38,18 +38,17 @@ interface ModalProps {
 
 const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'file' }) => {
   const router = useRouter();
-  const { chat, setChat } = useAnswers();
+  const { chat } = useAnswers();
   const [open, setOpen] = useState(true);
   const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState<string | null>(null);
+
   const {
-    register,
+    control,
     handleSubmit,
-    setValue,
-    setFocus,
-    formState: { errors, dirtyFields, isDirty, isSubmitSuccessful },
-    setError,
     clearErrors,
+    setValue,
+    formState: { isValid },
+    setError,
     reset
   } = useForm<IFormInput>({
     defaultValues: {
@@ -70,7 +69,7 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
         ...data,
         email: [...(chat?.users?.map((user: User) => user.email) ?? []), ...data.email]
       });
-
+      reset();
       router.refresh();
     } catch (err: any) {
       setError('email', { message: err.message ?? 'There was an error, please try again.' });
@@ -95,7 +94,6 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
       setLoading(false);
     }
   };
-  console.log('Chat', chat);
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -125,36 +123,45 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
             <Typography>Invite teammates to collaborate together</Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 1 }}>
-            <Autocomplete
-              options={[]}
-              multiple
-              freeSolo
-              fullWidth
-              placeholder="Email, comma separated"
-              onChange={(event, value) => {
-                console.log('Change');
-                if (value.some((email: string) => !/\S+@\S+\.\S+/.test(email))) {
-                  setError('email', { message: 'Enter valid emails' });
-                } else {
-                  clearErrors('email');
-                }
-                setValue('email', value);
+            <Controller
+              control={control}
+              rules={{
+                required: 'Enter at least one email.'
               }}
-              renderInput={(params) => (
-                <TextField
-                  // {...register('email', {})}
-                  {...params}
-                  label="Email"
-                  error={Boolean(errors.email)}
-                  helperText={errors.email?.message}
+              name="email"
+              render={({ formState: { errors }, field: { onBlur, value, ref } }) => (
+                <Autocomplete
+                  options={[]}
+                  multiple
+                  freeSolo
+                  fullWidth
+                  placeholder="Email, comma separated"
+                  onBlur={onBlur}
+                  value={value ?? []}
+                  ref={ref}
+                  onChange={(event, value) => {
+                    if (value.some((email: string) => !/\S+@\S+\.\S+/.test(email))) {
+                      setError('email', { message: 'Enter valid emails' });
+                    } else {
+                      clearErrors('email');
+                    }
+
+                    setValue('email', value, { shouldDirty: true });
+                  }}
+                  renderInput={({ inputProps: { ...inputProps }, ...params }) => (
+                    <TextField
+                      {...params}
+                      inputProps={inputProps}
+                      label="Email"
+                      error={Boolean(errors.email)}
+                      helperText={errors.email?.message}
+                    />
+                  )}
                 />
               )}
             />
-            <Button
-              variant="contained"
-              // disabled={!isDirty && !isSubmitSuccessful}
-              type="submit"
-              sx={{ maxHeight: 50 }}>
+
+            <Button variant="contained" disabled={!isValid} type="submit" sx={{ maxHeight: 50 }}>
               Invite
             </Button>
           </Box>
@@ -162,6 +169,7 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
             <List dense>
               {chat?.users?.map((user) => (
                 <ListItem
+                  key={user?.id}
                   disablePadding
                   secondaryAction={
                     chat.ownerId !== user.id ? (
