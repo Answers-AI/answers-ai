@@ -2,7 +2,7 @@ import { AppSettings } from 'types';
 
 export const SYSTEM_SETTINGS: AppSettings = {
   services: [
-    { id: 'file', name: 'file', imageURL: '/static/images/icon-fast-text.svg' },
+    { id: 'file', name: 'Plain Text', imageURL: '/static/images/icon-fast-text.svg' },
     { id: 'document', name: 'document', imageURL: '/static/images/documents.png' },
     {
       id: 'confluence',

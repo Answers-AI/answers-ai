@@ -14,16 +14,16 @@ export const JourneyAppsDrawer = ({
   appSettings: AppSettings;
   activeApp?: string;
 }) => {
-  const flags = useFlags(appSettings?.services?.map((s) => s.name) ?? []);
+  const flags = useFlags(appSettings?.services?.map((s) => s.id) ?? []);
 
   const enabledServices: AppService[] | undefined = appSettings?.services?.filter((service) => {
-    const isServiceEnabledInFlags = (flags?.[service.name] as any)?.enabled;
+    const isServiceEnabledInFlags = (flags?.[service.id] as any)?.enabled;
     return isServiceEnabledInFlags || service.enabled;
   });
 
   const [serviceOpen, setServiceOpen] = React.useState<string>('');
   const { filters, updateFilter } = useAnswers();
-  const selectedService = enabledServices?.find((service) => service.name === serviceOpen);
+  const selectedService = enabledServices?.find((service) => service.id === serviceOpen);
 
   return (
     <>
@@ -86,7 +86,7 @@ export const JourneyAppsDrawer = ({
                   updateFilter={updateFilter}
                   enabled={true}
                   {...selectedService}
-                  id={selectedService.name}
+                  id={selectedService.id}
                   expanded={true}
                 />
               </Box>

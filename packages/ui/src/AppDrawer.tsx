@@ -99,15 +99,16 @@ export const AppDrawer = ({ session }: any) => {
                   {user?.email}
                 </Typography>
               }>
-              <Avatar
-                src={user?.image}
-                sx={{
-                  bgcolor: 'secondary.main',
-                  height: '32px',
-                  width: '32px'
-                }}
-                title={user?.name?.charAt(0)}
-              />
+              <div>
+                <Avatar
+                  src={user?.image}
+                  sx={{
+                    bgcolor: 'secondary.main',
+                    height: '32px',
+                    width: '32px'
+                  }}
+                />
+              </div>
             </Tooltip>
           </ListItemIcon>
         </ListItem>

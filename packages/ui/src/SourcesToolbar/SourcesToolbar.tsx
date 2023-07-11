@@ -32,7 +32,7 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
   const enabledServices: AppService[] | undefined = React.useMemo(
     () =>
       appSettings?.services?.filter((service) => {
-        return (flags?.[service.name] as any)?.enabled;
+        return (flags?.[service.id] as any)?.enabled;
       }) ?? [],
     [appSettings?.services, flags]
   );
@@ -141,7 +141,7 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
                   </ListItemButton>
                   <Collapse in={opened == service.id} sx={{ width: '100%' }}>
                     <JourneySetting
-                      app={service.name}
+                      app={service.id}
                       appSettings={appSettings}
                       filters={filters}
                       updateFilter={updateFilter}

@@ -12,9 +12,11 @@ import {
 } from '@mui/material';
 
 import { useAnswers } from './AnswersContext';
+import JourneySetting from '@ui/JourneySetting';
+
 import { AppService, AppSettings } from 'types';
 import { useFlags } from 'flagsmith/react';
-import IntegrationSetting from './IntegrationSetting';
+
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { signIn } from 'next-auth/react';
@@ -56,6 +58,7 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
   return (
     <>
       <Card
+        onClick={onClick}
         component={motion.div}
         layoutId={id}
         sx={{
@@ -166,11 +169,13 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
                     // transitionDelay: '1s',
                     display: 'flex',
                     flexDirection: 'column',
-                    ...(expanded ? { maxHeight: '90vh', transitionDelay: '3s' } : { maxHeight: 0 })
+                    ...(expanded
+                      ? { maxHeight: '90vh', opacity: 1, transitionDelay: '4s' }
+                      : { maxHeight: 0, opacity: 0 })
                   }}>
                   <Typography variant="overline">Settings</Typography>
-                  <IntegrationSetting
-                    app={name}
+                  <JourneySetting
+                    app={id}
                     expanded={expanded}
                     appSettings={appSettings}
                     editable={editable}
