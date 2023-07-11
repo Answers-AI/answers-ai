@@ -129,7 +129,7 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
                 required: 'Enter at least one email.'
               }}
               name="email"
-              render={({ formState: { errors }, field: { onChange, onBlur, value, ref } }) => (
+              render={({ formState: { errors }, field: { onBlur, value, ref } }) => (
                 <Autocomplete
                   options={[]}
                   multiple
@@ -137,7 +137,7 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
                   fullWidth
                   placeholder="Email, comma separated"
                   onBlur={onBlur}
-                  value={value}
+                  value={value ?? []}
                   ref={ref}
                   onChange={(event, value) => {
                     if (value.some((email: string) => !/\S+@\S+\.\S+/.test(email))) {
@@ -169,6 +169,7 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
             <List dense>
               {chat?.users?.map((user) => (
                 <ListItem
+                  key={user?.id}
                   disablePadding
                   secondaryAction={
                     chat.ownerId !== user.id ? (
