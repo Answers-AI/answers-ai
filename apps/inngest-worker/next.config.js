@@ -6,7 +6,6 @@ const { withSentryConfig } = require('@sentry/nextjs');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 });
-// hi
 
 /**
  * @type {import('next').NextConfig}
@@ -27,7 +26,7 @@ let nextConfig = withBundleAnalyzer({
   },
 
   webpack: (config, { isServer }) => {
-    config.externals = [...config.externals, 'puppeteer', 'canvas'];
+    config.externals = [...config.externals, 'puppeteer', 'canvas', 'pdfjs-dist'];
     config.plugins = [
       ...config.plugins,
       // new PrismaPlugin(),
