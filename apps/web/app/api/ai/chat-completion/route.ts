@@ -1,13 +1,13 @@
 // import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
-import { authenticateUser } from '@utils/auth/authenticateUser';
+import { authenticateApiKey } from '@utils/auth/authenticateApiKey';
 import { respond401 } from '@utils/auth/respond401';
 import OpenAIClient from '@utils/openai/openai';
 
 export async function POST(req: Request) {
-  const user = await authenticateUser(req);
+  const result = await authenticateApiKey(req);
 
-  if (!user) return respond401();
+  if (!result) return respond401();
 
   const data = await req.json();
 

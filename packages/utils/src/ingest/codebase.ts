@@ -14,21 +14,8 @@ export const codebaseEmbeddings: EventVersionHandler<{
   v: '1',
   handler: async ({ event }) => {
     const source = 'codebase';
-    const user = await prisma.user.findUnique({
-      where: { id: event?.user?.id! },
-      include: { currentOrganization: true }
-    });
-
-    if (!user?.id) throw new Error('No user found');
-
     const data = event.data;
     const { text, repo, filePath, code } = data;
-
-    let organizationId = user.organizationId;
-    if (user.role === 'superadmin' && data.organizationId) {
-      organizationId = data.organizationId;
-    }
-
     const url = `${repo}/${filePath}`;
 
     await prisma.document.upsert({
@@ -62,6 +49,30 @@ export const codebaseEmbeddings: EventVersionHandler<{
         source
       }
     });
+
+    let organizationId: string | null = null;
+    if (event?.user) {
+      const user = await prisma.user.findUnique({
+        where: { id: event?.user?.id! },
+        include: { currentOrganization: true }
+      });
+
+      if (!user?.id) throw new Error('No user found');
+
+      organizationId = user.organizationId;
+
+      if (user.role === 'superadmin' && data.organizationId) {
+        organizationId = data.organizationId;
+      }
+    } else if (event?.organization) {
+      const organization = await prisma.organization.findUnique({
+        where: { id: event?.organization?.id! }
+      });
+
+      if (!organization?.id) throw new Error('No organization found');
+
+      organizationId = organization.id;
+    }
 
     if (!organizationId) throw new Error('No organizationId found');
 
