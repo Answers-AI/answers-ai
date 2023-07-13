@@ -81,7 +81,20 @@ export const ChatDetail = ({
             color={'transparent'}
             elevation={0}>
             <Toolbar>
-              <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  p: {
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    textTransform: 'capitalize',
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: '1'
+                  }
+                }}>
                 {chat ? <Typography variant="body1">{chat?.title ?? chat.id}</Typography> : null}
                 {journey ? (
                   <Typography variant="body2">{journey?.goal ?? journey?.title}</Typography>
