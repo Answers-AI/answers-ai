@@ -119,9 +119,9 @@ export async function POST(req: Request) {
       contextDocuments,
       filters: pineconeFilters,
       context,
+      completionRequest,
       ...(process.env.NODE_ENV === 'development' && {
-        pineconeData,
-        completionRequest
+        pineconeData
       })
     },
     handleResponse
