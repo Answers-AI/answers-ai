@@ -1,59 +1,43 @@
 import React from 'react';
 import { prisma } from '@db/client';
-import SidekickForm from '@ui/SidekickForm';
 import { authOptions } from '@ui/authOptions';
 import getCachedSession from '@ui/getCachedSession';
-import getUserContextFields from '@utils/utilities/getUserContextFields';
-import getOrganizationContextFields from '@utils/utilities/getOrganizationContextFields';
+import SidekickDetail from '@ui/SidekickDetail';
 
 export const metadata = {
   title: 'Sidekick Studio | Answers AI',
   description: 'Sidekick Studio'
 };
 
-const SidekickFormPage = async ({ params }: any) => {
+const SidekickDetailPage = async ({ params }: any) => {
   const session = await getCachedSession(authOptions);
 
   if (!session?.user?.email) return null;
-
-  const uniqueTags = await prisma.sidekick.findMany({
-    select: { tags: true },
-    where: {
-      createdByUser: {
-        email: session.user.email
-      }
-    },
-    distinct: ['tags']
-  });
-
-  // Flatten and get unique values
-  const allTags = Array.from(new Set(uniqueTags.flatMap((dep) => dep.tags)));
+  const userId = session.user.id;
 
   const sidekick = await prisma.sidekick
     .findFirst({
       where: {
         id: params.sidekickId,
-        createdByUser: {
-          email: session.user.email
-        }
+        OR: [
+          { createdByUser: { id: userId } },
+          { isGlobal: true },
+          {
+            createdByUser: {
+              organizations: {
+                some: { users: { some: { id: userId } } }
+              }
+            },
+            isSharedWithOrg: true
+          }
+        ]
       }
     })
     .then((data: any) => JSON.parse(JSON.stringify(data)));
 
-  const contextFields = {
-    user: getUserContextFields(session.user),
-    organization: getOrganizationContextFields(session.user?.currentOrganization),
-    result: {
-      text: '',
-      code: '',
-      filePath: '',
-      url: ''
-    }
-  };
+  sidekick.sharedWith = sidekick.isGlobal ? 'Global' : sidekick.isSharedWithOrg ? 'Org' : 'Private';
 
-  return (
-    <SidekickForm {...params} allTags={allTags} contextFields={contextFields} sidekick={sidekick} />
-  );
+  return <SidekickDetail {...params} sidekick={sidekick} />;
 };
 
-export default SidekickFormPage;
+export default SidekickDetailPage;

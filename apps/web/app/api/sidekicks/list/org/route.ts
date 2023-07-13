@@ -2,27 +2,23 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
-import { respond401 } from '@utils/auth/respond401';
 
-export async function GET(req: Request, { params: { id } }: { params: { id: string } }) {
+import { normalizeSidekickList } from '../../../../../utilities/normalizeSidekick';
+
+export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const userId = session?.user?.id;
-    if (!userId) return respond401();
+    if (!session?.user?.id) return NextResponse.redirect('/auth');
 
-    if (!id) {
-      return NextResponse.json({ error: 'Sidekick ID not provided' });
-    }
+    const userId = session.user.id;
 
-    const sidekick = await prisma.sidekick.findFirst({
+    const dbSidekicks = await prisma.sidekick.findMany({
       where: {
-        id,
         OR: [
-          { createdByUser: { id: userId } },
-          { isGlobal: true },
           {
             createdByUser: {
               organizations: {
+                // User attached to the sidekick is in the same organization as the current user
                 some: { users: { some: { id: userId } } }
               }
             },
@@ -32,11 +28,9 @@ export async function GET(req: Request, { params: { id } }: { params: { id: stri
       }
     });
 
-    if (!sidekick) {
-      return NextResponse.json({ error: 'Sidekick not found' });
-    }
+    const sidekicks = normalizeSidekickList(dbSidekicks);
 
-    return NextResponse.json(sidekick);
+    return NextResponse.json(sidekicks);
   } catch (error) {
     console.log('[GET] error', error);
     throw error;

@@ -12,6 +12,18 @@ async function main() {
       }
     }
   });
+
+  const testUserTwo = await prisma.user.upsert({
+    where: { email: 'test2@theanswer.ai' },
+    update: {},
+    create: {
+      email: 'tes2t@theanswer.ai',
+      name: 'Test 2',
+      ChatApp: {
+        create: { name: 'Test Chat App 2', apiKey: '05031979' }
+      }
+    }
+  });
 }
 
 main()

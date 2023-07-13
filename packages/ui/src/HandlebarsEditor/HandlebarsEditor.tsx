@@ -20,19 +20,48 @@ export type MonacoOnInitializePane = (
 
 export type HandlebarsEditorProps = {
   code: string;
-  setCode: any; //Dispatch<SetStateAction<string>>;
-  editorOptions: any;
+  setCode?: any; //Dispatch<SetStateAction<string>>;
+  editorOptions?: any;
   contextFields?: any;
-  onInitializePane: MonacoOnInitializePane;
+  readOnly?: boolean;
+  onInitializePane?: MonacoOnInitializePane;
 };
 
-//
-// End of placeholder typings
-//
+const defaultEditorOptions = {
+  minimap: {
+    enabled: false
+  },
+  wordWrap: 'on',
+  scrollbar: {
+    horizontalScrollbarSize: 4,
+    verticalScrollbarSize: 4
+  },
+  padding: '16px',
+  scrollBeyondLastLine: false,
+  autoIndent: 'full',
+  contextmenu: true,
+  fontFamily: 'monospace',
+  fontSize: 13,
+  lineHeight: 24,
+  hideCursorInOverviewRuler: true,
+  matchBrackets: 'always',
+  selectOnLineNumbers: true,
+  roundedSelection: false,
+  readOnly: true,
+  cursorStyle: 'line',
+  automaticLayout: true
+};
 
 const HandlebarsEditor = (props: HandlebarsEditorProps): JSX.Element => {
-  const { code, setCode, editorOptions, contextFields, onInitializePane } = props;
-
+  const {
+    code,
+    setCode,
+    editorOptions = {},
+    contextFields,
+    onInitializePane,
+    readOnly = true
+  } = props;
+  const options = { ...defaultEditorOptions, ...editorOptions };
   const monacoEditorRef = useRef<any | null>(null);
   const editorRef = useRef<any | null>(null);
 
@@ -42,7 +71,7 @@ const HandlebarsEditor = (props: HandlebarsEditorProps): JSX.Element => {
       // again, monaco takes years to mount and load, so this may load as null
       const model: any = monacoEditorRef.current.getModels();
 
-      if (model?.length > 0) {
+      if (model?.length > 0 && onInitializePane) {
         // finally, do editor's document initialization here
         onInitializePane(monacoEditorRef, editorRef, model);
       }
@@ -54,7 +83,7 @@ const HandlebarsEditor = (props: HandlebarsEditorProps): JSX.Element => {
       height="125px"
       language="handlebars"
       onChange={(value, _event) => {
-        setCode(value ?? '');
+        setCode ? setCode(value ?? '') : null;
       }}
       onMount={(editor, monaco) => {
         const suggestionsProvider: any = {
@@ -88,7 +117,7 @@ const HandlebarsEditor = (props: HandlebarsEditorProps): JSX.Element => {
         monacoEditorRef.current = monaco.editor;
         editorRef.current = editor;
       }}
-      options={editorOptions}
+      options={{ ...options, readOnly }}
       theme="vs-dark"
       value={code}
       className="handlebars-editor"

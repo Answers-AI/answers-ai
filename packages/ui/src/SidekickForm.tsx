@@ -1,25 +1,27 @@
 'use client';
 import React, { ChangeEvent, useState } from 'react';
 import axios from 'axios';
-
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import Slider from '@mui/material/Slider';
 import { useRouter } from 'next/navigation';
-import { AnswersProvider } from './AnswersContext';
 import { useForm, Controller } from 'react-hook-form';
+
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
 import Chip from '@mui/material/Chip';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import HandlebarsEditor, { MonacoOnInitializePane } from './HandlebarsEditor';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Slider from '@mui/material/Slider';
+
 import Autocomplete from '@mui/material/Autocomplete';
 import FormHelperText from '@mui/material/FormHelperText';
 import { ErrorMessage } from '@hookform/error-message';
-import Snackbar from '@mui/material/Snackbar';
 import Slide, { SlideProps } from '@mui/material/Slide';
+
+import { AnswersProvider } from './AnswersContext';
+import HandlebarsEditor from './HandlebarsEditor';
+import SnackMessage from './SnackMessage';
 
 type TransitionProps = Omit<SlideProps, 'direction'>;
 
@@ -28,6 +30,43 @@ function TransitionLeft(props: TransitionProps) {
 }
 
 import { Sidekick, AppSettings } from 'types';
+
+const editorStyles = {
+  'borderRadius': 1.5,
+  'textAlign': 'left',
+  'margin': 0,
+  'borderStyle': 'solid',
+  'borderWidth': '1px',
+  'minWidth': '0%',
+  'paddingRight': 1,
+  'paddingLeft': 1.5,
+  'py': 2,
+  'position': 'relative',
+  'borderColor': 'rgba(255, 255, 255, .23)',
+
+  '&:hover': {
+    borderColor: 'rgba(255, 255, 255, 1)'
+  },
+
+  '& legend': {
+    color: '#9e9e9e',
+    fontWeight: 400,
+    fontSize: '.75rem',
+    lineHeight: '1.4375em',
+    px: 1,
+    position: 'relative',
+    display: 'block',
+    maxWidth: 'calc(75%)',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  },
+
+  '& .handlebars-editor .monaco-editor': {
+    '--vscode-editor-background': 'transparent',
+    '--vscode-editorGutter-background': 'transparent'
+  }
+};
 
 interface SidekickInput
   extends Omit<
@@ -61,25 +100,7 @@ const SidekickForm = ({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [sliderValues, setSliderValues] = useState(defaultSliderValues);
-  const [message, setMessage] = useState('');
-  const [messageOpen, setMessageOpen] = React.useState(false);
-  const [messageTransition, setMessageTransition] = React.useState<
-    React.ComponentType<TransitionProps> | undefined
-  >(undefined);
-
-  const createMessage = (message: string) => {
-    setMessage(message);
-    setMessageOpen(true);
-  };
-
-  const hideMessage = () => {
-    setMessage('');
-    setMessageOpen(false);
-  };
-
-  const handleMessageClose = () => {
-    setMessageOpen(false);
-  };
+  const [theMessage, setTheMessage] = useState('');
 
   const {
     register,
@@ -108,10 +129,6 @@ const SidekickForm = ({
     }));
   };
 
-  const onInitializePane: MonacoOnInitializePane = (_monacoEditorRef, _editorRef, _model) => {
-    // Just need this callback in case we want to change anything after initialization
-  };
-
   const onSubmit = async (data: SidekickInput) => {
     setLoading(true);
     try {
@@ -136,17 +153,17 @@ const SidekickForm = ({
       }
 
       if (id) {
-        createMessage('... Updating your Sidekick');
-        await axios.patch(`/api/sidekicks/${id}`, { ...rest });
-        createMessage('Your sidekick was saved successfully.');
+        setTheMessage('... Updating your Sidekick');
+        await axios.patch(`/api/sidekicks/${id}/edit`, { ...rest });
+        setTheMessage('Your sidekick was saved successfully.');
       } else {
-        createMessage('... Creating your Sidekick');
-        const { data: sidekick } = await axios.post('/api/sidekicks', { ...rest });
-        createMessage('Your sidekick was saved successfully.');
+        setTheMessage('... Creating your Sidekick');
+        const { data: sidekick } = await axios.post('/api/sidekicks/new', { ...rest });
+        setTheMessage('Your sidekick was saved successfully.');
         router.replace(`/sidekick-studio/${sidekick.id}`);
       }
     } catch (err: any) {
-      hideMessage();
+      setTheMessage('');
       if (err.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
@@ -169,15 +186,6 @@ const SidekickForm = ({
   const selectStyles = {
     '& legend': {
       color: '#9e9e9e',
-      // fontWeight: 400,
-      // fontSize: '.75rem',
-      // lineHeight: '1.4375em',
-      // position: 'relative',
-      // display: 'block',
-      // maxWidth: 'calc(75%)',
-      // whiteSpace: 'nowrap',
-      // overflow: 'hidden',
-      // textOverflow: 'ellipsis',
 
       span: {
         opacity: 1,
@@ -186,82 +194,10 @@ const SidekickForm = ({
     }
   };
 
-  const editorStyles = {
-    'borderRadius': 1.5,
-    'textAlign': 'left',
-    'margin': 0,
-    'borderStyle': 'solid',
-    'borderWidth': '1px',
-    'minWidth': '0%',
-    'paddingRight': 1,
-    'paddingLeft': 1.5,
-    'py': 2,
-    'position': 'relative',
-    'borderColor': 'rgba(255, 255, 255, .23)',
-
-    '&:hover': {
-      borderColor: 'rgba(255, 255, 255, 1)'
-    },
-
-    '& legend': {
-      color: '#9e9e9e',
-      fontWeight: 400,
-      fontSize: '.75rem',
-      lineHeight: '1.4375em',
-      px: 1,
-      position: 'relative',
-      display: 'block',
-      maxWidth: 'calc(75%)',
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis'
-    },
-
-    '& .handlebars-editor .monaco-editor': {
-      '--vscode-editor-background': 'transparent',
-      '--vscode-editorGutter-background': 'transparent'
-    }
-  };
-
-  const editorOptions = {
-    minimap: {
-      enabled: false
-    },
-    wordWrap: 'on',
-    scrollbar: {
-      horizontalScrollbarSize: 4,
-      verticalScrollbarSize: 4
-    },
-    padding: '16px',
-    scrollBeyondLastLine: false,
-    autoIndent: 'full',
-    contextmenu: true,
-    fontFamily: 'monospace',
-    fontSize: 13,
-    lineHeight: 24,
-    hideCursorInOverviewRuler: true,
-    matchBrackets: 'always',
-    selectOnLineNumbers: true,
-    roundedSelection: false,
-    readOnly: false,
-    cursorStyle: 'line',
-    automaticLayout: true
-  };
-
   return (
     <AnswersProvider appSettings={appSettings}>
       <Box p={8} sx={{ position: 'relative' }}>
-        {message?.trim() !== '' && (
-          <Snackbar
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={messageOpen}
-            autoHideDuration={6000}
-            onClose={handleMessageClose}
-            TransitionComponent={messageTransition}
-            message={message}
-            key={messageTransition ? messageTransition.name : ''}
-          />
-        )}
+        {theMessage?.trim() !== '' && <SnackMessage message={theMessage} />}
         <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
           <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
             <Grid item xs={12} md={9}>
@@ -373,8 +309,7 @@ const SidekickForm = ({
                             code={sidekick?.systemPromptTemplate ?? ''}
                             setCode={(value: string) => setValue('systemPromptTemplate', value)}
                             contextFields={contextFields}
-                            editorOptions={editorOptions}
-                            onInitializePane={onInitializePane}
+                            readOnly={false}
                           />
                           {errors.systemPromptTemplate && (
                             <FormHelperText error>Required.</FormHelperText>
@@ -399,8 +334,7 @@ const SidekickForm = ({
                             key="userPromptTemplate"
                             code={sidekick?.userPromptTemplate ?? ''}
                             setCode={(value: string) => setValue('userPromptTemplate', value)}
-                            editorOptions={editorOptions}
-                            onInitializePane={onInitializePane}
+                            readOnly={false}
                           />
                           {errors.userPromptTemplate && (
                             <FormHelperText error>Required.</FormHelperText>
@@ -424,8 +358,7 @@ const SidekickForm = ({
                             key="contextStringRender"
                             code={sidekick?.contextStringRender ?? ''}
                             setCode={(value: string) => setValue('contextStringRender', value)}
-                            editorOptions={editorOptions}
-                            onInitializePane={onInitializePane}
+                            readOnly={false}
                           />
                           {errors.contextStringRender && (
                             <FormHelperText error>Required.</FormHelperText>

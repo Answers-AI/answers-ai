@@ -1,7 +1,10 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import NextLink from 'next/link';
+
+import { visuallyHidden } from '@mui/utils';
+
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -13,27 +16,19 @@ import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
+
 import StarIcon from '@mui/icons-material/Star';
-import { visuallyHidden } from '@mui/utils';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
+
+import SnackMessage from './SnackMessage';
 
 import { Order, getComparator, stableSort } from '@utils/utilities/datatables';
-import { AppSettings, Sidekick } from 'types';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import Button from '@mui/material/Button';
-import toSentenceCase from '../../utils/src/utilities/toSentenceCase';
 
-const fetchStarAPI = (id: string) => {
-  // TODO: Implement this
-  // fetch(`API_ENDPOINT/star/${id}`)
-  //   .then((response) => response.json())
-  //   .then((data) => console.log(data))
-  //   .catch((error) => console.error('Error:', error));
-};
+import { AppSettings, SidekickListItem } from 'types';
 
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof Sidekick;
+  id: keyof SidekickListItem;
   label: string;
   numeric: boolean;
 }
@@ -66,16 +61,17 @@ const headCells: readonly HeadCell[] = [
 ];
 
 interface EnhancedTableProps {
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Sidekick) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof SidekickListItem) => void;
   order: Order;
   orderBy: string;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
-  const createSortHandler = (property: keyof Sidekick) => (event: React.MouseEvent<unknown>) => {
-    onRequestSort(event, property);
-  };
+  const createSortHandler =
+    (property: keyof SidekickListItem) => (event: React.MouseEvent<unknown>) => {
+      onRequestSort(event, property);
+    };
 
   return (
     <TableHead>
@@ -90,7 +86,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}>
+              onClick={createSortHandler(headCell.id)}
+              sx={{ whiteSpace: 'nowrap' }}>
               {headCell.label}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
@@ -105,27 +102,84 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
-  const [sidekicks, setSidekicks] = useState<Sidekick[]>([]);
+const SidekickList = ({
+  endpoint,
+  appSettings,
+  sidekicks
+}: {
+  endpoint: string;
+  appSettings: AppSettings;
+  sidekicks?: SidekickListItem[];
+}) => {
+  const [currentSidekicks, setCurrentSidekicks] = useState<SidekickListItem[]>(sidekicks ?? []);
+  const [isLoading, setIsLoading] = useState(true);
+  const [theMessage, setTheMessage] = useState('');
   const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof Sidekick>('label');
+  const [orderBy, setOrderBy] = React.useState<keyof SidekickListItem>('label');
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(25);
+  const [updatedSidekicks, setUpdatedSidekicks] = useState<SidekickListItem[]>([]);
 
   useEffect(() => {
     const fetchSidekicks = async () => {
       try {
-        const response = await axios.get('/api/sidekicks');
-        setSidekicks(response.data);
+        const response = await axios.get(endpoint);
+        setCurrentSidekicks(response.data);
       } catch (error) {
         console.error('Error fetching sidekicks:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchSidekicks();
-  }, []);
+    if (!sidekicks && endpoint) {
+      setIsLoading(true);
+      fetchSidekicks();
+    }
+  }, [endpoint, sidekicks]);
 
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Sidekick) => {
+  const handleUpdateFavorite = async (id: string) => {
+    try {
+      setTheMessage('... Updating');
+      const { data: sidekick } = await axios.patch(`/api/sidekicks/${id}/favorite`);
+      setTheMessage('... Updated Successfully');
+
+      if (!!sidekicks?.length) {
+        // Update the specific row in the sidekicks state
+        const updatedSidekicks = sidekicks.map((sidekick) => {
+          if (sidekick.id === id) {
+            return { ...sidekick, isFavorite: !sidekick.isFavorite };
+          }
+          return sidekick;
+        });
+        setUpdatedSidekicks(updatedSidekicks);
+      }
+    } catch (err: any) {
+      if (err.response) {
+        // that falls out of the range of 2xx
+
+        setTheMessage(`Error: ${err.response.data}`);
+        // setError('root.serverError', { type: 'custom', message: err.response.data });
+      } else if (err.request) {
+        // The request was made but no response was received
+
+        setTheMessage(`Error: No response received from the server`);
+        // setError('root.serverError', {
+        //   type: 'custom',
+        //   message: 'No response received from the server'
+        // });
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setTheMessage(`Error: ${err.message}`);
+        // setError('root.serverError', { type: 'custom', message: err.message });
+      }
+    }
+  };
+
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: keyof SidekickListItem
+  ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
@@ -141,30 +195,21 @@ const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
   };
 
   // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - sidekicks.length) : 0;
+  const emptyRows =
+    page > 0 && !!sidekicks?.length ? Math.max(0, (1 + page) * rowsPerPage - sidekicks?.length) : 0;
 
-  const visibleRows = React.useMemo(
-    () =>
-      stableSort(sidekicks as any[], getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      ),
-    [order, orderBy, page, rowsPerPage, sidekicks]
-  );
+  const visibleRows = React.useMemo(() => {
+    const sidekickArray = updatedSidekicks.length > 0 ? updatedSidekicks : currentSidekicks;
+    return stableSort(sidekickArray as any[], getComparator(order, orderBy)).slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage
+    );
+  }, [currentSidekicks, order, orderBy, page, rowsPerPage, updatedSidekicks]);
 
   return (
-    <Box p={8}>
-      <Typography variant="h2" component="h1">
-        Sidekicks
-      </Typography>
+    <Box>
+      <SnackMessage message={theMessage} />
 
-      <Divider sx={{ my: 2 }} />
-
-      <Box sx={{ textAlign: 'right', mb: 2 }}>
-        <NextLink href="/sidekick-studio/new" passHref>
-          <Button variant="outlined">Add New Sidekick</Button>
-        </NextLink>
-      </Box>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
@@ -172,22 +217,22 @@ const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
             <TableBody>
               {visibleRows.map((row, index) => {
                 const labelId = `enhanced-table-checkbox-${index}`;
-                // @ts-ignore-next-line Data table is typing tags as a string even though it's an array of strings
-                const tags = (row.tags ?? []).map((t) => toSentenceCase(t)).join(', ');
 
                 return (
                   <TableRow hover tabIndex={-1} key={row.label} sx={{ cursor: 'pointer' }}>
                     <TableCell padding="checkbox">
-                      <IconButton onClick={() => fetchStarAPI(row.id as string)}>
-                        <StarIcon />
+                      <IconButton onClick={() => handleUpdateFavorite(row.id as string)}>
+                        {row.isFavorite ? <StarIcon /> : <StarOutlineIcon />}
                       </IconButton>
                     </TableCell>
 
                     <TableCell component="th" id={labelId} scope="row" padding="none">
-                      <NextLink href={`/sidekick-studio/${row.id}`}>{row.label}</NextLink>
+                      <NextLink href={`/sidekick-studio/${row.id}/edit`}>
+                        <Box sx={{ whiteSpace: 'nowrap' }}>{row.label}</Box>
+                      </NextLink>
                     </TableCell>
                     <TableCell>{row.placeholder}</TableCell>
-                    <TableCell>{tags}</TableCell>
+                    <TableCell>{row.tags}</TableCell>
                     <TableCell sx={{ textTransform: 'capitalize' }}>{row.sharedWith}</TableCell>
                   </TableRow>
                 );
@@ -204,9 +249,9 @@ const SidekickList = ({ appSettings }: { appSettings: AppSettings }) => {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[25, 50, 100]}
+          rowsPerPageOptions={[1, 25, 50, 100]}
           component="div"
-          count={sidekicks.length}
+          count={currentSidekicks?.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
