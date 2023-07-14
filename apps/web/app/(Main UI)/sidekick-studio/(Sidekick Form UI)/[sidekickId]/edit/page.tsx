@@ -15,7 +15,7 @@ export const metadata = {
 const SidekickFormPage = async ({ params }: any) => {
   const session = await getCachedSession(authOptions);
 
-  if (!session?.user?.email) {
+  if (!session?.user?.id) {
     return redirect('/auth');
   }
 

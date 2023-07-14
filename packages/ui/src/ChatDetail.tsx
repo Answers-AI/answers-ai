@@ -2,7 +2,6 @@
 import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-import Button from '@mui/material/Button';
 import NextLink from 'next/link';
 
 import AppBar from '@mui/material/AppBar';
@@ -13,6 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 
 import ArrowBackIcon from '@mui/icons-material/ArrowForward';
 import ShareIcon from '@mui/icons-material/IosShare';
@@ -167,12 +167,12 @@ export const ChatDetail = ({
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
-
                   gap: 2
                 }}>
                 {messages?.map((message, index) => (
                   <MessageCard {...message} key={`message_${index}`} />
                 ))}
+
                 {error ? (
                   <>
                     <MessageCard
@@ -192,6 +192,7 @@ export const ChatDetail = ({
                     </Box>
                   </>
                 ) : null}
+
                 {isLoading ? (
                   <MessageCard
                     //  user={user}
@@ -199,6 +200,7 @@ export const ChatDetail = ({
                     content={'...'}
                   />
                 ) : null}
+
                 {!messages?.length ? (
                   <MessageCard
                     // user={user}
@@ -208,6 +210,7 @@ export const ChatDetail = ({
                     }
                   />
                 ) : null}
+
                 {messages?.length && !isLoading && !error ? (
                   <Box sx={{ py: 2, width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <Button onClick={() => regenerateAnswer()} variant="outlined" color="primary">

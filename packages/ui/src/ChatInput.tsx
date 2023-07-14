@@ -10,12 +10,11 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import Tooltip from '@mui/material/Tooltip';
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
 
 import { debounce } from '@utils/debounce';
 import { useAnswers } from './AnswersContext';
 import { SidekickSelect } from './SidekickSelect';
+import Fieldset from './Fieldset';
 
 import { Sidekick } from 'types';
 
@@ -99,14 +98,12 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
       <Box sx={{ display: 'flex', gap: 2 }}>
         <SidekickSelect onSidekickSelected={handleSidekickSelected} />
-        <FormControl size="small">
-          <FormLabel id="model-select-label" sx={{ pb: 1 }}>
-            Model
-          </FormLabel>
+        <Fieldset legend="Model">
           <Select
             labelId="model-select-label"
             id="model-select"
             size="small"
+            sx={{ 'boxShadow': 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
             value={gptModel}
             onChange={handleGptModelSelected}>
             <MenuItem key="gpt3" value="gpt-3.5-turbo">
@@ -119,7 +116,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
               GPT 4
             </MenuItem>
           </Select>
-        </FormControl>
+        </Fieldset>
       </Box>
       <TextField
         id="user-chat-input"

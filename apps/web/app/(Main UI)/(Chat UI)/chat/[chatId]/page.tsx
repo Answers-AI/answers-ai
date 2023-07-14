@@ -3,7 +3,6 @@ import { prisma } from '@db/client';
 import Chat from '@ui/Chat';
 import ChatNotFound from '@ui/ChatNotFound';
 import getCachedSession from '@ui/getCachedSession';
-import { redirect } from 'next/navigation';
 
 export const metadata = {
   title: 'Chats | Answers AI',
