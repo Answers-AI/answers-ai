@@ -51,18 +51,26 @@ model User {
   updatedAt      DateTime  @default(now()) @updatedAt
   ChatApp        ChatApp[]
   organizationId String?
-  apiKey         ApiKey?
+  apiKeys        ApiKey[]
 
   favoritedSidekicks Sidekick[]     @relation("SidekickFavoritedBy")
   Sidekick           Sidekick[]
   contextFields      ContextField[]
 }
 
+enum ApiKeyType {
+  USER
+  ORGANIZATION
+}
+
 model ApiKey {
-  id     String @id @default(cuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
-  key    String @unique
+  id             String        @id @default(cuid())
+  userId         String?
+  organizationId String?
+  type           ApiKeyType    @default(USER)
+  user           User?         @relation(fields: [userId], references: [id])
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  key            String        @unique
 }
 
 model Organization {
@@ -79,6 +87,7 @@ model Organization {
   journeys            Journey[]
   chats               Chat[]
   appSettings         Json?
+  apiKeys             ApiKey[]
 }
 
 model ContextField {

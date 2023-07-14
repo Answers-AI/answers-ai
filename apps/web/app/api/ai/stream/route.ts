@@ -127,9 +127,9 @@ export async function POST(req: Request) {
       contextDocuments,
       filters: pineconeFilters,
       context,
+      completionRequest,
       ...(IS_DEVELOPMENT && {
-        pineconeData,
-        completionRequest
+        pineconeData
       })
     },
     handleResponse

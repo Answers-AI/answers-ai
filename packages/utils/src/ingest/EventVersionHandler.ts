@@ -1,6 +1,7 @@
 import { inngest } from './client';
 import { User, AppSettings } from 'types';
 import { createStepTools } from 'inngest/components/InngestStepTools';
+import { Organization } from 'db/generated/prisma-client';
 
 export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknown>[]) => {
   // Group all functions by event name and version i.e eventHandlerMap['user.created']['1']
@@ -61,7 +62,7 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
 };
 
 export type EventHandler<T> = (args: {
-  event: { v: string; data: T; user?: User; ts: number };
+  event: { v: string; data: T; user?: User; organization?: Organization; ts: number };
   // step: { run: (step: string, callback: () => unknown) => Promise<unknown> };
   step: ReturnType<typeof createStepTools<any, any>>[0];
 }) => Promise<unknown>;
