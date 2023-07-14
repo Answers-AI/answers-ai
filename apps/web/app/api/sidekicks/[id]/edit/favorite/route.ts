@@ -12,12 +12,16 @@ export async function PATCH(
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return respond401();
+    if (!id) {
+      throw new Error('There was an error updating your favorite');
+    }
+
     const sidekickId = id;
     const userId = session.user.id;
 
     // Find the sidekick by ID
     const sidekick = await prisma.sidekick.findUnique({
-      where: { id },
+      where: { id: sidekickId },
       include: {
         favoritedBy: {
           select: {
