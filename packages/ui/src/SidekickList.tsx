@@ -141,7 +141,7 @@ const SidekickList = ({
   const handleUpdateFavorite = async (id: string) => {
     try {
       setTheMessage('... Updating');
-      const { data: sidekick } = await axios.patch(`/api/sidekicks/${id}/favorite`);
+      const { data: sidekick } = await axios.patch(`/api/sidekicks/${id}/edit/favorite`);
       setTheMessage('... Updated Successfully');
 
       if (!!sidekicks?.length) {
