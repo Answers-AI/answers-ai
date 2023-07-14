@@ -477,10 +477,11 @@ export interface Sidekick extends DB.Sidekick {
   sharedWith?: string;
 }
 
-export interface SidekickListItem extends Pick<Sidekick, 'id' | 'placeholder' | 'label'> {
+export interface SidekickListItem
+  extends Pick<Sidekick, 'id' | 'placeholder' | 'tags' | 'aiModel' | 'label'> {
   isFavorite: boolean;
   sharedWith: string;
-  tags: string;
+  tagString: string;
 }
 
 // Add the Sidekicks type

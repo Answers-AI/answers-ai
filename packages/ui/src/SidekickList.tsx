@@ -47,7 +47,7 @@ const headCells: readonly HeadCell[] = [
     label: 'Help Text'
   },
   {
-    id: 'tags',
+    id: 'tagString',
     numeric: false,
     disablePadding: false,
     label: 'Tags'
@@ -232,7 +232,7 @@ const SidekickList = ({
                       </NextLink>
                     </TableCell>
                     <TableCell>{row.placeholder}</TableCell>
-                    <TableCell>{row.tags}</TableCell>
+                    <TableCell>{row.tagString}</TableCell>
                     <TableCell sx={{ textTransform: 'capitalize' }}>{row.sharedWith}</TableCell>
                   </TableRow>
                 );

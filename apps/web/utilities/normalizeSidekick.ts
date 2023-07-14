@@ -4,8 +4,10 @@ import { Sidekick, SidekickListItem } from 'types';
 export const normalizeSidekickListItem = (sidekick: Sidekick): SidekickListItem => {
   const sidekickListItem: SidekickListItem = {
     placeholder: sidekick.placeholder || '',
-    tags: (sidekick.tags || []).map((t) => toSentenceCase(t)).join(', '),
+    tagString: (sidekick.tags || []).map((t) => toSentenceCase(t)).join(', '),
+    tags: (sidekick.tags || []).map((t) => toSentenceCase(t)),
     id: sidekick.id || '',
+    aiModel: sidekick.aiModel || '',
     label: sidekick.label || '',
     sharedWith: sidekick.isGlobal ? 'global' : sidekick.isSharedWithOrg ? 'org' : 'private',
     isFavorite: true
