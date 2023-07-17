@@ -65,6 +65,9 @@ importers:
       experimental-prisma-webpack-plugin:
         specifier: workspace:*
         version: link:../../packages/experimental-prisma-webpack-plugin
+      handlebars:
+        specifier: ^4.7.7
+        version: 4.7.7
       hnswlib-node:
         specifier: ^1.4.2
         version: 1.4.2

@@ -1,5 +1,4 @@
 import Handlebars from 'handlebars';
-const { precompile, compile } = Handlebars;
 
 // Register the helper function
 Handlebars.registerHelper('helperMissing', function () {
@@ -7,7 +6,7 @@ Handlebars.registerHelper('helperMissing', function () {
 });
 
 export function precompileTemplate(templateString) {
-  return precompile(templateString);
+  return Handlebars.precompile(templateString);
 }
 
 export function getTemplate(precompiled) {

@@ -30,6 +30,7 @@ let nextConfig = withBundleAnalyzer({
       ...config.externals,
       'db',
       'puppeteer',
+      'handlebars',
       'canvas',
       'pdfjs-dist',
       'pdfjs-dist/legacy/build/pdf'
