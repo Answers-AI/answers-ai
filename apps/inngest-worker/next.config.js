@@ -1,5 +1,4 @@
 const { PrismaPlugin } = require('experimental-prisma-webpack-plugin');
-const path = require('path');
 const webpack = require('webpack');
 const { withSentryConfig } = require('@sentry/nextjs');
 
