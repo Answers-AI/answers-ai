@@ -1,0 +1,28 @@
+name: Deploy Inngest
+
+#only works on main for now
+#on: [pull_request, push]
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Wait for Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - id: wait-for-deploy
+        name: Wait for Render Deployment
+        uses: bounceapp/render-action@0.6.0
+        with:
+          render-token: ${{ secrets.RENDER_API_KEY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          service-id: srv-chcrauak728tp9aedne0
+          retries: 20
+          wait: 16000
+          sleep: 30000
+
+      - name: Make PUT request against Render deploy Inngest URL
+        run: |
+          curl -X PUT https://${{ steps.wait-for-deploy.outputs.url }}/api/inngest

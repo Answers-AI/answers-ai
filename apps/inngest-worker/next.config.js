@@ -1,5 +1,4 @@
 const { PrismaPlugin } = require('experimental-prisma-webpack-plugin');
-
 const webpack = require('webpack');
 const { withSentryConfig } = require('@sentry/nextjs');
 
@@ -13,6 +12,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 let nextConfig = withBundleAnalyzer({
   experimental: {
     appDir: true
+    // outputFileTracingIgnores: ['**canvas**']
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],
@@ -26,14 +26,7 @@ let nextConfig = withBundleAnalyzer({
   },
 
   webpack: (config, { isServer }) => {
-    config.externals = [
-      ...config.externals,
-      'db',
-      'puppeteer',
-      'canvas',
-      'pdfjs-dist',
-      'pdfjs-dist/legacy/build/pdf'
-    ];
+    config.externals = [...config.externals, 'puppeteer', 'canvas'];
     config.plugins = [
       ...config.plugins,
       // new PrismaPlugin(),
