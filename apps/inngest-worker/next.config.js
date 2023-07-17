@@ -12,13 +12,8 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
  */
 let nextConfig = withBundleAnalyzer({
   experimental: {
-    appDir: true,
-    // Didn't work
-    // outputFileTracingRoot: path.join(__dirname, '../../'),
-    // outputFileTracingExcludes: {
-    //   '*': ['node_modules/canvas']
-    // }
-    outputFileTracingIgnores: ['**canvas**']
+    appDir: true
+    // outputFileTracingIgnores: ['**canvas**']
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],
