@@ -1,5 +1,11 @@
 name: Deploy Inngest
-on: [pull_request, push]
+
+#only works on main for now
+#on: [pull_request, push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
