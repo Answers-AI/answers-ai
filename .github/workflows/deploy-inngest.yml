@@ -25,4 +25,4 @@ jobs:
 
       - name: Make PUT request against Render deploy Inngest URL
         run: |
-          curl -X PUT https://${{ steps.wait-for-deploy.outputs.url }}/api/inngest
+          curl -X PUT ${{ steps.wait-for-deploy.outputs.url }}/api/inngest

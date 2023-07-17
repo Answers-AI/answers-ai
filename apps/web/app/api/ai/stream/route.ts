@@ -115,6 +115,7 @@ export async function POST(req: Request) {
     },
     {
       user,
+      prompt,
       chat: chat as any,
       contextDocuments,
       filters: pineconeFilters,

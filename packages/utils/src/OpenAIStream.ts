@@ -20,7 +20,7 @@ export async function OpenAIStream(
 ) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
-  const { user, chat, context, contextDocuments } = extra;
+  const { prompt, user, chat, context, contextDocuments } = extra;
   let counter = 0;
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -99,7 +99,7 @@ export async function OpenAIStream(
           role: 'user',
           messageId: message.id,
           chatId: chat.id,
-          content: payload.prompt
+          content: prompt
           //  sidekick,
           // gptModel
         }
