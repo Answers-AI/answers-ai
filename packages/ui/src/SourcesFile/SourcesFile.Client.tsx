@@ -16,7 +16,7 @@ const SourcesFile: React.FC<{}> = ({}) => {
   const { data, error, isLoading, mutate } = useSWR<{
     sources: Document[];
     domains: { domain: string; pageCount: number }[];
-  }>(`/api/sources?source=file`, (url) => fetch(url).then((res) => res.json()));
+  }>(`/api/sources/file`, (url) => fetch(url).then((res) => res.json()));
 
   const { sources } = data || {};
   return (

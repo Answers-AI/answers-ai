@@ -15,7 +15,7 @@ const SourcesYoutube: React.FC<{}> = ({}) => {
   const { filters, updateFilter } = useAnswers();
   const { data, mutate } = useSWR<{
     sources: Document[];
-  }>(`/api/sources?source=${source}`, (url) => fetch(url).then((res) => res.json()));
+  }>(`/api/sources/${source}`, (url) => fetch(url).then((res) => res.json()));
 
   const { sources } = data || {};
 

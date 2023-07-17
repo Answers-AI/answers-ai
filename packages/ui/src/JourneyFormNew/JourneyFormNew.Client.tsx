@@ -37,10 +37,11 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
   const [query, setQuery] = useState<string>('');
 
   const { updateFilter, upsertJourney, filters } = useAnswers();
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateQuery = React.useCallback(debounce(setQuery, 600), []);
   const { data, error, isLoading, mutate } = useSWR(
-    query?.length > 3 ? `/api/suggested-sources?query=${query}` : null,
+    query?.length >= 10 ? `/api/suggested-sources?query=${query}` : null,
     (url) => fetch(url).then((res) => res.json()),
     {
       refreshInterval: 0,
@@ -58,9 +59,11 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
       // }
     }
   );
+
   const suggestedSources = React.useMemo(() => {
     return data;
   }, [data]);
+
   const handleCreateNewJourney = async () => {
     const { data: journey } = await upsertJourney({
       goal,
@@ -111,7 +114,6 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
 
             {isLoading ? <CircularProgress size={20} sx={{ ml: 1 }} /> : null}
           </Box>
-          {/* <pre>{JSON.stringify(suggestedSources, null, 2)}</pre> */}
           <Grid2 container sx={{ pt: 3, gap: 2, width: '100%' }}>
             <JourneyAppsDrawer appSettings={appSettings} />
           </Grid2>
