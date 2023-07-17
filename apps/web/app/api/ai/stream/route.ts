@@ -101,7 +101,7 @@ export async function POST(req: Request) {
         ts: new Date().valueOf(),
         name: 'answers/prompt.answered',
         user: user,
-        data: { chatId, message: response.message, prompt, contextDocuments }
+        data: { chatId, message: answer, prompt, contextDocuments }
       });
     }
   };
@@ -123,6 +123,7 @@ export async function POST(req: Request) {
     },
     {
       user,
+      prompt,
       chat: chat as any,
       contextDocuments,
       filters: pineconeFilters,

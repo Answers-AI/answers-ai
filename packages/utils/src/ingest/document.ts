@@ -266,7 +266,7 @@ const getDocumentRecordsVectors = async (DocumentRecords: DocumentRecord[]) => {
           return [];
         }
 
-        const markdownChunks = await splitDocumentHtml(document);
+        const markdownChunks = await splitDocumentHtmlChunkMore(document.content);
 
         if (!markdownChunks?.length) return [];
 
