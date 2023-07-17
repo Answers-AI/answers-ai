@@ -1,4 +1,3 @@
-import { getAppSettings } from '@ui/getAppSettings';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
 import { inngest } from '@utils/ingest/client';

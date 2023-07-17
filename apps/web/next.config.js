@@ -26,7 +26,7 @@ let nextConfig = withBundleAnalyzer({
     }
   },
 
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, nextRuntime }) => {
     config.externals = [...config.externals, 'db', 'puppeteer'];
     config.plugins = [
       ...config.plugins,
@@ -39,6 +39,13 @@ let nextConfig = withBundleAnalyzer({
 
     if (isServer) {
       config.plugins = [...config.plugins, new PrismaPlugin()];
+      // Avoid AWS SDK Node.js require issue
+      if (nextRuntime === 'nodejs') {
+        config.plugins = [
+          ...config.plugins,
+          new webpack.IgnorePlugin({ resourceRegExp: /^aws-crt$/ })
+        ];
+      }
     }
 
     return config;
