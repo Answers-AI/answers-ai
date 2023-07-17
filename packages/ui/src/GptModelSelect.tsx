@@ -1,7 +1,6 @@
 import React from 'react';
-import Select from '@mui/material/Select';
+import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { SelectChangeEvent } from '@mui/material';
 
 interface GptModelSelectProps {
   onGptModelSelected: (value: string) => void;

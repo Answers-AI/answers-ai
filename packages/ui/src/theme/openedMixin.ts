@@ -1,4 +1,4 @@
-import { Theme, CSSObject } from '@mui/material/styles';
+import type { Theme, CSSObject } from '@mui/material/styles';
 
 interface OpenedMixinProps {
   theme: Theme;

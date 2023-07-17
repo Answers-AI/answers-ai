@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';

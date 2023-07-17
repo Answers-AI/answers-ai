@@ -149,7 +149,11 @@ export const MessageCard = ({
           }}>
           <Box sx={{ gap: 2, display: 'flex' }}>
             <Avatar
-              src={role == 'user' ? user?.image || currentUser?.image! : '/logos/answerai-logo.png'}
+              src={
+                role == 'user'
+                  ? user?.image || currentUser?.image!
+                  : '/static/images/logos/answerai-logo.png'
+              }
               sx={{
                 bgcolor: role == 'user' ? 'secondary.main' : 'primary.main',
                 height: isWidget ? '24px' : '32px',

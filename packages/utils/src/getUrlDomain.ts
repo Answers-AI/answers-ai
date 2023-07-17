@@ -9,3 +9,6 @@ export const getUrlDomain = (url: string) => {
     return `https://${hostname}`;
   } catch (e) {}
 };
+
+export const getUniqueDomainss = (urls: string[]) =>
+  Array.from(new Set(urls.map((url) => getUrlDomain(url))));

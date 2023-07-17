@@ -18,7 +18,7 @@ const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
   return (
     <Box p={8}>
       <Image
-        src={'/logos/answerai-logo-600-white-teal-orange.png'}
+        src={'/static/images/logos/answerai-logo-600-white-teal-orange.png'}
         alt={'AnswerAI Logo'}
         width={400}
         height={80}
