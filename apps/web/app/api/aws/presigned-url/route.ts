@@ -1,4 +1,3 @@
-'use server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
 import { NextResponse, NextRequest } from 'next/server';
