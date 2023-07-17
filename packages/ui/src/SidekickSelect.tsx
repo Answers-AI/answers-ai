@@ -98,9 +98,11 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
   const handleSidekickChange = (event: SelectChangeEvent<string>) => {
     const sidekickValue = event.target.value;
     setSelectedSidekick(sidekickValue);
-    onSidekickSelected(
-      sidekicksInTag.some((s) => s.id === sidekick) ? sidekick : sidekicksInTag[0].id
-    );
+
+    const curSidekick = allSidekicks.find((s: Sidekick) => s?.id === sidekickValue);
+    if (curSidekick) {
+      onSidekickSelected(curSidekick);
+    }
 
     const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
     sidekickHistory.lastUsed = {
