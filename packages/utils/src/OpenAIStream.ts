@@ -90,20 +90,7 @@ export async function OpenAIStream(
           content: answer
         }
       });
-      await inngest.send({
-        v: '1',
-        ts: new Date().valueOf(),
-        name: 'answers/message.sent',
-        user: user,
-        data: {
-          role: 'user',
-          messageId: message.id,
-          chatId: chat.id,
-          content: prompt
-          //  sidekick,
-          // gptModel
-        }
-      });
+
       controller.close();
     }
   });
