@@ -52,7 +52,12 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
 
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={handleOpen} fullWidth>
+      <Button
+        data-cy="new-document-modal-add-button"
+        variant="contained"
+        color="primary"
+        onClick={handleOpen}
+        fullWidth>
         {title ?? `Add ${source}`}
       </Button>
       <Modal open={open} onClose={handleClose}>
@@ -92,12 +97,14 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
             <TextField
               {...register('title', { required: 'Title is required' })}
               error={Boolean(errors.title)}
+              data-cy="new-document-modal-title-input"
               helperText={errors.title?.message}
               label="Title"
               fullWidth
             />
             <TextField
               {...register('content', { required: 'Content is required' })}
+              data-cy="new-document-modal-content-input"
               error={Boolean(errors.content)}
               helperText={errors.content?.message}
               label="Content"
@@ -117,7 +124,12 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
                 <CircularProgress />
               </Box>
             ) : (
-              <Button type="submit" variant="contained" color="primary" fullWidth>
+              <Button
+                data-cy="new-document-modal-complete-add-button"
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth>
                 Add {source}
               </Button>
             )}

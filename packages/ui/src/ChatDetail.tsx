@@ -119,6 +119,7 @@ export const ChatDetail = ({
                     PopperProps={{ placement: 'top-end' }}
                     title={!Object.keys(services)?.length ? null : <Filters filters={filters} />}>
                     <Button
+                      data-cy="select-sources-button"
                       size="large"
                       color="inherit"
                       aria-label="manage sources"

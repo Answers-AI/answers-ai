@@ -38,6 +38,7 @@ const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
           }}>
           <Button
             component={NextLink}
+            data-cy="new-journey-button"
             href="/journey/new"
             variant="contained"
             endIcon={<AddIcon />}>
@@ -46,6 +47,7 @@ const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
           <Button
             color="primary"
             component={NextLink}
+            data-cy="quick-chat-button"
             href="/chat"
             variant="outlined"
             endIcon={<MessageIcon fontSize="large" />}>

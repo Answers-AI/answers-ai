@@ -139,6 +139,7 @@ jobs:
         id: wait-for-vercel-preview
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          environment: Preview – answers-ai-web
           max_timeout: 300
 
       # e2e-chrome-tests:

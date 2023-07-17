@@ -21,6 +21,7 @@ const SourcesFile: React.FC<{}> = ({}) => {
       <Box marginBottom={1} sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
         <Autocomplete
           label={'Choose file'}
+          data-cy="source-file-autocomplete-input"
           placeholder={`My custom file`}
           value={filters?.datasources?.file?.url!}
           onChange={(value) => updateFilter({ datasources: { file: { url: value } } })}

@@ -23,7 +23,7 @@ declare namespace Cypress {
 
 Cypress.Commands.add('login', () => {
   const apiKey = Cypress.env('ANSWERS_API_KEY');
-  cy.visit('/api/auth/signin');
+  cy.visit('/auth/login');
   cy.get('#input-apiKey-for-app-widget-provider').type(apiKey + '{enter}');
 });
 
