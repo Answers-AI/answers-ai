@@ -231,6 +231,9 @@ importers:
       flagsmith:
         specifier: ^3.18.2
         version: 3.18.2
+      handlebars:
+        specifier: ^4.7.7
+        version: 4.7.7
       hnswlib-node:
         specifier: ^1.4.2
         version: 1.4.2
