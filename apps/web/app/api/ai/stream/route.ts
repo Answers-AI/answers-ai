@@ -78,6 +78,7 @@ export async function POST(req: Request) {
   }
   const handleResponse = async (response: any) => {
     const answer = response.text;
+
     completionRequest = response.completionRequest;
 
     if (prompt && answer) {
@@ -94,7 +95,7 @@ export async function POST(req: Request) {
         ts: new Date().valueOf(),
         name: 'answers/prompt.answered',
         user: user,
-        data: { chatId, message: answer, prompt, contextDocuments }
+        data: { chatId, message: response.message, prompt, contextDocuments }
       });
     }
   };
