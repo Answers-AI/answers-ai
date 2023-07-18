@@ -60,7 +60,23 @@ const SidekickFormPage = async ({ params }: any) => {
     }
   };
 
-  sidekick.sharedWith = sidekick.isGlobal ? 'global' : sidekick.isSharedWithOrg ? 'org' : 'private';
+  switch (true) {
+    case sidekick.isGlobal:
+      sidekick.sharedWith = 'global';
+      break;
+
+    case sidekick.isSharedWithOrg:
+      sidekick.sharedWith = 'org';
+      break;
+
+    case sidekick.isSystem:
+      sidekick.sharedWith = 'system';
+      break;
+
+    default:
+      sidekick.sharedWith = 'private';
+      break;
+  }
 
   return (
     <SidekickForm {...params} allTags={allTags} contextFields={contextFields} sidekick={sidekick} />

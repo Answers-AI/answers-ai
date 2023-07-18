@@ -47,8 +47,6 @@ export async function getCompletionRequest({
       })
     : input;
 
-  // console.log({ systemPrompt, userPrompt, user: userContext, organization: organizationContext });
-
   const temperature = sidekick?.temperature || 0.1;
   const frequency = sidekick?.frequency || 0;
   const presence = sidekick?.presence || 0;
@@ -62,17 +60,6 @@ export async function getCompletionRequest({
 
   let filteredMessages: Message[] = [];
   let currentTokenCount = systemPromptTokens + userPromptTokens;
-  // console.log({
-  //   contextCount: countTokens(context),
-  //   currentTokenCount,
-  //   systemPromptTokens,
-  //   userPromptTokens,
-  //   maxTokens,
-  //   sidekickModel,
-  //   gptModel,
-  //   sidekickAiModel: sidekick?.aiModel,
-  //   maxCompletionTokens
-  // });
 
   if (messages) {
     for (const message of messages) {

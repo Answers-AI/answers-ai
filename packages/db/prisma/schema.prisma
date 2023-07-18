@@ -105,6 +105,7 @@ model ContextField {
 model Sidekick {
   id                   String   @id @default(cuid())
   isGlobal             Boolean? @default(false)
+  isSystem             Boolean? @default(false)
   isSharedWithOrg      Boolean? @default(false)
   isFavoriteByDefault  Boolean? @default(false)
   tags                 String[]

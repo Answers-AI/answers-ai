@@ -10,11 +10,11 @@ const Modal = () => {
   const handleClose = () => {
     if (pathname) router.push(pathname, { shallow: true });
   };
-  switch (modal) {
-    case 'share':
-      return <ShareModal onClose={handleClose} />;
-    default:
-      return null;
+
+  if (modal === 'share') {
+    return <ShareModal onClose={handleClose} />;
   }
+
+  return null;
 };
 export default Modal;

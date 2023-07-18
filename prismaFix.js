@@ -119,6 +119,7 @@ const URLS = [
   'http://localhost:3000/api/sidekicks/list/global',
   'http://localhost:3000/api/sidekicks/list/org',
   'http://localhost:3000/api/sidekicks/list/private',
+  'http://localhost:3000/api/sidekicks/list/system',
   'http://localhost:3000/api/sidekicks/new',
   'http://localhost:3000/api/sources',
   'http://localhost:3000/api/sync',

@@ -25,6 +25,8 @@ export const answersPromptUpserted: EventVersionHandler<{ prompt: string; chat: 
         createdAt: new Date(ts)
       },
       update: {
+        answers: undefined,
+        content: undefined,
         chat: { connect: { id: chat.id } },
         users: { connect: { email: user?.email } },
         usages: (savedPrompt?.usages || 0) + 1

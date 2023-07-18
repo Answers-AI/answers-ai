@@ -180,10 +180,12 @@ export function AnswersProvider({
       }
     }
   );
+
   const [messages, setMessages] = useState<Array<Message>>(chat?.messages ?? []);
   const [filters, setFilters] = useState<AnswersFilters>(
     deepmerge({}, appSettings?.filters, journey?.filters, chat?.filters)
   );
+
   const [chatId, setChatId] = useState<string | undefined>(chat?.id);
 
   // const setFilters = (filters: SetStateAction<AnswersFilters>) => {

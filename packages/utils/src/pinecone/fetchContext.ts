@@ -48,6 +48,7 @@ const parseFilters = (filters: AnswersFilters) => {
       (url) => (url as any)?.url
     );
   }
+
   if (parsedFilters?.datasources?.document?.url?.length) {
     (parsedFilters.datasources.document.url as any) = parsedFilters?.datasources?.document?.url.map(
       (url) => (url as any)?.url
@@ -59,6 +60,7 @@ const parseFilters = (filters: AnswersFilters) => {
       (url) => (url as any)?.url
     );
   }
+
   if (parsedFilters?.datasources?.codebase?.repo?.length) {
     // TODO: Define a type for the Pinecone filters which this function must return
     (parsedFilters.datasources.codebase.repo as any) =
@@ -124,6 +126,8 @@ export const fetchContext = async ({
     };
   }
 
+  let numberOfSources = 0;
+
   if (datasources) {
     Object.entries(datasources).forEach(([source, sourceFilter]) => {
       if (sourceFilter && Object.keys(sourceFilter)?.length) {
@@ -135,9 +139,12 @@ export const fetchContext = async ({
               ...(sourceFilter[field]?.length
                 ? {
                     [field]: {
-                      $in: sourceFilter[field]?.map((value: string) =>
-                        value?.toString().toLowerCase()
-                      )
+                      $in: sourceFilter[field]?.map((value: string) => {
+                        // Count the sources so we can have a fallback when filtering by threshold
+                        numberOfSources++;
+
+                        return value?.toString().toLowerCase();
+                      })
                     }
                   }
                 : null)
@@ -179,8 +186,24 @@ export const fetchContext = async ({
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
   console.timeEnd(`[${ts}] Pineconedata get`);
 
-  // Filter out any results that are above the relavance threshold, sort by score and retunr the max number based on gptModel
-  let relevantData = filterPineconeDataRelevanceThreshhold(pineconeData, DEFAULT_THRESHOLD);
+  // Filter out any results that are above the relavance threshold, sort by score and return the max number based on gptModel
+  let relevantData = pineconeData.length
+    ? filterPineconeDataRelevanceThreshhold(pineconeData, DEFAULT_THRESHOLD)
+    : [];
+
+  if (!relevantData.length && pineconeData.length) {
+    if (numberOfSources === 2) {
+      console.log(
+        "No relevent data found.   Since there are 2 sources, we're lowering the filtering threshold"
+      );
+      relevantData = filterPineconeDataRelevanceThreshhold(pineconeData, DEFAULT_THRESHOLD / 2);
+    } else if (numberOfSources === 1) {
+      console.log(
+        "No relevent data found.   Since there is 1 source, we're removing the filtering threshold"
+      );
+      relevantData = pineconeData;
+    }
+  }
 
   let context: string = '';
   const contextSourceFilesUsed = new Set<string>();

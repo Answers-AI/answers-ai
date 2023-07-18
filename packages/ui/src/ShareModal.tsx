@@ -20,7 +20,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { useAnswers } from '../AnswersContext';
+import { useAnswers } from './AnswersContext';
 
 import { User } from 'types';
 
@@ -123,6 +123,7 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
             </Typography>
             <Typography>Invite teammates to collaborate together</Typography>
           </Box>
+
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Controller
               control={control}
@@ -166,6 +167,7 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
               Invite
             </Button>
           </Box>
+
           <Box>
             <List dense>
               {chat?.users?.map((user) => (
@@ -193,6 +195,7 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
             </List>
           </Box>
         </Box>
+
         {loading ? (
           <LinearProgress
             variant="query"

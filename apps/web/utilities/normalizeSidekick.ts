@@ -33,14 +33,19 @@ export const normalizeSidekickItem = (sidekick: Sidekick): Sidekick => {
 export const normalizeSidekickForUpdate = (sidekick: Sidekick): Sidekick => {
   const { temperature, frequency, presence, maxCompletionTokens, sharedWith, ...data } = sidekick;
 
+  const isSystem = sharedWith === 'system';
+  const isGlobal = !isSystem && sharedWith === 'global';
+  const isSharedWithOrg = !isSystem && sharedWith === 'org';
+
   const normalizedSidekick: Sidekick = {
     ...data,
     temperature: Number(temperature),
     frequency: Number(frequency),
     presence: Number(presence),
     maxCompletionTokens: Number(maxCompletionTokens),
-    isGlobal: sharedWith === 'global',
-    isSharedWithOrg: sharedWith === 'org'
+    isSystem,
+    isGlobal,
+    isSharedWithOrg
   };
 
   return normalizedSidekick;

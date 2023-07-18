@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import NextLink from 'next/link';
+import { useFlags } from 'flagsmith/react';
+import { useRouter } from 'next/navigation';
 
 import { visuallyHidden } from '@mui/utils';
 
@@ -67,6 +69,7 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
+  const flags = useFlags(['sidekicks_system']);
   const { order, orderBy, onRequestSort } = props;
   const createSortHandler =
     (property: keyof SidekickListItem) => (event: React.MouseEvent<unknown>) => {
@@ -105,12 +108,18 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 const SidekickList = ({
   endpoint,
   appSettings,
-  sidekicks
+  sidekicks,
+  isFavoritable = true,
+  isSystem
 }: {
   endpoint: string;
   appSettings: AppSettings;
   sidekicks?: SidekickListItem[];
+  isFavoritable?: boolean;
+  isSystem?: boolean;
 }) => {
+  const router = useRouter();
+  const flags = useFlags(['sidekicks_system']);
   const [currentSidekicks, setCurrentSidekicks] = useState<SidekickListItem[]>(sidekicks ?? []);
   const [isLoading, setIsLoading] = useState(true);
   const [theMessage, setTheMessage] = useState('');
@@ -132,11 +141,13 @@ const SidekickList = ({
       }
     };
 
-    if (!sidekicks && endpoint) {
+    if (isSystem && !flags?.sidekicks_system?.enabled) {
+      router.push('/404');
+    } else if (!currentSidekicks?.length && endpoint) {
       setIsLoading(true);
       fetchSidekicks();
     }
-  }, [endpoint, sidekicks]);
+  }, [endpoint, currentSidekicks, isSystem, flags, router]);
 
   const handleUpdateFavorite = async (id: string) => {
     try {
@@ -146,7 +157,7 @@ const SidekickList = ({
 
       if (!!sidekicks?.length) {
         // Update the specific row in the sidekicks state
-        const updatedSidekicks = sidekicks.map((sidekick) => {
+        const updatedSidekicks = currentSidekicks.map((sidekick) => {
           if (sidekick.id === id) {
             return { ...sidekick, isFavorite: !sidekick.isFavorite };
           }
@@ -156,22 +167,11 @@ const SidekickList = ({
       }
     } catch (err: any) {
       if (err.response) {
-        // that falls out of the range of 2xx
-
         setTheMessage(`Error: ${err.response.data}`);
-        // setError('root.serverError', { type: 'custom', message: err.response.data });
       } else if (err.request) {
-        // The request was made but no response was received
-
         setTheMessage(`Error: No response received from the server`);
-        // setError('root.serverError', {
-        //   type: 'custom',
-        //   message: 'No response received from the server'
-        // });
       } else {
-        // Something happened in setting up the request that triggered an Error
         setTheMessage(`Error: ${err.message}`);
-        // setError('root.serverError', { type: 'custom', message: err.message });
       }
     }
   };
@@ -221,9 +221,11 @@ const SidekickList = ({
                 return (
                   <TableRow hover tabIndex={-1} key={row.label} sx={{ cursor: 'pointer' }}>
                     <TableCell padding="checkbox">
-                      <IconButton onClick={() => handleUpdateFavorite(row.id as string)}>
-                        {row.isFavorite ? <StarIcon /> : <StarOutlineIcon />}
-                      </IconButton>
+                      {isFavoritable && (
+                        <IconButton onClick={() => handleUpdateFavorite(row.id as string)}>
+                          {row.isFavorite ? <StarIcon /> : <StarOutlineIcon />}
+                        </IconButton>
+                      )}
                     </TableCell>
 
                     <TableCell component="th" id={labelId} scope="row" padding="none">

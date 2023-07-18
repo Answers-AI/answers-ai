@@ -3,6 +3,7 @@ import React, { ChangeEvent, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
+import { useFlags } from 'flagsmith/react';
 
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
@@ -76,6 +77,7 @@ interface SidekickInput
     | 'createdByUser'
     | 'favoritedBy'
     | 'isGlobal'
+    | 'isSystem'
     | 'isSharedWithOrg'
     | 'isFavoriteByDefault'
   > {}
@@ -91,6 +93,7 @@ const SidekickForm = ({
   allTags?: string[];
   contextFields?: any;
 }) => {
+  const flags = useFlags(['sidekicks_system']);
   const defaultSliderValues = {
     presence: 0,
     temperature: 1,
@@ -410,6 +413,9 @@ const SidekickForm = ({
                           <MenuItem value="private">Private</MenuItem>
                           <MenuItem value="org">My Org</MenuItem>
                           <MenuItem value="global">Global</MenuItem>
+                          {flags?.sidekicks_system?.enabled && (
+                            <MenuItem value="system">System</MenuItem>
+                          )}
                         </Select>
                       )}
                     />
