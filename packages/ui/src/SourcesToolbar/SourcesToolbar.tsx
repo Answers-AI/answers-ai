@@ -24,7 +24,7 @@ import { Accordion, AccordionDetails, AccordionSummary } from '../Accordion';
 import { AppSettings, AppService } from 'types';
 
 export default function SourcesToolbar({ appSettings }: { appSettings: AppSettings }) {
-  const flags = useFlags(appSettings?.services?.map((s) => s.name) ?? []);
+  const flags = useFlags(appSettings?.services?.map((s) => s.id) ?? []);
 
   const enabledServices: AppService[] | undefined = React.useMemo(
     () =>
