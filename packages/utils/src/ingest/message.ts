@@ -1,10 +1,8 @@
 import { prisma } from '@db/client';
 
-import { AnswersFilters, User, Chat } from 'types';
-// import { inngest } from './client';
+import { AnswersFilters, User } from 'types';
 import { EventVersionHandler } from './EventVersionHandler';
 import { openai } from '../openai/client';
-// import { upsertChat } from '../upsertChat';
 
 export const answersMessageSent: EventVersionHandler<{
   chatId: string;

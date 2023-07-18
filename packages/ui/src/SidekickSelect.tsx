@@ -70,7 +70,9 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
   }, [allTags]);
 
   useEffect(() => {
-    if (!allSidekicks?.length || !selectedTags) return;
+    if (!allSidekicks?.length || !selectedTags) {
+      return;
+    }
 
     const sidekicksInTag = allSidekicks
       .filter((s) =>
@@ -78,16 +80,29 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
       )
       .sort((a, b) => a.label.localeCompare(b.label));
 
-    if (!sidekicksInTag?.length) return;
+    if (!sidekicksInTag?.length) {
+      return;
+    }
 
     setTagSidekicks(sidekicksInTag);
 
     const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
-    const sidekick = sidekickHistory?.lastUsed?.sidekick;
+    const lastUsedSidekick = sidekickHistory?.lastUsed?.sidekick;
+    if (lastUsedSidekick === sidekicksInTag[0].id) {
+      return;
+    }
+
+    const sidekick = lastUsedSidekick ?? sidekicksInTag[0].id;
+
     setSelectedSidekick(
       sidekicksInTag.some((s) => s.id === sidekick) ? sidekick : sidekicksInTag[0].id
     );
-  }, [allSidekicks, selectedTags]);
+
+    const curSidekick = allSidekicks.find((s: Sidekick) => s?.id === sidekick);
+    if (curSidekick) {
+      onSidekickSelected(curSidekick);
+    }
+  }, [allSidekicks, onSidekickSelected, selectedTags]);
 
   const handleTagChange = (event: SelectChangeEvent<string[]>) => {
     const tagsValue = event.target.value;
