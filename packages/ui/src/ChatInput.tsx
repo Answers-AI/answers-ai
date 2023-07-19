@@ -33,7 +33,8 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     sidekick,
     setSidekick,
     gptModel,
-    setGptModel
+    setGptModel,
+    startNewChat
   } = useAnswers();
 
   const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
@@ -170,8 +171,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
             <Button
               variant="outlined"
               color="primary"
-              component={NextLink}
-              href={'/chat'}
+              onClick={() => startNewChat()}
               data-test-id="new-chat-button">
               <AddIcon />
             </Button>

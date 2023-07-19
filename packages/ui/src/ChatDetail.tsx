@@ -35,6 +35,8 @@ export const ChatDetail = ({
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const {
     error,
+
+    chatId,
     chat,
     journey,
     messages: clientMessages,

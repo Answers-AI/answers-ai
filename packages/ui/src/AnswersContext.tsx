@@ -54,6 +54,7 @@ interface AnswersContextType {
   updateChat: (chat: Partial<Chat>) => Promise<{ data: Chat }>;
   updatePrompt: (prompt: Partial<Prompt>) => Promise<{ data: Prompt }>;
   upsertJourney: (journey: Partial<Journey>) => Promise<{ data: Journey }>;
+  startNewChat: () => void;
 
   messageIdx: any;
   setMessages: (arg: SetStateAction<Message[]>) => void;
@@ -90,7 +91,8 @@ const AnswersContext = createContext<AnswersContextType>({
   setInputValue: () => {},
   deleteChat: async () => {},
   deletePrompt: async () => {},
-  deleteJourney: async () => {}
+  deleteJourney: async () => {},
+  startNewChat: async () => {}
 });
 
 export function useAnswers() {
@@ -162,13 +164,18 @@ export function AnswersProvider({
       // Check if the current route is the chat
       setIsLoading(false);
       if (newChat) {
-        router.push(`/chat/${newChat?.id}`);
+        setChatId(newChat?.id);
+        history.replaceState(null, '', `/chat/${newChat?.id}`);
       }
     }
   });
+  const [chatId, setChatId] = useState<string | undefined>(initialChat?.id);
+  React.useEffect(() => {
+    console.log('ChatId', { initialChat, chatId });
+  }, [initialChat, chatId]);
 
   const { data: chat } = useSWR<Chat>(
-    initialChat?.id ? `${apiUrl}/chats/${initialChat?.id}` : null,
+    !isStreaming && chatId ? `${apiUrl}/chats/${chatId}` : null,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -176,7 +183,8 @@ export function AnswersProvider({
       // refreshInterval: isStreaming ? 0 : 1000,
       fallbackData: initialChat,
       onSuccess(data, key, config) {
-        setMessages(data.messages!);
+        // TODO: re enable once polling is fixed for shared chats
+        // setMessages(data.messages!);
       }
     }
   );
@@ -185,8 +193,6 @@ export function AnswersProvider({
   const [filters, setFilters] = useState<AnswersFilters>(
     deepmerge({}, appSettings?.filters, journey?.filters, chat?.filters)
   );
-
-  const [chatId, setChatId] = useState<string | undefined>(chat?.id);
 
   // const setFilters = (filters: SetStateAction<AnswersFilters>) => {
   //   setFiltersState((currentFilters) => {
@@ -247,6 +253,13 @@ export function AnswersProvider({
   const updateMessage = async (message: Partial<Message>) =>
     axios.patch(`${apiUrl}/messages`, message).then(() => router.refresh());
 
+  const startNewChat = () => {
+    router.push('/chat');
+    setChatId(undefined);
+    setJourneyId(undefined);
+    setMessages([]);
+    setFilters({});
+  };
   const sendMessage = useCallback(
     async ({
       content,
@@ -357,7 +370,8 @@ export function AnswersProvider({
     updateChat,
     updatePrompt,
     upsertJourney,
-    updateMessage
+    updateMessage,
+    startNewChat
   };
   // @ts-ignore
   return <AnswersContext.Provider value={contextValue}>{children}</AnswersContext.Provider>;

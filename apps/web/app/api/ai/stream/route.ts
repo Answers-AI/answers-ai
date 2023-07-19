@@ -83,7 +83,7 @@ export async function POST(req: Request) {
     throw contextError;
   }
 
-  const handleResponse = async (response: any) => {
+  const handleStreamEnd = async (response: any) => {
     const answer = response.text;
     // console.log(response);
     completionRequest = response.completionRequest;
@@ -134,7 +134,7 @@ export async function POST(req: Request) {
         pineconeData
       })
     },
-    handleResponse
+    handleStreamEnd
   );
 
   return new Response(stream, {
