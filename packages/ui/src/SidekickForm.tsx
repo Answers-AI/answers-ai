@@ -14,6 +14,8 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
 import Autocomplete from '@mui/material/Autocomplete';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -24,6 +26,7 @@ import HandlebarsEditor from './HandlebarsEditor';
 import SnackMessage from './SnackMessage';
 
 import { Sidekick, AppSettings } from 'types';
+import { Typography } from '@mui/material';
 
 const editorStyles = {
   'borderRadius': 1.5,
@@ -73,7 +76,7 @@ interface SidekickInput
     | 'isSystem'
     | 'isSharedWithOrg'
     | 'isFavoriteByDefault'
-  > {}
+  > { }
 
 const SidekickForm = ({
   appSettings,
@@ -98,6 +101,7 @@ const SidekickForm = ({
   const [loading, setLoading] = useState(false);
   const [sliderValues, setSliderValues] = useState(defaultSliderValues);
   const [theMessage, setTheMessage] = useState('');
+  const [currentTab, setCurrentTab] = useState('System');
 
   const {
     register,
@@ -124,6 +128,10 @@ const SidekickForm = ({
       ...prevSidekick,
       [name]: Array.isArray(value) ? value[0] : value
     }));
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newTab: string) => {
+    setCurrentTab(newTab);
   };
 
   const onSubmit = async (data: SidekickInput) => {
@@ -197,9 +205,9 @@ const SidekickForm = ({
         <SnackMessage message={theMessage} />
         <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
           <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
-            <Grid item xs={12} md={9}>
+            <Grid item xs={12}>
               <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
-                <Grid item sm={12}>
+                <Grid item sm={8}>
                   <Controller
                     name="label"
                     control={control}
@@ -216,6 +224,35 @@ const SidekickForm = ({
                       />
                     )}
                   />
+                </Grid>
+
+                <Grid item xs={12} md={4}>
+                  <FormControl fullWidth size="small">
+                    <Controller
+                      name="sharedWith"
+                      control={control}
+                      defaultValue={sidekick?.sharedWith ?? 'private'}
+                      render={({ field }) => (
+                        <Select
+                          labelId="sharedWith-label"
+                          {...field}
+                          size="small"
+                          defaultValue={sidekick?.sharedWith ?? 'private'}
+                          required
+                          fullWidth
+                          label="Shared With"
+                          sx={{ ...selectStyles, pt: 1, pb: 0, width: '100%', mx: 'auto' }}>
+                          <MenuItem value="private">Private</MenuItem>
+                          <MenuItem value="org">My Org</MenuItem>
+                          <MenuItem value="global">Global</MenuItem>
+                          {flags?.sidekicks_system?.enabled && (
+                            <MenuItem value="system">System</MenuItem>
+                          )}
+                        </Select>
+                      )}
+                    />
+                    <FormHelperText error={true}>{errors.aiModel?.message}</FormHelperText>
+                  </FormControl>
                 </Grid>
 
                 <Grid item xs={12} md={6}>
@@ -290,297 +327,326 @@ const SidekickForm = ({
                     )}
                   />
                 </Grid>
+              
 
                 <Grid item xs={12}>
-                  <Box component="fieldset" sx={editorStyles}>
-                    <legend>System Prompt Template *</legend>
-                    <Controller
-                      name="systemPromptTemplate"
-                      control={control}
-                      defaultValue={sidekick?.systemPromptTemplate ?? ''}
-                      rules={{ required: true }}
-                      render={({ field: { ref, ...field } }) => (
-                        <FormControl fullWidth error={!!errors.systemPromptTemplate}>
-                          <HandlebarsEditor
-                            key="systemPromptTemplate"
-                            code={sidekick?.systemPromptTemplate ?? ''}
-                            setCode={(value: string) => setValue('systemPromptTemplate', value)}
-                            contextFields={{ ...contextFields, userInput: '', context: '' }}
-                            readOnly={false}
+                  <Tabs value={currentTab} onChange={handleTabChange} sx={{ mb: 4 }}>
+                    <Tab label="System Message" value="System" />
+                    <Tab label="User Message" value="User" />
+                    <Tab label="Context Parser" value="Context" />
+                    <Tab label="Advanced" value="Advanced" />
+                  </Tabs>
+                  <Box role="tabpanel" hidden={currentTab !== 'System'}>
+                    <Grid container rowSpacing={4} columnSpacing={4}>
+                      <Grid item xs={12} md={8}>
+                        <Box component="fieldset" sx={editorStyles}>
+                          <legend>System Prompt Template *</legend>
+                          <Controller
+                            name="systemPromptTemplate"
+                            control={control}
+                            defaultValue={sidekick?.systemPromptTemplate ?? ''}
+                            rules={{ required: true }}
+                            render={({ field: { ref, ...field } }) => (
+                              <FormControl fullWidth error={!!errors.systemPromptTemplate}>
+                                <HandlebarsEditor
+                                  key="systemPromptTemplate"
+                                  code={sidekick?.systemPromptTemplate ?? ''}
+                                  setCode={(value: string) => setValue('systemPromptTemplate', value)}
+                                  contextFields={{ ...contextFields, userInput: '', context: '' }}
+                                  readOnly={false}
+                                />
+                                {errors.systemPromptTemplate && (
+                                  <FormHelperText error>Required.</FormHelperText>
+                                )}
+                              </FormControl>
+                            )}
                           />
-                          {errors.systemPromptTemplate && (
-                            <FormHelperText error>Required.</FormHelperText>
-                          )}
-                        </FormControl>
-                      )}
-                    />
-                  </Box>
-                </Grid>
+                        </Box>
 
-                <Grid item xs={12}>
-                  <Box component="fieldset" sx={editorStyles}>
-                    <legend>User Prompt Template *</legend>
-                    <Controller
-                      name="userPromptTemplate"
-                      control={control}
-                      defaultValue={sidekick?.systemPromptTemplate ?? ''}
-                      rules={{ required: true }}
-                      render={({ field: { ref, ...field } }) => (
-                        <FormControl fullWidth error={!!errors.userPromptTemplate}>
-                          <HandlebarsEditor
-                            key="userPromptTemplate"
-                            code={sidekick?.userPromptTemplate ?? ''}
-                            setCode={(value: string) => setValue('userPromptTemplate', value)}
-                            readOnly={false}
+                      </Grid>
+                      <Grid item xs={12} md={4}>
+                        {/* <Typography  sx={{ mb: 2 }}>
+                          Help Text
+                        </Typography> */}
+
+                       
+                      </Grid>
+                    </Grid>
+                  </Box>
+
+                  <Box role="tabpanel" hidden={currentTab !== 'User'}>
+                    <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
+                      <Grid item xs={12} md={8}>
+                        <Box component="fieldset" sx={editorStyles}>
+                          <legend>User Prompt Template *</legend>
+                          <Controller
+                            name="userPromptTemplate"
+                            control={control}
+                            defaultValue={sidekick?.systemPromptTemplate ?? ''}
+                            rules={{ required: true }}
+                            render={({ field: { ref, ...field } }) => (
+                              <FormControl fullWidth error={!!errors.userPromptTemplate}>
+                                <HandlebarsEditor
+                                  key="userPromptTemplate"
+                                  code={sidekick?.userPromptTemplate ?? ''}
+                                  setCode={(value: string) => setValue('userPromptTemplate', value)}
+                                  readOnly={false}
+                                />
+                                {errors.userPromptTemplate && (
+                                  <FormHelperText error>Required.</FormHelperText>
+                                )}
+                              </FormControl>
+                            )}
                           />
-                          {errors.userPromptTemplate && (
-                            <FormHelperText error>Required.</FormHelperText>
-                          )}
-                        </FormControl>
-                      )}
-                    />
-                  </Box>
-                </Grid>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} md={4}>
+                        {/* <Typography  sx={{ mb: 2 }}>
+                          Help Text
+                        </Typography> */}
 
-                <Grid item xs={12}>
-                  <Box component="fieldset" sx={editorStyles}>
-                    <legend>Context String Render</legend>
-                    <Controller
-                      name="contextStringRender"
-                      control={control}
-                      defaultValue={sidekick?.contextStringRender ?? ''}
-                      render={({ field: { ref, ...field } }) => (
-                        <FormControl fullWidth error={!!errors.contextStringRender}>
-                          <HandlebarsEditor
-                            key="contextStringRender"
-                            code={sidekick?.contextStringRender ?? ''}
-                            setCode={(value: string) => setValue('contextStringRender', value)}
-                            readOnly={false}
+                        
+                      </Grid>
+                    </Grid>
+                  </Box>
+
+                  <Box role="tabpanel" hidden={currentTab !== 'Context'}>
+                    <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
+                      <Grid item xs={12} md={8}>
+
+                        <Box component="fieldset" sx={editorStyles}>
+                          <legend>Context String Render</legend>
+                          <Controller
+                            name="contextStringRender"
+                            control={control}
+                            defaultValue={sidekick?.contextStringRender ?? ''}
+                            render={({ field: { ref, ...field } }) => (
+                              <FormControl fullWidth error={!!errors.contextStringRender}>
+                                <HandlebarsEditor
+                                  key="contextStringRender"
+                                  code={sidekick?.contextStringRender ?? ''}
+                                  setCode={(value: string) => setValue('contextStringRender', value)}
+                                  readOnly={false}
+                                />
+                                {errors.contextStringRender && (
+                                  <FormHelperText error>Required.</FormHelperText>
+                                )}
+                              </FormControl>
+                            )}
                           />
-                          {errors.contextStringRender && (
-                            <FormHelperText error>Required.</FormHelperText>
-                          )}
-                        </FormControl>
-                      )}
-                    />
+                        </Box>
+
+                      </Grid>
+                      <Grid item xs={12} md={4}>
+                        {/* <Typography  sx={{ mb: 2 }}>
+                          Help Text
+                        </Typography> */}
+
+                       
+                      </Grid>
+                    </Grid>
+                  </Box>
+
+                  <Box role="tabpanel" hidden={currentTab !== 'Advanced'}>
+                    <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
+                      <Grid item xs={12} md={6}>
+                        <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
+
+                          <Grid item xs={12} md={6}>
+                            <FormControl fullWidth size="small">
+                              <Controller
+                                name="aiModel"
+                                control={control}
+                                defaultValue={sidekick?.aiModel ?? 'gpt-3.5-turbo'}
+                                render={({ field }) => (
+                                  <Select
+                                    labelId="aiModel-label"
+                                    {...field}
+                                    size="small"
+                                    required
+                                    defaultValue={sidekick?.aiModel ?? 'gpt-3.5-turbo'}
+                                    fullWidth
+                                    label="AI Model"
+                                    sx={{ ...selectStyles, pt: 1, pb: 0, width: '100%', mx: 'auto' }}>
+                                    <MenuItem value="gpt-3.5-turbo">GPT 3.5</MenuItem>
+                                    <MenuItem value="gpt-3.5-turbo-16k">GPT 3.5 16k</MenuItem>
+                                    <MenuItem value="gpt-4">GPT 4</MenuItem>
+                                  </Select>
+                                )}
+                              />
+                              <FormHelperText error={true}>{errors.aiModel?.message}</FormHelperText>
+                            </FormControl>
+                          </Grid>
+                          <Grid item xs={12} md={6}>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}>
+                              <TextField
+                                name="temperature"
+                                value={sliderValues.temperature}
+                                onChange={handleSliderTextChange}
+                                type="number"
+                                fullWidth
+                                size="small"
+                                label="Temperature"
+                                inputProps={{
+                                  min: 0,
+                                  max: 2,
+                                  step: 0.01
+                                }}
+                              />
+                              <Slider
+                                {...register('temperature')}
+                                value={sliderValues.temperature}
+                                name="temperature"
+                                onChange={handleSliderChange}
+                                min={0}
+                                size="small"
+                                max={2}
+                                step={0.01}
+                                sx={{ width: '85%' }}
+                              />
+                            </Box>
+                          </Grid>
+
+                          <Grid item xs={12} md={6}>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}>
+                              <TextField
+                                name="frequency"
+                                value={sliderValues.frequency}
+                                onChange={handleSliderTextChange}
+                                type="number"
+                                fullWidth
+                                size="small"
+                                label="Frequency"
+                                inputProps={{
+                                  min: 0,
+                                  max: 2,
+                                  step: 0.01
+                                }}
+                              />
+                              <Slider
+                                {...register('frequency')}
+                                value={sliderValues.frequency}
+                                name="frequency"
+                                onChange={handleSliderChange}
+                                min={0}
+                                size="small"
+                                max={2}
+                                step={0.01}
+                                sx={{ width: '85%' }}
+                              />
+                            </Box>
+                          </Grid>
+
+                          <Grid item xs={12} md={6}>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}>
+                              <TextField
+                                name="presence"
+                                value={sliderValues.presence}
+                                onChange={handleSliderTextChange}
+                                type="number"
+                                fullWidth
+                                size="small"
+                                label="Presence"
+                                inputProps={{
+                                  min: 0,
+                                  max: 2,
+                                  step: 0.01
+                                }}
+                              />
+                              <Slider
+                                {...register('presence')}
+                                value={sliderValues.presence}
+                                name="presence"
+                                onChange={handleSliderChange}
+                                min={0}
+                                size="small"
+                                max={2}
+                                step={0.01}
+                                sx={{ width: '85%' }}
+                              />
+                            </Box>
+                          </Grid>
+
+                          <Grid item xs={12}  md={6}>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}>
+                              <TextField
+                                name="maxCompletionTokens"
+                                value={sliderValues.maxCompletionTokens}
+                                onChange={handleSliderTextChange}
+                                type="number"
+                                fullWidth
+                                size="small"
+                                label="Max Tokens"
+                                inputProps={{
+                                  min: 200,
+                                  max: 4000,
+                                  step: 50
+                                }}
+                              />
+                              <Slider
+                                {...register('maxCompletionTokens')}
+                                value={sliderValues.maxCompletionTokens}
+                                name="maxCompletionTokens"
+                                onChange={handleSliderChange}
+                                min={200}
+                                size="small"
+                                max={4000}
+                                step={50}
+                                sx={{ width: '85%' }}
+                              />
+                            </Box>
+                          </Grid>
+                        </Grid>
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                          {/* <Typography  sx={{ mb: 2 }}>
+                            Help Text
+                          </Typography> */}
+
+                          
+                        </Grid>
+                    </Grid>
                   </Box>
                 </Grid>
 
-                <Grid item container direction="row" rowSpacing={4} columnSpacing={4}>
-                  <Grid item xs={12}>
-                    <ErrorMessage
-                      errors={errors}
-                      name="multipleErrorInput"
-                      render={({ messages }) =>
-                        messages &&
-                        Object.entries(messages).map(([type, message]) => (
-                          <p key={type}>{message}</p>
-                        ))
-                      }
-                    />
-                    <Button type="submit" variant="contained" sx={{ margin: '0 auto' }}>
-                      {sidekick?.id ? 'Save Sidekick' : 'Create Sidekick'}
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-
-            <Grid item xs={12} md={3}>
-              <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
                 <Grid item xs={12}>
-                  <FormControl fullWidth size="small">
-                    <Controller
-                      name="sharedWith"
-                      control={control}
-                      defaultValue={sidekick?.sharedWith ?? 'private'}
-                      render={({ field }) => (
-                        <Select
-                          labelId="sharedWith-label"
-                          {...field}
-                          size="small"
-                          defaultValue={sidekick?.sharedWith ?? 'private'}
-                          required
-                          fullWidth
-                          label="Shared With"
-                          sx={{ ...selectStyles, pt: 1, pb: 0, width: '100%', mx: 'auto' }}>
-                          <MenuItem value="private">Private</MenuItem>
-                          <MenuItem value="org">My Org</MenuItem>
-                          <MenuItem value="global">Global</MenuItem>
-                          {flags?.sidekicks_system?.enabled && (
-                            <MenuItem value="system">System</MenuItem>
-                          )}
-                        </Select>
-                      )}
-                    />
-                    <FormHelperText error={true}>{errors.aiModel?.message}</FormHelperText>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControl fullWidth size="small">
-                    <Controller
-                      name="aiModel"
-                      control={control}
-                      defaultValue={sidekick?.aiModel ?? 'gpt-3.5-turbo'}
-                      render={({ field }) => (
-                        <Select
-                          labelId="aiModel-label"
-                          {...field}
-                          size="small"
-                          required
-                          defaultValue={sidekick?.aiModel ?? 'gpt-3.5-turbo'}
-                          fullWidth
-                          label="AI Model"
-                          sx={{ ...selectStyles, pt: 1, pb: 0, width: '100%', mx: 'auto' }}>
-                          <MenuItem value="gpt-3.5-turbo">GPT 3.5</MenuItem>
-                          <MenuItem value="gpt-3.5-turbo-16k">GPT 3.5 16k</MenuItem>
-                          <MenuItem value="gpt-4">GPT 4</MenuItem>
-                        </Select>
-                      )}
-                    />
-                    <FormHelperText error={true}>{errors.aiModel?.message}</FormHelperText>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                    <TextField
-                      name="temperature"
-                      value={sliderValues.temperature}
-                      onChange={handleSliderTextChange}
-                      type="number"
-                      fullWidth
-                      size="small"
-                      label="Temperature"
-                      inputProps={{
-                        min: 0,
-                        max: 2,
-                        step: 0.01
-                      }}
-                    />
-                    <Slider
-                      {...register('temperature')}
-                      value={sliderValues.temperature}
-                      name="temperature"
-                      onChange={handleSliderChange}
-                      min={0}
-                      size="small"
-                      max={2}
-                      step={0.01}
-                      sx={{ width: '85%' }}
-                    />
-                  </Box>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                    <TextField
-                      name="frequency"
-                      value={sliderValues.frequency}
-                      onChange={handleSliderTextChange}
-                      type="number"
-                      fullWidth
-                      size="small"
-                      label="Frequency"
-                      inputProps={{
-                        min: 0,
-                        max: 2,
-                        step: 0.01
-                      }}
-                    />
-                    <Slider
-                      {...register('frequency')}
-                      value={sliderValues.frequency}
-                      name="frequency"
-                      onChange={handleSliderChange}
-                      min={0}
-                      size="small"
-                      max={2}
-                      step={0.01}
-                      sx={{ width: '85%' }}
-                    />
-                  </Box>
-                </Grid>
-                <Grid item xs={12}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                    <TextField
-                      name="presence"
-                      value={sliderValues.presence}
-                      onChange={handleSliderTextChange}
-                      type="number"
-                      fullWidth
-                      size="small"
-                      label="Presence"
-                      inputProps={{
-                        min: 0,
-                        max: 2,
-                        step: 0.01
-                      }}
-                    />
-                    <Slider
-                      {...register('presence')}
-                      value={sliderValues.presence}
-                      name="presence"
-                      onChange={handleSliderChange}
-                      min={0}
-                      size="small"
-                      max={2}
-                      step={0.01}
-                      sx={{ width: '85%' }}
-                    />
-                  </Box>
-                </Grid>
-                <Grid item xs={12}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                    <TextField
-                      name="maxCompletionTokens"
-                      value={sliderValues.maxCompletionTokens}
-                      onChange={handleSliderTextChange}
-                      type="number"
-                      fullWidth
-                      size="small"
-                      label="Max Tokens"
-                      inputProps={{
-                        min: 200,
-                        max: 4000,
-                        step: 50
-                      }}
-                    />
-                    <Slider
-                      {...register('maxCompletionTokens')}
-                      value={sliderValues.maxCompletionTokens}
-                      name="maxCompletionTokens"
-                      onChange={handleSliderChange}
-                      min={200}
-                      size="small"
-                      max={4000}
-                      step={50}
-                      sx={{ width: '85%' }}
-                    />
-                  </Box>
+                  <ErrorMessage
+                    errors={errors}
+                    name="multipleErrorInput"
+                    render={({ messages }) =>
+                      messages &&
+                      Object.entries(messages).map(([type, message]) => (
+                        <p key={type}>{message}</p>
+                      ))
+                    }
+                  />
+                  <Button type="submit" variant="contained" sx={{ margin: '0 auto' }}>
+                    {sidekick?.id ? 'Save Sidekick' : 'Create Sidekick'}
+                  </Button>
                 </Grid>
               </Grid>
             </Grid>

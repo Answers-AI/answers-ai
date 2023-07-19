@@ -1,5 +1,5 @@
-import Editor, { EditorProps } from '@monaco-editor/react';
-import { Dispatch, MutableRefObject, SetStateAction, useEffect, useRef } from 'react';
+import Editor from '@monaco-editor/react';
+import {  MutableRefObject, useEffect, useRef } from 'react';
 
 //
 // So... typings weren't working when I implemented Monaco, and we had to ship,
@@ -80,7 +80,7 @@ const HandlebarsEditor = (props: HandlebarsEditorProps): JSX.Element => {
 
   return (
     <Editor
-      height="125px"
+      height="50vh"
       language="handlebars"
       onChange={(value, _event) => {
         setCode ? setCode(value ?? '') : null;
