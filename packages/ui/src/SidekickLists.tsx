@@ -81,7 +81,6 @@ const SidekickTabs = ({ appSettings }: { appSettings: AppSettings }) => {
           <SidekickList
             endpoint={getEndpoint('System')}
             appSettings={appSettings}
-            isFavoritable={false}
             isSystem={true}
           />
         </Box>
