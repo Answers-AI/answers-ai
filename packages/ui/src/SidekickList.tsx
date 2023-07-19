@@ -4,6 +4,7 @@ import axios from 'axios';
 import NextLink from 'next/link';
 import { useFlags } from 'flagsmith/react';
 import { useRouter } from 'next/navigation';
+import useSWR from 'swr';
 
 import { visuallyHidden } from '@mui/utils';
 
@@ -120,8 +121,13 @@ const SidekickList = ({
 }) => {
   const router = useRouter();
   const flags = useFlags(['sidekicks_system']);
-  const [currentSidekicks, setCurrentSidekicks] = useState<SidekickListItem[]>(sidekicks ?? []);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: currentSidekicks = [], isLoading } = useSWR(
+    endpoint ? endpoint : null,
+    (endpoint) => axios.get(endpoint).then((res) => res.data),
+    {
+      fallbackData: sidekicks
+    }
+  );
   const [theMessage, setTheMessage] = useState('');
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof SidekickListItem>('label');
@@ -130,24 +136,10 @@ const SidekickList = ({
   const [updatedSidekicks, setUpdatedSidekicks] = useState<SidekickListItem[]>([]);
 
   useEffect(() => {
-    const fetchSidekicks = async () => {
-      try {
-        const response = await axios.get(endpoint);
-        setCurrentSidekicks(response.data);
-      } catch (error) {
-        console.error('Error fetching sidekicks:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     if (isSystem && !flags?.sidekicks_system?.enabled) {
       router.push('/404');
-    } else if (!currentSidekicks?.length && endpoint) {
-      setIsLoading(true);
-      fetchSidekicks();
     }
-  }, [endpoint, currentSidekicks, isSystem, flags, router]);
+  }, [router, isSystem, flags?.sidekicks_system?.enabled]);
 
   const handleUpdateFavorite = async (id: string) => {
     try {

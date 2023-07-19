@@ -20,7 +20,7 @@ const SidekickTabs = ({ appSettings }: { appSettings: AppSettings }) => {
   const [currentTab, setCurrentTab] = useState('Favorites');
   const [isLoading, setIsLoading] = useState(true);
 
-  const getEndpoint = (tab: string) => {
+  const getEndpoint = React.useCallback((tab: string) => {
     // Map the tab to the corresponding endpoint
     if (tab === 'Favorites') {
       return '/api/sidekicks/list/favorite';
@@ -35,7 +35,7 @@ const SidekickTabs = ({ appSettings }: { appSettings: AppSettings }) => {
     } else {
       return '';
     }
-  };
+  }, []);
 
   const handleTabChange = (event: React.SyntheticEvent, newTab: string) => {
     setCurrentTab(newTab);
