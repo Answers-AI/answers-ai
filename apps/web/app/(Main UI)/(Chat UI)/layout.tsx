@@ -3,11 +3,9 @@ import ChatLayout from '@ui/ChatLayout';
 
 export default async function ChatUILayout({
   // This will be populated with nested layouts or pages
-  children,
-  modal
+  children
 }: {
   children: React.ReactNode;
-  modal: React.ReactNode;
 }) {
   return (
     <>
