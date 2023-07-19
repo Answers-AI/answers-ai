@@ -162,7 +162,7 @@ export function AnswersProvider({
       // Check if the current route is the chat
       setIsLoading(false);
       if (newChat) {
-        router.push(`/chat/${newChat?.id}`, { shallow: true });
+        router.push(`/chat/${newChat?.id}`);
       }
     }
   });
