@@ -160,7 +160,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
             <Typography variant="overline">Domains</Typography>
             <Box sx={{ gap: 1, display: 'flex', flexWrap: 'wrap' }}>
               {filters?.datasources?.web?.domain?.map((domain) => (
-                <Chip size="small" label={domain} onDelete={() => handleRemoveDomain(domain)} />
+                <Chip key={`domain-chip-${domain}`} size="small" label={domain} onDelete={() => handleRemoveDomain(domain)} />
               ))}
             </Box>
           </Box>
@@ -172,7 +172,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
             <Box sx={{ gap: 1, display: 'flex', flexWrap: 'wrap' }}>
               {filters?.datasources?.web?.url?.map((url) => (
                 <Chip
-                  key={url.url}
+                  key={`page-chip-${url.url}`}
                   size="small"
                   label={url.url}
                   onDelete={() => handleRemoveUrl(url)}
@@ -181,6 +181,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
             </Box>
           </Box>
         ) : null}
+
         <Autocomplete
           freeSolo
           options={
@@ -219,12 +220,13 @@ const SourcesWeb: React.FC<{}> = ({}) => {
           )}
         />
       </Box>
+
       {domains?.length ? (
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 1 }}>
           {domains.map(({ domain, pageCount }) =>
             filters?.datasources?.web?.domain?.includes(domain) ? null : (
               <DomainCard
-                key={domain}
+                key={`domain-card-${domain}`}
                 domain={domain}
                 pageCount={pageCount}
                 onClick={() => addDomainFilter(domain)}
@@ -233,6 +235,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
           )}
         </Box>
       ) : null}
+
       {getUrlDomain(newUrl) &&
       !domains?.length &&
       !filters?.datasources?.web?.domain?.includes(getUrlDomain(newUrl)!) ? (
