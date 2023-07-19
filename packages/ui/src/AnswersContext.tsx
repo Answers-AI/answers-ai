@@ -170,9 +170,6 @@ export function AnswersProvider({
     }
   });
   const [chatId, setChatId] = useState<string | undefined>(initialChat?.id);
-  React.useEffect(() => {
-    console.log('ChatId', { initialChat, chatId });
-  }, [initialChat, chatId]);
 
   const { data: chat } = useSWR<Chat>(
     !isStreaming && chatId ? `${apiUrl}/chats/${chatId}` : null,
