@@ -23,7 +23,7 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
   useEffect(() => {
     const fetchSidekicks = async () => {
       try {
-        const response = await axios.get('/api/sidekicks/list/favorite');
+        const response = await axios.get('/api/sidekicks/list/chat');
         const retrievedSidekicks: Sidekick[] = response.data;
 
         retrievedSidekicks.forEach((s: Sidekick) => {

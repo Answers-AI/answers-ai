@@ -7,7 +7,7 @@ import { respond401 } from '@utils/auth/respond401';
 export async function GET(req: Request, { params: { id } }: { params: { id: string } }) {
   try {
     const session = await getServerSession(authOptions);
-    console.log({ session });
+    // console.log({ session });
     const userId = session?.user?.id;
     if (!userId) return respond401();
     // const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
