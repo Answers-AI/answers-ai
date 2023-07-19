@@ -149,7 +149,7 @@ const SidekickList = ({
 
       if (!!sidekicks?.length) {
         // Update the specific row in the sidekicks state
-        const updatedSidekicks = currentSidekicks.map((sidekick) => {
+        const updatedSidekicks = currentSidekicks.map((sidekick:SidekickListItem) => {
           if (sidekick.id === id) {
             return { ...sidekick, isFavorite: !sidekick.isFavorite };
           }
