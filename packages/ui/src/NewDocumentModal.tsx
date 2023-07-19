@@ -54,7 +54,7 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
       handleClose();
       onSave();
     } catch (err: any) {
-      setTheMessage('There was an error indexing your text.');
+      setTheMessage(`There was an error indexing your ${source} text.`);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -64,6 +64,7 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
 
   return (
     <div>
+      <SnackMessage message={theMessage} />
       <Button variant="contained" color="primary" onClick={handleOpen} fullWidth>
         {title ?? `Add ${source}`}
       </Button>
@@ -91,6 +92,7 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
             <Typography variant="h4" component="h2">
               {title ?? `Add ${source} document`}
             </Typography>
+
             {flags?.organization_override?.enabled ? (
               <TextField
                 {...register('organizationId')}
@@ -102,6 +104,7 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
                 margin="normal"
               />
             ) : null}
+
             <TextField
               {...register('title', { required: 'Title is required' })}
               error={Boolean(errors.title)}
@@ -127,6 +130,7 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
                 }
               }}
             />
+
             {loading ? (
               <Box display="flex" justifyContent="center" marginTop="1rem">
                 <CircularProgress />

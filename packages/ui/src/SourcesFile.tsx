@@ -17,7 +17,7 @@ const SourcesFile: React.FC<{}> = ({}) => {
     sources: Document[];
     domains: { domain: string; pageCount: number }[];
   }>(`/api/sources/file`, (url) => fetch(url).then((res) => res.json()), {
-    dedupingInterval: 20000
+    dedupingInterval: 1000
   });
 
   const { sources } = data || {};

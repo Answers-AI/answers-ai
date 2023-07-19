@@ -194,7 +194,7 @@ const SidekickForm = ({
   return (
     <AnswersProvider appSettings={appSettings}>
       <Box p={8} sx={{ position: 'relative' }}>
-        {theMessage?.trim() !== '' && <SnackMessage message={theMessage} />}
+        <SnackMessage message={theMessage} />
         <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
           <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
             <Grid item xs={12} md={9}>

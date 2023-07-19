@@ -20,7 +20,7 @@ const SourcesDocument: React.FC<{}> = ({}) => {
   const { data, mutate } = useSWR<{
     sources: Document[];
   }>(`/api/sources/${source}`, (url) => fetch(url).then((res) => res.json()), {
-    dedupingInterval: 20000
+    dedupingInterval: 1000
   });
 
   const { sources } = data || {};
@@ -120,7 +120,7 @@ const SourcesDocument: React.FC<{}> = ({}) => {
 
   return (
     <>
-      {theMessage?.trim() !== '' && <SnackMessage message={theMessage} />}
+      <SnackMessage message={theMessage} />
       <Box marginBottom={1} sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
         <AutocompleteSelect
           label={'Choose document'}

@@ -72,7 +72,7 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
   };
   return (
     <Box p={8} width="100%">
-      {theMessage?.trim() !== '' && <SnackMessage message={theMessage} />}
+      <SnackMessage message={theMessage} />
 
       <Typography variant="h2" component="h1">
         Create New Journey

@@ -16,7 +16,7 @@ const SourcesYoutube: React.FC<{}> = ({}) => {
   const { data, mutate } = useSWR<{
     sources: Document[];
   }>(`/api/sources/${source}`, (url) => fetch(url).then((res) => res.json()), {
-    dedupingInterval: 20000
+    dedupingInterval: 1000
   });
 
   const { sources } = data || {};

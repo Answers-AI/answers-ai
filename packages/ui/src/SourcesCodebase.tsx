@@ -14,7 +14,7 @@ const SourcesCodebase: React.FC<{}> = ({}) => {
   const { data, mutate } = useSWR<{
     sources: Document[];
   }>(`/api/sources/codebase`, (doc) => fetch(doc).then((res) => res.json()), {
-    dedupingInterval: 20000
+    dedupingInterval: 1000
   });
 
   const { sources } = data || {};
