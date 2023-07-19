@@ -157,7 +157,7 @@ const SidekickForm = ({
         setTheMessage('... Creating your Sidekick');
         const { data: sidekick } = await axios.post('/api/sidekicks/new', { ...rest });
         setTheMessage('Your sidekick was saved successfully.');
-        router.replace(`/sidekick-studio/${sidekick.id}`);
+        router.replace(`/sidekick-studio/${sidekick.id}/edit`);
       }
     } catch (err: any) {
       setTheMessage('');
