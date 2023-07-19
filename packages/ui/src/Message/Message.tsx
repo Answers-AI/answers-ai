@@ -232,7 +232,7 @@ export const MessageCard = ({
                 <Typography variant="body2">References:</Typography>
                 {contextDocuments?.map((doc) => (
                   <Button
-                    key={doc.id}
+                    key={`references-${doc.id}`}
                     size="small"
                     component={NextLink}
                     variant="outlined"

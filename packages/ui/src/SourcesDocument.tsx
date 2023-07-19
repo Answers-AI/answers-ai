@@ -8,8 +8,9 @@ import Button from '@mui/material/Button';
 import Input from '@mui/material/Input';
 import Typography from '@mui/material/Typography';
 
-import { useAnswers } from '../AnswersContext';
-import AutocompleteSelect from '../AutocompleteSelect';
+import { useAnswers } from './AnswersContext';
+import AutocompleteSelect from './AutocompleteSelect';
+import SnackMessage from './SnackMessage';
 
 import { Document } from 'types';
 
@@ -18,12 +19,14 @@ const SourcesDocument: React.FC<{}> = ({}) => {
   const { filters, updateFilter } = useAnswers();
   const { data, mutate } = useSWR<{
     sources: Document[];
-  }>(`/api/sources/${source}`, (url) => fetch(url).then((res) => res.json()));
+  }>(`/api/sources/${source}`, (url) => fetch(url).then((res) => res.json()), {
+    dedupingInterval: 20000
+  });
 
   const { sources } = data || {};
 
   const [showDocumentInput, setShowDocumentInput] = useState(true);
-  const [statusMessage, setStatusMessage] = useState('');
+  const [theMessage, setTheMessage] = useState('');
 
   const [documents, setDocuments] = useState<FileList | null>();
 
@@ -38,6 +41,8 @@ const SourcesDocument: React.FC<{}> = ({}) => {
       return;
     }
 
+    setTheMessage(`Uploading documents`);
+
     for (const index in documents) {
       const document = documents[index];
 
@@ -48,20 +53,20 @@ const SourcesDocument: React.FC<{}> = ({}) => {
 
       let signedUrl;
       try {
-        setStatusMessage(`Verifying "${documentName}"`);
+        setTheMessage(`Verifying "${documentName}"`);
         const presignedUrlResponse = await axios.post('/api/aws/presigned-url', { documentName });
         if (presignedUrlResponse.data.status === 'error') {
           throw new Error(presignedUrlResponse.data.message);
         }
         signedUrl = presignedUrlResponse.data.signedUrl;
       } catch (err: any) {
-        setStatusMessage(`Error presigning "${documentName}": ${err.message}`);
+        setTheMessage(`Error presigning "${documentName}": ${err.message}`);
         console.error(err);
         break;
       }
 
       try {
-        setStatusMessage(`Uploading "${documentName}"`);
+        setTheMessage(`Uploading "${documentName}"`);
         const uploadDocumentResponse = await axios.put(signedUrl, document, {
           headers: { 'Content-Type': document.type }
         });
@@ -70,23 +75,23 @@ const SourcesDocument: React.FC<{}> = ({}) => {
           throw new Error(uploadDocumentResponse.data.message);
         }
       } catch (err: any) {
-        setStatusMessage(`Error uploading "${documentName}": ${err.message}`);
+        setTheMessage(`Error uploading "${documentName}": ${err.message}`);
         console.error(err);
         break;
       }
 
       try {
-        setStatusMessage(`Indexing "${documentName}"`);
+        setTheMessage(`Indexing "${documentName}"`);
         const syncResponse = await axios.post(`/api/sync/document`, { documentName });
         if (syncResponse.data.status === 'error') {
           throw new Error(syncResponse.data.message);
         }
-        setStatusMessage(`${documentName} successfully indexed.`);
+        setTheMessage(`${documentName} successfully indexed.`);
         setTimeout(() => {
-          setStatusMessage('');
+          setTheMessage('');
         }, 3000);
       } catch (err: any) {
-        setStatusMessage(`Error indexing "${documentName}": ${err.message}`);
+        setTheMessage(`Error indexing "${documentName}": ${err.message}`);
         console.error(err);
         break;
       }
@@ -101,7 +106,7 @@ const SourcesDocument: React.FC<{}> = ({}) => {
           datasources: { document: { url: newDocuments } }
         });
       } catch (err: any) {
-        setStatusMessage(`Error updating filteers: ${err.message}`);
+        setTheMessage(`Error updating filteers: ${err.message}`);
         console.error(err);
       }
     }
@@ -115,23 +120,24 @@ const SourcesDocument: React.FC<{}> = ({}) => {
 
   return (
     <>
+      {theMessage?.trim() !== '' && <SnackMessage message={theMessage} />}
       <Box marginBottom={1} sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
-        <Typography variant="body2" color="error">
-          {statusMessage}
-        </Typography>
-        <Typography variant="overline">Choose Document</Typography>
         <AutocompleteSelect
+          label={'Choose document'}
+          placeholder={`My custom document`}
           value={filters?.datasources?.document?.url ?? []}
           onChange={(value) => updateFilter({ datasources: { document: { url: value } } })}
           getOptionLabel={(option) => option?.title ?? option?.url}
           options={sources ?? []}
+          onFocus={() => mutate()}
         />
+
         {showDocumentInput && (
           <Box sx={{ width: '100%' }}>
             <Typography variant="overline">Upload New Document</Typography>
             <Box
               component={`form`}
-              sx={{ px: 1 }}
+              sx={{ px: 1, display: 'flex', flexDirection: 'column', gap: 1 }}
               method="POST"
               onSubmit={handleSubmit}
               encType="multipart/form-data">

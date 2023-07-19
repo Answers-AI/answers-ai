@@ -5,6 +5,7 @@ import { authOptions } from '@ui/authOptions';
 import getCachedSession from '@ui/getCachedSession';
 import getUserContextFields from '@utils/utilities/getUserContextFields';
 import getOrganizationContextFields from '@utils/utilities/getOrganizationContextFields';
+import getResultContextFields from '@utils/utilities/getResultContextFields';
 import { redirect } from 'next/navigation';
 
 export const metadata = {
@@ -52,12 +53,7 @@ const SidekickFormPage = async ({ params }: any) => {
   const contextFields = {
     user: getUserContextFields(session.user),
     organization: getOrganizationContextFields(session.user?.currentOrganization),
-    result: {
-      text: '',
-      code: '',
-      filePath: '',
-      url: ''
-    }
+    result: getResultContextFields()
   };
 
   switch (true) {

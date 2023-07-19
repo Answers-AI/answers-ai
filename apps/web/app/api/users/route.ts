@@ -14,9 +14,7 @@ export async function PATCH(req: Request, res: Response) {
     if (!session?.user?.id || session?.user?.id !== id) return NextResponse.redirect('/auth');
 
     // @ts-ignore-next-line
-    const dbFields = prisma._dmmf.datamodel.models
-      .find((model: any) => model.name === 'User')
-      .fields.map((field: any) => field.name);
+    const dbFields = prisma._runtimeDataModel.models.User.fields.map((field: any) => field.name);
 
     const newData: Record<string, any> = {};
 

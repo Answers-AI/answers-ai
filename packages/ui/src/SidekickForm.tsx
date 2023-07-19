@@ -18,17 +18,10 @@ import Slider from '@mui/material/Slider';
 import Autocomplete from '@mui/material/Autocomplete';
 import FormHelperText from '@mui/material/FormHelperText';
 import { ErrorMessage } from '@hookform/error-message';
-import Slide, { SlideProps } from '@mui/material/Slide';
 
 import { AnswersProvider } from './AnswersContext';
 import HandlebarsEditor from './HandlebarsEditor';
 import SnackMessage from './SnackMessage';
-
-type TransitionProps = Omit<SlideProps, 'direction'>;
-
-function TransitionLeft(props: TransitionProps) {
-  return <Slide {...props} direction="left" />;
-}
 
 import { Sidekick, AppSettings } from 'types';
 
@@ -95,11 +88,12 @@ const SidekickForm = ({
 }) => {
   const flags = useFlags(['sidekicks_system']);
   const defaultSliderValues = {
-    presence: 0,
-    temperature: 1,
-    frequency: 0,
-    maxCompletionTokens: 500
+    presence: sidekick?.presence ?? 0,
+    temperature: sidekick?.temperature ?? 1,
+    frequency: sidekick?.frequency ?? 0,
+    maxCompletionTokens: sidekick?.maxCompletionTokens ?? 500
   };
+
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [sliderValues, setSliderValues] = useState(defaultSliderValues);
@@ -311,7 +305,7 @@ const SidekickForm = ({
                             key="systemPromptTemplate"
                             code={sidekick?.systemPromptTemplate ?? ''}
                             setCode={(value: string) => setValue('systemPromptTemplate', value)}
-                            contextFields={contextFields}
+                            contextFields={{ ...contextFields, userInput: '', context: '' }}
                             readOnly={false}
                           />
                           {errors.systemPromptTemplate && (

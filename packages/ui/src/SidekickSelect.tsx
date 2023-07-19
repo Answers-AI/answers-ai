@@ -140,8 +140,8 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
           multiple
           onChange={handleTagChange}>
           {allTags?.length ? (
-            allTags.map((tag) => (
-              <MenuItem key={tag} value={tag}>
+            allTags.map((tag, idx) => (
+              <MenuItem key={`${idx}-${tag}`} value={tag}>
                 {tag}
               </MenuItem>
             ))

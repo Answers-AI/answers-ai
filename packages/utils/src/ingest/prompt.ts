@@ -10,14 +10,21 @@ export const answersPromptUpserted: EventVersionHandler<{ prompt: string; chat: 
   handler: async ({ event }) => {
     const { data, user, ts } = event;
 
+    const userId = user?.id;
+    if (!userId) throw new Error('No user');
+
     const { prompt, chat } = data;
-    if (!user?.email) throw new Error('No user');
+    const chatId = chat?.id;
+
+    if (!chatId) throw new Error('No chat');
+
     const savedPrompt = await prisma.prompt.findUnique({ where: { content: prompt } });
+
     await prisma.prompt.upsert({
       where: { content: prompt },
       create: {
-        chat: { connect: { id: chat?.id } },
-        users: { connect: { email: user?.email } },
+        chat: { connect: { id: chatId } },
+        users: { connect: { id: userId } },
         title: prompt,
         content: prompt,
         likes: 0,
@@ -27,8 +34,8 @@ export const answersPromptUpserted: EventVersionHandler<{ prompt: string; chat: 
       update: {
         answers: undefined,
         content: undefined,
-        chat: { connect: { id: chat.id } },
-        users: { connect: { email: user?.email } },
+        chat: { connect: { id: chatId } },
+        users: { connect: { id: userId } },
         usages: (savedPrompt?.usages || 0) + 1
       }
     });

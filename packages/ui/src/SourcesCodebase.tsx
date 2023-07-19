@@ -4,8 +4,8 @@ import useSWR from 'swr';
 
 import Box from '@mui/material/Box';
 
-import Autocomplete from '../AutocompleteSelect';
-import { useAnswers } from '../AnswersContext';
+import Autocomplete from './AutocompleteSelect';
+import { useAnswers } from './AnswersContext';
 
 import { Document } from 'types';
 
@@ -13,7 +13,9 @@ const SourcesCodebase: React.FC<{}> = ({}) => {
   const { filters, updateFilter } = useAnswers();
   const { data, mutate } = useSWR<{
     sources: Document[];
-  }>(`/api/sources/codebase`, (doc) => fetch(doc).then((res) => res.json()));
+  }>(`/api/sources/codebase`, (doc) => fetch(doc).then((res) => res.json()), {
+    dedupingInterval: 20000
+  });
 
   const { sources } = data || {};
 

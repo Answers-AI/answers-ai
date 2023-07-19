@@ -13,7 +13,12 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
  */
 let nextConfig = withBundleAnalyzer({
   experimental: {
-    appDir: true
+    appDir: true,
+    serverComponentsExternalPackages: [
+      '@aws-sdk/client-s3',
+      '@aws-sdk/signature-v4-crt',
+      '@aws-sdk/s3-request-presigner'
+    ]
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],

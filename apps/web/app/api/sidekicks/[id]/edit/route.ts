@@ -25,9 +25,9 @@ export async function PATCH(req: Request, res: Response) {
     // Pulls all of the columns for the User model so they
     // can be set to undefined, which will keep them from being updated
     // @ts-ignore-next-line
-    const dbFields = prisma._dmmf.datamodel.models
-      .find((model: any) => model.name === 'Sidekick')
-      .fields.map((field: any) => field.name);
+    const dbFields = prisma._runtimeDataModel.models.Sidekick.fields.map(
+      (field: any) => field.name
+    );
 
     const newData: Record<string, any> = {};
 

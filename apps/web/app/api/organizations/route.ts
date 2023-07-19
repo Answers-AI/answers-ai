@@ -17,9 +17,9 @@ export async function PATCH(req: Request, res: Response) {
     // Pulls all of the columns for the Organization model so they
     // can be set to undefined, which will keep them from being updated
     // @ts-ignore-next-line
-    const dbFields = prisma._dmmf.datamodel.models
-      .find((model: any) => model.name === 'Organization')
-      .fields.map((field: any) => field.name);
+    const dbFields = prisma._runtimeDataModel.models.Organization.fields.map(
+      (field: any) => field.name
+    );
 
     const newData: Record<string, any> = {};
 

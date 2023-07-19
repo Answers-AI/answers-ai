@@ -4,9 +4,9 @@ import useSWR from 'swr';
 
 import Box from '@mui/material/Box';
 
-import Autocomplete from '../AutocompleteSelect';
-import { useAnswers } from '../AnswersContext';
-import NewDocumentModal from '../NewDocumentModal';
+import Autocomplete from './AutocompleteSelect';
+import { useAnswers } from './AnswersContext';
+import NewDocumentModal from './NewDocumentModal';
 
 import { Document } from 'types';
 
@@ -15,7 +15,9 @@ const SourcesYoutube: React.FC<{}> = ({}) => {
   const { filters, updateFilter } = useAnswers();
   const { data, mutate } = useSWR<{
     sources: Document[];
-  }>(`/api/sources/${source}`, (url) => fetch(url).then((res) => res.json()));
+  }>(`/api/sources/${source}`, (url) => fetch(url).then((res) => res.json()), {
+    dedupingInterval: 20000
+  });
 
   const { sources } = data || {};
 

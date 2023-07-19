@@ -64,7 +64,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
   const { data, error, isLoading, mutate } = useSWR<{
     sources: Document[];
     domains: { domain: string; pageCount: number }[];
-  }>(url?.length > 3 ? `/api/sources/web?url=${url}` : null, (url) =>
+  }>(url?.length > 10 ? `/api/sources/web?url=${url}` : null, (url) =>
     fetch(url).then((res) => res.json())
   );
 

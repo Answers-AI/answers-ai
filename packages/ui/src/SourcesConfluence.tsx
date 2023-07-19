@@ -8,7 +8,7 @@ interface Props {
   updateFilter: (newFilter: AnswersFilters) => void;
 }
 
-const SourcesJira = ({ appSettings, filters, updateFilter }: Props) => {
+const SourcesConfluence = ({ appSettings, filters, updateFilter }: Props) => {
   return (
     <>
       <AutocompleteSelect
@@ -33,4 +33,4 @@ const SourcesJira = ({ appSettings, filters, updateFilter }: Props) => {
   );
 };
 
-export default SourcesJira;
+export default SourcesConfluence;

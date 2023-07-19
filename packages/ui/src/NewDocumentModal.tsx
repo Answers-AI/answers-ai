@@ -10,6 +10,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+import SnackMessage from './SnackMessage';
 
 interface IFormInput {
   title: string;
@@ -28,6 +29,7 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
   const flags = useFlags(['organization_override']);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [theMessage, setTheMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
   const {
     register,
@@ -44,12 +46,15 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
   const handleClose = () => setOpen(false);
 
   const onSubmit = async (data: IFormInput) => {
+    setTheMessage('Indexing your text');
     setLoading(true);
     try {
       await axios.post('/api/sync/file', data);
+      setTheMessage('Text indexed successfully');
       handleClose();
       onSave();
     } catch (err: any) {
+      setTheMessage('There was an error indexing your text.');
       setError(err.message);
     } finally {
       setLoading(false);
@@ -93,12 +98,14 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
                 helperText={errors.organizationId?.message}
                 label="Organization Id"
                 fullWidth
+                disabled={loading}
                 margin="normal"
               />
             ) : null}
             <TextField
               {...register('title', { required: 'Title is required' })}
               error={Boolean(errors.title)}
+              disabled={loading}
               helperText={errors.title?.message}
               label="Title"
               fullWidth
@@ -107,6 +114,7 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
               {...register('content', { required: 'Content is required' })}
               error={Boolean(errors.content)}
               helperText={errors.content?.message}
+              disabled={loading}
               label="Content"
               fullWidth
               multiline
@@ -127,11 +135,6 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
               <Button type="submit" variant="contained" color="primary" fullWidth>
                 Add {source}
               </Button>
-            )}
-            {error && (
-              <Box marginTop="1rem">
-                <p>Error: {error}</p>
-              </Box>
             )}
           </Box>
         </Paper>

@@ -15,11 +15,11 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 
-import { useAnswers } from '../AnswersContext';
+import { useAnswers } from './AnswersContext';
 
-import JourneySetting from '../JourneySetting';
-import { Filters } from '../Filters';
-import { Accordion, AccordionDetails, AccordionSummary } from '../Accordion';
+import JourneySetting from './JourneySetting';
+import { Filters } from './Filters';
+import { Accordion, AccordionDetails, AccordionSummary } from './Accordion';
 
 import { AppSettings, AppService } from 'types';
 
@@ -35,30 +35,8 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
   );
 
   const { filters, showFilters, updateFilter } = useAnswers();
-  // const [opened, setOpened] = React.useState<{ [key: string]: any }>(
-  //   appSettings?.services?.reduce(
-  //     (acc, service) => ({
-  //       ...acc,
-  //       [service.id!]: false
-  //     }),
-  //     {}
-  //   ) ?? {}
-  // );
-  const [opened, setOpened] = React.useState<string>('');
 
-  // React.useEffect(() => {
-  //   if (showFilters) {
-  //     setOpened(
-  //       enabledServices?.reduce(
-  //         (acc, service) => ({
-  //           ...acc,
-  //           [service.id!]: !!(filters?.datasources as any)?.[service.id]
-  //         }),
-  //         {}
-  //       )
-  //     );
-  //   }
-  // }, [showFilters, enabledServices, filters]);
+  const [opened, setOpened] = React.useState<string>('');
 
   const handleOpenToggle = (serviceId: string) =>
     opened != serviceId ? setOpened(serviceId) : setOpened('');
@@ -70,27 +48,25 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
         flexDirection: 'column',
         gap: 1
       }}>
-      {Object.keys(filters)?.length ? (
-        <>
-          <Accordion
-            defaultExpanded
-            sx={{
-              '&.MuiPaper-root': {
-                borderBottom: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: 0,
-                py: 1
-              }
-            }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ minHeight: '48px!important' }}>
-              <Typography variant="overline">Selected sources</Typography>
-            </AccordionSummary>
-            <AccordionDetails sx={{ padding: '8px!important', px: 1 }}>
-              <Filters filters={filters} />
-            </AccordionDetails>
-          </Accordion>
-        </>
-      ) : null}
-      <Accordion defaultExpanded={!Object.keys(filters)?.length} sx={{}}>
+      <Accordion
+        expanded={!!Object.keys(filters)?.length}
+        sx={{
+          '&.MuiPaper-root': {
+            borderBottom: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: 0,
+            py: 1,
+            display: !!Object.keys(filters)?.length ? 'block' : 'none'
+          }
+        }}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ minHeight: '48px!important' }}>
+          <Typography variant="overline">Selected sources</Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{ padding: '8px!important', px: 1 }}>
+          <Filters filters={filters} />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ minHeight: '48px!important' }}>
           <Typography variant="overline">Add new sources</Typography>
         </AccordionSummary>
@@ -115,7 +91,6 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
                   }}>
                   <ListItemButton
                     onClick={() => handleOpenToggle(service.id)}
-                    // component={NextLink}
                     sx={{ width: '100%', paddingRight: 1 }}>
                     <ListItemIcon sx={{ minWidth: 0, mr: 2 }}>
                       <Avatar
@@ -127,14 +102,6 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
                     <ListItemText primary={service.name} sx={{ textTransform: 'capitalize' }} />
 
                     {opened == service.id ? <ExpandLess /> : <ExpandMore />}
-                    {/* {journey?.chats?.length ? (
-                    <IconButton onClick={handleExpandJourney(idx)}>
-                      {opened[idx] ? <ExpandLess /> : <ExpandMore />}
-                    </IconButton>
-                  ) : null} */}
-                    {/* <IconButton onClick={() => handleAddChat({ journey })}>
-                    <Add />
-                  </IconButton> */}
                   </ListItemButton>
                   <Collapse in={opened == service.id} sx={{ width: '100%' }}>
                     <JourneySetting

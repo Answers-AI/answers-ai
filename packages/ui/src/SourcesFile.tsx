@@ -5,9 +5,9 @@ import useSWR from 'swr';
 
 import Box from '@mui/material/Box';
 
-import Autocomplete from '../AutocompleteSelect';
-import { useAnswers } from '../AnswersContext';
-import NewDocumentModal from '../NewDocumentModal';
+import Autocomplete from './AutocompleteSelect';
+import { useAnswers } from './AnswersContext';
+import NewDocumentModal from './NewDocumentModal';
 
 import { Document } from 'types';
 
@@ -16,7 +16,9 @@ const SourcesFile: React.FC<{}> = ({}) => {
   const { data, error, isLoading, mutate } = useSWR<{
     sources: Document[];
     domains: { domain: string; pageCount: number }[];
-  }>(`/api/sources/file`, (url) => fetch(url).then((res) => res.json()));
+  }>(`/api/sources/file`, (url) => fetch(url).then((res) => res.json()), {
+    dedupingInterval: 20000
+  });
 
   const { sources } = data || {};
   return (

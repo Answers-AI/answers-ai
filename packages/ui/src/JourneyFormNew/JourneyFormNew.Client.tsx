@@ -13,6 +13,7 @@ import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 
 import { JourneyAppsDrawer } from '../JourneyLayout/JourneyAppsDrawer';
 import { AnswersProvider, useAnswers } from '../AnswersContext';
+import SnackMessage from '../SnackMessage';
 import { debounce } from '@utils/debounce';
 
 import { AppSettings, User } from 'types';
@@ -35,7 +36,7 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
   const router = useRouter();
   const [goal, setGoal] = useState('');
   const [query, setQuery] = useState<string>('');
-
+  const [theMessage, setTheMessage] = useState('');
   const { updateFilter, upsertJourney, filters } = useAnswers();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,16 +48,6 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
       refreshInterval: 0,
       revalidateIfStale: false,
       revalidateOnFocus: false
-      // onSuccess: ({ domain }) => {
-      //   console.log('Data', data);
-      //   updateFilter({
-      //     datasources: {
-      //       web: {
-      //         domain
-      //       }
-      //     }
-      //   });
-      // }
     }
   );
 
@@ -65,30 +56,35 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
   }, [data]);
 
   const handleCreateNewJourney = async () => {
-    const { data: journey } = await upsertJourney({
-      goal,
-      filters
-    });
-    router.push(`/journey/${journey.id}`);
+    try {
+      setTheMessage('... Creating your journey');
+
+      const { data: journey } = await upsertJourney({
+        goal,
+        filters
+      });
+      router.push(`/journey/${journey.id}`);
+      setTheMessage('Your journey is ready....taking you there now.');
+    } catch (err: any) {
+      setTheMessage('There was an error creating your journey.   Please try again.');
+      console.error(err);
+    }
   };
   return (
     <Box p={8} width="100%">
-      {/* <form action={handleSubmit}> */}
+      {theMessage?.trim() !== '' && <SnackMessage message={theMessage} />}
+
       <Typography variant="h2" component="h1">
         Create New Journey
       </Typography>
 
       <Divider sx={{ my: 2 }} />
 
-      <Box
-        sx={{
-          py: 2
-        }}>
+      <Box sx={{ py: 2 }}>
         <Typography variant="h5" component="h2">
           What is the goal of your journey?
         </Typography>
         <TextField
-          // label="What is the goal of your journey?"
           variant="outlined"
           fullWidth
           multiline
