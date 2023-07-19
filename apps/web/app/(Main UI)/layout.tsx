@@ -3,7 +3,7 @@ import { Session } from 'next-auth';
 import AppLayout from '@ui/AppLayout';
 import flagsmith from 'flagsmith/isomorphic';
 
-import { getCachedSession } from '@ui/getCachedSession';
+import getCachedSession from '@ui/getCachedSession';
 
 const MainUiLayout = async (props: {
   children: React.ReactNode;

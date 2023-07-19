@@ -1,20 +1,22 @@
 'use client';
 import React, { useState } from 'react';
+import useSWR from 'swr';
+import { useRouter } from 'next/navigation';
 
+import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
-import { JourneyAppsDrawer } from '@ui/JourneyLayout/JourneyAppsDrawer';
+
+import { JourneyAppsDrawer } from '../JourneyLayout/JourneyAppsDrawer';
+import { AnswersProvider, useAnswers } from '../AnswersContext';
+import SnackMessage from '../SnackMessage';
+import { debounce } from '@utils/debounce';
 
 import { AppSettings, User } from 'types';
-import { AnswersProvider, useAnswers } from '@ui/AnswersContext';
-import { debounce } from '@utils/debounce';
-import useSWR from 'swr';
-import { CircularProgress } from '@mui/material';
-import { useRouter } from 'next/navigation';
 
 const JourneyFormNew = ({
   appSettings,
@@ -34,57 +36,55 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
   const router = useRouter();
   const [goal, setGoal] = useState('');
   const [query, setQuery] = useState<string>('');
-
+  const [theMessage, setTheMessage] = useState('');
   const { updateFilter, upsertJourney, filters } = useAnswers();
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateQuery = React.useCallback(debounce(setQuery, 600), []);
   const { data, error, isLoading, mutate } = useSWR(
-    query?.length > 3 ? `/api/suggested-sources?query=${query}` : null,
+    query?.length >= 10 ? `/api/suggested-sources?query=${query}` : null,
     (url) => fetch(url).then((res) => res.json()),
     {
       refreshInterval: 0,
       revalidateIfStale: false,
       revalidateOnFocus: false
-      // onSuccess: ({ domain }) => {
-      //   console.log('Data', data);
-      //   updateFilter({
-      //     datasources: {
-      //       web: {
-      //         domain
-      //       }
-      //     }
-      //   });
-      // }
     }
   );
+
   const suggestedSources = React.useMemo(() => {
     return data;
   }, [data]);
+
   const handleCreateNewJourney = async () => {
-    const { data: journey } = await upsertJourney({
-      goal,
-      filters
-    });
-    router.push(`/journey/${journey.id}`);
+    try {
+      setTheMessage('... Creating your journey');
+
+      const { data: journey } = await upsertJourney({
+        goal,
+        filters
+      });
+      router.push(`/journey/${journey.id}`);
+      setTheMessage('Your journey is ready....taking you there now.');
+    } catch (err: any) {
+      setTheMessage('There was an error creating your journey.   Please try again.');
+      console.error(err);
+    }
   };
   return (
     <Box p={8} width="100%">
-      {/* <form action={handleSubmit}> */}
+      <SnackMessage message={theMessage} />
+
       <Typography variant="h2" component="h1">
         Create New Journey
       </Typography>
 
       <Divider sx={{ my: 2 }} />
 
-      <Box
-        sx={{
-          py: 2
-        }}>
+      <Box sx={{ py: 2 }}>
         <Typography variant="h5" component="h2">
           What is the goal of your journey?
         </Typography>
         <TextField
-          // label="What is the goal of your journey?"
           variant="outlined"
           fullWidth
           multiline
@@ -110,7 +110,6 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
 
             {isLoading ? <CircularProgress size={20} sx={{ ml: 1 }} /> : null}
           </Box>
-          {/* <pre>{JSON.stringify(suggestedSources, null, 2)}</pre> */}
           <Grid2 container sx={{ pt: 3, gap: 2, width: '100%' }}>
             <JourneyAppsDrawer appSettings={appSettings} />
           </Grid2>

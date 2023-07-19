@@ -1,15 +1,15 @@
 import React from 'react';
 
-import SourcesAirtable from '@ui/SourcesAirtable';
-import SourcesConfluence from '@ui/SourcesConfluence';
-import SourcesCodebase from '@ui/SourcesCodebase';
-import SourcesFile from '@ui/SourcesFile';
-import SourcesJira from '@ui/SourcesJira';
-import SourcesSlack from '@ui/SourcesSlack';
-import SourcesWeb from '@ui/SourcesWeb';
-import SourcesYoutube from '@ui/SourcesYoutube';
-import SourcesDocument from '@ui/SourcesDocument';
-import SourcesZoom from '@ui/SourcesZoom';
+import SourcesAirtable from './SourcesAirtable';
+import SourcesConfluence from './SourcesConfluence';
+import SourcesCodebase from './SourcesCodebase';
+import SourcesFile from './SourcesFile';
+import SourcesJira from './SourcesJira';
+import SourcesSlack from './SourcesSlack';
+import SourcesWeb from './SourcesWeb';
+import SourcesYoutube from './SourcesYoutube';
+import SourcesDocument from './SourcesDocument';
+import SourcesZoom from './SourcesZoom';
 
 const JOURNEY_SETTINGS: { [key: string]: any } = {
   airtable: SourcesAirtable,

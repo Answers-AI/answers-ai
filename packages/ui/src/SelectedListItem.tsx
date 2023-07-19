@@ -1,9 +1,8 @@
 import * as React from 'react';
+
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
-
-import { Paper } from '@mui/material';
-// import { useRouter } from 'next/router';
+import Paper from '@mui/material/Paper';
 interface SelectedListItemProps {
   items: { text: string; icon: React.ReactElement; link: string }[];
   handleSelected?: (item: any) => void;

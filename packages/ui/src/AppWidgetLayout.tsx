@@ -1,13 +1,13 @@
 'use client';
 import React from 'react';
-import { CssBaseline } from '@mui/material';
-import ThemeProvider from '@mui/material/styles/ThemeProvider';
-import { FlagsmithProvider } from 'flagsmith/react';
-import flagsmith from 'flagsmith/isomorphic';
-
-import { SessionProvider } from 'next-auth/react';
-
 import { Session } from 'next-auth';
+import { SessionProvider } from 'next-auth/react';
+import flagsmith from 'flagsmith/isomorphic';
+import { FlagsmithProvider } from 'flagsmith/react';
+
+import CssBaseline from '@mui/material/CssBaseline';
+import ThemeProvider from '@mui/material/styles/ThemeProvider';
+
 import { darkModeTheme } from './theme';
 import GlobalStyles from './GlobalStyles';
 

@@ -1,18 +1,28 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { pineconeQuery } from './pineconeQuery';
+
 import { prisma } from '@db/client';
-import { Chat } from 'db/generated/prisma-client';
-import { AnswersFilters, Message, User, Sidekicks, Sidekick, WebUrlType } from 'types';
+
 import OpenAIClient from '../openai/openai';
 import { countTokens } from '../utilities/countTokens';
+import { renderContext } from '../utilities/renderContext';
+import getUserContextFields from '../utilities/getUserContextFields';
+import getOrganizationContextFields from '../utilities/getOrganizationContextFields';
+import getMaxTokensByModel from '../utilities/getMaxTokensByModel';
 import { getUniqueUrls } from '../getUniqueUrls';
+
+import { AnswersFilters, Message, User, Sidekick, WebUrlType, Organization } from 'types';
+
+const EMBEDDING_MODEL = 'text-embedding-ada-002';
+const DEFAULT_THRESHOLD = 0.68;
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
-
 // TODO: find a more dynamic way to parse the filters into Pinecone
 const parseFilters = (filters: AnswersFilters) => {
   let parsedFilters = { ...filters };
+
   if (parsedFilters?.datasources?.confluence?.spaces) {
     parsedFilters.datasources.confluence.spaceId = parsedFilters.datasources.confluence.spaces.map(
       (space) => space.id
@@ -38,6 +48,7 @@ const parseFilters = (filters: AnswersFilters) => {
       (url) => (url as any)?.url
     );
   }
+
   if (parsedFilters?.datasources?.document?.url?.length) {
     (parsedFilters.datasources.document.url as any) = parsedFilters?.datasources?.document?.url.map(
       (url) => (url as any)?.url
@@ -49,6 +60,7 @@ const parseFilters = (filters: AnswersFilters) => {
       (url) => (url as any)?.url
     );
   }
+
   if (parsedFilters?.datasources?.codebase?.repo?.length) {
     // TODO: Define a type for the Pinecone filters which this function must return
     (parsedFilters.datasources.codebase.repo as any) =
@@ -59,6 +71,8 @@ const parseFilters = (filters: AnswersFilters) => {
 };
 
 const filterPineconeDataRelevanceThreshhold = (data: any[], threshold: number) => {
+  if (!data) return [];
+
   const sortedData = data
     .filter((x: { score: number }) => x.score > threshold)
     .sort((a: { score: number }, b: { score: number }) => b.score - a.score);
@@ -66,20 +80,10 @@ const filterPineconeDataRelevanceThreshhold = (data: any[], threshold: number) =
   return sortedData;
 };
 
-const getMaxContextTokens = (gptModel: string) => {
-  switch (gptModel) {
-    case 'gpt-3.5-turbo':
-      return 3500;
-    case 'gpt-4':
-      return 7000;
-    default:
-      return 3500;
-  }
-};
-
 export const fetchContext = async ({
   user,
   organizationId,
+  organization,
   prompt,
   messages = [],
   filters: clientFilters = {},
@@ -88,6 +92,7 @@ export const fetchContext = async ({
 }: {
   user?: User;
   organizationId?: string;
+  organization?: Organization;
   prompt: string;
   messages?: Message[];
   filters?: AnswersFilters;
@@ -99,7 +104,7 @@ export const fetchContext = async ({
   const filters = parseFilters(clientFilters);
   const promptEmbedding = await openai.createEmbedding({
     input: prompt?.toLowerCase(),
-    model: 'text-embedding-ada-002'
+    model: EMBEDDING_MODEL
   });
 
   // if (!hasDefaultFilter) {
@@ -120,6 +125,9 @@ export const fetchContext = async ({
         .flat()
     };
   }
+
+  let numberOfSources = 0;
+
   if (datasources) {
     Object.entries(datasources).forEach(([source, sourceFilter]) => {
       if (sourceFilter && Object.keys(sourceFilter)?.length) {
@@ -131,9 +139,12 @@ export const fetchContext = async ({
               ...(sourceFilter[field]?.length
                 ? {
                     [field]: {
-                      $in: sourceFilter[field]?.map((value: string) =>
-                        value?.toString().toLowerCase()
-                      )
+                      $in: sourceFilter[field]?.map((value: string) => {
+                        // Count the sources so we can have a fallback when filtering by threshold
+                        numberOfSources++;
+
+                        return value?.toString().toLowerCase();
+                      })
                     }
                   }
                 : null)
@@ -144,6 +155,7 @@ export const fetchContext = async ({
       }
     });
   }
+
   Object.keys(filter)?.forEach((source) => {
     if (Object.keys(filter[source])?.length === 0) {
       delete filter[source];
@@ -155,6 +167,7 @@ export const fetchContext = async ({
   console.time(`[${ts}] Pineconedata`);
   console.time(`[${ts}] Pineconedata get`);
   const PUBLIC_SOURCES = ['web', 'drive', 'github', 'notion', 'airtable'];
+
   const pineconeData = await Promise.all([
     ...Object.entries(datasources)?.map(([source]) => {
       if (!filter[source]) return Promise.resolve(null);
@@ -173,41 +186,90 @@ export const fetchContext = async ({
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
   console.timeEnd(`[${ts}] Pineconedata get`);
 
-  // Filter out any results that are above the relavance threshold, sort by score and retunr the max number based on gptModel
-  let relevantData = filterPineconeDataRelevanceThreshhold(pineconeData, 0.68);
+  // Filter out any results that are above the relavance threshold, sort by score and return the max number based on gptModel
+  let relevantData = pineconeData.length
+    ? filterPineconeDataRelevanceThreshhold(pineconeData, DEFAULT_THRESHOLD)
+    : [];
 
-  // Render the context string based on the sidekick and number of tokens
-  let totalTokens = 0;
-  const contextSourceFilesUsed: string[] = [];
-  const maxContextTokens = getMaxContextTokens(gptModel);
-  const contextPromises = relevantData.map((item) => {
-    let renderedContext = item?.metadata?.text;
-    if (sidekick?.contextStringRender) {
-      renderedContext = sidekick?.contextStringRender(item.metadata); // TODO: get this from the database to give us more flexibility
+  if (!relevantData.length && pineconeData.length) {
+    if (numberOfSources === 2) {
+      console.log(
+        "No relevent data found.   Since there are 2 sources, we're lowering the filtering threshold"
+      );
+      relevantData = filterPineconeDataRelevanceThreshhold(pineconeData, DEFAULT_THRESHOLD / 2);
+    } else if (numberOfSources === 1) {
+      console.log(
+        "No relevent data found.   Since there is 1 source, we're removing the filtering threshold"
+      );
+      relevantData = pineconeData;
     }
-    const tokenCount = countTokens(renderedContext || '');
-    if (totalTokens + tokenCount <= maxContextTokens) {
-      contextSourceFilesUsed.push(item?.metadata?.filePath || item.metadata?.url); // TODO: standardize teh canonical location (UUID) of the file
+  }
+
+  let context: string = '';
+  const contextSourceFilesUsed = new Set<string>();
+  let filteredData: Array<string | null> = [];
+
+  if (!!relevantData?.length) {
+    // Render the context string based on the sidekick and number of tokens
+    let totalTokens = 0;
+
+    const maxCompletionTokens = sidekick?.maxCompletionTokens || 500;
+    const model = sidekick?.aiModel || gptModel;
+    const maxTokens = getMaxTokensByModel(model) - maxCompletionTokens;
+
+    // Get organization's custom contact fields
+    const organizationContext: Record<string, any> = getOrganizationContextFields(organization);
+
+    // Get user's custom contect fields
+    const userContext: Record<string, any> = getUserContextFields(user);
+
+    const contextPromises = relevantData.map((item) => {
+      if (totalTokens > maxTokens) {
+        return null;
+      }
+
+      let renderedContext: string = item?.metadata?.text?.trim() ?? '';
+
+      const preTokenCount = renderedContext !== '' ? countTokens(renderedContext) : 0;
+
+      const contextStringRender =
+        sidekick?.contextStringRender?.trim() !== '' ? sidekick?.contextStringRender : null;
+
+      if (contextStringRender && totalTokens + preTokenCount <= maxTokens) {
+        renderedContext = renderContext(contextStringRender, {
+          result: item.metadata,
+          organization: organizationContext,
+          user: userContext
+        }).trim();
+      }
+
+      if (renderedContext === '') return null;
+
+      const tokenCount = countTokens(renderedContext);
+      if (tokenCount && totalTokens + tokenCount > maxTokens) {
+        return null;
+      }
+
+      // TODO: standardize the canonical location (UUID) of the file
+      contextSourceFilesUsed.add(item?.metadata?.filePath || item?.metadata?.url);
       totalTokens += tokenCount;
       return renderedContext;
-    } else {
-      return null;
-    }
-  });
+    });
 
-  const filteredData = contextPromises;
-  const context = filteredData.filter((result) => result !== null).join(' ');
+    filteredData = contextPromises;
+    context = filteredData.filter((result) => result !== null).join('\n\n');
+  }
 
   const contextDocuments = await prisma.document.findMany({
     where: {
-      url: { in: contextSourceFilesUsed }
+      url: { in: Array.from(contextSourceFilesUsed) }
     }
   });
 
   return {
     context,
     contextDocuments,
-    ...(process.env.NODE_ENV === 'development'
+    ...(IS_DEVELOPMENT
       ? {
           pineconeFilters: filters,
           filteredData,

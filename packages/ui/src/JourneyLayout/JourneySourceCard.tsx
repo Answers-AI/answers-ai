@@ -1,8 +1,9 @@
-import React, { Component, ElementType } from 'react';
+import React, { ElementType } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { signIn } from 'next-auth/react';
 import { useFlags } from 'flagsmith/react';
+
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
@@ -13,9 +14,9 @@ import CardHeader from '@mui/material/CardHeader';
 import Avatar from '@mui/material/Avatar';
 
 import { useAnswers } from '../AnswersContext';
-import { AnswersFilters, AppService, AppSettings } from 'types';
+import JourneySetting from '../JourneySetting';
 
-import JourneySetting from '@ui/JourneySetting';
+import { AnswersFilters, AppService, AppSettings } from 'types';
 
 interface JourneySourceCardProps extends AppService {
   appSettings: AppSettings;

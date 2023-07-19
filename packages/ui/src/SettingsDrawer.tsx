@@ -1,43 +1,27 @@
 'use client';
 import * as React from 'react';
-import { styled, Theme, CSSObject, alpha } from '@mui/material/styles';
+import { usePathname } from 'next/navigation';
+
+import { styled, alpha } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
-
-import WifiTetheringIcon from '@mui/icons-material/WifiTethering';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import WifiTetheringIcon from '@mui/icons-material/WifiTethering';
+import BusinessIcon from '@mui/icons-material/Business';
+import UserIcon from '@mui/icons-material/ManageAccounts';
+
+import closedMixin from './theme/closedMixin';
+import openedMixin from './theme/openedMixin';
+import AppSyncToolbar from './AppSyncToolbar';
+
 import { Chat } from 'types';
 
-import { ListItemIcon, ListSubheader } from '@mui/material';
-import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
-import AppSyncToolbar from './AppSyncToolbar';
 const drawerWidth = 200;
-
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: drawerWidth,
-  maxWidth: drawerWidth,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen
-  }),
-  overflowX: 'hidden'
-});
-
-const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen
-  }),
-  overflowX: 'hidden',
-  maxWidth: `calc(${theme.spacing(0)} + 0px)`,
-  [theme.breakpoints.up('sm')]: {
-    maxWidth: `calc(${theme.spacing(0)} + 0px)`
-  }
-});
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -55,13 +39,15 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',
+
     ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme)
+      ...openedMixin({ theme, width: drawerWidth }),
+      '& .MuiDrawer-paper': openedMixin({ theme, width: drawerWidth })
     }),
+
     ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme)
+      ...closedMixin({ theme }),
+      '& .MuiDrawer-paper': closedMixin({ theme })
     })
   })
 );
@@ -82,7 +68,14 @@ const DEFAULT_SETTINGS = [
     link: '/settings/integrations',
     title: 'integrations',
     icon: <WifiTetheringIcon />
-  }
+  },
+  {
+    id: 'organization-icon',
+    title: 'Organization',
+    link: '/settings/organization',
+    icon: <BusinessIcon />
+  },
+  { id: 'user-icon', title: 'User', link: '/settings/user', icon: <UserIcon /> }
   // {
   //   id: 'general',
   //   link: '/settings/general',
@@ -100,11 +93,7 @@ export default function SettingsDrawer({
   settings = DEFAULT_SETTINGS,
   chats
 }: SettingsDrawerProps) {
-  // const { chat } = useAnswers();
-
   const currentPath = usePathname();
-
-  const router = useRouter();
   const [open, setOpen] = React.useState(true);
 
   return (

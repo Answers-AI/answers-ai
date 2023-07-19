@@ -4,41 +4,65 @@ import { authOptions } from '@ui/authOptions';
 import OpenAIClient from '@utils/openai/openai';
 import { parse } from 'url';
 import { pineconeQuery } from '@utils/pinecone/pineconeQuery';
+import { respond401 } from '@utils/auth/respond401';
+import {
+  QueryResponse,
+  ScoredVector
+} from '@pinecone-database/pinecone/dist/pinecone-generated-ts';
 
 const openai = new OpenAIClient();
 const SCORE_THRESHOLD = 0.8;
 
 export async function GET(req: Request, res: Response) {
-  const { user } = (await getServerSession(authOptions)) ?? {};
-  if (!user?.email) return NextResponse.redirect('/auth');
+  const session = await getServerSession(authOptions);
+  const userId = session?.user?.id;
+  if (!userId || !session.user?.organizationId) return respond401();
+
   const { searchParams } = new URL(req.url);
   const url = searchParams.get('url');
-  const query = searchParams.get('query');
-  let pineconeDomains: any = {};
-  if (query) {
-    const queryEmbedding = await openai.createEmbedding({
-      input: query?.toLowerCase(),
-      model: 'text-embedding-ada-002'
-    });
-    const webSuggestions = await getWebSuggestions(queryEmbedding, pineconeDomains);
+  const query = (searchParams.get('query') ?? '').trim();
 
-    const otherSources = await pineconeQuery(queryEmbedding, {
-      // TODO: Figure how to filter by namespace without having to re-index per user
-      // namespace: `org-${user?.organizationId}`,
-      namespace: `org-${user?.organizationId}`,
-      topK: 200
-    });
-    const suggestions: any = {
-      web: webSuggestions
-    };
-    for (const match of otherSources?.matches ?? []) {
-      if (match.score! > SCORE_THRESHOLD) {
-        const source = (match?.metadata as any)?.source;
-        suggestions[source] = (suggestions[source] || []).concat(match?.metadata);
-      }
-    }
-    return NextResponse.json(suggestions);
+  // Require at least 10 characters
+  if (query.length < 10) {
+    return NextResponse.json({ error: 'Provide a longer query' }, { status: 422 });
   }
+
+  let pineconeDomains: any = {};
+
+  const queryEmbedding = await openai.createEmbedding({
+    input: query?.toLowerCase(),
+    model: 'text-embedding-ada-002'
+  });
+
+  const promiseArray = [];
+
+  promiseArray.push(getWebSuggestions(queryEmbedding, pineconeDomains));
+  promiseArray.push(
+    pineconeQuery(queryEmbedding, {
+      namespace: `org-${session.user?.organizationId}`,
+      topK: 200
+    })
+  );
+
+  const [webSuggestions, otherSources] = await Promise.all(promiseArray);
+
+  const suggestions: any = {
+    web: webSuggestions
+  };
+
+  const matches = (otherSources as QueryResponse)?.matches ?? [];
+  const filteredMatches: Record<string, any[]> = {};
+
+  if (matches?.length) {
+    matches.forEach((match) => {
+      if (match.score! > SCORE_THRESHOLD && (match?.metadata as any)?.source) {
+        const source: string = (match?.metadata as any)?.source;
+        filteredMatches[source] = (filteredMatches[source] || []).concat(match?.metadata);
+      }
+    });
+  }
+
+  return NextResponse.json(suggestions);
 }
 
 interface DomainInfo {

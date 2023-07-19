@@ -1,17 +1,20 @@
 'use client';
 import NextLink from 'next/link';
 import React, { useState } from 'react';
+import { useFlags } from 'flagsmith/react';
+
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import { Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
+import Tooltip from '@mui/material/Tooltip';
+
 import { debounce } from '@utils/debounce';
 import { useAnswers } from './AnswersContext';
-import { useFlags } from 'flagsmith/react';
 import { SidekickSelect } from './SidekickSelect';
-
-import { Tooltip } from '@mui/material';
+import Fieldset from './Fieldset';
 
 import { Sidekick } from 'types';
 
@@ -30,7 +33,8 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     sidekick,
     setSidekick,
     gptModel,
-    setGptModel
+    setGptModel,
+    startNewChat
   } = useAnswers();
 
   const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
@@ -63,6 +67,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
   const handleSidekickSelected = (value: Sidekick) => {
     setPlaceholder(value?.placeholder ?? defaultPlaceholderValue);
     setSidekick(value);
+    setGptModel(value.aiModel || gptModel);
   };
 
   const handleGptModelSelected = (event: SelectChangeEvent<string>) => {
@@ -93,29 +98,26 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
       <Box sx={{ display: 'flex', gap: 2 }}>
-        <SidekickSelect
-          onSidekickSelected={handleSidekickSelected}
-          selectedSidekick={sidekick}
-          initialSidekick={sidekick}
-        />
-
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          label="Sidekick"
-          size="small"
-          value={gptModel}
-          onChange={handleGptModelSelected}>
-          <MenuItem key="gpt3" value="gpt-3.5-turbo">
-            GPT 3.5
-          </MenuItem>
-          <MenuItem key="gpt316k" value="gpt-3.5-turbo-16k">
-            GPT 3.5 16k
-          </MenuItem>
-          <MenuItem key="gpt4" value="gpt-4">
-            GPT 4
-          </MenuItem>
-        </Select>
+        <SidekickSelect onSidekickSelected={handleSidekickSelected} />
+        <Fieldset legend="Model">
+          <Select
+            labelId="model-select-label"
+            id="model-select"
+            size="small"
+            sx={{ 'boxShadow': 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
+            value={gptModel}
+            onChange={handleGptModelSelected}>
+            <MenuItem key="gpt3" value="gpt-3.5-turbo">
+              GPT 3.5
+            </MenuItem>
+            <MenuItem key="gpt316k" value="gpt-3.5-turbo-16k">
+              GPT 3.5 16k
+            </MenuItem>
+            <MenuItem key="gpt4" value="gpt-4">
+              GPT 4
+            </MenuItem>
+          </Select>
+        </Fieldset>
       </Box>
       <TextField
         id="user-chat-input"
@@ -140,7 +142,6 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
       />
-
       <Box
         sx={{
           display: 'flex',
@@ -170,8 +171,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
             <Button
               variant="outlined"
               color="primary"
-              component={NextLink}
-              href={'/chat'}
+              onClick={() => startNewChat()}
               data-test-id="new-chat-button">
               <AddIcon />
             </Button>

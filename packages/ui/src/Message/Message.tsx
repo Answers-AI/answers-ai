@@ -1,32 +1,35 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import NextLink from 'next/link';
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Chip,
-  Divider,
-  IconButton
-} from '@mui/material';
-import { JsonViewer } from '@textea/json-viewer';
-// import { deepOrange, deepPurple } from '@mui/material/colors';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-import ContentCopy from '@mui/icons-material/ContentCopy';
-import Typography from '@mui/material/Typography';
-import { AppService, Document, Message } from 'types';
+import { AxiosError } from 'axios';
 import { useFlags } from 'flagsmith/react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { duotoneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { useAnswers } from '@ui/AnswersContext';
-import { AxiosError } from 'axios';
-import { Accordion, AccordionSummary, AccordionDetails } from '@ui/Accordion';
+
+import { JsonViewer } from '@textea/json-viewer';
+
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ContentCopy from '@mui/icons-material/ContentCopy';
+
+import { countTokens } from '@utils/utilities/countTokens';
+
+import { useAnswers } from '../AnswersContext';
+import { Accordion, AccordionSummary, AccordionDetails } from '../Accordion';
+
+import { AppService, Document, Message } from 'types';
 
 interface MessageExtra {
   prompt?: string;
@@ -90,6 +93,7 @@ export const MessageCard = ({
     filters = error?.response?.data.filters;
     prompt = error?.response?.data.prompt;
   }
+
   const handleLike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.stopPropagation();
     evt.preventDefault();
@@ -100,9 +104,11 @@ export const MessageCard = ({
         likes: (likes ?? 0) + 1
       });
   };
+
   const handleCopyCodeClick = (codeString: string) => {
     navigator.clipboard.writeText(codeString);
   };
+
   const handleDislike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.stopPropagation();
     evt.preventDefault();
@@ -113,6 +119,7 @@ export const MessageCard = ({
         dislikes: (dislikes ?? 0) + 1
       });
   };
+
   return (
     <Card
       data-cy="message"
@@ -142,7 +149,11 @@ export const MessageCard = ({
           }}>
           <Box sx={{ gap: 2, display: 'flex' }}>
             <Avatar
-              src={role == 'user' ? user?.image || currentUser?.image! : '/logos/answerai-logo.png'}
+              src={
+                role == 'user'
+                  ? user?.image || currentUser?.image!
+                  : '/static/images/logos/answerai-logo.png'
+              }
               sx={{
                 bgcolor: role == 'user' ? 'secondary.main' : 'primary.main',
                 height: isWidget ? '24px' : '32px',
@@ -206,6 +217,7 @@ export const MessageCard = ({
               </>
             ) : null}
           </Box>
+
           {contextDocuments?.length ? (
             <>
               <Divider />
@@ -217,10 +229,10 @@ export const MessageCard = ({
                   flexWrap: 'wrap',
                   gap: 1
                 }}>
-                <Typography variant="body2">View more:</Typography>
+                <Typography variant="body2">References:</Typography>
                 {contextDocuments?.map((doc) => (
                   <Button
-                    key={doc.id}
+                    key={`references-${doc.id}`}
                     size="small"
                     component={NextLink}
                     variant="outlined"
@@ -230,8 +242,7 @@ export const MessageCard = ({
                     sx={{
                       'textTransform': 'none',
                       'borderRadius': 20,
-
-                      '&:hover': { textDecoration: 'underline' }
+                      '&:hover': { textDecoration: 'none' }
                     }}
                     startIcon={
                       <Avatar
@@ -278,7 +289,7 @@ export const MessageCard = ({
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
             id="panel1a-header">
-            <Typography variant="overline">Context ({context?.length})</Typography>
+            <Typography variant="overline">Context ({countTokens(context)} Tokens)</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Typography
@@ -291,6 +302,7 @@ export const MessageCard = ({
           </AccordionDetails>
         </Accordion>
       ) : null}
+
       {developer_mode?.enabled ? (
         <Box>
           {error ? (
@@ -313,6 +325,7 @@ export const MessageCard = ({
               </Accordion>
             </>
           ) : null}
+
           {summary ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
@@ -355,6 +368,7 @@ export const MessageCard = ({
               </AccordionDetails>
             </Accordion>
           ) : null}
+
           {completionRequest ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
@@ -374,6 +388,7 @@ export const MessageCard = ({
               </AccordionDetails>
             </Accordion>
           ) : null}
+
           {completionData ? (
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
@@ -393,6 +408,7 @@ export const MessageCard = ({
               </AccordionDetails>
             </Accordion>
           ) : null}
+
           {Object.keys(other)?.length ? (
             // Use the @mui accordion component to wrap the extra and response
             <Accordion TransitionProps={{ unmountOnExit: true }}>
@@ -400,7 +416,7 @@ export const MessageCard = ({
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header">
-                <Typography variant="overline">extra</Typography>
+                <Typography variant="overline">Extra</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <JsonViewer

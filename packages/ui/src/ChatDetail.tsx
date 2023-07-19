@@ -1,29 +1,29 @@
 'use client';
 import React, { Suspense } from 'react';
-import Button from '@mui/material/Button';
+import { useSearchParams } from 'next/navigation';
+
 import NextLink from 'next/link';
-import {
-  AppBar,
-  Avatar,
-  AvatarGroup,
-  Box,
-  IconButton,
-  Toolbar,
-  Tooltip,
-  Typography
-} from '@mui/material';
-import { AppService, AppSettings } from 'types';
+
+import AppBar from '@mui/material/AppBar';
+import Avatar from '@mui/material/Avatar';
+import AvatarGroup from '@mui/material/AvatarGroup';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+
+import ArrowBackIcon from '@mui/icons-material/ArrowForward';
+import ShareIcon from '@mui/icons-material/IosShare';
+
 import { MessageCard } from './Message';
 import { useAnswers } from './AnswersContext';
-
 import { ChatInput } from './ChatInput';
-import ShareIcon from '@mui/icons-material/IosShare';
-import { usePathname, useSearchParams } from 'next/navigation';
 import DrawerFilters from './DrawerFilters/DrawerFilters';
-
-import FilterIcon from '@mui/icons-material/FilterList';
-import ArrowBackIcon from '@mui/icons-material/ArrowForward';
 import { Filters } from './Filters';
+
+import { AppService, AppSettings } from 'types';
 
 export const ChatDetail = ({
   appSettings,
@@ -35,6 +35,8 @@ export const ChatDetail = ({
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const {
     error,
+
+    chatId,
     chat,
     journey,
     messages: clientMessages,
@@ -167,12 +169,12 @@ export const ChatDetail = ({
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
-
                   gap: 2
                 }}>
                 {messages?.map((message, index) => (
                   <MessageCard {...message} key={`message_${index}`} />
                 ))}
+
                 {error ? (
                   <>
                     <MessageCard
@@ -192,6 +194,7 @@ export const ChatDetail = ({
                     </Box>
                   </>
                 ) : null}
+
                 {isLoading ? (
                   <MessageCard
                     //  user={user}
@@ -199,6 +202,7 @@ export const ChatDetail = ({
                     content={'...'}
                   />
                 ) : null}
+
                 {!messages?.length ? (
                   <MessageCard
                     // user={user}
@@ -208,6 +212,7 @@ export const ChatDetail = ({
                     }
                   />
                 ) : null}
+
                 {messages?.length && !isLoading && !error ? (
                   <Box sx={{ py: 2, width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <Button onClick={() => regenerateAnswer()} variant="outlined" color="primary">

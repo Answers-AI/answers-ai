@@ -1,18 +1,17 @@
 import React from 'react';
 import NextLink from 'next/link';
 import { motion } from 'framer-motion';
+
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardHeader from '@mui/material/CardHeader';
-import WorkIcon from '@mui/icons-material/Work';
-import formatDateSince from '@utils/formatDateSince';
-import AddRoadIcon from '@mui/icons-material/AddRoad';
-import { Journey } from 'types';
+import Button from '@mui/material/Button';
+
 import MessageIcon from '@mui/icons-material/Message';
-import { Button } from '@mui/material';
+
+import { Journey } from 'types';
 
 interface JourneyCardProps extends Journey {
   _count: { chats: number };

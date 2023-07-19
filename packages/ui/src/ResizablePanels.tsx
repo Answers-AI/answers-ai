@@ -2,7 +2,9 @@
 import React, { useState, useRef } from 'react';
 import { DraggableCore } from 'react-draggable';
 import { debounce } from '@utils/debounce';
-import { Box, styled, useTheme, Theme, CSSObject, SxProps } from '@mui/material';
+
+import Box from '@mui/material/Box';
+import { styled, Theme, CSSObject, SxProps } from '@mui/material';
 
 type ResizePanelProps = {
   direction: 'n' | 's' | 'e' | 'w';

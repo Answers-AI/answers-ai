@@ -1,15 +1,12 @@
 'use client';
 import React from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-
-import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
 
 import IntegrationCard from './IntegrationCard';
 import { useFlags } from 'flagsmith/react';
-
 import { AppService, AppSettings } from 'types';
+import { useRouter } from 'next/navigation';
+import { Box, ClickAwayListener } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export const AppsDrawer = ({
   appSettings,

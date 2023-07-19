@@ -1,20 +1,21 @@
 import React from 'react';
 import NextLink from 'next/link';
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  CardActions,
-  Button,
-  CardActionArea,
-  Chip,
-  IconButton,
-  CardHeader
-} from '@mui/material';
+
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+import Button from '@mui/material/Button';
+import CardActionArea from '@mui/material/CardActionArea';
+import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
+import CardHeader from '@mui/material/CardHeader';
+
 import MessageIcon from '@mui/icons-material/Message';
 import Delete from '@mui/icons-material/Delete';
-import { Chat, Prompt } from 'types';
+
+import { Chat } from 'types';
 
 interface ChatCardProps extends Chat {
   filters: any;

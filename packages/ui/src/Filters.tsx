@@ -1,9 +1,15 @@
 'use client';
 import React from 'react';
-import { Avatar, Box, Button, Chip, Typography } from '@mui/material';
-import { AnswersFilters, AppService } from 'types';
-import { useAnswers } from './AnswersContext';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+
 import ClearIcon from '@mui/icons-material/Clear';
+import { useAnswers } from './AnswersContext';
+
+import { AnswersFilters, AppService } from 'types';
+
 export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) => {
   const { appSettings, updateFilter } = useAnswers();
   const services: { [key: string]: AppService } =

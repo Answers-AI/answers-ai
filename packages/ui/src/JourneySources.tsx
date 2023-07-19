@@ -1,19 +1,24 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import { AppSettings, AppService } from 'types';
-
-import { AvatarGroup, Box, Popover, Typography } from '@mui/material';
-import { useAnswers } from './AnswersContext';
 import { useFlags } from 'flagsmith/react';
 import Image from 'next/image';
 
-import SourcesWeb from '@ui/SourcesWeb';
-import SourcesJira from '@ui/SourcesJira';
-import SourcesConfluence from '@ui/SourcesConfluence';
-import SourcesAirtable from '@ui/SourcesAirtable';
-import SourcesCodebase from '@ui/SourcesCodebase';
-import SourcesSlack from '@ui/SourcesSlack';
-import SourcesDocument from '@ui/SourcesDocument';
+import Avatar from '@mui/material/Avatar';
+import AvatarGroup from '@mui/material/AvatarGroup';
+import Box from '@mui/material/Box';
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
+
+import { useAnswers } from './AnswersContext';
+
+import SourcesWeb from './SourcesWeb';
+import SourcesJira from './SourcesJira';
+import SourcesConfluence from './SourcesConfluence';
+import SourcesAirtable from './SourcesAirtable';
+import SourcesCodebase from './SourcesCodebase';
+import SourcesSlack from './SourcesSlack';
+import SourcesDocument from './SourcesDocument';
+
+import { AppSettings, AppService } from 'types';
 
 export default function JourneySources({ appSettings }: { appSettings: AppSettings }) {
   const serviceRefs = React.useRef<{ [key: string]: HTMLDivElement }>({});

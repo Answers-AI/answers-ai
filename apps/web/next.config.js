@@ -13,7 +13,12 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
  */
 let nextConfig = withBundleAnalyzer({
   experimental: {
-    appDir: true
+    appDir: true,
+    serverComponentsExternalPackages: [
+      '@aws-sdk/client-s3',
+      '@aws-sdk/signature-v4-crt',
+      '@aws-sdk/s3-request-presigner'
+    ]
   },
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],
@@ -27,7 +32,7 @@ let nextConfig = withBundleAnalyzer({
   },
 
   webpack: (config, { isServer }) => {
-    config.externals = [...config.externals, 'db', 'puppeteer'];
+    config.externals = [...config.externals, 'db', 'puppeteer', 'handlebars'];
     config.plugins = [
       ...config.plugins,
       // new PrismaPlugin(),
@@ -39,6 +44,13 @@ let nextConfig = withBundleAnalyzer({
 
     if (isServer) {
       config.plugins = [...config.plugins, new PrismaPlugin()];
+      // Avoid AWS SDK Node.js require issue
+      // if (nextRuntime === 'nodejs') {
+      //   config.plugins = [
+      //     ...config.plugins,
+      //     new webpack.IgnorePlugin({ resourceRegExp: /^aws-crt$/ })
+      //   ];
+      // }
     }
 
     return config;

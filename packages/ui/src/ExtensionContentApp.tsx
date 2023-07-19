@@ -1,12 +1,13 @@
 import React from 'react';
-import ChatExtensionWidget from '@ui/ChatExtensionWidget';
+
 import { ThemeProvider } from '@emotion/react';
-import { CssBaseline } from '@mui/material';
 import flagsmith from 'flagsmith';
 import { FlagsmithProvider } from 'flagsmith/react';
 
 import { darkModeTheme } from './theme';
 import { AnswersProvider } from './AnswersContext';
+import ChatExtensionWidget from './ChatExtensionWidget';
+
 const ExtensionContentApp = ({ apiUrl }: { apiUrl: string }) => {
   return (
     <AnswersProvider user={{}} appSettings={{}} apiUrl={apiUrl}>

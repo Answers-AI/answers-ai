@@ -2,35 +2,15 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
-import SourcesToolbar from '@ui/SourcesToolbar';
+
+import { useAnswers } from '../AnswersContext';
+import SourcesToolbar from '../SourcesToolbar';
+import closedMixin from '../theme/closedMixin';
+import openedMixin from '../theme/openedMixin';
 
 import { AppSettings } from 'types';
-import { useAnswers } from '@ui/AnswersContext';
+
 const drawerWidth = 400;
-
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    width: drawerWidth
-  },
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen
-  }),
-  overflowX: 'hidden'
-});
-
-const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen
-  }),
-  overflowX: 'hidden',
-  width: `calc(${theme.spacing(0)} + 0px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(0)} + 0px)`
-  }
-});
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
@@ -39,13 +19,15 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',
+
     ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme)
+      ...openedMixin({ theme, width: drawerWidth }),
+      '& .MuiDrawer-paper': openedMixin({ theme, width: drawerWidth })
     }),
+
     ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme)
+      ...closedMixin({ theme, spacing: 0 }),
+      '& .MuiDrawer-paper': closedMixin({ theme, spacing: 0 })
     })
   })
 );

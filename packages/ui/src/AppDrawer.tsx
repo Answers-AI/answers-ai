@@ -1,26 +1,37 @@
 'use client';
 import React from 'react';
-import { signOut } from 'next-auth/react';
 import { useFlags } from 'flagsmith/react';
+
+import { signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { styled, Theme, CSSObject } from '@mui/material/styles';
+import NextLink from 'next/link';
+
+import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import NextLink from 'next/link';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import MuiDrawer from '@mui/material/Drawer';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import MuiAppBar from '@mui/material/AppBar';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+
 import MessageIcon from '@mui/icons-material/QueryBuilder';
 import HomeIcon from '@mui/icons-material/Home';
 import StorageIcon from '@mui/icons-material/Storage';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import SmartToy from '@mui/icons-material/SmartToy';
 import AIIcon from '@mui/icons-material/SmartButton';
-import { Tooltip, Typography } from '@mui/material';
+
+import closedMixin from './theme/closedMixin';
+import openedMixin from './theme/openedMixin';
+
+const drawerWidth = 240;
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 export const AppDrawer = ({ session }: any) => {
   const flags = useFlags(['settings']);
@@ -38,10 +49,11 @@ export const AppDrawer = ({ session }: any) => {
       <List sx={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
         {[
           { text: 'Message', link: '/', icon: <HomeIcon /> },
+          { text: 'Sidekick Studio', link: '/sidekick-studio', icon: <SmartToy /> },
           ...(flags?.settings?.enabled
             ? [{ text: 'Settings', link: '/settings', icon: <SettingsIcon /> }]
             : []),
-          ...(process.env.NODE_ENV === 'development'
+          ...(IS_DEVELOPMENT
             ? [
                 { text: 'Inngest', link: '/events', icon: <MessageIcon /> },
                 { text: 'Store', link: '/store', icon: <StorageIcon /> },
@@ -131,29 +143,6 @@ export const AppDrawer = ({ session }: any) => {
   );
 };
 
-const drawerWidth = 240;
-
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: drawerWidth,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen
-  }),
-  overflowX: 'hidden'
-});
-
-const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen
-  }),
-  overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`
-  }
-});
-
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -191,14 +180,17 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     'whiteSpace': 'nowrap',
     'boxSizing': 'border-box',
     'border': 'none',
+
     ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme)
+      ...openedMixin({ theme, width: drawerWidth }),
+      '& .MuiDrawer-paper': openedMixin({ theme, width: drawerWidth })
     }),
+
     ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme)
+      ...closedMixin({ theme }),
+      '& .MuiDrawer-paper': closedMixin({ theme })
     }),
+
     '@media (max-width: 600px)': {
       'width': 0,
       '& .MuiDrawer-paper': { width: 0 }

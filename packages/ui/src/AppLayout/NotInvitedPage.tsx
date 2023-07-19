@@ -1,8 +1,11 @@
 'use client';
 import React from 'react';
-import { Box, Button, Typography } from '@mui/material';
 import { signOut } from 'next-auth/react';
 import { Session } from 'next-auth';
+
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
 export const NotInvitedPage = ({ session }: { session: Session | undefined }) => {
   return (

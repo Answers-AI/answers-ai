@@ -12,38 +12,19 @@ import Collapse from '@mui/material/Collapse';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Add from '@mui/icons-material/Add';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+
+import closedMixin from './theme/closedMixin';
+import openedMixin from './theme/openedMixin';
+
 import { Chat, Journey } from 'types';
 
 const drawerWidth = 400;
-
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    width: drawerWidth
-  },
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen
-  }),
-  overflowX: 'hidden'
-});
-
-const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen
-  }),
-  overflowX: 'hidden',
-  width: `calc(${theme.spacing(0)} + 0px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(0)} + 0px)`
-  }
-});
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -57,17 +38,19 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     position: 'relative',
-    width: drawerWidth,
+    width: '100%',
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',
+
     ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme)
+      ...openedMixin({ theme, width: drawerWidth }),
+      '& .MuiDrawer-paper': openedMixin({ theme, width: drawerWidth })
     }),
+
     ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme)
+      ...closedMixin({ theme, spacing: 0 }),
+      '& .MuiDrawer-paper': closedMixin({ theme, spacing: 0 })
     })
   })
 );
@@ -82,6 +65,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
   const pathname = usePathname();
   const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen);
   const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({ chats: true });
+
   const handleDrawerOpen = () => {
     window.localStorage.setItem('drawerOpen', 'true');
     setOpen(true);
@@ -91,6 +75,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
     window.localStorage.setItem('drawerOpen', 'false');
     setOpen(false);
   };
+
   const handleExpandJourney = (idx: string | number) => (evt: any) => {
     evt.preventDefault();
     evt.stopPropagation();
@@ -100,7 +85,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
       return newArr;
     });
   };
-  const handleNewJourney = () => {};
+
   const handleAddChat = ({ journey }: any) => {
     setOpen(false);
     router.push('/chat');
@@ -123,6 +108,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
           {!open ? <Add /> : <ChevronLeftIcon />}
         </IconButton>
       </DrawerHeader>
+
       <Drawer
         sx={{
           'flexShrink': 0,
@@ -155,10 +141,12 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
             ...(open ? {} : { opacity: 0 })
           }}>
           <Typography variant="h5">Journeys</Typography>
+
           <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
             {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </DrawerHeader>
+
         <ListItem sx={{ flexDirection: 'column' }} disablePadding>
           <Button
             href={`/journey/new`}
@@ -169,6 +157,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
             {/* <Add /> */}
           </Button>
         </ListItem>
+
         <List disablePadding sx={{ flex: 1 }}>
           {journeys?.map((journey, idx) => (
             <React.Fragment key={journey.id}>
@@ -229,6 +218,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
               </ListItem>
             </React.Fragment>
           ))}
+
           <ListItem disablePadding sx={{ flexDirection: 'column' }}>
             <ListItemButton
               sx={{ width: '100%', py: 2, paddingRight: 1 }}
@@ -241,6 +231,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
                 <Add />
               </IconButton>
             </ListItemButton>
+
             <Collapse in={opened['chats']} timeout="auto" unmountOnExit sx={{ width: '100%' }}>
               <List disablePadding>
                 {chats?.map((chat) => (

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ChatDrawer from '@ui/ChatDrawer';
+import ChatDrawer from '../ChatDrawer';
 import { AppSettings, Chat, Journey } from 'types';
 
 export default function ChatUILayout({

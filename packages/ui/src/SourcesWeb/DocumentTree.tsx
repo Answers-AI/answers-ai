@@ -1,13 +1,17 @@
 import * as React from 'react';
+import clsx from 'clsx';
+
 import TreeView from '@mui/lab/TreeView';
+import TreeItem, { TreeItemProps, useTreeItem, TreeItemContentProps } from '@mui/lab/TreeItem';
+
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import TreeItem, { TreeItemProps, useTreeItem, TreeItemContentProps } from '@mui/lab/TreeItem';
-import clsx from 'clsx';
-import Typography from '@mui/material/Typography';
-import { Button } from '@mui/material';
-import { Document } from 'types';
+
 import { buildTree } from './buildTree';
+import { Document } from 'types';
 
 interface TreeNode {
   id: string;
@@ -82,7 +86,7 @@ function CustomTreeItem(props: TreeItemProps) {
 export default function DocumentTree({ documents }: { documents: Document[] }) {
   const tree = React.useMemo(() => {
     const newTree = buildTree(documents);
-    console.log(newTree);
+    // console.log(newTree);
     return newTree;
   }, [documents]);
 

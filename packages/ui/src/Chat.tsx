@@ -1,12 +1,12 @@
 import React, { Suspense } from 'react';
-import { getAppSettings } from '@ui/getAppSettings';
-import { prisma } from '@db/client';
 
+import { getAppSettings } from './getAppSettings';
 import { ChatDetail } from './ChatDetail';
-import { Chat, Journey } from 'types';
 import { AnswersProvider } from './AnswersContext';
-import Modal from '@ui/Modal';
-import { getCachedSession } from './getCachedSession';
+import Modal from './Modal';
+import getCachedSession from './getCachedSession';
+
+import { Chat, Journey } from 'types';
 
 export interface Params {
   chat?: Chat;

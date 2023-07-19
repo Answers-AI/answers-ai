@@ -7,7 +7,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '@db/client';
 import { inngest } from '@utils/ingest/client';
-import { User as AnswersUser, AppSettings } from 'types';
+import { User as AnswersUser, AppSettings, ContextField, Organization, User } from 'types';
 export const USER_EVENTS = ['signIn', 'signOut', 'createUser', 'updateUser', 'linkAccount'];
 
 declare module 'next-auth' {
@@ -83,7 +83,14 @@ export const authOptions: AuthOptions = {
     },
     async session({ session, token }) {
       if (token && session.user) {
-        const user = await prisma.user.findUnique({ where: { id: token.id as any } });
+        const user = await prisma.user.findFirst({
+          where: { id: token.id as any },
+          include: {
+            contextFields: true,
+            currentOrganization: { include: { contextFields: true } }
+          }
+        });
+
         if (!user) throw new Error('User not found');
         session.user.id = user.id!;
         session.user.role = user.role!;
@@ -91,6 +98,8 @@ export const authOptions: AuthOptions = {
         // @ts-ignore-next-line
         session.user.invited = user.invited ? new Date(user.invited as string) : user.invited;
         session.user.appSettings = user?.appSettings as AppSettings;
+        session.user.contextFields = user?.contextFields ?? ([] as ContextField[]);
+        session.user.currentOrganization = user?.currentOrganization as Organization;
       }
       return session;
     },

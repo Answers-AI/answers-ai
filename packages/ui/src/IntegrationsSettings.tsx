@@ -1,23 +1,14 @@
 'use client';
-import React, { useState } from 'react';
-import {
-  Avatar,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Container,
-  Dialog,
-  Typography,
-  Box
-} from '@mui/material';
+import React from 'react';
 
-import { AppService, AppSettings } from 'types';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
-import NextLink from 'next/link';
-import SelectedListItem from './SelectedListItem';
-import { useFlags } from 'flagsmith/react';
-import { redirect } from 'next/navigation';
+
+import { AppSettings } from 'types';
+
 import { AppsDrawer } from './AppsDrawer';
 import { AnswersProvider } from './AnswersContext';
 

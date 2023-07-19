@@ -1,11 +1,15 @@
 'use client';
 import React from 'react';
 import { useFlags } from 'flagsmith/react';
-import { Box, ClickAwayListener } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AppSettings, AppService } from 'types';
+
+import Box from '@mui/material/Box';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+
 import { useAnswers } from '../AnswersContext';
 import JourneySourceCard from './JourneySourceCard';
+
+import { AppSettings, AppService } from 'types';
 
 export const JourneyAppsDrawer = ({
   appSettings,

@@ -1,6 +1,5 @@
-import { mount } from '@ui/mount';
-
-import { MessageCard } from '@ui/Message';
+import { mount } from '../mount';
+import { MessageCard } from './Message';
 import { Message } from 'types';
 
 describe('Message', () => {

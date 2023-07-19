@@ -229,19 +229,21 @@ export type Flags = {
   [key: string]: FeatureFlag;
 };
 
+export interface Organization extends Omit<DB.Organization, 'appSettings'> {
+  appSettings: AppSettings;
+  contextFields?: ContextField[];
+}
+
 export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
+  currentOrganization?: Organization;
+  contextFields?: ContextField[];
   // accounts: DB.Account[] | null;
 }
-export interface Organization extends Omit<DB.Organization, 'appSettings'> {
-  appSettings: AppSettings;
-}
+
+export interface ContextField extends DB.ContextField {}
 
 export interface ChatApp extends Omit<DB.ChatApp, 'appSettings'> {
-  appSettings: AppSettings;
-}
-
-export interface Organization extends Omit<DB.Organization, 'appSettings'> {
   appSettings: AppSettings;
 }
 
@@ -471,20 +473,17 @@ export type JiraIssue = { key: string; self: string; id: string; fields: any; ar
 export type JiraComment = { key: string; self: string; id: string; fields: any; archived: any };
 
 // Replace the Sidekick interface with the following type
-export type Sidekick = {
-  departments: string[];
-  label: string;
-  value: string;
-  placeholder: string;
-  temperature?: number;
-  frequency?: number;
-  presence?: number;
-  defaultModel?: string;
-  maxCompletionTokens?: number;
-  getSystemPromptTemplate?: (user?: User) => string;
-  getUserPromptTemplate?: (query: string, context: any) => string;
-  contextStringRender?: (item: any) => string;
-};
+export interface Sidekick extends DB.Sidekick {
+  sharedWith?: string;
+  favoritedBy?: DB.User[];
+}
+
+export interface SidekickListItem
+  extends Pick<Sidekick, 'id' | 'placeholder' | 'tags' | 'aiModel' | 'label'> {
+  isFavorite: boolean;
+  sharedWith: string;
+  tagString: string;
+}
 
 // Add the Sidekicks type
 export type Sidekicks = Sidekick[];

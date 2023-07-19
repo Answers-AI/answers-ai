@@ -1,11 +1,11 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import { AppSettings, User } from 'types';
-import { useAnswers } from './AnswersContext';
+
+import Fab from '@mui/material/Fab';
 
 import SaveIcon from '@mui/icons-material/Save';
 
-import { Fab } from '@mui/material';
+import { User } from 'types';
 interface ChatExtensionWidgetProps {
   user?: User;
 }

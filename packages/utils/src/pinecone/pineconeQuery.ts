@@ -19,9 +19,11 @@ export const pineconeQuery = async (
     namespace = process.env.PINECONE_INDEX_NAMESPACE
   }: { filter?: any; topK?: number; namespace?: string }
 ) => {
+  const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  const queryStr = JSON.stringify({ filter, topK, namespace });
   // TODO: Use metadata inferred from the question
   try {
-    console.time('[PineconeQuery]' + JSON.stringify({ filter, topK, namespace }));
+    console.time(`[${ts}] PineconeQuery ${queryStr}`);
     await pinecone.init({
       environment: process.env.PINECONE_ENVIRONMENT!,
       apiKey: process.env.PINECONE_API_KEY!
@@ -39,16 +41,12 @@ export const pineconeQuery = async (
     const pinconeIndex = pinecone.Index(process.env.PINECONE_INDEX!);
     //@ts-ignore-next-line
     const result = await pinconeIndex.query(queryRequest);
-    // console.log('========result', result);
-    console.timeEnd('[PineconeQuery]' + JSON.stringify({ filter, topK, namespace }));
-    console.log(
-      '[PineconeQuery]',
-      JSON.stringify({ filter, topK, namespace }),
-      result?.data.matches?.length
-    );
+
+    console.timeEnd(`[${ts}] PineconeQuery ${queryStr}`);
+
     return result?.data;
   } catch (error) {
-    console.timeEnd('[PineconeQuery]' + JSON.stringify({ filter, topK, namespace }));
+    console.timeEnd(`[${ts}] PineconeQuery ${queryStr}`);
     throw error;
   }
 };

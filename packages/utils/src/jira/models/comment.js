@@ -8,7 +8,7 @@ class JiraComment extends JiraObject {
   }
 
   static tidy(comment) {
-    console.log('FIELDS', comment);
+    // console.log('FIELDS', comment);
     // delete comment.updateAuthor;
     // delete comment.jsdPublic;
     // delete comment.visibility;

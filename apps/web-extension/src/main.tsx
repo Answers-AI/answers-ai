@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+
 import { ThemeProvider } from '@emotion/react';
 import { PaletteMode, createTheme, CssBaseline } from '@mui/material';
 import { amber, grey } from '@mui/material/colors';

@@ -1,15 +1,22 @@
 'use client';
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Box, Chip, TextField, Typography } from '@mui/material';
-import Autocomplete from '@ui/VirtualAutocomplete';
-import { WebUrlType, Document } from 'types';
-import { useAnswers } from '@ui/AnswersContext';
-import { getUrlDomain } from '@utils/getUrlDomain';
-
-import { throttle } from '@utils/throttle';
 import useSWR from 'swr';
+
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+
+import { getUrlDomain } from '@utils/getUrlDomain';
+import { throttle } from '@utils/throttle';
+
+import Autocomplete from '../VirtualAutocomplete';
+import { useAnswers } from '../AnswersContext';
+
 import DomainCard from './DomainCard';
+
+import { WebUrlType, Document } from 'types';
 
 const isDomain = (url?: string) => {
   try {
@@ -57,7 +64,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
   const { data, error, isLoading, mutate } = useSWR<{
     sources: Document[];
     domains: { domain: string; pageCount: number }[];
-  }>(url?.length > 3 ? `/api/sources?url=${url}` : null, (url) =>
+  }>(url?.length > 10 ? `/api/sources/web?url=${url}` : null, (url) =>
     fetch(url).then((res) => res.json())
   );
 
@@ -153,7 +160,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
             <Typography variant="overline">Domains</Typography>
             <Box sx={{ gap: 1, display: 'flex', flexWrap: 'wrap' }}>
               {filters?.datasources?.web?.domain?.map((domain) => (
-                <Chip size="small" label={domain} onDelete={() => handleRemoveDomain(domain)} />
+                <Chip key={`domain-chip-${domain}`} size="small" label={domain} onDelete={() => handleRemoveDomain(domain)} />
               ))}
             </Box>
           </Box>
@@ -165,7 +172,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
             <Box sx={{ gap: 1, display: 'flex', flexWrap: 'wrap' }}>
               {filters?.datasources?.web?.url?.map((url) => (
                 <Chip
-                  key={url.url}
+                  key={`page-chip-${url.url}`}
                   size="small"
                   label={url.url}
                   onDelete={() => handleRemoveUrl(url)}
@@ -174,6 +181,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
             </Box>
           </Box>
         ) : null}
+
         <Autocomplete
           freeSolo
           options={
@@ -212,12 +220,13 @@ const SourcesWeb: React.FC<{}> = ({}) => {
           )}
         />
       </Box>
+
       {domains?.length ? (
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 1 }}>
           {domains.map(({ domain, pageCount }) =>
             filters?.datasources?.web?.domain?.includes(domain) ? null : (
               <DomainCard
-                key={domain}
+                key={`domain-card-${domain}`}
                 domain={domain}
                 pageCount={pageCount}
                 onClick={() => addDomainFilter(domain)}
@@ -226,6 +235,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
           )}
         </Box>
       ) : null}
+
       {getUrlDomain(newUrl) &&
       !domains?.length &&
       !filters?.datasources?.web?.domain?.includes(getUrlDomain(newUrl)!) ? (

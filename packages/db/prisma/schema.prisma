@@ -33,15 +33,15 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  currentOrganization   Organization? @relation("UserOrganzationsSelected", fields: [organizationId], references: [id])
+  currentOrganization Organization? @relation("UserOrganzationsSelected", fields: [organizationId], references: [id])
 
   organizations Organization[] @relation("UserOrganzations")
 
-  appSettings Json?
-  chats       Chat[]
+  appSettings  Json?
+  chats        Chat[]
   chatsCreated Chat[] @relation("UserChatsCreated")
-  
-  messages    Message[]
+
+  messages Message[]
 
   prompts Prompt[]
 
@@ -51,7 +51,11 @@ model User {
   updatedAt      DateTime  @default(now()) @updatedAt
   ChatApp        ChatApp[]
   organizationId String?
-  apiKeys         ApiKey[]
+  apiKeys        ApiKey[]
+
+  favoritedSidekicks Sidekick[]     @relation("SidekickFavoritedBy")
+  Sidekick           Sidekick[]
+  contextFields      ContextField[]
 }
 
 enum ApiKeyType {
@@ -60,34 +64,66 @@ enum ApiKeyType {
 }
 
 model ApiKey {
-  id        String @id @default(cuid())
-  userId    String?
+  id             String        @id @default(cuid())
+  userId         String?
   organizationId String?
-  type      ApiKeyType @default(USER)
-  user User? @relation(fields: [userId], references: [id])
-  organization Organization? @relation(fields: [organizationId], references: [id])
-  key       String @unique
+  type           ApiKeyType    @default(USER)
+  user           User?         @relation(fields: [userId], references: [id])
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  key            String        @unique
 }
 
 model Organization {
-  id    String  @id @default(cuid())
-  name  String?
-  image String?
-
-  users         User[] @relation("UserOrganzations")
-  usersSelected User[] @relation("UserOrganzationsSelected")
-
+  id                  String               @id @default(cuid())
+  name                String?
+  image               String?
+  users               User[]               @relation("UserOrganzations")
+  usersSelected       User[]               @relation("UserOrganzationsSelected")
   documentPermissions DocumentPermission[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @default(now()) @updatedAt
+  ChatApp             ChatApp[]
+  contextFields       ContextField[]
+  journeys            Journey[]
+  chats               Chat[]
+  appSettings         Json?
+  apiKeys             ApiKey[]
+}
 
-  journeys Journey[]
-  chats Chat[]
+model ContextField {
+  id             String        @id @default(cuid())
+  fieldId        String
+  helpText       String?
+  fieldType      String?
+  fieldTextValue String
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  User           User?         @relation(fields: [userId], references: [id])
+  userId         String?
+}
 
-  appSettings Json?
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
-  ChatApp   ChatApp[]
-  apiKeys   ApiKey[]
+model Sidekick {
+  id                   String   @id @default(cuid())
+  isGlobal             Boolean? @default(false)
+  isSystem             Boolean? @default(false)
+  isSharedWithOrg      Boolean? @default(false)
+  isFavoriteByDefault  Boolean? @default(false)
+  tags                 String[]
+  label                String
+  placeholder          String?
+  temperature          Float    @default(1)
+  frequency            Float    @default(0)
+  presence             Float    @default(0)
+  maxCompletionTokens  Int      @default(500)
+  aiModel              String
+  systemPromptTemplate String?
+  userPromptTemplate   String?
+  contextStringRender  String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @default(now()) @updatedAt
+  createdByUser        User     @relation(fields: [userId], references: [id])
+  userId               String
+  favoritedBy          User[]   @relation("SidekickFavoritedBy")
 }
 
 model WebDocument {
@@ -97,15 +133,14 @@ model WebDocument {
   content           String?
   pageTitle         String?
   pageLastUpdatedAt DateTime? @updatedAt
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now()) @updatedAt
 }
 
 model Document {
   id     String  @id @default(cuid())
   source String
-  title   String?
+  title  String?
   domain String?
   url    String  @unique
 
@@ -113,7 +148,7 @@ model Document {
   metadata Json   @default("{}")
 
   usedInMessages Message[]
-  permissions DocumentPermission[]
+  permissions    DocumentPermission[]
 
   status       String    @default("pending")
   lastSyncedAt DateTime?
@@ -181,7 +216,7 @@ model Chat {
   journey   Journey? @relation(fields: journeyId, references: id)
   journeyId String?
 
-  owner User? @relation("UserChatsCreated", fields: [ownerId], references: [id])
+  owner   User?   @relation("UserChatsCreated", fields: [ownerId], references: [id])
   ownerId String?
 
   users    User[]
@@ -203,12 +238,11 @@ model Journey {
   goal  String?
 
   filters Json
-  
+
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id])
- 
-  chats Chat[]
 
+  chats Chat[]
 
   users     User[]
   deleted   Boolean  @default(false)
@@ -246,7 +280,7 @@ model Message {
   content                String
   contextSourceFilesUsed String[]
 
-  context String @default("")
+  context          String     @default("")
   contextDocuments Document[]
 
   prompt   Prompt? @relation(fields: promptId, references: id)

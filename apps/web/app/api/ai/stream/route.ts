@@ -1,17 +1,18 @@
-import { getAppSettings } from '@ui/getAppSettings';
-import { User, getServerSession } from 'next-auth';
-import { authOptions } from '@ui/authOptions';
-// import { syncFromAirtable } from '@utils/ingest/airtable';
-import { NextResponse } from 'next/server';
-import { QueryRequest } from '@pinecone-database/pinecone';
+import { getServerSession } from 'next-auth';
+
 import { OpenAIStream } from '@utils/OpenAIStream';
 import { inngest } from '@utils/ingest/client';
 import { getCompletionRequest } from '@utils/llm/getCompletionRequest';
 import { fetchContext } from '@utils/pinecone/fetchContext';
-import { sidekicks } from '@utils/sidekicks';
 import { upsertChat } from '@utils/upsertChat';
+
 import { prisma } from '@db/client';
-import { Chat, Document, Sidekicks } from 'types';
+
+import { authOptions } from '@ui/authOptions';
+
+import { Document } from 'types';
+
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -21,15 +22,18 @@ export async function POST(req: Request) {
   }
 
   const { journeyId, chatId, filters, prompt, messages, sidekick, gptModel } = await req.json();
+  // TODO: Update for sharing in the future
+  const sidekickObject = !sidekick?.id
+    ? null
+    : await prisma.sidekick.findFirst({
+        where: {
+          id: sidekick.id
+        }
+      });
 
-  let completionData, completionRequest;
+  let completionRequest;
 
-  console.log('[AI][Stream]', { journeyId, chatId, filters, prompt, messages, sidekick, gptModel });
-
-  // Get the chosen sidekick and its getContextFunction
-  const sidekicksArray: Sidekicks = sidekicks;
-  const sidekickValue = sidekick || 'default';
-  const sidekickObject = sidekicksArray.find((sidekick) => sidekick.value === sidekickValue);
+  // console.log('[AI][Stream]', { journeyId, chatId, filters, prompt, messages, sidekick, gptModel });
 
   // TODO: Validate the user is in the chat or is allowed to send messages
   const chat = await upsertChat({
@@ -58,26 +62,30 @@ export async function POST(req: Request) {
         chat
       }
     });
-  let pineconeData,
-    pineconeFilters,
-    context = '',
-    contextDocuments: Document[] = [];
+
+  let pineconeData;
+  let pineconeFilters;
+  let context = '';
+  let contextDocuments: Document[] = [];
 
   try {
     ({ pineconeFilters, pineconeData, context, contextDocuments } = await fetchContext({
       organizationId: chat.organizationId ?? user.organizationId ?? '',
       user,
+      organization: user?.currentOrganization,
       prompt,
       messages,
       filters,
-      sidekick: sidekickObject
+      sidekick: sidekickObject!
     }));
   } catch (contextError) {
     console.log('fetchContext', contextError);
     throw contextError;
   }
-  const handleResponse = async (response: any) => {
+
+  const handleStreamEnd = async (response: any) => {
     const answer = response.text;
+    // console.log(response);
     completionRequest = response.completionRequest;
 
     if (prompt && answer) {
@@ -94,17 +102,18 @@ export async function POST(req: Request) {
         ts: new Date().valueOf(),
         name: 'answers/prompt.answered',
         user: user,
-        data: { chatId, message: answer, prompt, contextDocuments }
+        data: { chatId, message: response.message, prompt, contextDocuments }
       });
     }
   };
 
   completionRequest = await getCompletionRequest({
     context,
-    user, // Add this line
+    user,
+    organization: user?.currentOrganization,
     input: prompt,
     messages,
-    sidekick: sidekickObject,
+    sidekick: sidekickObject!,
     gptModel
   });
 
@@ -121,12 +130,13 @@ export async function POST(req: Request) {
       filters: pineconeFilters,
       context,
       completionRequest,
-      ...(process.env.NODE_ENV === 'development' && {
+      ...(IS_DEVELOPMENT && {
         pineconeData
       })
     },
-    handleResponse
+    handleStreamEnd
   );
+
   return new Response(stream, {
     headers: { 'Content-Type': 'text/html; charset=utf-8' }
   });

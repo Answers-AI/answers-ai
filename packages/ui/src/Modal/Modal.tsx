@@ -1,5 +1,5 @@
 'use client';
-import ShareModal from '@ui/ShareModal';
+import ShareModal from '../ShareModal';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const Modal = () => {
@@ -8,13 +8,13 @@ const Modal = () => {
   const searchParams = useSearchParams();
   const modal = searchParams?.get('modal');
   const handleClose = () => {
-    if (pathname) router.push(pathname, { shallow: true });
+    if (pathname) router.push(pathname);
   };
-  switch (modal) {
-    case 'share':
-      return <ShareModal onClose={handleClose} />;
-    default:
-      return null;
+
+  if (modal === 'share') {
+    return <ShareModal onClose={handleClose} />;
   }
+
+  return null;
 };
 export default Modal;

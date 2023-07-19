@@ -437,7 +437,7 @@ export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
     });
 
     const webPagesHtml = (await webPageLoader.loadMany(pendingSyncURls)) as string[];
-    console.log('PAgeHTML', webPagesHtml);
+
     const webPages = await Promise.all(
       pendingSyncURls.map(async (url, index) => {
         const content = webPagesHtml[index];

@@ -52,7 +52,7 @@ export const useStreamedResponse = ({
         prompt: content,
         filters,
         messages: parseMessages(messages),
-        sidekick: sidekick?.value, // Add sidekick parameter
+        sidekick: sidekick, // Add sidekick parameter
         gptModel // Add gptModel parameter
       })
     });

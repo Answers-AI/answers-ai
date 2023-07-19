@@ -1,24 +1,23 @@
 'use client';
 import React from 'react';
-import { CssBaseline } from '@mui/material';
-import * as Sentry from '@sentry/browser';
-import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { FlagsmithProvider } from 'flagsmith/react';
 import flagsmith from 'flagsmith/isomorphic';
 import { Session } from 'next-auth';
-import { AppDrawer } from '@ui/AppDrawer';
-import { darkModeTheme } from '@ui/theme';
-import GlobalStyles from '@ui/GlobalStyles';
-import { AppSettings } from 'types';
+
+import CssBaseline from '@mui/material/CssBaseline';
+import ThemeProvider from '@mui/material/styles/ThemeProvider';
+
+import { AppDrawer } from '../AppDrawer';
+import { darkModeTheme } from '../theme';
+import GlobalStyles from '../GlobalStyles';
+
 import { NotInvitedPage } from './NotInvitedPage';
+
+import { AppSettings } from 'types';
 
 export default function AppLayout({
   session,
-  appSettings,
-  // providers,
-  // Layouts must accept a children prop.
   params,
-  // This will be populated with nested layouts or pages
   children,
   flagsmithState
 }: {
@@ -31,18 +30,6 @@ export default function AppLayout({
   };
   flagsmithState: any;
 }) {
-  const handleUserFeedback = (event: any) => {
-    const eventId = Sentry.captureMessage('User Feedback');
-    Sentry.showReportDialog({
-      eventId,
-      title: 'Submit feedback',
-      subtitle: 'Let us know how we can improve the AnswerAI experience',
-      subtitle2: 'We will get back to you as soon as possible',
-      labelComments: 'Feedback',
-      labelSubmit: 'Submit'
-    });
-  };
-
   return (
     <FlagsmithProvider
       serverState={flagsmithState}
@@ -78,8 +65,8 @@ export default function AppLayout({
                 }}>
                 This is an Alpha product.{' '}
                 <a
-                  href="#"
-                  onClick={handleUserFeedback}
+                  href="https://airtable.com/appIQM0aGhytwZPAO/shrjNDGhl0liOGL3W"
+                  target="_blank"
                   style={{ color: '#0F0F0F', textDecoration: 'underline' }}>
                   Report bugs and provide feedback here
                 </a>

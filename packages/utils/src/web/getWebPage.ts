@@ -174,7 +174,7 @@ export const convertWebPageToMarkdown = async (url: string, pageHtml: string): P
     domain,
     title: article?.title,
     description: article?.excerpt,
-    content: `# ${url}\n${mkdown}`
+    content: mkdown
   };
 };
 
