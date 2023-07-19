@@ -61,7 +61,7 @@ export default function SidekickStudioDrawer({
   sidekicks,
   defaultOpen
 }: SidekickStudioDrawerProps) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? '';
   const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen);
   const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({
     sidekicks: true
