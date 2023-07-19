@@ -475,6 +475,7 @@ export type JiraComment = { key: string; self: string; id: string; fields: any; 
 // Replace the Sidekick interface with the following type
 export interface Sidekick extends DB.Sidekick {
   sharedWith?: string;
+  favoritedBy?: DB.User[];
 }
 
 export interface SidekickListItem

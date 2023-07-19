@@ -15,6 +15,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  if (!children) return null;
+  // console.log(
+  //   'LAYOUT ========================================================================================'
+  // );
+
   return (
     <html
       className={poppins.className}

@@ -10,13 +10,16 @@ export async function GET(req: Request) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return respond401();
 
+    const user = session.user;
+    const userId = user.id;
+
     const dbSidekicks = await prisma.sidekick.findMany({
       where: {
         OR: [
           {
             favoritedBy: {
               some: {
-                id: session.user.id
+                id: userId
               }
             }
           },
@@ -27,7 +30,7 @@ export async function GET(req: Request) {
       }
     });
 
-    const sidekicks = normalizeSidekickList(dbSidekicks);
+    const sidekicks = normalizeSidekickList(dbSidekicks, user);
 
     return NextResponse.json(sidekicks);
   } catch (error) {

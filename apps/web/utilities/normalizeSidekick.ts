@@ -1,7 +1,27 @@
 import toSentenceCase from '@utils/utilities/toSentenceCase';
-import { Sidekick, SidekickListItem } from 'types';
+import { Sidekick, SidekickListItem, User } from 'types';
 
-export const normalizeSidekickListItem = (sidekick: Sidekick): SidekickListItem => {
+export const normalizeSidekickListItem = (sidekick: Sidekick, user?:User): SidekickListItem => {
+  switch (true) {
+    case sidekick.isGlobal:
+      sidekick.sharedWith = 'global';
+      break;
+
+    case sidekick.isSharedWithOrg:
+      sidekick.sharedWith = 'org';
+      break;
+
+    case sidekick.isSystem:
+      sidekick.sharedWith = 'system';
+      break;
+
+    default:
+      sidekick.sharedWith = 'private';
+      break;
+  }
+
+  const hasFavorited = sidekick?.favoritedBy?.some((u) => u.id === user?.id) ?? false;
+
   const sidekickListItem: SidekickListItem = {
     placeholder: sidekick.placeholder || '',
     tagString: (sidekick.tags || []).map((t) => toSentenceCase(t)).join(', '),
@@ -9,16 +29,16 @@ export const normalizeSidekickListItem = (sidekick: Sidekick): SidekickListItem 
     id: sidekick.id || '',
     aiModel: sidekick.aiModel || '',
     label: sidekick.label || '',
-    sharedWith: sidekick.isGlobal ? 'global' : sidekick.isSharedWithOrg ? 'org' : 'private',
-    isFavorite: true
+    sharedWith: sidekick.sharedWith,
+    isFavorite: hasFavorited
   };
 
   return sidekickListItem;
 };
 
-export const normalizeSidekickList = (sidekicks: Sidekick[]): SidekickListItem[] => {
+export const normalizeSidekickList = (sidekicks: Sidekick[], user?:User): SidekickListItem[] => {
   const normalizedSidekicks: SidekickListItem[] = sidekicks.map((sidekick) =>
-    normalizeSidekickListItem(sidekick)
+    normalizeSidekickListItem(sidekick, user)
   );
 
   return normalizedSidekicks;

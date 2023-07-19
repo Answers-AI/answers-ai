@@ -156,15 +156,15 @@ export default function SidekickStudioDrawer({
                   }
                 }}>
                 <ListItemButton
-                  href={`/sidekick-studio/${sidekick.id}`}
+                  href={`/sidekick-studio/${sidekick.id}/edit`}
                   component={NextLink}
-                  selected={pathname === `/sidekick-studio/${sidekick.id}`}
+                  selected={pathname.startsWith(`/sidekick-studio/${sidekick.id}`)}
                   sx={{ width: '100%', py: 0, paddingRight: 1 }}>
                   <ListItemText
                     secondary={
-                      pathname === `/sidekick-studio/${sidekick.id}` ? null : sidekick.label
+                      pathname.startsWith(`/sidekick-studio/${sidekick.id}`) ? null : sidekick.label
                     }
-                    primary={pathname === `/sidekick-studio/${sidekick.id}` ? sidekick.label : null}
+                    primary={pathname.startsWith(`/sidekick-studio/${sidekick.id}`) ? sidekick.label : null}
                   />
                 </ListItemButton>
               </ListItem>

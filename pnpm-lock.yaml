@@ -21,8 +21,8 @@ importers:
         specifier: workspace:*
         version: link:packages/eslint-config-custom
       inngest-cli:
-        specifier: ^0.11.0
-        version: 0.11.0
+        specifier: latest
+        version: 0.15.3
       prettier:
         specifier: latest
         version: 3.0.0
@@ -8075,8 +8075,8 @@ packages:
     resolution: {integrity: sha512-7NXolsK4CAS5+xvdj5OMMbI962hU/wvwoxk+LWR9Ek9bVtyuuYScDN6eS0rUm6TxApFpw7CX1o4uJzcd4AyD3Q==}
     dev: false
 
-  /inngest-cli@0.11.0:
-    resolution: {integrity: sha512-wM1HNNGacyDJihNY5yk3bTINyO8KS403gp1y8xqWow9cMDvC9QevFlKba6oXfQrmOS5XR+NZFlEwKkKfzIsIdg==}
+  /inngest-cli@0.15.3:
+    resolution: {integrity: sha512-9+CKNLr50U7FMoaCzKypWWRRXrE+nbN24tZYpWIunYx2w2jh8tZwVDxo1SGAHm/Hp4HCjJ7TGg9rx1Tkg0EUPA==}
     hasBin: true
     requiresBuild: true
     dependencies:

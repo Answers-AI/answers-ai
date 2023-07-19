@@ -162,7 +162,7 @@ export const fetchContext = async ({
     }
   });
 
-  console.log('[FetchContext]', JSON.stringify({ datasources, filters, filter }));
+  // console.log('[FetchContext]', JSON.stringify({ datasources, filters, filter }));
 
   console.time(`[${ts}] Pineconedata`);
   console.time(`[${ts}] Pineconedata get`);
