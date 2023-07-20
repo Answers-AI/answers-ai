@@ -1,0 +1,30 @@
+name: Run D.A.I.S.Y
+
+on:
+  push:
+    branches:
+      - main
+      - feature/add-daisy-action
+
+jobs:
+  daisy:
+    name: Daisy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          # This makes Actions fetch all Git history so that daisy can find the corret commits to diff against
+          fetch-depth: 0
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@master
+        with:
+          node-version: 18
+
+      - name: Runs daisy completions or memorizations
+        id: daisy
+        uses: '@answerai/daisy-github-action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANSWERAI_API_KEY: ${{ secrets.ANSWERAI_API_KEY }}
