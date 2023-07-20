@@ -22,9 +22,8 @@ jobs:
         with:
           node-version: 18
 
-      - name: Runs daisy completions or memorizations
-        id: daisy
-        uses: '@answerai/daisy-github-action'
+      - name: D.A.I.S.Y
+        uses: Answers-AI/daisy-github-action
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ANSWERAI_API_KEY: ${{ secrets.ANSWERAI_API_KEY }}
