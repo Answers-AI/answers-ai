@@ -24,7 +24,7 @@ jobs:
 
       - name: D.A.I.S.Y
         id: daisy
-        uses: Answers-AI/daisy-github-action@v0.1.2
+        uses: Answers-AI/daisy-github-action@v0.1.3
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
