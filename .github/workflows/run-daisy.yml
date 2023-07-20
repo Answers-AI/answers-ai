@@ -23,7 +23,8 @@ jobs:
           node-version: 18
 
       - name: D.A.I.S.Y
-        uses: Answers-AI/daisy-github-action
+        uses: Answers-AI/daisy-github-action@v0.1.2
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ANSWERAI_API_KEY: ${{ secrets.ANSWERAI_API_KEY }}
