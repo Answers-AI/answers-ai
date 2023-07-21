@@ -22,7 +22,6 @@
     "@pinecone-database/pinecone": "^0.0.5",
     "@sentry/nextjs": "^7.60.0",
     "@textea/json-viewer": "2.14.1",
-    "@types/js-cookie": "^3.0.3",
     "axios": "^1.4.0",
     "chromadb": "^1.5.5",
     "cohere-ai": "^6.2.2",
@@ -49,6 +48,7 @@
     "utils": "workspace:*"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.3",
     "@babel/core": "^7.21.4",
     "@next/bundle-analyzer": "^13.4.11",
     "@prisma/nextjs-monorepo-workaround-plugin": "^5.0.0",
