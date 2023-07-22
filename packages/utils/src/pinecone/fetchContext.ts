@@ -182,6 +182,9 @@ export const fetchContext = async ({
         },
         topK: 500
       });
+    }),
+    pineconeQuery(promptEmbedding, {
+      topK: 500
     })
   ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
   console.timeEnd(`[${ts}] Pineconedata get`);

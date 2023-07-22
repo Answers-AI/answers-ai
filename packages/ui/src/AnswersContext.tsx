@@ -16,7 +16,17 @@ import { useStreamedResponse } from './useStreamedResponse';
 import { clearEmptyValues } from './clearEmptyValues';
 import defaultSidekick from '@utils/sidekicks/defaultPrompt';
 
-import { AnswersFilters, AppSettings, Chat, Journey, Message, Prompt, Sidekick, User } from 'types';
+import {
+  AnswersFilters,
+  AppSettings,
+  Chat,
+  Journey,
+  Message,
+  Prompt,
+  Sidekick,
+  User,
+  MessageFeedback
+} from 'types';
 
 interface AnswersContextType {
   user: User;
@@ -68,6 +78,7 @@ interface AnswersContextType {
   sidekick?: Sidekick;
   gptModel: string;
   setGptModel: any;
+  sendMessageFeedback: (args: Partial<MessageFeedback>) => void;
 }
 // @ts-ignore
 const AnswersContext = createContext<AnswersContextType>({
@@ -92,7 +103,8 @@ const AnswersContext = createContext<AnswersContextType>({
   deleteChat: async () => {},
   deletePrompt: async () => {},
   deleteJourney: async () => {},
-  startNewChat: async () => {}
+  startNewChat: async () => {},
+  sendMessageFeedback: async () => {}
 });
 
 export function useAnswers() {
@@ -236,6 +248,10 @@ export function AnswersProvider({
 
   const deleteChat = async (id: string) =>
     axios.delete(`${apiUrl}/chats?id=${id}`).then(() => router.refresh());
+
+  const sendMessageFeedback = async (data: Partial<MessageFeedback>) =>
+    axios.post(`${apiUrl}/chats/message_feedback`, data).then(() => router.refresh());
+
   const deletePrompt = async (id: string) =>
     axios.delete(`${apiUrl}/prompts?id=${id}`).then(() => router.refresh());
   const deleteJourney = async (id: string) =>
@@ -368,7 +384,8 @@ export function AnswersProvider({
     updatePrompt,
     upsertJourney,
     updateMessage,
-    startNewChat
+    startNewChat,
+    sendMessageFeedback
   };
   // @ts-ignore
   return <AnswersContext.Provider value={contextValue}>{children}</AnswersContext.Provider>;

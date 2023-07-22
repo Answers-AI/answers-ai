@@ -19,6 +19,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from '@mui/icons-material/Close';
 
 import { useAnswers } from './AnswersContext';
 
@@ -122,6 +123,9 @@ const ShareModal: React.FC<ModalProps> = ({ title, onSave, onClose, source = 'fi
               Share this chat
             </Typography>
             <Typography>Invite teammates to collaborate together</Typography>
+            <IconButton sx={{ position: 'absolute', top: 8, right: 8 }} onClick={onClose}>
+              <CloseIcon />
+            </IconButton>
           </Box>
 
           <Box sx={{ display: 'flex', gap: 1 }}>

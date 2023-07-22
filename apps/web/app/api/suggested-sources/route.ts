@@ -13,7 +13,7 @@ import {
 const openai = new OpenAIClient();
 const SCORE_THRESHOLD = 0.8;
 
-export async function GET(req: Request, res: Response) {
+export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
   if (!userId || !session.user?.organizationId) return respond401();

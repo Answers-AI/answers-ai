@@ -85,7 +85,7 @@ function getAllowedHeaders(req: Request, allowed?: string | string[]) {
   return headers;
 }
 
-export default async function cors(req: Request, res: Response, options?: CorsOptions) {
+export default async function cors(req: Request, options?: CorsOptions) {
   const opts = { ...defaultOptions, ...options };
   const { headers } = res;
   const originHeaders = await originHeadersFromReq(req, opts.origin ?? false);
@@ -136,5 +136,5 @@ export default async function cors(req: Request, res: Response, options?: CorsOp
 }
 
 export function initCors(options?: CorsOptions) {
-  return (req: Request, res: Response) => cors(req, res, options);
+  return (req: Request) => cors(req, res, options);
 }

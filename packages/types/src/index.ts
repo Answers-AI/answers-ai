@@ -7,6 +7,8 @@ export type PineconeObject = {
   vectors: PineconeVector[];
 };
 
+export interface MessageFeedback extends DB.MessageFeedback {}
+
 export type PineconeVector = {
   text: string;
   metadata: any;
@@ -289,6 +291,7 @@ export interface Message extends Partial<DB.Message> {
   chat?: Chat | null;
   user?: User | null;
   role: ChatCompletionRequestMessageRoleEnum | string;
+  feedback?: MessageFeedback | null;
   content: string;
 }
 

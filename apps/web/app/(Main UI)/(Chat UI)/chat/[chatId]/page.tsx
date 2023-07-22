@@ -19,11 +19,13 @@ const ChatDetailPage = async ({ params }: any) => {
       include: {
         prompt: true,
         journey: true,
-
         messages: {
           include: {
             user: { select: { id: true, email: true, image: true, name: true } },
-            contextDocuments: true
+            contextDocuments: true,
+            feedback: {
+              select: { rating: true }
+            }
           },
           orderBy: { createdAt: 'asc' }
         },

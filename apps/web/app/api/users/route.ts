@@ -4,7 +4,7 @@ import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { randomUUID } from 'crypto';
 
-export async function PATCH(req: Request, res: Response) {
+export async function PATCH(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) return NextResponse.redirect('/auth');
