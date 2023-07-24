@@ -31,7 +31,7 @@
     "next": "^13.4.12",
     "openai": "^3.2.1",
     "pdfjs-dist": "^3.8.162",
-    "puppeteer": "^19.11.1",
+    
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.45.2",
     "react": "^18.2.0",

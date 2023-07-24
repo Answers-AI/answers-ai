@@ -36,6 +36,7 @@
   },
   "packageManager": "pnpm@7.30.5",
   "dependencies": {
-    "wait-on": "^7.0.1"
+    "wait-on": "^7.0.1",
+    "puppeteer": "^19.11.1"
   }
 }
