@@ -3,6 +3,7 @@ import { getUrlDomain } from '../getUrlDomain';
 
 const  getPendingSyncURLs = async(urls: string[]) => {
   const normalizedUrls = urls.map((url) => url.toLowerCase());
+  console.log({normalizedUrls})
 
   await prisma.document.createMany({
     data: normalizedUrls.map((url) => ({

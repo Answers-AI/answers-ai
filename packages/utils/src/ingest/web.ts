@@ -288,7 +288,6 @@ export const processWebScrape: EventVersionHandler<{ urls: string[], recursive: 
             return {
               v: event.v,
               id: `${recursiveId}-${url}`,
-              
               name: 'web/page.sync',
               data: {
                 urls: [url],
@@ -382,6 +381,7 @@ export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
     const uniquePath = getUniqueUrl(path);
 
     const uniqueUrls = getUniqueUrls(([...(sitemapUrls || []), ...(xmlUrls || []), ...(xmlIndexUrls || [])])).filter(url => {
+      console.log({url, uniquePath, starts:url.startsWith(uniquePath)})
       return url.startsWith(uniquePath)
     });
 
