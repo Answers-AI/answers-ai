@@ -37,7 +37,7 @@ class WebClient {
     try {
       const loader = new PuppeteerWebBaseLoader(url, {
         launchOptions: {
-          headless: "new",
+          headless: true,
           args: [`--host-rules="MAP * 127.0.0.1, EXCLUDE ${url}"`]
         },
         gotoOptions: {

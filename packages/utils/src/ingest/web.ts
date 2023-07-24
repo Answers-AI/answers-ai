@@ -363,14 +363,14 @@ export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
       return;
     }
 
-    if (path === domain) {
-      inngest.send({
-        name: 'web/domain.sync',
-        data: { domain },
-        user: event.user
-      });
-      return;
-    }
+    // if (path === domain) {
+    //   inngest.send({
+    //     name: 'web/domain.sync',
+    //     data: { domain },
+    //     user: event.user
+    //   });
+    //   return;
+    // }
 
     const [sitemapUrls, xmlUrls, xmlIndexUrls] = await Promise.all([
       fetchSitemapUrls(domain),
