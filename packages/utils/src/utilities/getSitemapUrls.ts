@@ -1,17 +1,17 @@
 import Sitemapper from 'sitemapper';
 
-const getSitemapUrls = async(url: string): Promise<string[]> => {
+const getSitemapUrls = async (url: string): Promise<string[]> => {
   let sitemapUrls;
   try {
     const SitemapUrls = new Sitemapper({
       url,
-      timeout: 10000, // 15 seconds
+      timeout: 10000 // 15 seconds
     });
-    
-    const { sites } = await SitemapUrls.fetch();
-    sitemapUrls = sites;
+
+    const response = await SitemapUrls.fetch();
+    sitemapUrls = response?.sites ?? [];
   } catch (error) {
-    console.log(error);
+    console.log(error, url);
   }
 
   return sitemapUrls ?? [];

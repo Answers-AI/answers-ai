@@ -67,8 +67,11 @@ const prepareHtml = (url: string, html: string): string => {
         }
       } else if (attribute === 'href') {
         const href = element.attr('href');
+
         if (href?.startsWith('/')) {
           element.attr('href', new URL(href, urlObject.origin).href);
+        } else {
+          element.removeAttr(attribute);
         }
       } else {
         element.removeAttr(attribute);

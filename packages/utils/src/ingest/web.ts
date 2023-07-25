@@ -64,6 +64,8 @@ const getWebPagesVectors = async (webPages: WebPage[]) => {
           .replace(/\n{2,}/g, '\n')
           .replace(/^(#+\s+.+)\n(#+\s+.+\n)/gm, '$2');
 
+        // hash page content and send event to chunk page content
+
         const markdownChunks = await recursiveCharacterTextSplitter.splitDocuments([
           new Document({ pageContent })
         ]);
@@ -189,14 +191,19 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
       return;
     }
 
-    const [sitemapUrls, xmlUrls, xmlIndexUrls] = await Promise.all([
+    const [sitemapUrls, sitemapXml, sitemapIndexXml, sitemap1Xml] = await Promise.all([
       fetchSitemapUrls(domain),
       getSitemapUrls(`${domain}/sitemap.xml`),
       getSitemapUrls(`${domain}/sitemap-index.xml`),
       getSitemapUrls(`${domain}/sitemap1.xml`)
     ]);
 
-    const urls = [...(sitemapUrls || []), ...(xmlUrls || []), ...(xmlIndexUrls || [])];
+    const urls = [
+      ...(sitemapUrls || []),
+      ...(sitemapXml || []),
+      ...(sitemapIndexXml || []),
+      ...(sitemap1Xml || [])
+    ];
 
     if (!urls?.length) {
       console.log('[web/domain.sync] Could not extract URLs from sitemap.  Preparing deep sync');
@@ -377,7 +384,7 @@ export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
     //   return;
     // }
 
-    const [sitemapUrls, xmlUrls, xmlIndexUrls] = await Promise.all([
+    const [sitemapUrls, sitemapXml, sitemapIndexXml, sitemap1Xml] = await Promise.all([
       fetchSitemapUrls(domain),
       getSitemapUrls(`${domain}/sitemap.xml`),
       getSitemapUrls(`${domain}/sitemap-index.xml`),
@@ -388,8 +395,9 @@ export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
 
     const uniqueUrls = getUniqueUrls([
       ...(sitemapUrls || []),
-      ...(xmlUrls || []),
-      ...(xmlIndexUrls || [])
+      ...(sitemapXml || []),
+      ...(sitemapIndexXml || []),
+      ...(sitemap1Xml || [])
     ]).filter((url) => {
       // This will match anything that starts with this path.
       // Ex: /blog as the path would match /blog/page and /blogger-was-here/page

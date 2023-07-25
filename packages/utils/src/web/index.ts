@@ -24,12 +24,7 @@ export const webPageLoader = redisLoader<string, string>({
   keyPrefix: 'web:page:v1',
   redisConfig: process.env.REDIS_URL as string,
   getValuesFn: async (keys) => {
-    const results: Array<string> = [];
-    for (const url of keys) {
-      const result = await getWebPageHtml({ url });
-      results.push(result);
-    }
-
+    const results = keys.map((url) => getWebPageHtml({ url }));
     const allResults = await Promise.all(results);
     return allResults;
   },
