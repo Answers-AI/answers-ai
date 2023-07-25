@@ -17,11 +17,10 @@ External Functions:
 - None
 
 Interaction Summary:
-This script interacts with the database using the Prisma client to retrieve and create messages. It also interacts with the OpenAI API to generate a title for the chat based on the conversation history. The created message and updated chat title are then stored in the database.
+This script interacts with the database using the Prisma client to retrieve and create messages. It also interacts with the OpenAI API to generate a title for the chat based on the conversation history. The script can be triggered by the event `answers/message.sent` and performs the necessary operations to handle the message.
 
 Developer Questions:
-- How does the event object look like and what data does it contain?
-- What is the purpose of the `AnswersFilters` and `User` types?
-- How does the `AIUpdateChatTitle` function generate a title using the OpenAI API?
-- What is the significance of the `v` and `event` properties in the `answersMessageSent` constant?
-- How can I modify the script to handle additional event types or perform additional operations when a message is sent?
+- How does the script handle cases where the message ID is not provided?
+- What other data could be saved from the message sent?
+- How does the AI model generate a title for the chat?
+- What is the purpose of the `EventVersionHandler` type?

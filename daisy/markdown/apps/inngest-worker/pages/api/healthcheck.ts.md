@@ -10,7 +10,7 @@ This API endpoint serves as a health check for the application. It can be used t
 
 **Import Statements:**
 
-The code imports two modules from the 'next' package: `NextApiRequest` and `NextApiResponse`. These modules provide types for the request and response objects used in Next.js API routes.
+The code imports two objects, `NextApiRequest` and `NextApiResponse`, from the 'next' module. These objects are used to handle incoming requests and send responses, respectively.
 
 **Internal Functions:**
 
@@ -22,39 +22,41 @@ The code does not interact with any external services. It only handles the incom
 
 **API Endpoints:**
 
-- **GET /api/healthCheck**
+There is a single API endpoint in this file:
 
-  Summary: This endpoint serves as a health check for the application. It can be used to verify that the worker is running and responding properly.
+**GET /api/healthCheck**
 
-  Example Usage:
-  ```
-  curl -X GET \
-    http://localhost:3000/api/healthCheck \
-    -H 'Content-Type: application/json' \
-    -H 'cache-control: no-cache' \
-    -d '{
-    "data": "data"
-  }'
-  ```
+Summary: This endpoint serves as a health check for the application. It logs a message indicating that the worker is healthy and sends a response with the string "ok".
 
-  Example Response:
-  ```json
-  {
-    "response": "ok"
-  }
-  ```
+Example Usage:
+```
+curl -X GET \
+  http://localhost:3000/api/healthCheck \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache' \
+  -d '{
+  "data": "data"
+}'
+```
+
+Example Response:
+```json
+{
+  "response": "ok"
+}
+```
 
 **Interaction Summary:**
 
-When a GET request is made to the `/api/healthCheck` endpoint, the `healthCheck` function is called. It logs a message to the console and sends a response with the string "ok". This response indicates that the worker is healthy and the application is running properly.
+When a GET request is made to the `/api/healthCheck` endpoint, the `healthCheck` function is called. It logs the message "Worker Healthy" to the console and sends a response with the string "ok". This response indicates that the worker is healthy and the application is running properly.
 
 **Developer Questions:**
 
 1. What other API endpoints are available in the application?
-2. Are there any authentication or authorization requirements for accessing the `/api/healthCheck` endpoint?
+2. Are there any authentication or authorization requirements for accessing this endpoint?
 3. Can the response message be customized?
-4. How can the health check be extended to include additional checks or metrics?
+4. How can I test this endpoint locally?
 
 **TODO Items / Known Issues:**
 
-There are no specific TODO items or known issues related to this file. However, it is important to ensure that the health check endpoint is properly secured and not exposed to unauthorized access. Additionally, it may be beneficial to add more comprehensive health checks to cover different aspects of the application's functionality.
+There are no specific TODO items or known issues related to this file. However, it is important to ensure that the larger application has proper error handling and logging in place to handle any potential issues that may arise.

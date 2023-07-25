@@ -26,21 +26,21 @@ Event Handlers:
 None.
 
 Rendered components:
-- `SessionProvider`: Wraps the component tree with the provided `session` prop, allowing child components to access the user session.
-- `FlagsmithProvider`: Wraps the component tree with the provided `flagsmithState` prop and options, allowing child components to access and manage feature flags using Flagsmith.
-- `ThemeProvider`: Wraps the component tree with the provided `darkModeTheme`, applying the dark mode theme to the widget.
-- `CssBaseline`: Renders the baseline CSS styles for the widget.
-- `GlobalStyles`: Renders the global styles for the widget.
+- `SessionProvider`: Wraps the component tree with the `session` prop, providing access to the user session.
+- `FlagsmithProvider`: Wraps the component tree with the `flagsmithState` prop and options, providing access to the Flagsmith feature flags.
+- `ThemeProvider`: Wraps the component tree with the `darkModeTheme`, providing a themed layout.
+- `CssBaseline`: Renders the baseline CSS styles.
+- `GlobalStyles`: Renders global styles specific to the application.
 - `children`: Renders the child components within the layout.
 
 Interaction Summary:
-The `AppWidgetLayout` component interacts with other components by providing a themed and styled layout for the application's widget. It wraps the component tree with session and feature flag providers, applies the dark mode theme, and renders the necessary CSS styles and global styles. Child components can access the user session and feature flags through the provided providers.
+The `AppWidgetLayout` component interacts with other components by providing them with the user session, Flagsmith feature flags, and a themed layout. It wraps the component tree with the necessary providers and renders the child components within the layout.
 
 Developer Questions:
-- How can I access the user session within the child components?
-- How can I access and manage feature flags within the child components?
-- How can I customize the theme for the widget?
-- How can I add additional global styles to the widget?
+- How can I access the user session within the `AppWidgetLayout` component?
+- How can I access the Flagsmith feature flags within the `AppWidgetLayout` component?
+- How can I customize the theme used by the `ThemeProvider` component?
+- How can I add additional global styles to the `GlobalStyles` component?
 
 Known Issues / Todo:
 - No known issues or bugs with the component.

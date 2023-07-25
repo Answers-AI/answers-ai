@@ -10,6 +10,6 @@ There are no loops or conditional statements in this code. It is a series of SQL
 
 The code does not use any variables. It only defines the structure of database tables and relationships.
 
-There are no bugs or issues in this code since it is a series of SQL statements. However, it is important to note that this code assumes the existence of the necessary database and user permissions to execute the statements successfully. Additionally, it is assumed that the referenced tables ("JiraSettings", "AppSettings") already exist in the database.
+There are no bugs or issues in this code since it is a series of SQL statements. However, it is important to note that this code assumes the existence of the necessary database and user permissions to execute the statements successfully. Additionally, it is important to ensure that the table and column names used in the code align with the desired database schema.
 
-In summary, the provided code is a series of SQL statements used to create tables, indexes, and foreign key constraints in a database. It does not have a specific purpose within a broader software application and does not contain any Python code. It is important to ensure that the necessary database and user permissions are in place before executing these statements.
+In summary, the provided code is a series of SQL statements used to create tables, indexes, and foreign key constraints in a database. It does not have a specific purpose within a broader software application and does not contain any Python code. It is important to have the necessary database and user permissions to execute the statements successfully and to ensure that the table and column names align with the desired database schema.

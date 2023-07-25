@@ -19,7 +19,7 @@ None.
 
 Rendered components:
 - Card: The main component that represents the journey card. It is styled using Material-UI and Framer Motion.
-- CardActionArea: A component that wraps the content of the card and provides a clickable area for navigation.
+- CardActionArea: A component that wraps the content of the card and provides an area for clickable interactions.
 - CardHeader: A component that displays the title of the journey.
 - Typography: A component from Material-UI used for displaying text.
 - Button: A component from Material-UI used for displaying a button.
@@ -30,9 +30,10 @@ The "JourneyCard" component is a client-side component that renders a card repre
 
 Developer Questions:
 - How can I customize the styling of the Card component?
-- How can I pass additional props to the CardActionArea component?
-- How can I handle user interactions such as clicking on the Card or the Button component?
+- How can I pass additional props to the Card component?
+- How can I handle user interactions, such as clicking on the Card or the Button component?
+- How can I access the journey object in the parent component when the Card is clicked?
 
 Known Issues / Todo:
-- There are commented out sections of code that may need to be reviewed and potentially removed or uncommented.
+- The code contains commented out sections that may need to be reviewed and cleaned up.
 - The component does not handle any user interactions or state changes, so additional functionality may need to be implemented depending on the requirements of the application.

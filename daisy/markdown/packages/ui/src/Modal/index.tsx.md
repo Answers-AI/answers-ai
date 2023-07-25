@@ -24,5 +24,5 @@ Developer Questions:
 2. Can I pass additional props to the "Modal" component to control its behavior?
 3. How can I handle user interactions within the modal window, such as button clicks or form submissions?
 
-Known Issues and Todo Items:
-There are no known issues or bugs with the component mentioned in this file. Any specific issues or todo items related to the "Modal" component would need to be addressed in the "Modal.js" file.
+Known Issues / Todo:
+There are no known issues or bugs with the component mentioned in this file. Any specific issues or todos related to the "Modal" component would need to be addressed by examining the implementation of the "Modal" component itself.

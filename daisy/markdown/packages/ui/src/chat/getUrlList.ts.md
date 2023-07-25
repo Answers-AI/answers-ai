@@ -11,7 +11,7 @@ Internal Functions:
 - None
 
 External Functions:
-- `getUrlList`: This function takes an object as a parameter with an optional property `domains`. It queries the database using the `prisma` object to retrieve a list of URLs that belong to the specified domains. It returns a promise that resolves to the list of URLs.
+- `getUrlList`: This function takes an object as a parameter with an optional property `domains` which is an array of strings. It queries the database using the `prisma` object to retrieve a list of URLs that belong to the specified domains. It returns a promise that resolves to the list of URLs.
 
 Interaction Summary:
 This module interacts with a database using the Prisma ORM library. It retrieves a list of URLs based on the provided domains. The module can be imported and used by other parts of the application to fetch URLs from the database.

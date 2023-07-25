@@ -16,11 +16,10 @@ Internal Functions:
 - tidy(status): This static method takes a status object as a parameter and removes specific fields from it. It iterates over an array of field names to be removed and deletes those fields from the status object. It returns the tidied status object.
 
 Interaction Summary:
-The JiraStatus class is a component that can be used within a broader software application that deals with JIRA integration. It extends the JiraObject class, suggesting that it may inherit or override certain methods or properties from the parent class. The JiraStatus class can be instantiated to create JIRA status objects and provides a method to tidy up the status object by removing unnecessary fields.
+The JiraStatus class is a component that can be used within a broader software application that deals with JIRA. It extends the JiraObject class and provides functionality to create and tidy up JIRA status objects. Other parts of the application can create instances of the JiraStatus class and use its methods to work with JIRA status data.
 
 Developer Questions:
+- How can I create a JiraStatus object?
+- What fields are removed when tidying up a status object?
+- How can I access the tidied status object after creating a JiraStatus instance?
 - How does the JiraStatus class interact with the JiraObject class?
-- What are the available methods and properties of the JiraStatus class?
-- How can I create a JIRA status object using the JiraStatus class?
-- How can I modify the tidy() method to remove additional fields from the status object?
-- Are there any other dependencies or interactions with other components in the application?

@@ -23,7 +23,7 @@ Event Handlers:
 Rendered components:
 - Card: A component from the MUI library that represents a card.
 - Box: A component from the MUI library for creating layout containers.
-- Wrapper: A component that conditionally renders either a Box or a CardActionArea based on the expanded prop.
+- Wrapper: A component that conditionally renders either a Box or a CardActionArea based on the value of the 'expanded' prop.
 - CardContent: A component from the MUI library that represents the content of a card.
 - CardHeader: A component from the MUI library that represents the header of a card.
 - Avatar: A component from the MUI library that represents an avatar.
@@ -34,14 +34,18 @@ Rendered components:
 - JourneySetting: A custom component that represents the filter options for the data.
 
 Interaction Summary:
-The JourneySourceCard component interacts with other components in the application by receiving props that represent the source of data and its settings. It uses these props to render the card and handle user interactions, such as connecting or refreshing the data. It also communicates with the AnswersContext to manage answers and uses feature flags from the flagsmith/react library.
+The JourneySourceCard component interacts with other components in the application by receiving props that represent the source of data and its settings. It uses these props to render the card and handle user interactions, such as connecting or refreshing the data. It also communicates with the AnswersContext to manage answers and update filters.
 
 Developer Questions:
-- How are the props for the JourneySourceCard component passed from the parent component?
-- How does the JourneySourceCard component handle the onClick event?
-- How does the JourneySourceCard component update the filter options?
-- How does the JourneySourceCard component handle authentication integration?
-- How does the JourneySourceCard component use feature flags from the flagsmith/react library?
+- How are the props 'appSettings', 'filters', 'updateFilter', 'onClick', 'expanded', and 'editable' used in this component?
+- What is the purpose of the 'flags' variable and how is it used?
+- How does the 'handleAuthIntegration' function work and when is it called?
+- What is the purpose of the 'Wrapper' component and how does it conditionally render either a Box or a CardActionArea?
+- How does the 'JourneySetting' component interact with this component and what props does it receive?
+- How is the 'lastInteraction' state variable used in this component?
+- How does the animation from the 'motion' library work in this component?
+- How does the 'useAnswers' hook from the '../AnswersContext' file work and what functions does it provide?
+- How does the 'useFlags' hook from the 'flagsmith/react' library work and how is it used in this component?
 
 Known Issues / Todo:
 - No known issues or bugs with the component.

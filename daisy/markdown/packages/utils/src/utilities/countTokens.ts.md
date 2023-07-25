@@ -23,7 +23,7 @@ Interaction Summary:
 This script can be used by other parts of the application to count the number of tokens in a given text. It exports the "countTokens" function, which can be imported and called from other files.
 
 Developer Questions:
-- How can I use this script to count tokens in my text?
-- Can I use a different tokenizer instead of GPT3Tokenizer?
-- Are there any performance considerations when using this script for large texts?
-- How can I handle errors or exceptions when using the GPT3Tokenizer library?
+- How can I use the "countTokens" function in my code?
+- What is the purpose of the GPT3Tokenizer library and how does it work?
+- Are there any limitations or potential issues with tokenizing large texts?
+- Can I customize the tokenizer's configuration options?

@@ -8,15 +8,18 @@ Script Summary:
 The script defines a class called "SlackObject" that extends the "AnswersObject" class. It includes a constructor that calls the parent class's constructor. It also includes a static method called "convertTimestampToDate" that takes a timestamp as input and returns a JavaScript Date object.
 
 Internal Functions:
-- None
+- constructor(object): This is the constructor of the "SlackObject" class. It calls the constructor of the parent class ("AnswersObject") with the "object" parameter.
+
+- convertTimestampToDate(timestamp): This is a static method that takes a timestamp as input and converts it to a JavaScript Date object. It first checks if the timestamp is falsy and returns null if it is. Then, it removes the microseconds from the timestamp by splitting it at the dot and taking the first part. It converts the resulting string to an integer using "parseInt". If the conversion fails and returns NaN, it throws an error. Finally, it creates a new Date object by multiplying the converted timestamp by 1000 to convert it to milliseconds and returns the date.
 
 External Functions:
-- convertTimestampToDate(timestamp): This static method takes a timestamp as input and converts it to a JavaScript Date object. It first checks if the timestamp is falsy and returns null if it is. It then removes the microseconds from the timestamp by splitting it at the "." character and taking the first part. It converts the resulting string to an integer using parseInt(). If the resulting integer is NaN, it throws an error. Finally, it multiplies the integer by 1000 to convert it to milliseconds and creates a new Date object with the resulting value. It returns the Date object.
+None
 
 Interaction Summary:
-This script is a standalone file that defines the "SlackObject" class. It can be used by other parts of the application that need to work with Slack-related data. Other parts of the application can create instances of the "SlackObject" class and call its methods, such as "convertTimestampToDate", to perform specific operations on Slack data.
+This script is a standalone file that defines the "SlackObject" class. It can be used by other parts of the application that need to work with Slack-related data. Other parts of the application can create instances of the "SlackObject" class and use its methods, such as "convertTimestampToDate", to manipulate Slack data.
 
 Developer Questions:
 - How do I create an instance of the "SlackObject" class?
-- How do I use the "convertTimestampToDate" method to convert a timestamp to a Date object?
-- What happens if the timestamp is invalid or missing?
+- How do I use the "convertTimestampToDate" method?
+- What happens if I pass an invalid timestamp to the "convertTimestampToDate" method?
+- Can I override any methods of the parent class in the "SlackObject" class?

@@ -20,4 +20,4 @@ Potential Bugs or Issues:
 There are no potential bugs or issues in this script.
 
 Summary:
-This script is a simple SQL statement that alters the "Account" table by adding a new column. It does not contain any complex logic or control flow. The script can be executed directly on a database to modify the table structure. No modifications or extensions are required for this script as it serves a specific purpose of adding a column to the table.
+This script is a simple SQL statement that alters the "Account" table by adding a new column called "refresh_token_expires_in" of type INTEGER. It does not involve any complex logic or control flow. The script can be executed directly on the database to modify the table structure.

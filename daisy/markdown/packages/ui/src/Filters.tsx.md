@@ -34,4 +34,4 @@ Developer Questions:
 
 Known Issues / Todo:
 - No known issues or bugs.
-- No specific todo items related to this component.
+- No todo items.

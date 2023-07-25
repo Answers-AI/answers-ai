@@ -1,46 +1,44 @@
 Summary:
-The provided React file is a functional component called "JourneySources" that renders a list of enabled services and their associated filters. It uses various Material-UI components and custom sub-components to display the services and their filters. The component interacts with the AnswersContext to access and update filters. It also uses the Flagsmith library to determine which services are enabled based on feature flags.
+The provided React file is a functional component called "JourneySources" that renders a list of enabled services as avatars. When an avatar is clicked, a popover is displayed with filters specific to the selected service. The component uses various sub-components to render the filters for each service.
 
 Import statements:
-- React: The React library for creating and managing React components.
-- useFlags: A custom hook from the Flagsmith library for accessing feature flags.
-- Image: A component from the Next.js library for rendering images.
-- Avatar, AvatarGroup, Box, Popover, Typography: Material-UI components for styling and layout.
-- useAnswers: A custom hook from the AnswersContext for accessing and updating filters.
-- SourcesWeb, SourcesJira, SourcesConfluence, SourcesAirtable, SourcesCodebase, SourcesSlack, SourcesDocument: Custom sub-components for rendering specific service filters.
-- AppSettings, AppService: Custom types for defining app settings and services.
+- React: The React library is imported to define and use React components.
+- useFlags: The useFlags hook from the 'flagsmith/react' library is imported to access feature flags.
+- Image: The Image component from the 'next/image' library is imported to display images.
+- Avatar, AvatarGroup, Box, Popover, Typography: Material-UI components are imported for styling and layout.
+- useAnswers: The useAnswers hook from the './AnswersContext' file is imported to access answers and filters.
+- SourcesWeb, SourcesJira, SourcesConfluence, SourcesAirtable, SourcesCodebase, SourcesSlack, SourcesDocument: These are sub-components that render filters for specific services.
+- AppSettings, AppService: These are types used for props.
 
 Component:
-The "JourneySources" component is a functional component that takes an "appSettings" prop of type "AppSettings". It renders a list of enabled services and their associated filters. The component uses various hooks and state variables to manage the selected service and its filters.
+The JourneySources component is a functional component that takes an appSettings prop of type AppSettings. It renders a list of avatars for enabled services and a popover with filters for the selected service.
 
 Hooks:
-- useRef: A hook that creates a mutable ref object to store references to service avatar elements.
-- useState: A hook that creates a state variable for storing the currently selected service.
-- useAnswers: A custom hook from the AnswersContext for accessing and updating filters.
+- useRef: The useRef hook is used to create a ref object to store references to the avatar elements.
+- useState: The useState hook is used to manage the state of the selected service and whether the popover is open.
 
 Event Handlers:
-- onClick: An event handler attached to each service avatar that sets the selected service when clicked.
-- onClose: An event handler attached to the popover component that clears the selected service when closed.
+- onClick: The onClick event handler is attached to each avatar element to set the selected service when clicked.
 
 Rendered components:
-- AvatarGroup: Renders a group of avatars representing the enabled services.
-- Avatar: Renders an avatar for each enabled service.
-- Image: Renders the service logo as an image inside the avatar.
-- Popover: Renders a popover component for displaying the selected service's filters.
-- Typography: Renders the title of the selected service's filters.
-- Box: Renders a container for the selected service's filters.
-- Custom sub-components: Renders the filters for each enabled service based on the selected service.
+- AvatarGroup: Renders a group of avatars for the enabled services.
+- Avatar: Renders an avatar element for each enabled service.
+- Image: Renders the image of the service logo if available.
+- Popover: Renders a popover with filters for the selected service.
+- Typography: Renders the title of the selected service.
+- Box: Renders a container for the filters.
+- SourcesWeb, SourcesJira, SourcesConfluence, SourcesAirtable, SourcesCodebase, SourcesSlack, SourcesDocument: These sub-components render filters specific to each service.
 
 Interaction Summary:
-The "JourneySources" component interacts with the AnswersContext to access and update filters. It also uses the Flagsmith library to determine which services are enabled based on feature flags. The component communicates with the custom sub-components to render the appropriate filters based on the selected service.
+The JourneySources component interacts with the AnswersContext to access answers and filters. It also uses the useFlags hook to access feature flags for each service. When an avatar is clicked, the selected service is set, and the popover with filters for that service is displayed.
 
 Developer Questions:
-- How are the filters in the AnswersContext used and updated?
-- How are the feature flags from Flagsmith library integrated with the enabled services?
-- How are the custom sub-components for each service filter implemented and used?
-- How is the "appSettings" prop passed to the "JourneySources" component?
-- How is the "JourneySources" component used in the larger application?
+- How are the enabled services determined?
+- How are the filters updated and propagated to other components?
+- How are the feature flags used to conditionally render specific filters?
+- How are the serviceRefs used to position the popover?
+- How can I add support for additional services and their filters?
 
 Known Issues / Todo:
-- No known issues or bugs with the component.
-- No specific todo items related to this component.
+- No known issues or bugs.
+- Todo: Add support for additional services and their filters.

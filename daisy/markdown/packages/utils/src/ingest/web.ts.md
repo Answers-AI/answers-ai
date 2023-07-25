@@ -41,6 +41,7 @@ The script interacts with the database, an external service, and various utility
 
 Developer Questions:
 - How can I modify the script to handle different types of web pages or extract different information?
-- How can I handle errors or exceptions that occur during web page loading or processing?
-- How can I optimize the script to improve performance when processing a large number of web pages?
-- How can I extend the script to include additional functionality or integrate with other parts of the application?
+- How can I handle errors or exceptions that occur during web page scraping or synchronization?
+- How can I optimize the performance of the script when processing a large number of web pages or URLs?
+- How can I extend the script to support additional functionality or integrate with other systems or services?
+- Are there any known issues or bugs with the script that need to be addressed?

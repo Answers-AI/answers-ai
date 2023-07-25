@@ -9,7 +9,7 @@ Import statements:
 
 Script Summary:
 - An instance of the `OpenApiClient` class is created and exported as `openApiClient`.
-- A Redis loader is created using the `redisLoader` function and exported as `openApiLoader`. The loader is configured to use a key prefix of 'web:page', the Redis URL from the environment variables, and to disable caching.
+- A Redis loader is created using the `redisLoader` function and exported as `openApiLoader`. The loader is configured to use a key prefix of 'web:page', the Redis configuration from the `REDIS_URL` environment variable, and to disable caching.
 
 Internal Functions:
 - None
@@ -18,11 +18,12 @@ External Functions:
 - None
 
 Interaction Summary:
-This module can be used by other parts of the application to load and cache OpenAPI JSON documents. The `openApiClient` instance can be used to interact with the OpenAPI server, and the `openApiLoader` function can be used to retrieve and update the cache.
+- This module can be used by other parts of the application to retrieve and update OpenAPI JSON documents. The `openApiClient` instance can be used to make requests to the OpenAPI server, and the `openApiLoader` can be used to load and cache the JSON documents.
 
 Developer Questions:
 - How can I use the `openApiClient` instance to make requests to the OpenAPI server?
-- How can I use the `openApiLoader` function to retrieve and update the cache?
-- How can I configure the Redis cache settings, such as the key prefix and cache expiration time?
-- How can I enable caching instead of disabling it?
-- How can I handle errors when retrieving the OpenAPI JSON document?
+- How can I use the `openApiLoader` to load and cache OpenAPI JSON documents?
+- How can I configure the Redis cache for the `openApiLoader`?
+- How can I disable caching for the `openApiLoader`?
+- How can I change the key prefix used by the `openApiLoader`?
+- How can I change the Redis configuration for the `openApiLoader`?

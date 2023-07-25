@@ -9,21 +9,35 @@ Import statements:
 - Various utility functions and types from different files.
 
 Script Summary:
-The script fetches context data based on a given prompt and filters. It parses the filters, creates an embedding for the prompt, applies the filters to query the Pinecone database, filters the results based on relevance threshold, renders the context string, counts tokens, and returns the fetched context data along with associated documents.
+The script fetches context data based on a given prompt and filters. It parses and applies the filters to the Pinecone query, retrieves the relevant data, filters it based on a relevance threshold, renders the context string, and returns the final context data along with associated documents.
 
 Internal Functions:
-- `parseFilters(filters: AnswersFilters)`: This function parses the filters object and modifies it to match the expected format for querying the Pinecone database.
-- `filterPineconeDataRelevanceThreshhold(data: any[], threshold: number)`: This function filters the data based on a relevance threshold and sorts it by score.
+- `parseFilters(filters: AnswersFilters)`: This function parses and transforms the filters object to match the expected format for the Pinecone query. It handles specific transformations for different filter types.
+- `filterPineconeDataRelevanceThreshhold(data: any[], threshold: number)`: This function filters the given data based on a relevance threshold and sorts it by score in descending order.
+- `fetchContext({ user, organizationId, organization, prompt, messages, filters, sidekick, gptModel })`: This is the main function that fetches the context data. It takes various parameters including the user, organization, prompt, messages, filters, sidekick, and GPT model. It performs the following steps:
+  - Parses the filters using `parseFilters` function.
+  - Creates an embedding for the prompt using the OpenAI client.
+  - Constructs the filter object based on the parsed filters.
+  - Queries the Pinecone database for relevant data based on the prompt embedding and filters.
+  - Filters the retrieved data based on a relevance threshold.
+  - Renders the context string based on the sidekick and token count.
+  - Retrieves the associated documents for the context data.
+  - Returns the context data, context documents, and additional information if in development mode.
 
 External Functions:
-- `fetchContext(params: FetchContextParams)`: This function is the main entry point of the script. It fetches context data based on the provided parameters. It parses the filters, creates an embedding for the prompt, applies the filters to query the Pinecone database, filters the results based on relevance threshold, renders the context string, counts tokens, and returns the fetched context data along with associated documents.
+- None
 
 Interaction Summary:
-This script interacts with the Pinecone database, the Prisma database, and the OpenAI API. It fetches context data from the Pinecone database based on the provided prompt and filters. It also interacts with the Prisma database to fetch associated documents. The OpenAI API is used for creating embeddings and rendering the context string.
+This script interacts with the Pinecone database, the Prisma database, and the OpenAI API. It fetches context data from Pinecone, retrieves associated documents from Prisma, and uses the OpenAI client for creating embeddings and rendering the context string.
 
 Developer Questions:
-- How are the filters parsed and modified to match the expected format for querying the Pinecone database?
-- How is the relevance threshold applied to filter the fetched data?
+- How are the filters parsed and transformed for the Pinecone query?
+- How is the relevance threshold applied to filter the data?
 - How is the context string rendered and token count calculated?
-- How are the associated documents fetched from the Prisma database?
-- How is the prompt embedding created and used in the Pinecone query?
+- How are the associated documents retrieved and returned?
+- How does the script handle different filter types and sources?
+- How does the script handle different scenarios when no relevant data is found?
+- How does the script handle different sources and organizations?
+- How does the script handle different GPT models and sidekick configurations?
+- How can the script be modified to support additional filter types or sources?
+- How can the script be optimized for performance?

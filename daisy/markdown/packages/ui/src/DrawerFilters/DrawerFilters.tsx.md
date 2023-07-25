@@ -13,7 +13,7 @@ Hooks:
 - `useAnswers` from `../AnswersContext`: This custom hook provides the `showFilters` state and `setShowFilters` function for controlling the visibility of the drawer.
 
 Rendered components:
-- `Drawer`: This is a styled version of the `MuiDrawer` component. It represents the main drawer element and handles its open/close state based on the `showFilters` prop. It also applies different styles based on the open/close state.
+- `Drawer`: This is a styled version of the `MuiDrawer` component. It represents the main drawer element and handles the open/close state based on the `showFilters` prop. It also applies different styles based on the open/close state.
 
 Event Handlers:
 None.

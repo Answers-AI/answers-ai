@@ -27,17 +27,16 @@ Event Handlers:
 
 Rendered components:
 - SnackMessage: Displays the snack message.
-- Typography: Displays the heading "Create New Journey".
+- Typography: Displays the heading for the form.
 - Divider: Renders a horizontal line.
 - TextField: Renders a multiline text input for the goal.
-- CircularProgress: Renders a loading spinner when data is being fetched.
-- Box: A layout component for grouping other components.
+- CircularProgress: Renders a loading spinner while fetching data.
+- Box: Provides layout and spacing for the form.
 - Button: Renders the "Create New Journey" button.
-- Grid2: A custom component for rendering a grid layout.
-- JourneyAppsDrawer: Renders a drawer component for selecting data sources.
+- Grid2: Renders the JourneyAppsDrawer component.
 
 Interaction Summary:
-The JourneyFormNew component interacts with the AnswersProvider context and the JourneyForm component. It also uses the useSWR hook to fetch data from the server based on the user's input. The component handles user input for the goal and updates the query value accordingly. It also handles the creation of a new journey and displays feedback messages to the user.
+The JourneyFormNew component interacts with the AnswersProvider context and the JourneyForm component. It also uses the useSWR hook to fetch data from the server based on the user's input. The JourneyAppsDrawer component is rendered within the JourneyForm component.
 
 Developer Questions:
 - How does the AnswersProvider context work and what data does it provide?
@@ -48,4 +47,4 @@ Developer Questions:
 
 Known Issues / Todo:
 - No known issues or bugs.
-- Todo: Add error handling for failed data fetching.
+- No specific todo items related to this component.

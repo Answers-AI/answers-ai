@@ -15,9 +15,9 @@ The script processes Algolia search results by extracting relevant information f
 Internal Functions:
 - `prefixHeaders`: This function takes a markdown string as input and adds prefix headers to the headings in the markdown. It returns the modified markdown string.
 - `splitPageHtmlChunkMore`: This async function takes a markdown chunk as input and splits it into smaller chunks using the `recursiveCharacterTextSplitter` object. It returns an array of smaller markdown chunks.
-- `splitPageHtml`: This async function takes an Algolia hit as input and splits its content into smaller chunks based on headings. It uses the `prefixHeaders` function and the `splitPageHtmlChunkMore` function. It returns an array of smaller markdown chunks.
-- `getAlgoliaVectors`: This async function takes an array of Algolia hits as input and extracts vectors from the markdown content of the hits. It uses the `splitPageHtml` function. It returns an array of vectors.
-- `embedVectors`: This async function takes an event object and an array of vectors as input. It sends the vectors to the `inngest` service in batches for embedding. It returns an array of embedded vectors.
+- `splitPageHtml`: This async function takes an Algolia hit as input and splits its content into smaller chunks based on headings. It uses the `prefixHeaders` and `splitPageHtmlChunkMore` functions. It returns an array of smaller markdown chunks.
+- `getAlgoliaVectors`: This async function takes an array of Algolia hits as input and extracts vectors from their content. It uses the `splitPageHtml` function. It returns an array of vectors.
+- `embedVectors`: This async function takes an event and an array of vectors as input and sends the vectors to the `inngest` service in batches. It returns an array of void values.
 
 External Functions:
 - `processAlgoliaSearch`: This is an event handler function that processes Algolia search events. It takes an event object as input and performs the following steps:
@@ -26,15 +26,14 @@ External Functions:
   - Initializes the Algolia search client and index.
   - Retrieves Algolia search hits based on the provided query, domain, and other options.
   - Filters and transforms the search hits to extract relevant information and convert it to markdown format.
-  - Calls the `getAlgoliaVectors` function to extract vectors from the markdown content.
-  - Calls the `embedVectors` function to send the vectors to the `inngest` service for embedding.
+  - Calls the `getAlgoliaVectors` function to extract vectors from the search hits.
+  - Calls the `embedVectors` function to send the vectors to the `inngest` service.
 
 Interaction Summary:
-This script interacts with the Algolia search service to retrieve search hits and extract relevant information from them. It also interacts with the `inngest` service to send vectors for embedding.
+This script interacts with the Algolia search service to retrieve search hits and extract relevant information from them. It also interacts with the `inngest` service to send the extracted information for further processing.
 
 Developer Questions:
 - How are Algolia search events triggered and passed to the `processAlgoliaSearch` function?
 - What are the required fields for Algolia search events and how are they validated?
-- How are the Algolia search hits filtered and transformed to extract relevant information?
-- How are the extracted vectors sent to the `inngest` service for embedding?
-- How can the script be extended to handle additional event versions or event types?
+- How are the search hits filtered and transformed to extract relevant information?
+- How are the extracted vectors sent to the `inngest` service and in what format?

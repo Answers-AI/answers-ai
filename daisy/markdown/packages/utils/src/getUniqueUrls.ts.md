@@ -17,7 +17,8 @@ Interaction Summary:
 This script can be used as a utility module in a larger software application that needs to manipulate URLs. Other modules or components can import and use the `getUniqueUrl` and `getUniqueUrls` functions to modify and filter URLs.
 
 Developer Questions:
-- How does the `getUniqueUrl` function handle querystrings and hashes in the URL?
-- Can the `getUniqueUrls` function handle large arrays of URLs efficiently?
-- Are there any performance considerations when using the `Array.from` and `Set` functions in the `getUniqueUrls` function?
-- Can the `getUniqueUrl` function handle URLs with non-standard schemes (e.g., "ftp://")?
+- How can I use the `getUniqueUrl` function to modify a single URL?
+- How can I use the `getUniqueUrls` function to modify an array of URLs?
+- What happens if I pass an empty array to the `getUniqueUrls` function?
+- Can I modify the behavior of the `getUniqueUrl` function to handle querystrings and hashes differently?
+- Are there any potential performance issues when processing a large number of URLs?

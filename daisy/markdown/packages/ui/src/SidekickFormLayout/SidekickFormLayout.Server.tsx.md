@@ -1,15 +1,15 @@
 Summary:
-The provided React file is a client-side component called ChatUILayout. It is responsible for rendering a layout for a chat UI. It interacts with other components in the application by receiving nested layouts or pages as children. It relies on the authOptions, prisma, SidekickFormLayout, and getCachedSession modules for authentication, database operations, and rendering the chat UI.
+The provided React file is a client-side component called ChatUILayout. It is responsible for rendering a layout for a chat UI. It interacts with other components in the application by receiving nested layouts or pages as children and passing them to the SidekickFormLayout component. It also fetches data from the server using Prisma and displays it in the SidekickFormLayout component.
 
 Import statements:
-- React: The React library is imported to define and use React components.
-- authOptions: The authOptions module is imported to provide authentication options for the session.
-- prisma: The prisma module is imported to interact with the database.
-- SidekickFormLayout: The SidekickFormLayout module is imported to render the chat UI layout.
-- getCachedSession: The getCachedSession module is imported to retrieve the cached session for authentication.
+- React: The React library is imported to use React components and hooks.
+- authOptions: The authOptions module is imported from the '../authOptions' file.
+- prisma: The prisma module is imported from the '@db/client' file.
+- SidekickFormLayout: The SidekickFormLayout component is imported from the './SidekickFormLayout.Client' file.
+- getCachedSession: The getCachedSession function is imported from the '../getCachedSession' file.
 
 Component:
-The ChatUILayout component is an async function that takes two props: children and sidekickId. It returns a JSX element representing the chat UI layout.
+The ChatUILayout component is a default export and is an async function. It takes two props: children and sidekickId. The children prop is of type React.ReactNode and represents the nested layouts or pages. The sidekickId prop is of type string and represents the ID of the sidekick.
 
 Hooks:
 - None
@@ -18,18 +18,16 @@ Event Handlers:
 - None
 
 Rendered components:
-- SidekickFormLayout: This component is rendered with the sidekicks and appSettings props. It is responsible for rendering the chat UI layout.
+- SidekickFormLayout: This component is rendered and receives two props: sidekicks and appSettings. The sidekicks prop is an array of sidekick data fetched from the server using Prisma. The appSettings prop is the app settings of the user's session.
 
 Interaction Summary:
-The ChatUILayout component interacts with other components by receiving nested layouts or pages as children. It uses the authOptions module to authenticate the session and retrieve the user's email. It then uses the prisma module to fetch sidekicks from the database based on the user's email. The fetched sidekicks are passed as props to the SidekickFormLayout component along with the appSettings from the session. The children components are rendered within the SidekickFormLayout component.
+The ChatUILayout component interacts with other components by rendering the SidekickFormLayout component and passing it the fetched sidekick data and app settings. It also uses the getCachedSession function to retrieve the user's session and check if the user is authenticated before rendering the layout.
 
 Developer Questions:
-- How does the authentication process work with the authOptions module?
-- What are the possible values for the sidekickId prop?
-- How are the sidekicks fetched from the database using the prisma module?
-- What are the expected props for the children components?
-- How does the SidekickFormLayout component handle the sidekicks and appSettings props?
+- How does the getCachedSession function work and what does it return?
+- What is the structure of the sidekick data fetched from the server?
+- How are the sidekicks sorted in the Prisma query?
+- What are the possible values for the appSettings prop in the SidekickFormLayout component?
 
 Known Issues / Todo:
-- No known issues or bugs.
-- No specific todo items related to this component.
+- None

@@ -29,5 +29,5 @@ Developer Questions:
 - How does the Chat component handle user interactions and state management?
 
 Known Issues / Todo:
-- No known issues or bugs.
-- No specific todo items related to this component.
+- There are no known issues or bugs with this component.
+- There are no specific todo items related to this component.

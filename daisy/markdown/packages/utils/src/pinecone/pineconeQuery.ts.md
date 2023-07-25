@@ -7,18 +7,19 @@ Import statements:
 - `PineconeClient` and `QueryRequest` are imported from the '@pinecone-database/pinecone' module. These are used to interact with the Pinecone database.
 
 Script Summary:
-The script initializes the OpenAI API and exports the initialized instance as `openai`. It also exports a function `pineconeQuery` that performs a query on a Pinecone database.
+The script initializes the OpenAI API and exports the initialized instance as `openai`. It also exports a function `pineconeQuery` that performs a query on a Pinecone database using the PineconeClient and QueryRequest classes.
 
 Internal Functions:
-- `initializeOpenAI`: This function initializes the OpenAI API by creating a new `Configuration` instance with the API key from the environment variables. It returns a new `OpenAIApi` instance.
+- `initializeOpenAI`: This function initializes the OpenAI API by creating a Configuration instance with the API key from the environment variables. It returns a new OpenAIApi instance.
 
 External Functions:
-- `pineconeQuery`: This function takes in embeddings and query parameters and performs a query on a Pinecone database. It initializes the Pinecone client, creates a query request object, and queries the database. It returns the query result.
+- `pineconeQuery`: This function takes in embeddings (an array of numbers) and query parameters (an object with optional `filter`, `topK`, and `namespace` properties). It performs a query on a Pinecone database using the PineconeClient and QueryRequest classes. It returns the query result.
 
 Interaction Summary:
-This module can be used by other parts of the application to query a Pinecone database and interact with the OpenAI API. Developers can use the `pineconeQuery` function to perform queries and retrieve results.
+This module can be used by other parts of the application to perform queries on a Pinecone database and interact with the OpenAI API.
 
 Developer Questions:
 - How do I initialize the OpenAI API?
-- How do I perform a query on a Pinecone database using the `pineconeQuery` function?
-- What parameters does the `pineconeQuery` function accept and what does it return?
+- How do I perform a query on a Pinecone database using this module?
+- What are the required and optional parameters for the `pineconeQuery` function?
+- How do I handle errors when performing a query on a Pinecone database?

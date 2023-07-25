@@ -30,12 +30,11 @@ Interaction Summary:
 The DocumentTree component receives an array of documents as a prop. It builds a tree structure based on the documents and renders it using the TreeView and TreeItem components. Users can expand and collapse tree nodes by clicking on the expand/collapse icons. They can also select a tree node by clicking on its label. The component does not handle any state itself but relies on the useTreeItem hook provided by the TreeItem component to handle expansion and selection states.
 
 Developer Questions:
-- How is the buildTree function implemented and what is the expected structure of the "documents" prop?
-- How can I customize the appearance of the tree nodes?
+- How are the documents passed to the DocumentTree component?
+- How does the buildTree function work and what is the expected structure of the documents array?
+- How can I customize the appearance of the tree items?
 - How can I handle events when the "Add page" button is clicked?
-- How can I access the selected tree node in the parent component?
 
 Known Issues / Todo:
 - There are no known issues or bugs with the component.
-- Todo: Add support for customizing the appearance of the tree nodes.
-- Todo: Add event handling for the "Add page" button.
+- The "handleAdd" prop in the CustomContent component is commented out. It may need to be implemented or removed depending on the desired functionality.

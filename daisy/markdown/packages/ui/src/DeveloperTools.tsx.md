@@ -1,30 +1,30 @@
 Summary:
-The provided React file is a functional component called DeveloperTools. It renders a ChatDetail component and receives props such as appSettings, user, prompts, journeys, and chats. It is a client-side component.
+This file is a React component called DeveloperTools. It is a client-side component that renders a chat detail component and interacts with other components in the application.
 
 Import statements:
-The file imports the following dependencies:
-- AppSettings, Chat, Journey, and User from the 'types' module.
-- ChatDetail component from './ChatDetail'.
+The file imports the following dependencies: AppSettings, Chat, Journey, and User from the 'types' module, and ChatDetail from the './ChatDetail' module.
 
 Component:
-The DeveloperTools component is a functional component that renders a div containing the ChatDetail component. It receives props such as appSettings, user, prompts, journeys, and chats.
+The DeveloperTools component is a functional component that takes in props including appSettings, user, prompts, journeys, and chats. It renders a div element containing the ChatDetail component.
 
 Hooks:
-The DeveloperTools component does not use any hooks.
+This component does not use any hooks.
 
 Event Handlers:
-The DeveloperTools component does not have any event handlers.
+This component does not have any event handlers.
 
 Rendered components:
-The DeveloperTools component renders the ChatDetail component. It passes the appSettings and prompts props to the ChatDetail component.
+The DeveloperTools component renders the ChatDetail component.
 
 Interaction Summary:
-The DeveloperTools component is a part of a larger application and is responsible for rendering the ChatDetail component. It receives appSettings, user, prompts, journeys, and chats props from its parent component. The ChatDetail component handles the display of chat details based on the provided appSettings and prompts.
+The DeveloperTools component interacts with other components in the application by passing down props such as appSettings, user, prompts, journeys, and chats to the ChatDetail component. It relies on these props to display the appropriate chat details.
 
 Developer Questions:
 1. What are the required props for the DeveloperTools component?
-2. How does the DeveloperTools component receive the chats and journeys props?
-3. What is the purpose of the ChatDetail component and how does it interact with the DeveloperTools component?
+2. How are the appSettings, user, prompts, journeys, and chats props used in the ChatDetail component?
+3. Are there any additional props that can be passed to the DeveloperTools component?
+4. How can I customize the styling of the div element containing the ChatDetail component?
+5. Are there any performance considerations when using the DeveloperTools component?
 
-Known Issues / Todo:
-There are no known issues or bugs with the DeveloperTools component. However, it may be necessary to add additional functionality or handle edge cases based on the specific requirements of the application.
+Known Issues and Todo Items:
+There are no known issues or bugs with the DeveloperTools component. However, a possible todo item could be to add error handling for missing or invalid props.

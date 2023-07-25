@@ -22,7 +22,7 @@ The "Styles" component is a client-side component that can be used to apply glob
 Developer Questions:
 1. How can I customize the global styles applied by the "Styles" component?
 2. Can I use CSS-in-JS libraries like styled-components or emotion with the "Styles" component?
-3. Are there any performance considerations when using the "Styles" component?
+3. How do I override the default styles applied by the "GlobalStyles" component?
 
 Known Issues and Todo Items:
-There are no known issues or bugs with the "Styles" component. However, a possible todo item could be to make the styles more configurable by accepting props to override the default styles.
+There are no known issues or bugs with the "Styles" component. However, a possible todo item could be to add more customization options for the global styles, such as allowing developers to pass in their own styles as props.

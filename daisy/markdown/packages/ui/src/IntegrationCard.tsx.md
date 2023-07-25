@@ -26,24 +26,23 @@ Rendered components:
 - Box: A component from the Material-UI library used for layout purposes.
 - Wrapper: A component that conditionally renders either a Box or CardActionArea component based on the 'expanded' prop.
 - CardContent: A component from the Material-UI library used to display the content of the card.
-- CardHeader: A component from the Material-UI library used to display the header of the card.
+- CardHeader: A component from the Material-UI library used to display the integration's name and authentication button.
 - Avatar: A component from the Material-UI library used to display the integration's logo.
 - Typography: A component from the Material-UI library used to display text.
 - Image: A component from the 'next/image' package used to display the integration's logo.
+- Button: A component from the Material-UI library used for the authentication button.
+- JourneySetting: A custom component imported from the '@ui/JourneySetting' module.
 
 Interaction Summary:
-The IntegrationCard component interacts with other components by receiving props representing the integration service and its settings. It uses the signIn function from the 'next-auth/react' package to handle authentication. It also uses the useFlags and useAnswers hooks to retrieve and update flags and answers related to the integration. The component renders several sub-components from the Material-UI library and other modules to display the integration's information and settings.
+The IntegrationCard component interacts with other components by receiving props representing the integration service and its settings. It uses the signIn function from the 'next-auth/react' package to handle authentication. It also uses the useFlags and useAnswers hooks to retrieve and update flags and answers related to the integration. The component renders sub-components such as Card, CardHeader, Avatar, Typography, Image, Button, and JourneySetting to display the integration's information and settings.
 
 Developer Questions:
-- How are the integration flags and answers managed and updated?
-- How is the authentication handled when the button is clicked?
-- How are the integration settings displayed and updated?
-- How is the 'expanded' state managed and updated?
-- How are the integration's logo and name displayed?
-- How is the 'enabled' prop used to determine the state of the integration?
-- How is the 'editable' prop used in the component?
-- How is the 'onClick' prop used in the component?
+- How are the integration settings passed to the JourneySetting component?
+- How does the component handle the 'expanded' state?
+- How does the component handle the 'enabled' state?
+- How does the component handle the 'editable' state?
+- How does the component handle the 'onClick' event?
 
 Known Issues / Todo:
-- No known issues or bugs with the component are mentioned in the provided code.
-- No specific todo items related to the component are mentioned in the provided code.
+- No known issues or bugs are mentioned in the provided code.
+- No todo items are mentioned in the provided code.

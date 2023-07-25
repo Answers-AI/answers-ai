@@ -1,16 +1,24 @@
 Summary:
-The provided React file is a client-side component called SidekickDetailPage. It is responsible for rendering the SidekickDetail component and handling the logic to fetch and display a specific sidekick's details. The component interacts with the Prisma database client, the authentication options, and other utility functions.
+The provided React file is a client-side component that represents the SidekickDetailPage in a larger application. It is responsible for rendering the details of a sidekick, based on the provided sidekickId parameter. The component interacts with the database using Prisma and handles user authentication using authOptions and getCachedSession.
 
 Import statements:
 - React: The core React library.
-- prisma: The Prisma database client.
-- authOptions: The authentication options for the application.
-- getCachedSession: A utility function to retrieve the cached user session.
-- SidekickDetail: The component responsible for rendering the sidekick's details.
-- types: The typescript types used in the application.
+- prisma: The Prisma client for interacting with the database.
+- authOptions: The options for user authentication.
+- getCachedSession: A function for retrieving the cached user session.
+- SidekickDetail: A sub-component for rendering the details of a sidekick.
+- types: A module containing type definitions.
 
 Component:
-The SidekickDetailPage component is a server-side component that fetches the details of a specific sidekick and renders the SidekickDetail component with the fetched data. It takes in a parameter object that includes the sidekickId.
+The SidekickDetailPage component is an async function that takes a params object as a parameter. It first retrieves the user session using getCachedSession and authOptions. If the userId is not available in the session, the component returns null.
+
+The sidekickId is extracted from the params object. If it is not available, the component also returns null.
+
+The component then queries the database using Prisma to find the sidekick with the provided sidekickId. The query includes several conditions to determine the visibility of the sidekick based on the userId and other properties. The result is assigned to the sidekick variable.
+
+Based on the properties of the sidekick, the sharedWith property is set to indicate whether the sidekick is global, shared with an organization, part of the system, or private.
+
+Finally, the SidekickDetail component is rendered with the params and sidekick props.
 
 Hooks:
 - None
@@ -19,16 +27,15 @@ Event Handlers:
 - None
 
 Rendered components:
-- SidekickDetail: This component is rendered with the parameters and the fetched sidekick data.
+- SidekickDetail: Renders the details of a sidekick.
 
 Interaction Summary:
-The SidekickDetailPage component interacts with the Prisma database client to fetch the sidekick details based on the provided sidekickId. It also uses the authOptions to retrieve the user session and determine the userId. The fetched sidekick data is then passed as props to the SidekickDetail component for rendering.
+The SidekickDetailPage component interacts with the database using Prisma to retrieve the details of a sidekick. It also relies on user authentication using authOptions and getCachedSession. The component renders the SidekickDetail sub-component to display the sidekick details.
 
 Developer Questions:
-- How does the getCachedSession function work and what does it return?
-- What are the possible values for the sidekick.sharedWith property?
-- How does the Prisma query in the component's logic work and what does it return?
-- What are the required props for the SidekickDetail component?
+- How is the user session cached and retrieved using getCachedSession?
+- What are the possible values for the sharedWith property and how are they determined?
+- How does the Prisma query work and what conditions are used to filter the sidekick?
 
 Known Issues / Todo:
 - None

@@ -21,7 +21,7 @@ This file contains code for a GET API endpoint that retrieves suggestions based 
 
 **External Services:**
 
-- NextAuth: Used for session management and authentication.
+- NextAuth: Used for authentication and retrieving the server session.
 - OpenAI: Used for creating embeddings based on the query.
 - Pinecone: Used for querying the database for suggestions.
 
@@ -46,39 +46,41 @@ This file contains code for a GET API endpoint that retrieves suggestions based 
   Example Response:
   ```json
   {
-    "suggestions": {
-      "web": {
-        "domain": ["example.com"],
-        "url": ["https://example.com"]
-      }
+    "web": {
+      "domain": ["example.com"],
+      "url": ["https://example.com"]
     }
   }
   ```
 
 **Interaction Summary:**
 
-The code starts by importing the required dependencies and setting up constants. It then defines the `GET` function, which is the entry point for the API endpoint. Inside the function, it retrieves the server session and checks if the user is authenticated and has the required information. If not, it returns a 401 unauthorized response.
+The code first imports the required dependencies and initializes the `openai` client and a score threshold constant.
 
-Next, it extracts the query and URL parameters from the request. It validates the query length and returns a 422 unprocessable entity response if it is too short.
+The `GET` function is the main API endpoint. It starts by retrieving the server session and extracting the user ID and organization ID. If the user ID or organization ID is missing, it returns a 401 unauthorized response.
 
-The code then initializes an empty object to store the web suggestions and makes two asynchronous requests: one to get web suggestions using the `getWebSuggestions` function and another to query the Pinecone database using the `pineconeQuery` function.
+Next, it extracts the query and URL parameters from the request URL. If the query length is less than 10 characters, it returns a 422 unprocessable entity response.
 
-After both requests are completed, the code processes the responses. It filters the matches from the Pinecone query based on a score threshold and extracts the domain and URL information. It stores the web suggestions and other source matches in separate objects.
+The code then initializes an empty object to store the web suggestions and other sources. It creates an embedding for the query using the OpenAI client.
 
-Finally, it returns a JSON response with the suggestions.
+Two promises are created: one for getting web suggestions and another for querying the Pinecone database. These promises are executed in parallel using `Promise.all`.
+
+The results of the promises are stored in `webSuggestions` and `otherSources` variables. The web suggestions are extracted from the `otherSources` response and filtered based on the score threshold and source metadata.
+
+Finally, the suggestions are returned as a JSON response.
 
 **Developer Questions:**
 
 1. How does the authentication work in this code?
-2. What is the purpose of the `openai.createEmbedding` function?
-3. How are the web suggestions and other source matches filtered based on the score threshold?
-4. How does the `countPagesByDomain` function work?
-5. How can the code be improved to handle different namespaces in the Pinecone query?
+2. What is the purpose of the `openai` client and how is it used?
+3. How are the web suggestions and other sources retrieved and processed?
+4. How does the Pinecone query work and what parameters are used?
+5. How are the suggestions filtered and returned in the response?
 
 **TODO Items:**
 
-- Figure out how to filter by namespace without having to re-index per user in the Pinecone query.
+- Figure out how to filter Pinecone queries by namespace without re-indexing per user.
 
 **Known Issues:**
 
-None.
+- None mentioned in the code.

@@ -29,10 +29,9 @@ Interaction Summary:
 This file serves as a server-side component that renders the "AppLayoutClient" component. It interacts with other components by passing the necessary props to the "AppLayoutClient" component.
 
 Developer Questions:
-- How are the "session" and "appSettings" props obtained and passed to this component?
-- What is the purpose of the "params" prop and how is it used?
-- How is the "flagsmithState" prop used within this component?
+1. What is the purpose of the "AppLayoutServer" component?
+2. How are the props used in the "AppLayoutServer" component?
+3. What is the role of the "AppLayoutClient" component in the larger application?
 
 Known Issues / Todo:
-- No known issues or bugs with the component.
-- No todo items related to this component.
+None.

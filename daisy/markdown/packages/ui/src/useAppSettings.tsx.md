@@ -18,13 +18,13 @@ Rendered components:
 None.
 
 Interaction Summary:
-This file interacts with other components by providing the `updateAppSettings` function, which allows other components to update and save application settings. It communicates with a server-side API endpoint `/api/settings` to save the settings.
+This file interacts with other components by providing a hook that allows them to update and save application settings. Other components can import and use the `useAppSettings` hook to manage the application settings.
 
 Developer Questions:
 - How can I use the `useAppSettings` hook in my component?
-- What are the expected properties and types of the `AppSettings` object?
+- What is the structure of the `AppSettings` type?
 - How can I handle errors when using the `updateAppSettings` function?
 
 Known Issues / Todo:
 - No known issues or bugs.
-- No specific todo items related to this component.
+- No todo items.

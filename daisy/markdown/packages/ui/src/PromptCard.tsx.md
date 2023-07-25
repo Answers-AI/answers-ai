@@ -29,18 +29,17 @@ Rendered components:
 - CardActions: Displays the buttons for usages, likes, and dislikes.
 - Button: Renders a button with icons for usages, likes, and dislikes.
 - IconButton: Renders an icon button for liking and disliking the prompt.
-- MenuButton: A custom component that renders a menu button for deleting the prompt.
-- Typography: Renders the prompt's title and content.
+- MenuButton: A custom component that renders a menu button with options for deleting the prompt.
 
 Interaction Summary:
-The PromptCard component interacts with other components in the application by using the useAnswers hook to access the deletePrompt and updatePrompt functions. It also uses the useFlags hook to access the "delete_prompt" feature flag. The component renders sub-components from the "@mui/material" library for styling and layout. It also renders a custom MenuButton component for the delete prompt functionality.
+The PromptCard component interacts with other components in the application by using the useAnswers hook to access the deletePrompt and updatePrompt functions. It also uses the useFlags hook to access the "delete_prompt" feature flag. The component renders sub-components from the "@mui/material" library for styling and layout. It also uses custom components like MenuButton and hooks like useAnswers.
 
 Developer Questions:
-- How can I pass the prompt data to the PromptCard component?
+- How can I pass the onClick function to the PromptCard component?
 - How does the useAnswers hook work and where is it defined?
-- How does the useFlags hook work and where is it defined?
 - How can I customize the styling of the PromptCard component?
-- How can I handle additional user interactions in the PromptCard component?
+- How does the useFlags hook work and where is it defined?
+- How can I add more options to the MenuButton component?
 
 Known Issues / Todo:
 - No known issues or bugs with the component.

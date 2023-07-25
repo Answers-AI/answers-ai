@@ -5,16 +5,16 @@ Import statements:
 - `User` from 'types': This import statement imports the `User` type from a module called 'types'. The `User` type is likely defined in another file and is used to define the structure of the user object.
 
 Script Summary:
-The script exports a single function called `getUserContextFields`. This function takes an optional `user` parameter and returns a context object containing various user fields. The function first checks if a user object is provided. If not, it returns an empty object. If a user object is provided, it creates an empty object called `userContext`. It then uses the `reduce` method on the `contextFields` array of the user object to populate the `userContext` object with field IDs as keys and field text values as values. After that, it adds some additional user fields (`name`, `role`, and `email`) to the `userContext` object. Finally, it returns the `userContext` object.
+The script exports a single function called `getUserContextFields`. This function takes an optional `user` parameter and returns a context object containing various user fields. The function first checks if a user object is provided. If not, it returns an empty object. If a user object is provided, it creates an empty object called `userContext`. It then uses the `reduce` method on the `contextFields` array of the user object to populate the `userContext` object with field IDs as keys and field text values as values. Finally, it adds some additional user fields (name, role, and email) to the `userContext` object and returns it.
 
 Internal Functions:
-- `getUserContextFields`: This function takes an optional `user` parameter of type `User` and returns a context object. It first checks if a user object is provided. If not, it returns an empty object. If a user object is provided, it creates an empty object called `userContext`. It then uses the `reduce` method on the `contextFields` array of the user object to populate the `userContext` object with field IDs as keys and field text values as values. After that, it adds some additional user fields (`name`, `role`, and `email`) to the `userContext` object. Finally, it returns the `userContext` object.
+- `getUserContextFields`: This is the main function of the script. It takes an optional `user` parameter of type `User` and returns a context object. It first checks if a user object is provided. If not, it returns an empty object. If a user object is provided, it creates an empty object called `userContext`. It then uses the `reduce` method on the `contextFields` array of the user object to populate the `userContext` object with field IDs as keys and field text values as values. Finally, it adds some additional user fields (name, role, and email) to the `userContext` object and returns it.
 
 External Functions:
 - None
 
 Interaction Summary:
-This script can be used as a utility function in other parts of the software application. It can be imported and called with a user object to retrieve a context object containing various user fields. The context object can then be used in other parts of the application as needed.
+This script can be used as a utility function in other parts of the software application. It can be imported and called with a user object to retrieve the user's context fields. The returned context object can then be used in other parts of the application as needed.
 
 Developer Questions:
 - What is the structure of the `User` type?

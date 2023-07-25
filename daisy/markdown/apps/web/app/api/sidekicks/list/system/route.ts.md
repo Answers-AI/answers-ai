@@ -2,55 +2,77 @@ API Summary:
 This file contains code for a GET API endpoint that retrieves a list of sidekicks from a database. The sidekicks are filtered based on a specific condition and are then normalized before being returned as a JSON response.
 
 Import statements:
-- `NextResponse` is imported from the `next/server` module and is used to send the response back to the client.
-- `getServerSession` is imported from the `next-auth` module and is used to retrieve the user session.
-- `prisma` is imported from the `@db/client` module and is used to interact with the database.
-- `authOptions` is imported from the `@ui/authOptions` module and contains options for session authentication.
-- `respond401` is imported from the `@utils/auth/respond401` module and is used to handle unauthorized requests.
-- `normalizeSidekickList` is imported from the `../../../../../utilities/normalizeSidekick` module and is used to normalize the sidekick data.
-- `Sidekick` is imported from the `types` module and represents the structure of a sidekick object.
+- `NextResponse` is imported from the `next/server` module. It is used to send the response back to the client.
+- `getServerSession` is imported from the `next-auth` module. It is used to retrieve the user session from the server.
+- `prisma` is imported from the `@db/client` module. It is the database client used to query the sidekicks.
+- `authOptions` is imported from the `@ui/authOptions` module. It contains the options for authentication.
+- `respond401` is imported from the `@utils/auth/respond401` module. It is a utility function to handle unauthorized requests.
+- `normalizeSidekickList` is imported from the `../../../../../utilities/normalizeSidekick` module. It is a utility function to normalize the sidekick data.
+- `Sidekick` is imported from the `types` module. It is the type definition for a sidekick object.
 
 Internal Functions:
-- `GET`: This function is the main entry point for the API endpoint. It takes a `req` parameter of type `Request` and returns a `NextResponse` object. It performs the following steps:
-  - Retrieves the user session using `getServerSession` and `authOptions`.
-  - Checks if the session exists and if the user ID is present. If not, it returns a 401 unauthorized response using `respond401`.
-  - Retrieves the user object from the session.
-  - Queries the database using `prisma.sidekick.findMany` to fetch sidekicks that have the `isSystem` property set to `true`. It also includes the `favoritedBy` relation, filtering only the sidekicks favorited by the current user.
-  - Normalizes the sidekick data using `normalizeSidekickList` and the user object.
-  - Returns the normalized sidekicks as a JSON response using `NextResponse.json`.
+- `GET`: This is the main function that handles the GET request. It takes a `req` parameter of type `Request`. It retrieves the user session, checks if the user is authenticated, queries the database for sidekicks, normalizes the sidekick data, and returns the normalized sidekicks as a JSON response.
 
 External Services:
-- Database: The code interacts with the database using the `prisma` client to fetch sidekick data.
+- The code interacts with a database using the `prisma` client to query for sidekicks.
 
 API Endpoints:
-GET /api/route
-Summary: This endpoint retrieves a list of sidekicks from the database that are marked as system sidekicks and have been favorited by the current user. The sidekicks are then normalized before being returned as a JSON response.
+GET /api/sidekicks
+Summary: Retrieves a list of sidekicks from the database and returns them as a JSON response.
 
 Example Usage:
 ```
 curl -X GET \
-  http://localhost:3000/api/route \
+  http://localhost:3000/api/sidekicks \
   -H 'Content-Type: application/json' \
-  -H 'cache-control: no-cache' \
-  -d '{
-  "data": "data"
-}'
+  -H 'cache-control: no-cache'
 ```
 
 Example Response:
 ```json
-{
-  "response": "data"
-}
+[
+  {
+    "id": 1,
+    "name": "Sidekick 1",
+    "isSystem": true,
+    "favoritedBy": [
+      {
+        "id": 123,
+        "name": "User 1"
+      },
+      {
+        "id": 456,
+        "name": "User 2"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Sidekick 2",
+    "isSystem": true,
+    "favoritedBy": [
+      {
+        "id": 123,
+        "name": "User 1"
+      }
+    ]
+  }
+]
 ```
 
 Interaction Summary:
-The code imports necessary modules and dependencies, including the `NextResponse` class for sending responses, the `getServerSession` function for retrieving the user session, and the `prisma` client for interacting with the database. It also imports utility functions for authentication and data normalization.
-
-The `GET` function is the entry point for the API endpoint. It retrieves the user session, checks for authentication, and fetches sidekicks from the database based on specific criteria. The sidekicks are then normalized and returned as a JSON response.
+1. The code imports necessary modules and dependencies.
+2. The `GET` function is defined to handle the GET request.
+3. The function retrieves the user session using `getServerSession`.
+4. If the user is not authenticated, the function returns a 401 Unauthorized response using `respond401`.
+5. If the user is authenticated, the function retrieves the user object from the session.
+6. The function queries the database using `prisma.sidekick.findMany` to retrieve sidekicks that have `isSystem` set to true.
+7. The query includes the `favoritedBy` relation, filtering only the sidekicks favorited by the current user.
+8. The function normalizes the sidekick data using `normalizeSidekickList`.
+9. The normalized sidekicks are returned as a JSON response using `NextResponse.json`.
 
 Developer Questions:
-- What is the purpose of the `normalizeSidekickList` function and how does it work?
-- How can I modify the database query to include additional filters or sorting options?
-- Are there any known issues or limitations with this API endpoint?
-- Are there any TODO items related to this file that need to be addressed?
+1. What is the purpose of the `normalizeSidekickList` function and how does it work?
+2. How can I modify the query to retrieve sidekicks based on different conditions?
+3. What other functions or utilities are available in the `@utils/auth` module?
+4. Are there any known issues or limitations with this code?

@@ -55,13 +55,15 @@ Import statements:
 - `NextResponse` is imported from the `next/server` module and is used to send responses back to the client.
 - `getServerSession` is imported from the `next-auth` module and is used to retrieve the user session.
 - `prisma` is imported from the `@db/client` module and is used to interact with the database.
-- `authOptions` is imported from the `@ui/authOptions` module and is used as an argument for `getServerSession`.
+- `authOptions` is imported from the `@ui/authOptions` module and contains options for session authentication.
 
 Internal Functions:
-- `POST`: This function is the main API endpoint handler. It takes a `req` object as a parameter, which represents the incoming request. It first retrieves the user session using `getServerSession` and checks if the user is logged in. If not, it returns a JSON response with an error message and a status code of 403. It then extracts the `chatId` and `email` from the request payload. If no email is provided, it returns a JSON response with an error message and a status code of 403. It then retrieves the chat from the database using the `chatId` and checks if the user is the owner of the chat. If not, it returns a JSON response with an error message and a status code of 403. It creates new user records for the provided email addresses using `prisma.user.createMany` and updates the chat's user list accordingly using `prisma.chat.update`. Finally, it returns a JSON response with a success message.
+- `POST`: This function is the main API endpoint handler. It takes a `req` object as a parameter, which represents the incoming request. It first retrieves the user session using `getServerSession` and checks if the user is logged in. If not, it returns a 403 error response. It then extracts the `chatId` and `email` from the request payload. If no email is provided, it returns a 403 error response. It then checks if the chat exists and if the user is the owner of the chat. If not, it returns a 403 error response. It creates new user records for the provided email addresses using `prisma.user.createMany` and updates the chat's user list using `prisma.chat.update`. Finally, it returns a success response.
 
 External Services:
-- This API endpoint interacts with the Next.js server, the NextAuth session management system, and the Prisma database client.
+- `next-auth`: This module is used to handle user authentication and session management.
+- `@db/client`: This module provides access to the database using Prisma.
+- `@ui/authOptions`: This module contains options for session authentication.
 
 API Endpoints:
 POST /api/share-chat
@@ -72,9 +74,9 @@ curl -X POST \
   http://localhost:3000/api/share-chat \
   -H 'Content-Type: application/json' \
   -d '{
-  "chatId": "123",
-  "email": ["user1@example.com", "user2@example.com"]
-}'
+    "chatId": "123",
+    "email": ["user1@example.com", "user2@example.com"]
+  }'
 ```
 
 Example Response:
@@ -85,15 +87,19 @@ Example Response:
 ```
 
 Interaction Summary:
-The API endpoint first checks if the user is logged in and the owner of the chat. If not, it returns an error response. Then, it creates new user records for the provided email addresses and updates the chat's user list. Finally, it returns a success response.
+The API endpoint first checks if the user is logged in and the owner of the chat. If not, it returns a 403 error response. It then creates new user records for the provided email addresses and updates the chat's user list. Finally, it returns a success response.
 
 Developer Questions:
-1. What happens if the user is not logged in or not the owner of the chat?
-2. What is the expected format for the request payload?
-3. Are there any limitations on the number of email addresses that can be provided?
-4. How are duplicate email addresses handled?
-5. Are there any known issues or limitations with this API endpoint?
+1. What happens if the user is not logged in?
+2. What happens if the chat does not exist or the user is not the owner?
+3. Can the API handle sharing a chat with multiple email addresses at once?
+4. Are there any limitations on the number of email addresses that can be shared with a chat?
+5. How are duplicate email addresses handled when creating new user records?
+6. Are there any known issues or limitations with this API endpoint?
 
-TODO:
-- Add input validation for the request payload.
+TODO Items:
+- Add input validation for the email addresses.
 - Implement error handling for database operations.
+
+Known Issues:
+- The API endpoint does not return a response when the chat or user validation fails.

@@ -1,33 +1,29 @@
-{{prompt}}
-{{fileContents}}
 Summary:
-The provided file is a configuration file used in a larger application. It extends a base configuration file, sets compiler options, defines paths for module resolution, and specifies files to include and exclude from compilation.
+This configuration file is used in a larger application to specify various settings and options for the TypeScript compiler. It extends a base configuration file, sets the compiler options, excludes certain directories from compilation, and includes specific TypeScript files for compilation.
 
 Service:
-The specific service or application that this configuration file is for is not mentioned in the provided information. However, based on the file contents, it appears to be a TypeScript-based application that uses React and has separate packages for utilities and UI components.
+The service that this configuration file is for is not specified in the provided file. However, based on the configuration options, it appears to be a React library.
 
 Configuration Summary:
-This configuration file extends a base configuration file located at "../packages/tsconfig/react-library.json". It excludes certain directories ("dist", "build", "node_modules") from compilation. It sets compiler options such as the libraries to include ("dom", "ES2015"), the base URL for module resolution (".."), and the paths for module resolution aliases (e.g., "@utils/*" maps to "packages/utils/src/*"). It also specifies the types to include ("cypress", "node") and the files to include for compilation ("**/*.ts").
+This configuration file extends a base configuration file located at "../packages/tsconfig/react-library.json". It excludes the "dist", "build", and "node_modules" directories from compilation. The compiler options are set to include the "dom" and "ES2015" libraries, set the base URL to "..", define path aliases for "@utils/*" and "@ui/*", and include the types "cypress" and "node". It also includes all TypeScript files for compilation.
 
 Configuration Breakdown:
-- "extends": Specifies the path to the base configuration file to extend.
-- "exclude": An array of directories or files to exclude from compilation.
-- "compilerOptions": An object containing various compiler options:
-  - "lib": An array of libraries to include for compilation.
-  - "baseUrl": The base URL for module resolution.
-  - "paths": An object mapping module resolution aliases to their corresponding paths.
-  - "types": An array of type declaration files to include for compilation.
-- "include": An array of file patterns to include for compilation.
+- "extends": Specifies the path to the base configuration file that this file extends.
+- "exclude": Specifies an array of directories to exclude from compilation.
+- "compilerOptions": Specifies various options for the TypeScript compiler.
+  - "lib": Specifies the libraries to include.
+  - "baseUrl": Specifies the base URL for module resolution.
+  - "paths": Specifies path aliases for module resolution.
+  - "types": Specifies the types to include.
+- "include": Specifies the TypeScript files to include for compilation.
 
 Interaction Summary:
-This configuration file interacts with the rest of the application by providing the necessary settings for TypeScript compilation. It sets up the compiler options, module resolution aliases, and file inclusion/exclusion rules. Other parts of the application, such as the build system or development environment, may rely on these configuration settings to ensure proper compilation and module resolution.
+This configuration file interacts with the rest of the application by providing the necessary settings for the TypeScript compiler. It ensures that the correct libraries are included, sets up path aliases for module resolution, and specifies the types to include.
 
 Developer Questions:
-1. How can I add additional directories or files to exclude from compilation?
-2. How can I change the libraries included for compilation?
-3. How can I add or modify module resolution aliases?
-4. How can I include additional type declaration files for compilation?
-5. How can I change the file patterns to include for compilation?
-6. How does this configuration file interact with the build system or development environment?
-7. What is the purpose of the base configuration file it extends, and can I modify it?
-8. How can I configure different compiler options for different environments (e.g., development vs. production)?
+1. What is the purpose of the base configuration file that this file extends?
+2. Why are certain directories excluded from compilation?
+3. What libraries are included in the "lib" option and why?
+4. How are the path aliases defined in the "paths" option used in the application?
+5. Why are specific types included in the "types" option?
+6. How does the "include" option affect the files that are compiled?

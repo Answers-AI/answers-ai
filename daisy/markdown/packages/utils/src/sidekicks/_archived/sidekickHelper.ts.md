@@ -16,8 +16,8 @@ Loops and Conditional Statements:
 Variable Usage:
 - defaultPrompt: This constant variable is an object of type Sidekick. It stores the default values for the sidekick prompt, including the available departments, label, value, placeholder, and prompt templates for the system and user.
 
-Potential Bugs or Issues:
-- There are no apparent bugs or issues in this script.
+Bugs or Issues:
+- There are no known bugs or issues with this component.
 
 Summary:
-This script defines the default values for a sidekick prompt in a software application. It sets the available departments, label, value, placeholder, and prompt templates for the system and user. The defaultPrompt object is exported as the default export of the module. There are no classes or functions defined in this script. No bugs or issues were identified.
+This script defines the default values for a sidekick prompt in a software application. It sets the available departments, label, value, placeholder, and prompt templates for the system and user. The defaultPrompt object is exported as the default export of the module. There are no classes or functions defined in this script. No bugs or issues have been identified.

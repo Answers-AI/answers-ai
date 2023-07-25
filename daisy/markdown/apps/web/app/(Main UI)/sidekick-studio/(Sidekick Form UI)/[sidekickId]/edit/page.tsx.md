@@ -15,11 +15,11 @@ Import statements:
 Component:
 The SidekickFormPage component is an async function that takes in a parameter called "params". It first retrieves the user session using the getCachedSession function and checks if the user is authenticated. If not, it redirects to the "/auth" page.
 
-Next, it retrieves the sidekickId from the params and queries the database using Prisma to find the corresponding sidekick object. If the sidekick does not exist, it redirects to the "/sidekick-studio/{sidekickId}" page.
+Next, it retrieves the sidekickId from the params and queries the database to find the corresponding sidekick object. If the sidekick does not exist, it redirects to the "/sidekick-studio/{sidekickId}" page.
 
-Then, it queries the database again to get all unique tags associated with sidekicks created by the current user. It flattens the tags and removes duplicates to get allTags.
+Then, it queries the database to get all unique tags associated with sidekicks created by the current user. It flattens the tags and removes duplicates to get allTags.
 
-Next, it creates a contextFields object using utility functions to get user, organization, and result context fields.
+Next, it creates a contextFields object that contains user, organization, and result context fields using the getUserContextFields, getOrganizationContextFields, and getResultContextFields utility functions.
 
 Based on the properties of the sidekick object, it sets the sharedWith property to either 'global', 'org', 'system', or 'private'.
 
@@ -35,13 +35,14 @@ Rendered components:
 - SidekickForm: A sub-component that renders the form page for the Sidekick Studio application. It receives props such as params, allTags, contextFields, and sidekick.
 
 Interaction Summary:
-The SidekickFormPage component interacts with the Prisma client to query the database for sidekick and tag data. It also interacts with the SidekickForm component to render the form page with the retrieved data.
+The SidekickFormPage component interacts with the Prisma client to query the database for sidekick data. It also interacts with the SidekickForm component to render the form page. Additionally, it handles user authentication and redirects if necessary.
 
 Developer Questions:
-- How does the authentication process work in this application?
+- How does the getCachedSession function work and what does it return?
 - What are the possible values for the sharedWith property of the sidekick object?
-- How are the contextFields used in the SidekickForm component?
 - How does the redirect function work and where does it redirect to?
+- How are the contextFields used in the SidekickForm component?
+- How does the Prisma client connect to the database and perform queries?
 
 Known Issues / Todo:
 - None

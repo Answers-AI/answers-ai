@@ -18,16 +18,16 @@ Event Handlers:
 Rendered components:
 - Suspense: Renders a fallback component while the modal component is being loaded asynchronously.
 - Modal: Renders a modal component.
-- ChatDetail: Renders the chat detail component, passing the app settings as a prop.
+- ChatDetail: Renders the chat detail component.
 
 Interaction Summary:
-The "Chat" component interacts with other components in the application by rendering the chat interface, including the modal and chat details. It relies on the "getAppSettings" and "getCachedSession" functions to fetch app settings and the cached session, respectively. It also uses the "AnswersProvider" component to provide user, app settings, chat, and journey props to its child components.
+The "Chat" component interacts with other components in the application by rendering the "AnswersProvider" component, which provides context to its child components. It also renders the "Modal" and "ChatDetail" components, passing necessary props.
 
 Developer Questions:
 - How are the "chat" and "journey" props used within the component?
 - What is the purpose of the "getAppSettings" and "getCachedSession" functions?
-- How does the "AnswersProvider" component handle the provided props?
-- What is the purpose of the "Modal" component and how is it loaded asynchronously?
+- How does the "AnswersProvider" component handle the user, app settings, chat, and journey props?
 
 Known Issues / Todo:
-- None
+- No known issues or bugs with the component.
+- No specific todo items related to this component.

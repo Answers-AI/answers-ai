@@ -14,16 +14,9 @@ External Functions:
 - None
 
 Interaction Summary:
-This script is a standalone function that can be called from other parts of the application. It expects an array of Jira objects as input and returns an array of prepared statuses. It does not have any direct interaction with other components or modules.
+This script can be used as a utility function within a larger software application that deals with Jira objects. It can be called with an array of Jira objects to prepare them for embedding.
 
 Developer Questions:
-- How should the Jira objects be structured in order to work with this script?
-- What does the `prepareForEmbedding` method do and what does it expect as input?
-- Are there any error handling mechanisms in place if the input is invalid or if an error occurs during the preparation process?
-
-Known Issues or Bugs:
-- The script does not handle the case where the `jiraObjects` parameter is not provided or is not an array. It throws an error but does not provide any specific error message. It would be helpful to provide a more informative error message to assist with debugging.
-
-Todo Items:
-- Add error handling for cases where the `jiraObjects` parameter is not provided or is not an array. Provide a more informative error message.
-- Consider adding input validation to ensure that each Jira object in the array has the required properties and methods for the `prepareForEmbedding` method to work correctly.
+- How should the `prepareForEmbedding` method be implemented in the Jira object class?
+- What should be done if the `jiraObjects` parameter is not provided or is invalid?
+- Are there any potential issues or bugs in this script?

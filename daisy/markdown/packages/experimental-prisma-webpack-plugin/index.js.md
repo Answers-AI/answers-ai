@@ -8,30 +8,33 @@ Import statements:
 Script Summary:
 The script defines a regular expression `prismaDirRegex` to match the output path of the Prisma client in the generated JavaScript bundles. It also defines an async function `getPrismaDir` to determine the directory of the Prisma files (schema.prisma and engine) based on the provided path.
 
-The script then defines another async function `getPrismaFiles` which uses `getPrismaDir` to get the Prisma directory and then reads the directory to get the list of Prisma files. It filters the files based on the regex `filterRegex` to only include schema.prisma and engine files.
+The script then defines an async function `getPrismaFiles` which uses `getPrismaDir` to get the Prisma directory and then reads the directory to get the list of Prisma files. It filters the files to include only "schema.prisma" and "engine" files.
 
-Next, the script declares some variables `schemaCount`, `fromDestPrismaMap`, and a class `PrismaPlugin`. The `schemaCount` is used to keep track of the number of schema.prisma files encountered. The `fromDestPrismaMap` is an object that maps the source path of a Prisma file to its destination path in the output directory. The `PrismaPlugin` class is the main plugin class that implements the webpack plugin interface.
+Next, the script declares some variables: `schemaCount` to keep track of the number of "schema.prisma" files encountered, and `fromDestPrismaMap` which is an object that maps the source Prisma file paths to their corresponding destination paths in the output directory.
 
-The `PrismaPlugin` class has a constructor that accepts an optional `options` object. It also defines an `apply` method which is called when the plugin is applied to the webpack compiler. Inside the `apply` method, the plugin hooks into the webpack compilation process to perform the necessary actions.
+The script defines a class `PrismaPlugin` which is the main plugin implementation. It has a constructor that accepts an options object. The class has an `apply` method which is called when the plugin is applied to a webpack compiler. Inside the `apply` method, the plugin registers hooks to perform various tasks during the compilation and build process.
 
-The plugin has three main parts:
-1. Reading bundles and updating sources: It hooks into the `processAssets` stage of the compilation to read the generated JavaScript bundles and update the references to the Prisma files in the sources. It uses the `prismaDirRegex` to find the Prisma directory in the bundle and then uses `getPrismaDir` and `getPrismaFiles` to get the list of Prisma files. It updates the references to the schema.prisma files with a unique number if there are multiple schema.prisma files. It also updates the `fromDestPrismaMap` to map the source path to the destination path of each Prisma file.
-2. Updating nft.json files: It hooks into the `processAssets` stage again to update the nft.json files (specific to Next.js) to include the paths of the Prisma files in the `files` array.
-3. Copying Prisma files to output: It hooks into the `done` stage to copy the Prisma files to the output directory. It iterates over the `fromDestPrismaMap` and copies each file to its destination path if it doesn't already exist.
+The first hook is registered to process the JavaScript assets. It filters the JavaScript asset names and then asynchronously processes each asset. It prepares the paths for the asset and its directory, gets the source code of the asset, and updates the source code to replace references to the Prisma directory with the actual destination paths in the output directory. It also updates the `fromDestPrismaMap` with the mapping of source to destination paths.
 
-External Functions:
-- `apply(compiler)`: This is the main function that is called when the plugin is applied to the webpack compiler. It hooks into the compilation process to perform the necessary actions.
+The second hook is registered to process the nft.json files. It filters the nft.json asset names and then processes each asset. It prepares the paths for the asset and its directory, gets the source code of the asset, parses it as JSON, and updates the JSON object to include the paths of the Prisma files in the `files` array. It then updates the asset with the modified JSON source code.
+
+The third hook is registered to perform the final step of copying the Prisma files to the output directory. It asynchronously copies each file from the source path to the destination path in the output directory, only if the file doesn't already exist.
+
+Finally, the `PrismaPlugin` class is exported as the module's default export.
 
 Internal Functions:
-- `getPrismaDir(from)`: This async function takes a path `from` and determines the directory of the Prisma files based on the presence of the schema.prisma file in the path. If the schema.prisma file is found, it returns the path. Otherwise, it uses `require.resolve` to find the directory of the Prisma client.
-- `getPrismaFiles(from)`: This async function takes a path `from` and uses `getPrismaDir` to get the Prisma directory. It then reads the directory and filters the files based on the regex `filterRegex` to only include schema.prisma and engine files. It returns the list of Prisma files.
+- `getPrismaDir(from)`: This async function takes a path `from` and determines the directory of the Prisma files based on the presence of "schema.prisma" in the path. If "schema.prisma" is found, it returns the `from` path. Otherwise, it uses `require.resolve` to find the directory of the Prisma client and returns its parent directory.
+- `getPrismaFiles(from)`: This async function takes a path `from` and uses `getPrismaDir` to get the Prisma directory. It then reads the directory and filters the files to include only "schema.prisma" and "engine" files. It returns the filtered list of files.
+
+External Functions:
+- `apply(compiler)`: This method is called when the plugin is applied to a webpack compiler. It registers hooks to perform various tasks during the compilation and build process. It processes JavaScript assets, nft.json files, and copies the Prisma files to the output directory.
 
 Interaction Summary:
-This script is a webpack plugin that interacts with the webpack compiler and the compilation process. It reads the generated JavaScript bundles, updates the references to the Prisma files, updates the nft.json files, and copies the Prisma files to the output directory. It ensures that the Prisma files are available in the output directory for the application to use.
+This script interacts with the webpack compiler and its compilation process. It hooks into the compilation process to process JavaScript assets and nft.json files, and to perform the final step of copying the Prisma files to the output directory. It modifies the source code of the assets and updates the `fromDestPrismaMap` object to keep track of the source-destination file mappings.
 
 Developer Questions:
 - How does the plugin determine the directory of the Prisma files?
-- How are the references to the Prisma files updated in the generated JavaScript bundles?
-- How are the nft.json files updated to include the paths of the Prisma files?
+- How are the Prisma files updated in the JavaScript assets and nft.json files?
 - How are the Prisma files copied to the output directory?
-- What happens if there are multiple schema.prisma files in different paths?
+- What happens if there are multiple "schema.prisma" files in different directories?
+- How does the plugin handle watch mode and file existence checks?

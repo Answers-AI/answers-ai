@@ -14,10 +14,10 @@ External Functions:
 - None
 
 Interaction Summary:
-This script can be imported and used in other parts of the application to generate CSS objects for styling elements in an "opened" state. Developers can pass in a `theme` object and optional `width` and `maxWidth` parameters to customize the generated CSS object.
+This script can be used as a utility function to generate CSS objects for styling elements in an "opened" state. It can be imported and used in other parts of the application where such styling is needed.
 
 Developer Questions:
-- How do I use the `openedMixin` function to generate a CSS object?
-- What properties can I customize by passing in a `theme` object?
-- What are the default values for `width` and `maxWidth` if they are not provided?
-- How can I override the default transition easing and duration?
+- How do I use the `openedMixin` function?
+- What properties can I customize by passing in the `theme` object?
+- Can I override the default `width` and `maxWidth` values?
+- How can I apply the generated CSS object to an element in my application?

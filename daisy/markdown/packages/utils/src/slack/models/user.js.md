@@ -8,24 +8,22 @@ Script Summary:
 This script defines a class called "SlackUser" that represents a user in the Slack application. It provides methods to retrieve information about the user and access their normalized real name.
 
 Internal Functions:
-- constructor(slackApiClient, userId): Initializes a new instance of the SlackUser class with the provided Slack API client and user ID. It also initializes the cache property as an empty object.
-
+- constructor(slackApiClient, userId): Initializes a new instance of the SlackUser class with the provided Slack API client and user ID. It also initializes the cache property.
 - getInfo(): Retrieves information about the user from the Slack API. If the information is already cached, it returns the cached value. Otherwise, it makes an API call to fetch the information, caches it, and returns it.
-
 - get real_name_normalized(): Returns a promise that resolves to the normalized real name of the user. It calls the getInfo() method and extracts the real_name_normalized property from the returned user information.
 
 External Functions:
 - None
 
 Interaction Summary:
-This script can be used by other parts of the application to retrieve information about a Slack user and access their normalized real name. It requires a Slack API client and a user ID to be provided during initialization.
+This script represents a user in the Slack application and provides methods to retrieve information about the user. It can be used by other parts of the application that need to work with user data, such as displaying user information or performing actions on behalf of a user.
 
 Developer Questions:
-- How can I use this class to retrieve information about a Slack user?
-- What happens if the user information is already cached when calling the getInfo() method?
-- How can I access the normalized real name of a user using this class?
-- What other properties or methods does the SlackUser class provide?
-- Can I extend this class to add more functionality for interacting with Slack users?
+- How can I create an instance of the SlackUser class?
+- How can I retrieve information about a user?
+- How can I access the normalized real name of a user?
+- Can I modify the cache property to store additional user information?
+- How can I handle errors when making API calls to retrieve user information?
 
 Known Issues or Bugs:
 - None

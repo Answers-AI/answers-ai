@@ -13,26 +13,22 @@ This file contains a single API endpoint that handles GET requests to the `/api`
 
 **Internal Functions:**
 
-- `GET`: This is the main function that handles the GET request to the `/api` route. It takes a `req` parameter representing the incoming request. It performs the following steps:
-  1. Retrieves the user session using `getServerSession` and the `authOptions` configuration.
-  2. Checks if the session exists and if the user ID is present. If not, it returns a 401 Unauthorized response using `respond401`.
+- `GET`: This is the main function that handles the GET request to the `/api` route. It takes a `req` parameter of type `Request` and returns a `NextResponse` object. It performs the following steps:
+  1. Retrieves the user session using `getServerSession` and `authOptions`.
+  2. Checks if the user session exists and contains a valid user ID. If not, it returns a 401 Unauthorized response using `respond401`.
   3. Extracts the `url` parameter from the request URL's search parameters.
-  4. Queries the database using `prisma.document.findMany` to retrieve a list of documents that meet the specified criteria. The criteria include filtering by the `source` field, the `url` field (if provided), and the user's permissions. It also selects only the `url` and `title` fields and limits the result to 100 records.
-  5. Initializes an empty array `domains`.
-  6. If the `url` parameter is provided, extracts the domain from it using `getUrlDomain`.
-  7. If a domain is extracted, queries the database using `prisma.document.count` to count the number of documents with the same domain.
-  8. If a domain is found, adds an object with the domain and the count to the `domains` array.
-  9. Maps the filtered records to a new array of objects containing the `url`, `title`, and `repo` fields.
-  10. Constructs a JSON response using `NextResponse.json` with the `sources` and `domains` arrays as the payload.
+  4. Queries the database using `prisma.document.findMany` to retrieve a list of documents that meet the specified criteria. The criteria include filtering by the `source` field, the `url` field (if provided), and the `permissions` field to ensure the user has access to the document.
+  5. If a `url` parameter is provided, it extracts the domain from the URL using `getUrlDomain` and queries the database to count the number of documents with the same domain.
+  6. Constructs the response body with the retrieved documents and domain information.
+  7. Returns a JSON response using `NextResponse.json`.
 
 **External Services:**
 
-- The code interacts with a database using the Prisma ORM (`prisma`).
-- It also uses the Next.js server (`NextResponse`) and authentication library (`getServerSession`) for handling the request and session management.
+- The code interacts with a database using the `prisma` ORM. It queries the `document` table to retrieve documents based on certain criteria.
 
 **API Endpoints:**
 
-- GET /api/route
+- `GET /api/route`
   - Summary: This endpoint retrieves a list of documents from the database based on certain criteria and returns the results to the client.
   - Example Usage:
     ```
@@ -49,15 +45,20 @@ This file contains a single API endpoint that handles GET requests to the `/api`
     {
       "sources": [
         {
-          "url": "https://example.com",
-          "title": "Example Document",
-          "repo": "Example Document"
+          "url": "https://example.com/document1",
+          "title": "Document 1",
+          "repo": "Document 1"
+        },
+        {
+          "url": "https://example.com/document2",
+          "title": "Document 2",
+          "repo": "Document 2"
         }
       ],
       "domains": [
         {
           "domain": "example.com",
-          "pageCount": 1
+          "pageCount": 2
         }
       ]
     }
@@ -65,23 +66,20 @@ This file contains a single API endpoint that handles GET requests to the `/api`
 
 **Interaction Summary:**
 
-The code in this file handles GET requests to the `/api` route. It retrieves a list of documents from the database based on certain criteria, such as the source, URL, and user permissions. It also counts the number of documents with the same domain as the provided URL. The filtered records are then returned to the client as a JSON response.
+The code in this file handles GET requests to the `/api` route. It retrieves documents from the database based on certain criteria, such as the source, URL, and user permissions. It also counts the number of documents with the same domain as the provided URL. The retrieved documents and domain information are then returned as a JSON response to the client.
 
 **Developer Questions:**
 
 - What other criteria can be used to filter the documents?
-- How can the number of records returned be increased or decreased?
-- How can the authentication options be customized?
-- Are there any performance considerations when querying the database for large datasets?
-- How can the code be tested?
+- How can the code be modified to handle pagination of the results?
+- Are there any performance considerations when querying the database for documents with the same domain?
 
 **TODO:**
 
 - Ensure this only shows documents owned by the user.
-- Improve error handling and error responses.
-- Add unit tests for the `GET` function.
-- Consider pagination for large result sets.
+- Implement pagination for the results.
+- Address any performance issues related to querying documents with the same domain.
 
 **Known Issues:**
 
-- None at the moment.
+- None.

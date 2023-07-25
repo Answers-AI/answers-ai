@@ -80,17 +80,16 @@ Import statements:
 - `authOptions` is imported from the `@ui/authOptions` module. It contains options for authentication.
 
 Internal Functions:
-- `GET`: This function handles the GET request. It retrieves journey records for the user by querying the database using the `prisma` client. It checks if the user is authenticated and redirects to the authentication page if not. It returns the journey records as a JSON response.
-- `DELETE`: This function handles the DELETE request. It retrieves the journey record ID from the request URL parameters. It checks if the user is authenticated and redirects to the authentication page if not. It then checks if the user has permission to delete the journey record and deletes it from the database using the `prisma` client. It returns the deleted journey record ID as a JSON response.
-- `PATCH`: This function handles the PATCH request. It retrieves the user session, the journey record ID, and the updated data from the request body. It checks if the user is authenticated and redirects to the authentication page if not. It then updates or creates a journey record in the database using the `prisma` client. It returns the updated or created journey record as a JSON response.
+- `GET`: This function handles the GET request to retrieve journey records for a user. It first retrieves the user session using `getServerSession`. If the user session does not contain an email, it redirects the user to the authentication page. It then queries the database using `prisma.journey.findMany` to retrieve journey records associated with the user's email. The function returns the journey records as a JSON response using `NextResponse.json`.
+- `DELETE`: This function handles the DELETE request to delete a journey record. It first retrieves the `id` parameter from the request URL. It then retrieves the user session using `getServerSession`. If the user session does not contain an email, it redirects the user to the authentication page. If the `id` parameter is provided, it checks if the user has permission to delete the journey record by querying the database using `prisma.journey.findFirst`. If the user does not have permission, it redirects the user to the authentication page. If the user has permission, it deletes the journey record from the database using `prisma.journey.delete` and returns the deleted `id` as a JSON response using `NextResponse.json`.
+- `PATCH`: This function handles the PATCH request to update or create a journey record. It first retrieves the user session using `getServerSession`. If the user session does not contain an email, it redirects the user to the authentication page. It then retrieves the `id` and `data` parameters from the request body using `req.json()`. It also retrieves the `organizationId` from the user session. If the `id` parameter is provided, it updates the journey record in the database using `prisma.journey.update`. If the `id` parameter is not provided, it creates a new journey record in the database using `prisma.journey.create`. The function returns the updated or created journey record as a JSON response using `NextResponse.json`.
 
 External Services:
-- This code interacts with the `next-auth` module for user authentication.
-- It also interacts with the `prisma` client for database operations.
+- This code interacts with the Next.js server, NextAuth for session management, and a Prisma client for database operations.
 
 API Endpoints:
 1. GET /api/route
-Summary: Retrieves journey records for the authenticated user.
+Summary: Retrieves journey records for a user.
 Example Usage:
 ```
 curl -X GET \
@@ -108,18 +107,18 @@ Example Response:
   {
     "id": 1,
     "name": "Journey 1",
-    "description": "This is journey 1"
+    "userId": 1
   },
   {
     "id": 2,
     "name": "Journey 2",
-    "description": "This is journey 2"
+    "userId": 1
   }
 ]
 ```
 
 2. DELETE /api/route?id=<journeyId>
-Summary: Deletes a journey record with the specified ID for the authenticated user.
+Summary: Deletes a journey record.
 Example Usage:
 ```
 curl -X DELETE \
@@ -136,7 +135,7 @@ Example Response:
 ```
 
 3. PATCH /api/route
-Summary: Updates or creates a journey record for the authenticated user.
+Summary: Updates or creates a journey record.
 Example Usage:
 ```
 curl -X PATCH \
@@ -146,7 +145,7 @@ curl -X PATCH \
   -d '{
   "id": 1,
   "name": "Updated Journey 1",
-  "description": "This is the updated journey 1"
+  "userId": 1
 }'
 ```
 
@@ -155,15 +154,17 @@ Example Response:
 {
   "id": 1,
   "name": "Updated Journey 1",
-  "description": "This is the updated journey 1"
+  "userId": 1
 }
 ```
 
 Interaction Summary:
-The code in this file handles three API endpoints: GET, DELETE, and PATCH. The GET endpoint retrieves journey records for the authenticated user, the DELETE endpoint deletes a journey record, and the PATCH endpoint updates or creates a journey record. The code interacts with the `next-auth` module for user authentication and the `prisma` client for database operations.
+- The GET endpoint retrieves journey records for a user by querying the database using the user's email.
+- The DELETE endpoint deletes a journey record by checking user permission and deleting the record from the database.
+- The PATCH endpoint updates or creates a journey record by checking user permission and updating or creating the record in the database.
 
 Developer Questions:
-1. What are the allowed fields that can be updated in the PATCH request?
-2. How does the code validate user ownership or permission scope?
-3. What are the authentication options defined in `authOptions`?
+1. What are the allowed fields to be updated in the PATCH request?
+2. How is user ownership or permission scope validated in the PATCH request?
+3. What are the dependencies for this file (e.g., Next.js, NextAuth, Prisma)?
 4. Are there any known issues or limitations with this code?

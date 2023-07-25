@@ -27,4 +27,4 @@ Potential Bugs or Issues:
 There are no apparent bugs or issues in this script.
 
 Summary:
-This script defines and exports a sidekick object that represents a specific type of sidekick in a software application. The sidekick object contains properties and methods that define its behavior and functionality. The script imports the necessary types and exports the sidekick object as the default export. There are no apparent bugs or issues in the script.
+This script defines and exports a sidekick object that represents a specific type of sidekick in a software application. The sidekick object contains properties and methods that define its behavior and functionality. The script imports the necessary types and uses them to define the structure of the sidekick object. The sidekick object can be configured with various properties and methods to customize its behavior.

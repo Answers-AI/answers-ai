@@ -17,19 +17,19 @@ Internal Functions:
 - `prefixHeaders`: This function takes a markdown string as input and prefixes headers with a hierarchical structure. It splits the markdown string into lines, maintains a stack of headers, and adds the appropriate number of '#' characters to each header based on its level in the hierarchy. It returns the modified markdown string.
 - `splitPageHtmlChunkMore`: This async function takes a markdown chunk as input and splits it into smaller chunks using the `RecursiveCharacterTextSplitter` class. It returns an array of smaller markdown chunks.
 - `splitPageAdf`: This async function takes a Confluence page as input and converts its content from Jira ADF to markdown format. It then splits the markdown content into smaller chunks based on headings. It returns an array of smaller markdown chunks.
-- `getConfluencePagesVectors`: This async function takes a user and an array of Confluence pages as input. It extracts vectors from the Confluence pages using the `splitPageAdf` function and returns an array of vectors.
-- `embedVectors`: This async function takes a user, an event, and an array of vectors as input. It sends the vectors to the vector database in batches using the `inngest` object. It returns an array of void values.
+- `getConfluencePagesVectors`: This async function takes a user and an array of Confluence pages as input. It extracts vectors from the Confluence pages and returns them as an array.
+- `embedVectors`: This async function takes a user, an event, and an array of vectors as input. It sends the vectors to the vector database in batches and returns an array of embedded vectors.
 
 External Functions:
-- `processConfluencePages`: This is an event handler for the 'confluence/app.sync' event. It retrieves the user, gets the Confluence client, retrieves Confluence pages, extracts vectors from the pages, and embeds the vectors into the vector database.
-- `processConfluencePage`: This is an event handler for the 'confluence/page.sync' event. It retrieves the user, gets the Confluence client, retrieves specific Confluence pages, extracts vectors from the pages, and embeds the vectors into the vector database.
+- `processConfluencePages`: This is an event handler that is triggered when the 'confluence/app.sync' event occurs. It retrieves Confluence pages, extracts vectors from them, and embeds the vectors into the vector database.
+- `processConfluencePage`: This is an event handler that is triggered when the 'confluence/page.sync' event occurs. It retrieves specific Confluence pages, extracts vectors from them, and embeds the vectors into the vector database.
 
 Interaction Summary:
-This script interacts with the rest of the application by handling specific events related to Confluence syncing. It retrieves Confluence pages, extracts vectors from the pages, and sends the vectors to the vector database.
+This script interacts with the rest of the application by handling specific events related to Confluence syncing. It retrieves Confluence pages, extracts vectors from them, and sends the vectors to the vector database for further processing.
 
 Developer Questions:
 - How are the Confluence pages retrieved and processed?
 - How are the vectors embedded into the vector database?
 - What events trigger the execution of the event handlers?
-- How is the markdown content split into smaller chunks?
-- How is Jira ADF converted to markdown format?
+- How is the markdown content converted from Jira ADF format?
+- How are the markdown chunks split into smaller chunks?

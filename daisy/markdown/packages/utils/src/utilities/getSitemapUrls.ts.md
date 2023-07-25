@@ -15,11 +15,10 @@ External Functions:
 - `extractUrlsFromSitemap`: This function is exported and can be used by other modules. It takes a sitemap URL as input and returns a promise that resolves to an array of URLs.
 
 Interaction Summary:
-This script can be used by other modules or scripts to extract URLs from sitemaps. It can be called with a sitemap URL, and it will return a promise that resolves to an array of URLs. This functionality can be useful in web scraping, SEO analysis, or any other application that requires extracting URLs from sitemaps.
+This script can be used by other modules or scripts to extract URLs from sitemaps. It can be called by passing a sitemap URL to the `extractUrlsFromSitemap` function. The function will return a promise that resolves to an array of URLs.
 
 Developer Questions:
 - How do I use this script to extract URLs from a sitemap?
 - What happens if the sitemap URL is invalid or the request fails?
 - How can I handle errors that occur during the extraction process?
-- Can I modify this script to extract additional information from the sitemap, such as last modified dates or priority values?
-- How can I optimize this script for performance when processing large sitemaps?
+- Can I modify this script to extract additional information from the sitemap?

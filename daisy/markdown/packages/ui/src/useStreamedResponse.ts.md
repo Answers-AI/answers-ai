@@ -1,25 +1,25 @@
 Summary:
-This code is a TypeScript module that exports a custom React hook called `useStreamedResponse`. The hook is used to handle streaming responses from an API endpoint. It takes in an API URL, callback functions for handling chunks of data and the end of the response, and returns state variables and a function for generating a response.
+The purpose of this script is to provide a custom hook called `useStreamedResponse` that handles the generation of AI responses in a streaming manner. It makes use of the `useState` hook from the React library to manage state. The script also includes a helper function called `parseMessages` that parses an array of messages and returns a new array with only the `role` and `content` properties.
 
 Import statements:
-- `useState` from 'react': This import is used to define and update state variables in a React component.
-- `Message` and `Sidekick` from 'types': These imports are used to define the types of the `Message` and `Sidekick` objects used in the code.
+- `useState` from 'react': This import is used to import the `useState` hook from the React library. It is used to manage state within functional components.
+- `Message` and `Sidekick` from 'types': These imports are used to import the `Message` and `Sidekick` types from a module called 'types'. These types are likely used within the script to define the shape of certain variables.
 
 Script Summary:
-This script exports a custom React hook called `useStreamedResponse`. The hook is used to handle streaming responses from an API endpoint. It takes in an API URL, callback functions for handling chunks of data and the end of the response, and returns state variables and a function for generating a response.
+The script defines a custom hook called `useStreamedResponse` that takes in an object with three properties: `apiUrl`, `onChunk`, and `onEnd`. It returns an object with three properties: `isStreaming`, `generatedResponse`, and `generateResponse`. The `isStreaming` property is a boolean value that indicates whether the streaming process is currently active. The `generatedResponse` property is an object that stores the generated response from the AI. The `generateResponse` function is an asynchronous function that sends a request to an API endpoint to generate an AI response. It uses the `fetch` function to make a POST request and handles the response in a streaming manner. The response is read in chunks and processed until the streaming is complete. The `onChunk` and `onEnd` functions are called to handle each chunk of the response and the end of the streaming process, respectively.
 
 Internal Functions:
-- `parseMessages`: This function takes an array of message objects and returns a new array with only the `role` and `content` properties of each message object.
+- `parseMessages`: This function takes in an optional array of messages and returns a new array with only the `role` and `content` properties of each message. It is used to parse the `messages` array before sending it in the API request.
 
 External Functions:
-- `useStreamedResponse`: This function is a custom React hook that takes in an object with an API URL, callback functions for handling chunks of data and the end of the response. It returns state variables and a function for generating a response. The function uses the `useState` hook to define and update state variables for `isStreaming` and `generatedResponse`. It also defines an async function called `generateResponse` that takes in various arguments for generating a response. Inside the `generateResponse` function, an API request is made using the `fetch` function. If the response is not successful, an error is thrown. The response data is then read as a stream and decoded using a `TextDecoder`. The data is read in chunks and concatenated until the stream is done. The concatenated data is split into JSON and non-JSON parts. The JSON part is parsed and used to update the `extra` variable, while the non-JSON part is used as the content of the response chunk. The `onChunk` callback function is called with the response chunk and the `extra` variable. Finally, the state variables are reset and the `onEnd` callback function is called with the final response chunk and the `extra` variable.
+- `useStreamedResponse`: This function is the main function of the script and serves as a custom hook. It takes in an object with three properties: `apiUrl`, `onChunk`, and `onEnd`. It returns an object with three properties: `isStreaming`, `generatedResponse`, and `generateResponse`. The `isStreaming` property is a boolean value that indicates whether the streaming process is currently active. The `generatedResponse` property is an object that stores the generated response from the AI. The `generateResponse` function is an asynchronous function that sends a request to an API endpoint to generate an AI response. It uses the `fetch` function to make a POST request and handles the response in a streaming manner. The response is read in chunks and processed until the streaming is complete. The `onChunk` and `onEnd` functions are called to handle each chunk of the response and the end of the streaming process, respectively.
 
 Interaction Summary:
-This script can be used as a custom React hook in a larger application to handle streaming responses from an API endpoint. It provides state variables and a function for generating a response. The `onChunk` and `onEnd` callback functions can be used to handle the received chunks of data and the end of the response, respectively.
+This script can be used as a custom hook in a React application to handle the generation of AI responses in a streaming manner. It can be integrated with other components or hooks to provide real-time AI responses to the user.
 
 Developer Questions:
-- How can I use this hook in my React component?
-- What are the required callback functions for handling the response chunks and the end of the response?
-- How can I customize the API URL used in the `fetch` request?
-- What are the available options for the `filters`, `sidekick`, and `gptModel` arguments in the `generateResponse` function?
-- How can I handle errors that occur during the API request or response handling?
+- How can I modify the API endpoint URL?
+- How can I handle errors during the streaming process?
+- How can I customize the behavior of the `onChunk` and `onEnd` functions?
+- How can I pass additional parameters to the API request?
+- How can I handle the response data in a different format?

@@ -2,42 +2,43 @@ Summary:
 The provided React file is a functional component called "ResizePanel" that allows for resizing of its content in four different directions (north, south, east, and west). It uses the React-Draggable library for handling drag events and the MUI (Material-UI) library for styling.
 
 Import statements:
-- React and its dependencies: useState, useRef
-- React-Draggable: DraggableCore
-- debounce function from a custom utility file
-- MUI components: Box, styled, Theme, CSSObject, SxProps
+- React and its dependencies are imported from the 'react' package.
+- DraggableCore is imported from the 'react-draggable' package.
+- The debounce function is imported from the '@utils/debounce' module.
+- Box, styled, Theme, CSSObject, and SxProps are imported from the '@mui/material' package.
 
 Component:
 The ResizePanel component is a functional component that takes in several props:
-- direction: Specifies the direction in which the panel can be resized (n, s, e, w).
-- containerClass: Optional class name for the container element.
-- handleClass: Optional class name for the resize handle element.
-- borderClass: Optional class name for the resize border element.
+- direction: Specifies the direction in which the panel can be resized (n, s, e, or w).
+- containerClass: Optional CSS class for the container element.
+- handleClass: Optional CSS class for the resize handle element.
+- borderClass: Optional CSS class for the resize bar element.
 - sx: Optional MUI styling props.
 
 Hooks:
-- useState: The component uses the useState hook to manage the size state of the panel. The size state represents the current size of the panel.
-- useRef: The component uses useRef to create references to the content and wrapper elements. These references are used to access and manipulate the DOM elements.
+- useState: The size state variable is used to keep track of the current size of the panel.
+- useRef: Two refs, contentRef and wrapperRef, are used to reference the content and wrapper elements respectively.
 
 Event Handlers:
-- handleDrag: This event handler is called when the user drags the resize handle. It calculates the delta of the drag movement and updates the size state accordingly.
-- handleDragEnd: This event handler is called when the user stops dragging the resize handle. It triggers the validateSize function to validate and adjust the size of the panel.
+- validateSize: This debounced function is called to validate and update the size of the panel based on its content and overflow.
+- handleDrag: This function is called when the user drags the resize handle. It updates the size of the panel based on the drag delta.
+- handleDragEnd: This function is called when the user stops dragging the resize handle. It calls validateSize to update the size.
 
 Rendered components:
-- StyledResizePanel: A styled div element that serves as the container for the resize panel. It applies MUI styling based on the provided sx prop.
-- ResizeContent: A styled Box component that represents the content of the resize panel. It applies MUI styling based on the provided direction prop.
-- ResizeHandle: A styled Box component that represents the resize handle. It applies MUI styling based on the provided direction prop.
-- ResizeBar: A styled Box component that represents the resize border. It applies MUI styling based on the provided direction prop.
+- StyledResizePanel: A styled div that serves as the container for the resize panel. It applies MUI styling based on the provided sx prop.
+- ResizeContent: A styled Box component that serves as the content container for the resize panel. It applies MUI styling based on the provided direction prop.
+- ResizeHandle: A styled Box component that serves as the resize handle. It applies MUI styling based on the provided direction prop.
+- ResizeBar: A styled Box component that serves as the resize bar. It applies MUI styling based on the provided direction prop.
 
 Interaction Summary:
-The ResizePanel component allows users to resize its content in four different directions (north, south, east, and west) by dragging the resize handle. The size of the panel is updated dynamically as the user drags the handle. The component also adjusts the size of the panel to fit the content if there is overflow.
+The ResizePanel component allows the user to resize its content in four different directions. The user can drag the resize handle to change the size of the panel. The panel's size is updated based on the content's size and overflow. The component can be customized with optional CSS classes and MUI styling props.
 
 Developer Questions:
 - How can I customize the styling of the ResizePanel component?
-- How can I change the initial size of the panel?
-- Can I use this component inside another component?
-- How can I handle additional events or interactions with the ResizePanel component?
+- How does the debounce function work and why is it used in the validateSize function?
+- How does the DraggableCore component from the react-draggable library handle drag events?
+- How does the MUI styling system work and how can I apply custom styles to the ResizePanel component?
 
 Known Issues / Todo:
 - No known issues or bugs.
-- Todo: Add more customization options for styling and event handling.
+- No specific todo items related to this component.

@@ -11,18 +11,20 @@ Hooks:
 The WidgetChatLayout component does not use any hooks.
 
 Event Handlers:
-The WidgetChatLayout component does not have any event handlers.
+The WidgetChatLayout component does not define any event handlers.
 
 Rendered components:
 The WidgetChatLayout component renders the AnswersProvider component from the '@ui/AnswersContext' module. It passes an empty object as the appSettings prop to the AnswersProvider component. The children prop is also rendered within the AnswersProvider component.
 
 Interaction Summary:
-The WidgetChatLayout component serves as a layout for a chat widget in the larger application. It wraps the children components with the AnswersProvider component, which provides app settings to the nested components. The component does not have any direct interaction with other components in the application.
+The WidgetChatLayout component serves as a layout for a chat widget in the larger application. It wraps the nested layouts or pages with the AnswersProvider component, which provides app settings to the components within the chat widget.
 
 Developer Questions:
-1. How can I pass additional app settings to the AnswersProvider component?
-2. Can I use this WidgetChatLayout component without providing children components?
+1. How can I pass app settings to the AnswersProvider component?
+2. What other props can be passed to the WidgetChatLayout component?
 3. How can I access the slug parameter within the WidgetChatLayout component?
 
 Known Issues / Todo:
-There are no known issues or bugs with the WidgetChatLayout component. However, a potential todo item could be to add validation or default values for the params prop to ensure it always contains the required slug property.
+There are no known issues or bugs with the WidgetChatLayout component. However, potential todo items may include:
+- Adding validation for the appSettings prop passed to the AnswersProvider component.
+- Handling any potential errors that may occur during the async execution of the WidgetChatLayout component.

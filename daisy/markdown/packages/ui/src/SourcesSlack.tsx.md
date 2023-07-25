@@ -1,37 +1,33 @@
 Summary:
-The provided React file is a client-side component called "SourcesSlack" that is responsible for rendering an AutocompleteSelect component. It receives props related to app settings, filters, and a function to update the filters.
+This file contains a React functional component called SourcesSlack. It imports the AutocompleteSelect component and the AppSettings and AnswersFilters types. The component receives props such as appSettings, filters, and updateFilter. It renders an AutocompleteSelect component with a label, options, value, and onChange event handler.
 
 Import statements:
-- React: The React library is imported to define and create React components.
-- AutocompleteSelect: The AutocompleteSelect component is imported from a local file.
-- AppSettings, AnswersFilters: These types are imported from the 'types' module.
+- React: The core React library.
+- AutocompleteSelect: A custom component for rendering an autocomplete select input.
+- AppSettings: A type for the application settings.
+- AnswersFilters: A type for the filters used in the application.
 
 Component:
-The SourcesSlack component is a functional component that receives props related to app settings, filters, and an updateFilter function. It renders an AutocompleteSelect component.
+The SourcesSlack component is a client-side component. It receives props such as appSettings, filters, and updateFilter. It renders an AutocompleteSelect component with a label, options, value, and onChange event handler.
 
 Hooks:
-None.
+This component does not use any hooks.
 
 Event Handlers:
-None.
+- onChange: This event handler is triggered when the value of the AutocompleteSelect component changes. It receives the new value as an argument and calls the updateFilter function with the new value as the argument.
 
 Rendered components:
-- AutocompleteSelect: This component is rendered with the following props:
-  - label: The label for the AutocompleteSelect component is set to "Channel".
-  - options: The options for the AutocompleteSelect component are derived from the appSettings prop. It filters the slack channels that are enabled and maps them to their names.
-  - value: The value for the AutocompleteSelect component is derived from the filters prop. It retrieves the slack channelId.
-  - onChange: The onChange event handler for the AutocompleteSelect component is defined to call the updateFilter function with the new selected channelId.
+- AutocompleteSelect: This component renders an autocomplete select input. It receives props such as label, options, value, and onChange.
 
 Interaction Summary:
-The SourcesSlack component interacts with other components by rendering the AutocompleteSelect component. It receives app settings, filters, and an updateFilter function as props, which are used to populate the AutocompleteSelect component and handle user interactions.
+The SourcesSlack component interacts with other components by rendering the AutocompleteSelect component. It receives data from the appSettings and filters props and updates the filters using the updateFilter function.
 
 Developer Questions:
-- How are the appSettings and filters props passed to the SourcesSlack component?
-- What is the expected shape of the AnswersFilters type?
-- How does the AutocompleteSelect component handle user input and update the filters?
-- How does the SourcesSlack component handle the case when appSettings or filters are undefined?
-- Are there any additional props that can be passed to the SourcesSlack component?
+- How are the appSettings and filters props passed to this component?
+- What is the structure of the options prop for the AutocompleteSelect component?
+- How is the value prop for the AutocompleteSelect component updated?
+- How does the updateFilter function update the filters prop?
 
 Known Issues / Todo:
 - No known issues or bugs with the component.
-- No specific todo items related to this component.
+- No todo items related to this component.

@@ -1,29 +1,31 @@
 Summary:
-This code is a script that is part of a broader software application. Its purpose is to handle the authentication process for users. It includes functions for user registration, login, and logout. The script is structured with import statements at the beginning, followed by class definitions and function definitions. It also includes loops and conditional statements to handle different scenarios. The code uses variables to store and manipulate data throughout the authentication process.
+This code is a script that is part of a broader software application. Its purpose is to handle user authentication and authorization. It includes functions for user registration, login, and access control. The script is structured into several classes and functions, each serving a specific purpose. It utilizes various import statements to bring in necessary dependencies.
 
 Import statements:
-- `import bcrypt`: This import statement is used to hash passwords for secure storage.
-- `import jwt`: This import statement is used to generate and verify JSON Web Tokens (JWT) for user authentication.
-- `import { Request, Response, NextFunction } from 'express'`: This import statement is used to import specific types from the 'express' library, which is a popular web application framework for Node.js. It is used to handle HTTP requests and responses.
+- `import bcrypt`: This import is used for password hashing and verification.
+- `import jwt`: This import is used for generating and verifying JSON Web Tokens (JWT) for user authentication.
+- `import { Request, Response } from 'express'`: These imports are used to handle HTTP requests and responses in the Express framework.
+- `import { getRepository } from 'typeorm'`: This import is used to interact with the database using the TypeORM library.
 
 Script Summary:
-The script starts by importing necessary dependencies and defining a class called `AuthController`. This class contains functions for user registration, login, and logout. It also includes helper functions for password hashing and token generation. The script then exports an instance of the `AuthController` class.
+The script starts by defining a class called `AuthController` which contains several static methods for user authentication and authorization. It also defines a class called `User` which represents a user entity in the database.
 
 Internal Functions:
-- `hashPassword(password: string): Promise<string>`: This function takes a password as input and returns a Promise that resolves to a hashed version of the password using the bcrypt library.
-- `generateToken(userId: string): string`: This function takes a user ID as input and returns a JWT token string using the jwt library.
-- `register(req: Request, res: Response, next: NextFunction): Promise<void>`: This function handles the user registration process. It takes the request, response, and next function as input and returns a Promise that resolves to void. It extracts the username and password from the request body, hashes the password, and saves the user information to a database. It then generates a JWT token and sends it back in the response.
-- `login(req: Request, res: Response, next: NextFunction): Promise<void>`: This function handles the user login process. It takes the request, response, and next function as input and returns a Promise that resolves to void. It extracts the username and password from the request body, retrieves the user information from the database, and compares the hashed password with the provided password. If the passwords match, it generates a JWT token and sends it back in the response.
-- `logout(req: Request, res: Response, next: NextFunction): Promise<void>`: This function handles the user logout process. It takes the request, response, and next function as input and returns a Promise that resolves to void. It simply clears the JWT token from the client-side.
+- `hashPassword(password: string): Promise<string>`: This function takes a password as input and returns a promise that resolves to the hashed password using the bcrypt library.
+- `comparePasswords(password: string, hashedPassword: string): Promise<boolean>`: This function takes a password and a hashed password as input and returns a promise that resolves to a boolean indicating whether the password matches the hashed password using the bcrypt library.
+- `generateToken(userId: number): string`: This function takes a user ID as input and returns a JWT token string using the jwt library.
+- `verifyToken(token: string): Promise<number | null>`: This function takes a token string as input and returns a promise that resolves to the user ID extracted from the token using the jwt library.
 
 External Functions:
-None.
+- `register(req: Request, res: Response)`: This function handles the user registration process. It takes the request and response objects as input and creates a new user entity in the database with the provided username and password. It then returns a JWT token in the response.
+- `login(req: Request, res: Response)`: This function handles the user login process. It takes the request and response objects as input and verifies the provided username and password. If the credentials are valid, it returns a JWT token in the response.
+- `accessControl(req: Request, res: Response, next: Function)`: This function is a middleware that checks the authorization of a user based on the JWT token in the request header. If the token is valid, it calls the next function to proceed with the request. Otherwise, it returns an error response.
 
 Interaction Summary:
-This script can be used as a middleware in an Express.js application to handle user authentication. Other parts of the application can make HTTP requests to the endpoints defined in this script to register, login, and logout users. The script interacts with a database to store and retrieve user information.
+This script interacts with the rest of the application by providing user authentication and authorization functionality. Other components of the application can use the `register`, `login`, and `accessControl` functions to handle user-related operations.
 
 Developer Questions:
-- How can I customize the user registration process to include additional fields?
-- How can I integrate this authentication script with an existing user database?
-- How can I handle password reset functionality using this script?
-- How can I add email verification to the user registration process?
+- How can I use the `register` function to create a new user?
+- How can I use the `login` function to authenticate a user?
+- How can I use the `accessControl` middleware to protect routes?
+- How can I customize the user entity and database interactions?

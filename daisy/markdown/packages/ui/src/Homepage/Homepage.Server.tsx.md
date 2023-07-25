@@ -1,15 +1,15 @@
 Summary:
-The provided React file is a server-side component that is responsible for rendering the homepage of the application. It retrieves data from the server and passes it to a client-side component for rendering.
+The provided React file is a server-side component that is responsible for rendering the homepage of the application. It retrieves the user's session using the `getServerSession` function from the `next-auth` library and then fetches the user's journeys from the database using the `prisma` client. The retrieved journeys are then passed as props to the `HomepageClient` component, which is responsible for rendering the client-side portion of the homepage.
 
 Import statements:
-- React: The core React library.
-- getServerSession: A function from the 'next-auth' library used to retrieve the server session.
-- authOptions: An object containing authentication options.
-- prisma: The Prisma client used to interact with the database.
-- HomepageClient: The client-side component responsible for rendering the homepage.
+- `React` is imported from the `react` library.
+- `getServerSession` is imported from the `next-auth` library to retrieve the user's session.
+- `authOptions` is imported from the `authOptions` file to configure the authentication options.
+- `prisma` is imported from the `@db/client` file to interact with the database.
+- `HomepageClient` is imported from the `Homepage.Client` file to render the client-side portion of the homepage.
 
 Component:
-The HomepageServer component is an async function that retrieves the server session using the getServerSession function. If the session does not contain a user, it returns null. Otherwise, it queries the database using the Prisma client to retrieve a list of journeys. The retrieved data is then passed as a prop to the HomepageClient component for rendering.
+The `HomepageServer` component is an async function that retrieves the user's session and fetches the user's journeys from the database. It then renders the `HomepageClient` component with the retrieved journeys as props.
 
 Hooks:
 None.
@@ -18,16 +18,16 @@ Event Handlers:
 None.
 
 Rendered components:
-- HomepageClient: The client-side component responsible for rendering the homepage. It receives the journeys prop, which contains the data retrieved from the server.
+- `HomepageClient`: This component is rendered with the `journeys` prop, which contains the user's journeys retrieved from the database.
 
 Interaction Summary:
-The HomepageServer component interacts with the server to retrieve the server session and query the database for journey data. It then passes the retrieved data to the HomepageClient component for rendering.
+The `HomepageServer` component interacts with the `next-auth` library to retrieve the user's session and with the `prisma` client to fetch the user's journeys from the database. It also interacts with the `HomepageClient` component by passing the retrieved journeys as props.
 
 Developer Questions:
-- How is the server session retrieved and authenticated?
-- What data is being queried from the database and how is it used?
-- How is the HomepageClient component rendering the journey data?
+- How is the user's session retrieved using the `getServerSession` function?
+- How are the user's journeys fetched from the database using the `prisma` client?
+- How is the `HomepageClient` component rendered with the retrieved journeys as props?
 
 Known Issues / Todo:
-- No known issues or bugs.
-- No specific todo items related to this component.
+- No known issues or bugs with the component.
+- No todo items related to this component.

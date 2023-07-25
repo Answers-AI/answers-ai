@@ -34,4 +34,5 @@ Developer Questions:
 - How can I add additional sections or components to the homepage layout?
 
 Known Issues / Todo:
-- There are commented out sections of code that seem to be alternative implementations of the buttons. It is unclear why they are commented out and if they should be removed or kept for future use.
+- There are commented out sections of code that seem to be alternative implementations of the buttons. It is unclear why they are commented out and if they should be removed or kept.
+- There are no known issues or bugs with the component.

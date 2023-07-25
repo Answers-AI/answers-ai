@@ -16,10 +16,11 @@ External Functions:
 - None
 
 Interaction Summary:
-This script represents a component of a broader software application that provides decision-making assistance. It can be used by other parts of the application to generate system and user prompts related to decision-making. The "sidekick" object can be accessed and used to retrieve the necessary templates and information for decision-making.
+This script represents a decision-making AI assistant that can be used within a broader software application. It provides system and user prompts related to decision-making and can be integrated into a user interface or conversational interface.
 
 Developer Questions:
-- How can I access the "sidekick" object in other parts of the application?
-- Can the "sidekick" object be modified or extended to add more functionality?
-- What is the purpose of the "contextStringRender" function and how should it be implemented?
-- Are there any other dependencies or modules required to use this script?
+- How can I modify the system prompt template?
+- How can I modify the user prompt template?
+- How can I add additional functionality to the AI assistant?
+- How can I integrate the AI assistant into a user interface or conversational interface?
+- What is the purpose of the "contextStringRender" function and how can I implement it?

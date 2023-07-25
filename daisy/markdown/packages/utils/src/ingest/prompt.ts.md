@@ -1,28 +1,28 @@
 Summary:
-This code is a module that handles two events related to prompts in a chat application. The first event, "answers/prompt.upserted", is triggered when a prompt is created or updated. The second event, "answers/prompt.answered", is triggered when a user answers a prompt. The module contains two event handlers that handle these events by interacting with a Prisma database.
+This code is a module that handles two events related to prompts in a chat application. The first event, "answers/prompt.upserted", is triggered when a prompt is created or updated. The second event, "answers/prompt.answered", is triggered when a user answers a prompt. The module uses the Prisma ORM to interact with the database and perform CRUD operations on prompts and messages.
 
 Import statements:
-- `prisma` is imported from the `@db/client` module, which is likely a custom module that provides a Prisma client for database operations.
-- `Chat` is imported from the `db/generated/prisma-client` module, which is likely a generated Prisma client module that provides types and functions for interacting with the `Chat` model in the database.
-- `Message` is imported from the `types` module, which is likely a custom module that provides types for messages in the chat application.
-- `EventVersionHandler` is imported from the `./EventVersionHandler` module, which is likely a custom module that provides a type definition for event handlers.
+- `prisma` is imported from the `@db/client` module, which is responsible for connecting to the database and providing access to the Prisma client.
+- `Chat` is imported from the `db/generated/prisma-client` module, which contains the generated Prisma client code for the Chat model.
+- `Message` is imported from the `types` module, which likely contains type definitions for various data structures used in the application.
+- `EventVersionHandler` is imported from the `./EventVersionHandler` module, which is a custom event handler class.
 
 Script Summary:
-The script defines two event handlers, `answersPromptUpserted` and `answersPromptAnswered`, which handle the "answers/prompt.upserted" and "answers/prompt.answered" events, respectively. These event handlers interact with the Prisma database to create or update prompts and connect answers to prompts.
+The script defines two event handlers, `answersPromptUpserted` and `answersPromptAnswered`, which handle the "answers/prompt.upserted" and "answers/prompt.answered" events, respectively. Each event handler is an object with a `v` property representing the version of the event, an `event` property representing the event name, and a `handler` property containing an async function that handles the event.
 
 Internal Functions:
-- `answersPromptUpserted.handler`: This function is an async function that handles the "answers/prompt.upserted" event. It takes an event object as a parameter and extracts the necessary data from it. It then performs database operations using the Prisma client to create or update prompts based on the event data.
-- `answersPromptAnswered.handler`: This function is an async function that handles the "answers/prompt.answered" event. It takes an event object as a parameter and extracts the necessary data from it. It then performs database operations using the Prisma client to connect an answer message to a prompt based on the event data.
+- `answersPromptUpserted.handler`: This function handles the "answers/prompt.upserted" event. It extracts the necessary data from the event object, such as the prompt content, user ID, and chat ID. It then performs database operations using the Prisma client to create or update a prompt record based on the provided data.
+- `answersPromptAnswered.handler`: This function handles the "answers/prompt.answered" event. It extracts the prompt content and message data from the event object and uses the Prisma client to update the prompt record by connecting it to the answered message.
 
 External Functions:
 None
 
 Interaction Summary:
-This module interacts with a Prisma database using the Prisma client to create or update prompts and connect answer messages to prompts. It is likely used as a part of a larger chat application to handle prompt-related events.
+This module interacts with the Prisma client to perform database operations related to prompts and messages. It likely receives events from other parts of the application and updates the database accordingly. Other parts of the application may trigger the "answers/prompt.upserted" and "answers/prompt.answered" events to create or update prompts and connect them to answered messages.
 
 Developer Questions:
-- How are the event objects structured and what data do they contain?
-- What other event handlers are there in the application and how do they interact with this module?
-- Are there any additional database operations that need to be performed when handling these events?
-- How can the error handling be improved in the event handlers?
-- Are there any performance optimizations that can be made when interacting with the database?
+- How are events triggered and passed to these event handlers?
+- What other modules or components interact with this module?
+- Are there any additional event handlers for different events?
+- How are errors handled in these event handlers?
+- Are there any performance considerations when performing database operations?

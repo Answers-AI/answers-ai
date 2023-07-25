@@ -5,7 +5,7 @@ Import statements:
 - React: The core React library.
 - useFlags: A custom hook from the 'flagsmith/react' library that allows the component to access feature flags.
 - signOut: A function from the 'next-auth/react' library that handles user sign out.
-- usePathname: A custom hook from the 'next/navigation' library that provides the current pathname of the application.
+- usePathname: A custom hook from the 'next/navigation' library that retrieves the current pathname.
 - NextLink: A component from the 'next/link' library that handles client-side navigation.
 - styled: A function from the '@mui/material/styles' library that allows the component to define custom styles.
 - Avatar, Box, List, ListItem, ListItemButton, MuiDrawer, ListItemIcon, MuiAppBar, Typography, Tooltip: Components from the '@mui/material' library that are used to build the drawer menu.
@@ -17,34 +17,32 @@ The AppDrawer component is a functional component that takes a session prop. It 
 
 Hooks:
 - useFlags: This hook is used to access feature flags. It takes an array of flag keys as an argument and returns an object with the flag values.
-- usePathname: This hook is used to get the current pathname of the application.
+- usePathname: This hook is used to retrieve the current pathname. It returns a string representing the current pathname.
 
 Event Handlers:
-- signOut: This event handler is called when the sign out button is clicked. It calls the signOut function from the 'next-auth/react' library to handle user sign out.
+- onClick: This event handler is attached to the sign out button. It calls the signOut function to handle user sign out.
 
 Rendered components:
-- Drawer: This component is a styled version of the MuiDrawer component from the '@mui/material' library. It represents the main drawer menu container.
-- List: This component is a styled version of the MuiList component from the '@mui/material' library. It represents the list of menu items.
-- ListItem: This component is a styled version of the MuiListItem component from the '@mui/material' library. It represents a single menu item.
-- ListItemButton: This component is a styled version of the MuiListItemButton component from the '@mui/material' library. It represents a clickable area within a menu item.
-- ListItemIcon: This component is a styled version of the MuiListItemIcon component from the '@mui/material' library. It represents the icon within a menu item.
-- AppBar: This component is a styled version of the MuiAppBar component from the '@mui/material' library. It represents the top app bar of the application.
-- Avatar: This component is a styled version of the MuiAvatar component from the '@mui/material' library. It represents the user's avatar.
-- Typography: This component is a styled version of the MuiTypography component from the '@mui/material' library. It represents the text within the user tooltip.
-- Tooltip: This component is a styled version of the MuiTooltip component from the '@mui/material' library. It represents the tooltip that appears when hovering over the user avatar.
+- Drawer: This component represents the drawer menu. It is a styled MuiDrawer component from the '@mui/material' library. It has a variant prop set to "permanent" and a custom style defined in the Drawer styled component.
+- List: This component represents the list of menu items. It is a styled List component from the '@mui/material' library. It has a custom style defined in the List styled component.
+- ListItem: This component represents a single menu item. It is a styled ListItem component from the '@mui/material' library. It has a custom style defined in the ListItem styled component.
+- ListItemButton: This component represents the button within a menu item. It is a styled ListItemButton component from the '@mui/material' library. It has a custom style defined in the ListItemButton styled component.
+- ListItemIcon: This component represents the icon within a menu item. It is a styled ListItemIcon component from the '@mui/material' library. It has a custom style defined in the ListItemIcon styled component.
+- Avatar: This component represents the user's avatar. It is a component from the '@mui/material' library. It has a src prop set to the user's image and a custom style defined in the Avatar styled component.
+- Tooltip: This component represents a tooltip that displays the user's name and email. It is a component from the '@mui/material' library. It has a title prop that contains the user's name and email.
+- Typography: This component represents the text within the tooltip. It is a component from the '@mui/material' library. It has a variant prop set to "body2".
+- ExitToAppIcon: This component represents the sign out icon. It is an icon from the '@mui/icons-material' library.
 
 Interaction Summary:
-The AppDrawer component interacts with other components in the application by rendering the drawer menu and handling user interactions such as clicking on menu items and signing out. It also relies on the useFlags and usePathname hooks to determine which menu items to display and highlight.
+The AppDrawer component interacts with other components in the application by rendering the drawer menu and handling user navigation. It uses feature flags to conditionally render menu items and highlights the selected menu item based on the current pathname. It also handles user sign out.
 
 Developer Questions:
-- How can I customize the appearance of the menu items?
-- How can I add additional menu items?
-- How can I handle navigation to different pages when a menu item is clicked?
-- How can I access the user session data in other components?
-- How can I add additional feature flags and use them in the component?
+- How can I add additional menu items to the drawer menu?
+- How can I customize the styles of the menu items and the drawer menu?
+- How can I add additional event handlers to the menu items?
+- How can I access the user's session data in other components?
 
 Known Issues / Todo:
-- The DrawerHeader component is currently commented out. It should be uncommented and implemented to display the application logo.
-- The useFlags hook is currently used with a hardcoded flag key 'settings'. It should be updated to use dynamic flag keys.
-- The usePathname hook is currently used with a hardcoded value of '/' for the home menu item. It should be updated to use the actual home page pathname.
-- The Drawer component has some styling issues on smaller screens. It should be updated to handle responsive behavior properly.
+- The DrawerHeader component is currently commented out. It should be uncommented and implemented to display a header in the drawer menu.
+- The useFlags hook is used to access feature flags, but the specific flags being used are not specified in the code. The flags should be documented or clarified.
+- The usePathname hook is used to retrieve the current pathname, but it is not clear how it is implemented or what its purpose is. It should be documented or clarified.

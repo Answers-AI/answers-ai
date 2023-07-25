@@ -10,22 +10,19 @@ Import statements:
 - `User`, `AppSettings`, `ContextField`, `Organization`, and `User` are imported from the `types` module. These types define the structure of user data and related entities.
 
 Script Summary:
-The script sets up the authentication options for the Next.js application using NextAuth. It defines the session cookie settings, session and adapter options, callbacks for JWT and session handling, and various authentication providers. It also includes an event handler for user-related events.
+The script sets up the authentication options for the Next.js application using NextAuth. It defines the session cookie settings, session strategy, adapter, callbacks, providers, and event handling. It also includes a function to refresh access tokens for the Atlassian provider.
 
 Internal Functions:
-- `refreshAccessToken`: This function is used to refresh the access token for the Atlassian provider. It checks if the access token has expired and tries to refresh it using the refresh token. If successful, it updates the access token and expiration time in the database.
+- `refresAccessToken`: This function is used to refresh the access token for the Atlassian provider. It checks if the access token has expired and if so, sends a request to the Atlassian OAuth token endpoint to refresh the token. The function updates the access token, expiration time, and refresh token in the database.
 
 External Functions:
 None
 
 Interaction Summary:
-This script interacts with the NextAuth library and various authentication providers to handle user authentication and session management. It also interacts with the Prisma database for user and account data storage. Additionally, it sends user-related events to an external service using the `inngest` function.
+This script interacts with the NextAuth library, Prisma database, and external services for event tracking. It provides the authentication options and handles authentication-related events.
 
 Developer Questions:
-- How can I add a new authentication provider?
-- How can I customize the session cookie settings?
-- How can I handle additional user events?
-- How can I modify the user data stored in the session?
-- How can I customize the JWT token handling?
-- How can I handle errors during token refresh?
-- How can I customize the redirect behavior after authentication?
+- How do I add a new authentication provider?
+- How do I customize the session settings?
+- How do I handle authentication-related events?
+- How do I modify the access token refresh logic for the Atlassian provider?

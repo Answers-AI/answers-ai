@@ -34,8 +34,11 @@ Event Handlers:
 Rendered components:
 - DrawerHeader: A styled div component that represents the header of the drawer. It contains an IconButton component for opening/closing the drawer.
 - Drawer: A styled MuiDrawer component that represents the main drawer. It contains the drawer header and the list of sidekicks.
-- Button: A Button component that represents the "Create New Sidekick" button. It is rendered as a ListItem in the list of sidekicks.
-- List: A List component that represents the list of sidekicks. It contains multiple ListItem components.
+- Button: A Button component that represents the "Create New Sidekick" button.
+- List: A List component that contains the list items for each sidekick.
+- ListItem: A ListItem component that represents a single sidekick in the list.
+- ListItemButton: A ListItemButton component that represents a clickable area within the ListItem.
+- ListItemText: A ListItemText component that displays the label of the sidekick.
 
 Interaction Summary:
 The SidekickStudioDrawer component interacts with the rest of the application by providing a side navigation drawer for navigating between different sections of the application. It uses the NextLink component for client-side navigation and the usePathname hook to determine the current pathname. The component also handles the open/close state of the drawer and stores it in the local storage.
@@ -43,8 +46,8 @@ The SidekickStudioDrawer component interacts with the rest of the application by
 Developer Questions:
 - How can I customize the styling of the SidekickStudioDrawer component?
 - How can I pass additional props to the SidekickStudioDrawer component?
-- How can I add more sections to the list of sidekicks?
-- How can I handle click events on the sidekick items in the list?
+- How can I add new sections to the side navigation drawer?
+- How can I handle user interactions with the side navigation drawer?
 
 Known Issues / Todo:
 - No known issues or bugs with the component.

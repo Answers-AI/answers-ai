@@ -11,13 +11,12 @@ Internal Functions:
 - None
 
 External Functions:
-- `Sentry.init(options)`: This function initializes the Sentry error tracking service with the provided options. The `options` object can contain various configuration settings, such as the DSN (Data Source Name) for error reporting, sample rate for tracing, and release version.
+- `Sentry.init(options)`: This function initializes the Sentry error tracking service with the provided options. The `options` object can contain various configuration settings, such as the DSN (Data Source Name) for the Sentry project and the sample rate for tracing. It returns void.
 
 Interaction Summary:
-This script interacts with the Sentry service by initializing it with the provided configuration options. Once initialized, Sentry will automatically track and report errors that occur in the Next.js application.
+This script interacts with the Sentry error tracking service by initializing it with the provided configuration options. Once initialized, Sentry will start tracking and reporting errors that occur in the Next.js application.
 
 Developer Questions:
 - How do I configure Sentry for error tracking in a Next.js application?
 - What options can I customize when initializing Sentry?
-- How does Sentry track and report errors in the application?
-- How can I access the error reports and analyze them?
+- How does Sentry handle error reporting and tracking in Next.js?

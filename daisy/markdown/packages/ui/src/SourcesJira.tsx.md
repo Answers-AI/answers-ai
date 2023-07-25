@@ -19,7 +19,7 @@ Event Handlers:
 None.
 
 Rendered components:
-- AutocompleteSelect: This component is rendered twice. The first instance is used to select a project, and the second instance is used to select a status. Both instances receive various props, including label, options, value, and onChange.
+- AutocompleteSelect: This component is rendered twice. The first instance is used to select a project, and the second instance is used to select a status. Both instances receive various props such as label, options, value, and onChange.
 
 Interaction Summary:
 The SourcesJira component interacts with other components by rendering the AutocompleteSelect components. It receives appSettings and filters as props, which are used to populate the options and values of the AutocompleteSelect components. The updateFilter function is called when the user selects a value in the AutocompleteSelect components, allowing the parent component to update the filters.
@@ -27,8 +27,9 @@ The SourcesJira component interacts with other components by rendering the Autoc
 Developer Questions:
 1. How are the appSettings and filters props passed to the SourcesJira component?
 2. What is the structure of the AppSettings and AnswersFilters types?
-3. How does the AutocompleteSelect component handle user input and update the selected value?
-4. How does the updateFilter function update the filters in the parent component?
+3. How does the AutocompleteSelect component handle user input and update the filters?
+4. How can I customize the styling of the AutocompleteSelect components?
+5. Are there any additional props that can be passed to the AutocompleteSelect components?
 
 Known Issues / Todo:
 - No known issues or bugs with the component.

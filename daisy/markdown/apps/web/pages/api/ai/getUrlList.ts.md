@@ -14,48 +14,49 @@ External Services:
 - This API endpoint interacts with the Next.js framework, specifically the 'next-auth' package for authentication.
 
 API Endpoints:
-- There is one API endpoint in this file:
-  - `POST /api/route`
-    - Summary: This endpoint retrieves a list of URLs based on the provided domains.
-    - Example Usage:
-      ```
-      curl -X POST \
-        http://localhost:3000/api/route \
-        -H 'Content-Type: application/json' \
-        -H 'cache-control: no-cache' \
-        -d '{
-        "domains": ["example.com", "example.org"]
-      }'
-      ```
-    - Example Response:
-      ```json
-      {
-        "urls": [
-          "https://example.com",
-          "https://example.org"
-        ]
-      }
-      ```
+- There is one API endpoint in this file, which is a POST request to the '/api/route' route.
 
-Interaction Summary:
-- When a request is made to the `/api/route` endpoint, the `handler` function is called.
-- The `cors` middleware is applied to the request and response objects to handle CORS.
-- The server session is retrieved using `getServerSession` and the `authOptions`.
-- The user object is extracted from the session.
-- If the user's email is not available, a 401 Unauthorized status is returned.
-- The `domains` property is extracted from the request body.
-- The `params` object is created with the `domains` property if it exists.
-- The `getUrlList` function is called with the `params` object to retrieve a list of URLs.
-- The URLs are mapped to extract only the URL string.
-- The response is sent with a 200 OK status and the list of URLs.
+**API Summary:**
+This API endpoint is responsible for retrieving a list of URLs based on the provided domains. It requires authentication and returns a JSON response containing the URLs.
 
-Developer Questions:
+**Interaction Summary:**
+1. The client sends a POST request to the '/api/route' route with the domains in the request body.
+2. The server handles the CORS for the request.
+3. The server retrieves the server session using the 'getServerSession' function.
+4. The server checks if the user is authenticated by checking if the user's email is present in the session.
+5. If the user is not authenticated, the server sends a 401 Unauthorized response.
+6. If the user is authenticated, the server retrieves the domains from the request body.
+7. The server calls the 'getUrlList' function with the domains as parameters to retrieve the list of URLs.
+8. The server sends a 200 OK response with the list of URLs in the response body.
+
+**Example Usage:**
+```
+curl -X POST \
+  http://localhost:3000/api/route \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "domains": ["example.com", "example.org"]
+}'
+```
+
+**Example Response:**
+```json
+{
+  "urls": [
+    "https://example.com",
+    "https://example.org"
+  ]
+}
+```
+
+**Developer Questions:**
 - How is the authentication handled in this API endpoint?
-- What happens if the `domains` property is not provided in the request body?
-- Are there any error handling mechanisms in place for the external services used in this endpoint?
+- What happens if the domains parameter is not provided in the request body?
+- Are there any error responses defined for this API endpoint?
+- How can I customize the CORS settings for this API endpoint?
 
-TODO Items:
-- None identified.
+**TODO Items:**
+- None
 
-Known Issues:
-- None identified.
+**Known Issues:**
+- None

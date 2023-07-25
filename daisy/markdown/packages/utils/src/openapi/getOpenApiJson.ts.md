@@ -12,7 +12,7 @@ Internal Functions:
 - None
 
 External Functions:
-- `getOpenApiJson`: This function takes an object as a parameter with a `url` property. It is an async function that returns a Promise that resolves to an OpenAPI v3 document. It logs a message indicating that it is fetching OpenAPI data from the specified URL. It then calls the `fetchOpenApiData` function from the `openApiClient` module, passing the URL and an options object with `cache` set to `false`. If the fetched JSON data is not valid, an error is thrown. Otherwise, the fetched JSON data is returned.
+- `getOpenApiJson`: This function takes an object as a parameter with a `url` property. It is an asynchronous function that returns a Promise that resolves to an OpenAPI v3 document. It logs a message indicating that it is fetching OpenAPI data from the specified URL. It then calls the `fetchOpenApiData` function from the `openApiClient` module, passing the URL and an options object with `cache` set to `false`. If the fetched JSON data is not valid, an error is thrown. Otherwise, the fetched JSON data is returned.
 
 Interaction Summary:
 This script interacts with the `openApiClient` module to fetch OpenAPI JSON data from a specified URL. It does not have any direct interaction with other modules or components.

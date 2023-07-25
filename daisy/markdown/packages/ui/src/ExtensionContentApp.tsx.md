@@ -17,7 +17,7 @@ Hooks:
 None of the React hooks are used in this component.
 
 Event Handlers:
-None of the event handlers are defined or used in this component.
+None of the event handlers are defined in this component.
 
 Rendered components:
 - `AnswersProvider`: This component is responsible for providing the `user`, `appSettings`, and `apiUrl` props to its child components. It wraps the `FlagsmithProvider` component.
@@ -26,15 +26,15 @@ Rendered components:
 - `ChatExtensionWidget`: This component represents the chat extension widget and is the main component rendered by the `ExtensionContentApp` component.
 
 Interaction Summary:
-The `ExtensionContentApp` component interacts with other components in the application by providing necessary context and providers to its child components. It sets up the environment and theme for the chat extension widget and renders the widget itself.
+The `ExtensionContentApp` component interacts with other components in the application by providing necessary context and providers to its child components. It sets up the environment and theme for the chat extension widget and passes down relevant props.
 
 Developer Questions:
 1. What are the required props for the `ExtensionContentApp` component?
-2. How does the `AnswersProvider` component handle the `user`, `appSettings`, and `apiUrl` props?
-3. What is the purpose of the `FlagsmithProvider` component and how does it interact with the `flagsmith` library?
-4. How is the `ThemeProvider` component used to provide the theme to its child components?
-5. What is the role of the `ChatExtensionWidget` component and how does it interact with the rest of the application?
+2. How does the `FlagsmithProvider` component work and what does it provide?
+3. What is the purpose of the `ThemeProvider` component and how does it affect the styling of the chat extension widget?
+4. What are the expected props for the `ChatExtensionWidget` component and how are they used?
 
-Known Issues / Todo:
-- The code includes commented-out code that seems to be related to mounting and messaging, but it is currently unused. It should either be removed or properly implemented.
-- There is a commented-out section that suggests using an iframe to render a web app. This functionality is not currently implemented and should be addressed if needed.
+Known Issues / Todo Items:
+- The code includes commented-out code that seems to be related to mounting and messaging, but it is currently unused. It should be either removed or properly implemented.
+- There is a commented-out section that suggests using an iframe to render a web app component. It is marked as a TODO item and should be addressed.
+- There are no known issues or bugs specific to this component.

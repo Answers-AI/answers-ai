@@ -7,23 +7,20 @@ Import statements:
 - `redis` is imported from a custom Redis client module.
 
 Script Summary:
-The script defines a class called `WebClient` that fetches web data from a given URL. It uses `axios` to make HTTP requests and `puppeteer` to scrape web pages. The fetched data can be cached using Redis. The class has a single method called `fetchWebData` that takes a URL and an optional cache flag as parameters and returns the fetched data.
+The script defines a class called `WebClient` that fetches web data from a given URL. It has a method called `fetchWebData` that takes a URL and an optional cache flag as parameters. The method first checks if the data is available in the cache using Redis. If the data is not found in the cache, it makes an HTTP request to the URL using `axios`. If the response status is not 200, an error is thrown. The method then checks if the page is fully loaded with JavaScript enabled by checking the length of the HTML body. If the body is less than 100 characters, it uses `puppeteer` to load the page and fetch the content. Finally, if caching is enabled, the fetched data is stored in the cache using Redis.
 
 Internal Functions:
-- `constructor`: Initializes the `WebClient` class with an optional cache expiration time. Sets the default headers for HTTP requests.
-- `fetchWebData`: Fetches web data from a given URL. It first checks if the data is available in the cache. If not, it makes an HTTP request to the URL using `axios`. If the response status is not 200, an error is thrown. It then checks if the page is fully loaded with JavaScript enabled by checking the length of the stripped HTML. If the page is not fully loaded, it uses `puppeteer` to load the page and fetch the content. If caching is enabled, it stores the fetched data in Redis with an expiration time. Finally, it returns the fetched data.
+- `fetchWebData(url: string, { cache = true }: { cache?: boolean } = {})`: This async function is the main function of the script. It takes a URL and an optional cache flag as parameters. It first checks if the data is available in the cache using Redis. If the data is not found in the cache, it makes an HTTP request to the URL using `axios`. If the response status is not 200, an error is thrown. The function then checks if the page is fully loaded with JavaScript enabled by checking the length of the HTML body. If the body is less than 100 characters, it uses `puppeteer` to load the page and fetch the content. Finally, if caching is enabled, the fetched data is stored in the cache using Redis. The function returns the fetched data.
 
 External Functions:
-- None
+None
 
 Interaction Summary:
-This script can be used by other parts of the application to fetch web data from a given URL. The `fetchWebData` method can be called with the URL and an optional cache flag to fetch the data. The fetched data can be used for further processing or display.
+The `WebClient` class can be instantiated and used to fetch web data from a given URL. The fetched data can be cached using Redis. The class can be used by other components or modules in the application to fetch web data.
 
 Developer Questions:
-- How can I use the `WebClient` class to fetch web data?
-- What happens if the HTTP request fails or returns a non-200 status code?
+- How can I use the `WebClient` class to fetch web data from a URL?
 - How can I enable or disable caching of the fetched data?
-- How can I modify the default headers for HTTP requests?
-- How can I change the cache expiration time?
+- How can I modify the cache expiration time?
 - How can I handle errors when fetching web data?
-- How can I integrate this script with other parts of the application?
+- How can I integrate the `WebClient` class with other components or modules in the application?

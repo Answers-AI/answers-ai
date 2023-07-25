@@ -1,37 +1,31 @@
 Summary:
-This file is a React component called "JourneySettings" that is responsible for rendering different sources based on the "app" prop passed to it. It imports various source components such as SourcesAirtable, SourcesConfluence, etc., and maps them to the corresponding "app" value in the JOURNEY_SETTINGS object. It handles cases where the "app" prop is not found or is empty by displaying a message or returning null.
+The provided React file, JourneySettings, is a client-side component that is responsible for rendering different sources based on the app prop passed to it. It imports various source components such as SourcesAirtable, SourcesConfluence, etc., and renders the appropriate component based on the app prop. If the app prop does not match any of the available sources, it displays a message indicating that there are no filters available for that app.
 
 Import statements:
-- React: The main React library.
+The file imports React and various source components such as SourcesAirtable, SourcesConfluence, etc.
 
 Component:
-- JourneySettings: This is the main component that renders different source components based on the "app" prop.
+The JourneySettings component is a functional component that takes an app prop and renders the appropriate source component based on the app prop. It also handles cases where the app prop does not match any available sources.
 
 Hooks:
-- None.
+None.
 
 Event Handlers:
-- None.
+None.
 
 Rendered components:
-- SourcesAirtable: Renders the Airtable source component.
-- SourcesConfluence: Renders the Confluence source component.
-- SourcesCodebase: Renders the Codebase source component.
-- SourcesFile: Renders the File source component.
-- SourcesJira: Renders the Jira source component.
-- SourcesSlack: Renders the Slack source component.
-- SourcesWeb: Renders the Web source component.
-- SourcesYoutube: Renders the Youtube source component.
-- SourcesDocument: Renders the Document source component.
-- SourcesZoom: Renders the Zoom source component.
+The JourneySettings component renders the appropriate source component based on the app prop. The available source components include SourcesAirtable, SourcesConfluence, SourcesCodebase, SourcesFile, SourcesJira, SourcesSlack, SourcesWeb, SourcesYoutube, SourcesDocument, and SourcesZoom.
 
 Interaction Summary:
-This component is a client-side component that interacts with other components by rendering the appropriate source component based on the "app" prop. It does not have any direct interaction with server-side components or APIs.
+The JourneySettings component interacts with other components in the application by rendering the appropriate source component based on the app prop. It can be used as part of a larger application to display different sources based on user selection.
 
 Developer Questions:
-- How can I add a new source component to be rendered based on a new "app" value?
-- How can I customize the message displayed when the "app" prop is not found or is empty?
+1. How can I add a new source component to the JourneySettings component?
+2. How can I modify the rendering logic to handle additional cases?
+3. How can I pass additional props to the rendered source component?
 
 Known Issues / Todo:
-- No known issues or bugs.
-- No todo items related to this component.
+There are no known issues or bugs with the JourneySettings component. However, potential todo items include:
+- Adding support for additional source components.
+- Enhancing the rendering logic to handle more complex cases.
+- Adding more error handling and validation for the app prop.

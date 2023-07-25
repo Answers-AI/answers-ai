@@ -7,25 +7,25 @@ Import statements:
 - SidekickLists: A component that displays a list of sidekicks.
 
 Component:
-The SidekickListPage component is a server-side component. It is an async function that takes a single parameter, `params`, and returns the SidekickLists component with the `params` and `appSettings` props.
+The SidekickListPage component is a server-side component. It is an async function that takes a single parameter, params. It uses the getAppSettings function to retrieve the application settings asynchronously. Once the appSettings are fetched, it renders the SidekickLists component with the params and appSettings as props.
 
 Hooks:
 This component does not use any hooks.
 
 Event Handlers:
-This component does not define any event handlers.
+This component does not have any event handlers.
 
 Rendered components:
-- SidekickLists: This component is rendered with the `params` and `appSettings` props.
+- SidekickLists: This component is rendered with the params and appSettings as props.
 
 Interaction Summary:
-The SidekickListPage component interacts with other components in the application by rendering the SidekickLists component with the necessary props. It relies on the getAppSettings function to retrieve the application settings before rendering the SidekickLists component.
+The SidekickListPage component interacts with the getAppSettings function to fetch the application settings. It then passes the fetched appSettings as a prop to the SidekickLists component. The SidekickLists component is responsible for rendering the list of sidekicks based on the provided props.
 
 Developer Questions:
-- How are the `params` and `appSettings` props used in the SidekickLists component?
-- What does the getAppSettings function do and how does it retrieve the application settings?
-- Are there any additional props that can be passed to the SidekickListPage component?
+- How does the getAppSettings function work and what does it return?
+- What are the expected properties of the params object?
+- How does the SidekickLists component use the appSettings prop?
 
 Known Issues / Todo:
-- No known issues or bugs with the component.
-- No specific todo items related to this component.
+- No known issues or bugs.
+- No todo items related to this component.

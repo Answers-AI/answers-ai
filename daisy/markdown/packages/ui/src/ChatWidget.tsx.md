@@ -33,5 +33,4 @@ Developer Questions:
 
 Known Issues / Todo:
 - The code currently logs a message to the console if no apiKey is passed in the URL search parameters. It should show an error message to the user instead.
-- There are commented out console.log statements that should be removed.
-- There may be potential issues with the handling of user authorization and session management that need to be addressed.
+- There are commented out console.log statements that should be removed or uncommented for debugging purposes.

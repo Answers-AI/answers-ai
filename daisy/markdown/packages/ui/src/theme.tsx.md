@@ -19,12 +19,13 @@ Rendered components:
 None.
 
 Interaction Summary:
-This file is used to define the themes for the application. Other components in the application can import and use these themes to customize their appearance. The dark mode theme is exported separately to be used specifically for dark mode.
+This file is used to define the themes for the application. Other components in the application can import and use these themes to customize their appearance. The dark mode theme can be used to provide a dark mode experience to the users.
 
 Developer Questions:
 - How can I use the themes defined in this file in my components?
 - Can I customize the themes further?
-- How can I switch between the dark mode theme and the default theme?
+- How can I switch between the dark mode and default mode themes?
+- Are there any other theme-related configurations I need to be aware of?
 
 Known Issues / Todo:
 None.

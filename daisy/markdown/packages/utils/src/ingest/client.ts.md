@@ -17,7 +17,7 @@ Interaction Summary:
 This script interacts with the "Inngest" module by creating a new instance of the "Inngest" class. This instance can be used to perform various operations related to data ingestion and processing.
 
 Developer Questions:
-- How can I customize the configuration options for the "Inngest" module?
+- How can I customize the configuration of the "Inngest" module?
 - What other methods and properties does the "Inngest" class provide?
 - How can I use the "Inngest" instance created in this script to perform data ingestion and processing tasks?
 - Are there any additional dependencies or configurations required to use the "Inngest" module effectively?
