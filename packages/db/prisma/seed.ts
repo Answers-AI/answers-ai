@@ -6,10 +6,17 @@ async function main() {
     update: {},
     create: {
       email: 'test@theanswer.ai',
-      name: 'Test',
-      ChatApp: {
-        create: { name: 'Test Chat App', apiKey: '01031993' }
-      }
+      name: 'Test'
+    }
+  });
+  const chatapp = await prisma.chatApp.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      id: 1,
+      name: 'Test Chat App',
+      apiKey: '01031993',
+      userId: testUser.id
     }
   });
 
@@ -17,11 +24,35 @@ async function main() {
     where: { email: 'test2@theanswer.ai' },
     update: {},
     create: {
-      email: 'tes2t@theanswer.ai',
-      name: 'Test 2',
-      ChatApp: {
-        create: { name: 'Test Chat App 2', apiKey: '05031979' }
-      }
+      email: 'test2@theanswer.ai',
+      name: 'Test 2'
+    }
+  });
+  const chatapp2 = await prisma.chatApp.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      id: 1,
+      name: 'Test Chat App 2',
+      apiKey: '05031979',
+      userId: testUserTwo.id
+    }
+  });
+  const defaultSidekick = await prisma.sidekick.upsert({
+    where: { id: 'default' },
+    update: {},
+    create: {
+      id: 'default',
+      isGlobal: true,
+      isSystem: true,
+      tags: ['Default'],
+      label: 'Default',
+      aiModel: 'gpt-3.5-turbo',
+      systemPromptTemplate: 'You are a friendly assistant',
+      userPromptTemplate:
+        'Reply based on the context provided \n\nCONTEXT: {{context}}\n\n USER INPUT:{{userInput}}',
+      contextStringRender: `{{result.text}}`,
+      userId: testUser.id
     }
   });
 }

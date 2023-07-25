@@ -47,6 +47,8 @@ model User {
 
   journeys Journey[]
 
+  feedbacks MessageFeedback[]
+
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @default(now()) @updatedAt
   ChatApp        ChatApp[]
@@ -283,6 +285,8 @@ model Message {
   context          String     @default("")
   contextDocuments Document[]
 
+  sidekickJson Json @default("{}")
+
   prompt   Prompt? @relation(fields: promptId, references: id)
   promptId String?
 
@@ -292,7 +296,7 @@ model Message {
   chat   Chat   @relation(fields: chatId, references: id)
   chatId String
 
-  feedback MessageFeedback?
+  feedbacks MessageFeedback[]
 
   likes    Int @default(0)
   dislikes Int @default(0)
@@ -313,9 +317,13 @@ model MessageFeedback {
   rating Rating @default(thumbsUp)
   content String 
   tags String[] @default([])
+  user User @relation(fields: [userId], references: [id])
+  userId String   
 
   message   Message @relation(fields: [messageId], references: [id])
-  messageId String @unique
+  messageId String
+
+  @@unique([userId,messageId])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt

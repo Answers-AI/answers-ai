@@ -79,9 +79,8 @@ export const MessageCard = ({
   const [showFeedback, setShowFeedback] = useState(false);
   const services: { [key: string]: AppService } =
     appSettings?.services?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};
-  const [lastInteraction, setLastInteraction] = React.useState<string>(feedback?.rating ?? '');
-  const [codeStyle, setCodeStyle] = useState({});
-
+  const [lastInteraction, setLastInteraction] = React.useState<string>('');
+  const hasContent = role === 'assistant' ? content && Object.keys(other)?.length : content;
   if (error) {
     pineconeData = error?.response?.data.pineconeData;
     summary = error?.response?.data.summary;
@@ -95,11 +94,15 @@ export const MessageCard = ({
     evt.preventDefault();
     setLastInteraction('thumbsUp');
     if (id) {
-      const feedback = await sendMessageFeedback({
-        messageId: id,
-        rating: 'thumbsUp'
-      });
-      setShowFeedback(true);
+      try {
+        const feedback = await sendMessageFeedback({
+          messageId: id,
+          rating: 'thumbsUp'
+        });
+        setShowFeedback(true);
+      } catch (err) {
+        setLastInteraction('');
+      }
       // Show modal to ask for added feedback
     }
   };
@@ -113,12 +116,16 @@ export const MessageCard = ({
     evt.preventDefault();
     setLastInteraction('thumbsDown');
     if (id) {
-      const feedback = await sendMessageFeedback({
-        messageId: id,
-        rating: 'thumbsDown'
-      });
-      setShowFeedback(true);
-      // Show modal to ask for added feedback
+      try {
+        const feedback = await sendMessageFeedback({
+          messageId: id,
+          rating: 'thumbsDown'
+        });
+        setShowFeedback(true);
+        // Show modal to ask for added feedback } catch (err) {
+      } catch (err) {
+        setLastInteraction('');
+      }
     }
   };
 
@@ -175,7 +182,7 @@ export const MessageCard = ({
                 }}
                 title={role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
               />
-              {content ? (
+              {hasContent && content ? (
                 <>
                   <Typography
                     variant="body1"
@@ -278,13 +285,9 @@ export const MessageCard = ({
                 top: isWidget ? 0 : '100%',
                 right: 8
               }}>
-              {feedback || lastInteraction ? (
-                <IconButton
-                  // disabled
-                  sx={{}}
-                  size="small"
-                  onClick={handleLike}>
-                  {(feedback?.rating ?? lastInteraction) == 'thumbsUp' ? (
+              {lastInteraction ? (
+                <IconButton disabled size="small">
+                  {lastInteraction == 'thumbsUp' ? (
                     <ThumbUpIcon sx={{ fontSize: 16 }} />
                   ) : (
                     <ThumbDownIcon sx={{ fontSize: 16 }} />
@@ -294,7 +297,6 @@ export const MessageCard = ({
                 <>
                   <IconButton
                     color={lastInteraction === 'like' ? 'secondary' : 'default'}
-                    sx={{}}
                     size="small"
                     onClick={handleLike}>
                     <ThumbUpIcon sx={{ fontSize: 16 }} />

@@ -9,6 +9,7 @@ export async function POST(req: Request, res: any) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) return respond401();
   const { messageId, rating, content = '', tags } = await req.json();
+  const { user } = session;
 
   const message = await prisma.message.findFirst({
     where: {
@@ -19,18 +20,17 @@ export async function POST(req: Request, res: any) {
   if (message) {
     const feedback = await prisma.messageFeedback.upsert({
       where: {
-        id: messageId
+        userId_messageId: {
+          messageId: messageId,
+          userId: user.id
+        }
       },
       create: {
-        id: messageId,
+        messageId,
+        userId: user.id,
         content,
         rating,
-        tags,
-        message: {
-          connect: {
-            id: messageId
-          }
-        }
+        tags
       },
       update: {
         ...{ content, rating, tags }
