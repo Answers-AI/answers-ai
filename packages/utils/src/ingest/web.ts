@@ -401,7 +401,7 @@ export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
       const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
 
       try {
-        // await Promise.all(
+        await Promise.all(
           chunkArray(pendingSyncURLs, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
             inngest.send({
               v: event.v,
@@ -413,7 +413,7 @@ export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
               user: event.user
             })
           )
-        // );
+        );
       } catch (error) {
         console.log(error);
       } finally {
