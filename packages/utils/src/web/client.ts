@@ -48,6 +48,7 @@ class WebClient {
         }
 
         data = response?.data;
+        data = prepareHtml(url, data);
       }
     } catch (error: unknown) {
       let message = getAxiosErrorMessage(error);
@@ -55,7 +56,8 @@ class WebClient {
     }
 
     try {
-      if (!data) {
+      if (!data || data.trim() === '') {
+        console.log(`No valid HTML from axios for ${url}.   Attempting Puppeteer...`);
         const loader = new PuppeteerWebBaseLoader(url, {
           launchOptions: {
             headless: 'new',
@@ -72,14 +74,12 @@ class WebClient {
           throw new Error('Issue fetching document');
         }
 
-        data = docs[0].pageContent;
+        data = prepareHtml(url, docs[0].pageContent);
       }
 
-      if (!data) {
+      if (!data || data.trim() === '') {
         throw new Error(`Issue fetching ${url} using both axios and Puppeteer`);
       }
-
-      data = prepareHtml(url, data);
 
       if (cache) {
         await redis.set(hashKey, JSON.stringify(data));
