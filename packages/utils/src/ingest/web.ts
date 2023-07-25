@@ -263,6 +263,8 @@ export const processWebScrape: EventVersionHandler<{
     const uniqueUrls = getUniqueUrls(Array.from(urls));
 
     const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
+    // Need to use the unique URLs' original case sensitivity as not all sites treat mixed cases the same
+    const finalUrls = uniqueUrls.filter((url) => pendingSyncURLs.includes(url.toLocaleLowerCase()));
 
     await prisma.document.updateMany({
       where: { url: { in: pendingSyncURLs } },
@@ -271,11 +273,11 @@ export const processWebScrape: EventVersionHandler<{
       }
     });
 
-    const webPagesHtml = (await webPageLoader.loadMany(pendingSyncURLs)) as string[];
+    const webPagesHtml = (await webPageLoader.loadMany(finalUrls)) as string[];
 
     let recursiveUrls: string[] = [];
     const webPages = await Promise.all(
-      pendingSyncURLs.map(async (url, index) => {
+      finalUrls.map(async (url, index) => {
         const domain = new URL(url).origin;
         const webData: WebPage = {
           url,
@@ -419,15 +421,19 @@ export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
       });
     } else {
       const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
+      // Need to use the unique URLs' original case sensitivity as not all sites treat mixed cases the same
+      const finalUrls = uniqueUrls.filter((url) =>
+        pendingSyncURLs.includes(url.toLocaleLowerCase())
+      );
 
       try {
         await Promise.all(
-          chunkArray(pendingSyncURLs, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
+          chunkArray(finalUrls, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
             inngest.send({
               v: event.v,
               name: 'web/page.sync',
               data: {
-                _total: pendingSyncURLs.length,
+                _total: finalUrls.length,
                 urls
               },
               user: event.user

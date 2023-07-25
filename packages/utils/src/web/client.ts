@@ -49,7 +49,12 @@ class WebClient {
 
         data = response?.data;
       }
+    } catch (error: unknown) {
+      let message = getAxiosErrorMessage(error);
+      throw new Error(message);
+    }
 
+    try {
       if (!data) {
         const loader = new PuppeteerWebBaseLoader(url, {
           launchOptions: {
