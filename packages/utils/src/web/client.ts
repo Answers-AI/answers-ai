@@ -1,9 +1,11 @@
-import { PuppeteerWebBaseLoader } from "langchain/document_loaders/web/puppeteer";
+import axios from 'axios';
+
+import { PuppeteerWebBaseLoader } from 'langchain/document_loaders/web/puppeteer';
 import { redis } from '../redis/client';
 
 import getAxiosErrorMessage from '../utilities/getAxiosErrorMessage';
 
-import type { Browser, Page } from "langchain/document_loaders/web/puppeteer";
+import prepareHtml from './prepareHtml';
 
 class WebClient {
   headers: { Authorization?: string; Accept: string; Cookie?: string };
@@ -35,116 +37,44 @@ class WebClient {
     }
 
     try {
-      const loader = new PuppeteerWebBaseLoader(url, {
-        launchOptions: {
-          headless: true,
-          args: [`--host-rules="MAP * 127.0.0.1, EXCLUDE ${url}"`]
-        },
-        gotoOptions: {
-          waitUntil: "domcontentloaded",
-        },
-        async evaluate(page: Page, browser: Browser) {
-          const result = await page.evaluate(() => {
-            const excludeSelectors: string[] = [
-              'noscript',
-              'iframe',
-              'header',
-              'footer',
-              'nav',
-              '.navbar',
-              '.menu',
-              'script',
-              '.ad',
-              '.ads',
-              'style',
-              'aside',
-              'link',
-              '[role="tree"]',
-              '[role="navigation"]',
-              'svg',
-              'video',
-              'canvas',
-              'form',
-              '[role="alert"]',
-              'cite',
-              'sup',
-              'hr'
-            ];
+      if (!data) {
+        const response = await axios.get(url, {
+          method: 'GET',
+          headers: this.headers
+        });
 
-            // Remove elements matching the given selectors
-            excludeSelectors.forEach((selector) => {
-              document.querySelectorAll(selector).forEach((element) => element.remove());
-            });
+        if (response.status !== 200) {
+          throw new Error(`Response Failed to fetch data from ${url}. Status: ${response.status}`);
+        }
 
-            const textContent = document.body.textContent;
-            
-            if (!textContent || textContent.length < 100) {
-               return '';
-            }
-
-            const url = window.location.href;
-            const origin = window.location.origin;
-
-            // Function to remove attributes from a DOM element
-            const updateAttributes = (element: Element) => {
-              const attributes = Array.from(element.attributes); // Convert the attributes to an array
-
-              attributes.forEach(attribute => {
-                if (attribute.name === 'src') {
-                  const src = element.getAttribute('src');
-                  if (src?.startsWith('/')) {
-                    element.setAttribute('src',new URL(src, origin).href);
-                  }
-                } else if (attribute.name === 'href') {
-                  const href = element.getAttribute('href');
-                  if (href?.startsWith('/')) {
-                    element.setAttribute('href',new URL(href, origin).href);
-                  }
-                } else {
-                  element.removeAttribute(attribute.name);
-                }
-              });
-            };
-
-            // Recursively remove attributes from all elements
-            const stripAttributesRecursive = (element: Element) => {
-              updateAttributes(element);
-              element.childNodes.forEach((childNode) => {
-                if (childNode.nodeType === Node.ELEMENT_NODE) {
-                  stripAttributesRecursive(childNode as Element);
-                }
-              });
-            };
-
-            // Remove attributes from all elements in the document body
-            stripAttributesRecursive(document.body);
-
-            let h1Elements = document.getElementsByTagName('h1');
-            for (let i = 0; i < h1Elements.length; i++) {
-              let h1 = h1Elements[i];
-              let innerHtml = h1.innerHTML;
-              h1.outerHTML = `<h2>${innerHtml}</h2>`;
-            }
-
-            const newTag = document.createElement('H1');
-            newTag.innerHTML = document.title ?? url;
-            document.body.insertBefore(newTag, document.body.firstChild);
-
-            return document.body.innerHTML;
-          });
-
-          await browser.close();
-          return result;
-        },
-      });
-
-      const docs = await loader.load();
-      
-      if (!docs.length) {
-        throw new Error('Issue fetching document')
+        data = response?.data;
       }
 
-      data = docs[0].pageContent;
+      if (!data) {
+        const loader = new PuppeteerWebBaseLoader(url, {
+          launchOptions: {
+            headless: 'new',
+            args: [`--host-rules="MAP * 127.0.0.1, EXCLUDE ${url}"`]
+          },
+          gotoOptions: {
+            waitUntil: 'domcontentloaded'
+          }
+        });
+
+        const docs = await loader.load();
+
+        if (!docs.length) {
+          throw new Error('Issue fetching document');
+        }
+
+        data = docs[0].pageContent;
+      }
+
+      if (!data) {
+        throw new Error(`Issue fetching ${url} using both axios and Puppeteer`);
+      }
+
+      data = prepareHtml(url, data);
 
       if (cache) {
         await redis.set(hashKey, JSON.stringify(data));
@@ -154,7 +84,6 @@ class WebClient {
       let message = getAxiosErrorMessage(error);
       throw new Error(message);
     }
-
 
     return data;
   }

@@ -7,7 +7,7 @@ const getWebPageHtml = async ({ url }: { url: string }): Promise<string> => {
   console.log(`===Fetching webpage: ${url}`);
   try {
     const pageHtml = await webClient.fetchWebData(url, { cache: false });
-    
+
     if (!pageHtml) {
       throw new Error(`No valid HTML returned for url: ${url}`);
     }
@@ -15,7 +15,8 @@ const getWebPageHtml = async ({ url }: { url: string }): Promise<string> => {
     return pageHtml;
   } catch (error: any) {
     console.error('[getWebPageHtml] ', error);
-    throw error;
+    // throw error;
+    return '';
   }
 };
 

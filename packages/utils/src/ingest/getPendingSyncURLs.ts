@@ -1,9 +1,8 @@
 import { prisma } from '@db/client';
 import { getUrlDomain } from '../getUrlDomain';
 
-const  getPendingSyncURLs = async(urls: string[]) => {
+const getPendingSyncURLs = async (urls: string[]) => {
   const normalizedUrls = urls.map((url) => url.toLowerCase());
-  console.log({normalizedUrls})
 
   await prisma.document.createMany({
     data: normalizedUrls.map((url) => ({
@@ -21,7 +20,7 @@ const  getPendingSyncURLs = async(urls: string[]) => {
       url: { in: normalizedUrls },
       OR: [
         // 60 minutes have passed since last sync
-        { lastSyncedAt: { lte: new Date(Date.now()+ 60 * 60 * 1000) } },
+        { lastSyncedAt: { lte: new Date(Date.now() + 60 * 60 * 1000) } },
         { status: 'pending' },
         { lastSyncedAt: null }
       ]
@@ -30,6 +29,6 @@ const  getPendingSyncURLs = async(urls: string[]) => {
 
   const pendingSyncURLs = pendingSyncDocuments.map((d) => d.url);
   return pendingSyncURLs;
-}
+};
 
 export default getPendingSyncURLs;

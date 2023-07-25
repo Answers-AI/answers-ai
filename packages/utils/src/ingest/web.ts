@@ -1,6 +1,6 @@
 import { URL } from 'url';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { Document } from "langchain/document";
+import { Document } from 'langchain/document';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 
 import { prisma } from '@db/client';
@@ -19,7 +19,6 @@ import { getUniqueDomains, getUrlDomain } from '../getUrlDomain';
 import type { EventVersionHandler } from './EventVersionHandler';
 import type { WebPage } from 'types';
 import getDomainUrlsFromMarkdown from '../utilities/getDomainUrlsFromMarkdown';
-
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
 const WEB_PAGE_SYNC_BATCH_SIZE = 10;
@@ -45,18 +44,19 @@ const prefixHeaders = (markdown: string): string => {
   return lines.join('\n');
 };
 
-const recursiveCharacterTextSplitter = RecursiveCharacterTextSplitter.fromLanguage("markdown", {
+const recursiveCharacterTextSplitter = RecursiveCharacterTextSplitter.fromLanguage('markdown', {
   chunkSize: 2000,
-  chunkOverlap: 100, separators: ['#####'], keepSeparator: true
+  chunkOverlap: 100,
+  separators: ['#####'],
+  keepSeparator: true
 });
-
 
 const getWebPagesVectors = async (webPages: WebPage[]) => {
   const vectors = (
     await Promise.all(
       webPages.map(async (page) => {
         if (!page?.content) {
-          console.log(`[getWebPagesVectors] No content found for ${page.url.toLowerCase}`)
+          console.log(`[getWebPagesVectors] No content found for ${page.url.toLowerCase}`);
           return [];
         }
 
@@ -65,11 +65,11 @@ const getWebPagesVectors = async (webPages: WebPage[]) => {
           .replace(/^(#+\s+.+)\n(#+\s+.+\n)/gm, '$2');
 
         const markdownChunks = await recursiveCharacterTextSplitter.splitDocuments([
-          new Document({ pageContent }),
+          new Document({ pageContent })
         ]);
 
         if (!markdownChunks?.length) {
-          console.log(`[getWebPagesVectors] No markdownChunks found for ${page.url}`)
+          console.log(`[getWebPagesVectors] No markdownChunks found for ${page.url}`);
           return [];
         }
 
@@ -102,7 +102,7 @@ const embedVectors = async (event: any, vectors: any[]) => {
           try {
             const vectorSends = await inngest.send({
               v: '1',
-              
+
               name: 'pinecone/vectors.upserted',
               data: {
                 _page: i,
@@ -147,7 +147,7 @@ export const processWebUrlScrape: EventVersionHandler<{ urls: string[]; byDomain
       const domainPromises = domains.map((domain) =>
         inngest.send({
           v: event.v,
-          
+
           name: 'web/domain.sync',
           data: {
             domain
@@ -193,7 +193,7 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
       fetchSitemapUrls(domain),
       getSitemapUrls(`${domain}/sitemap.xml`),
       getSitemapUrls(`${domain}/sitemap-index.xml`),
-      getSitemapUrls(`${domain}/sitemap1.xml`),
+      getSitemapUrls(`${domain}/sitemap1.xml`)
     ]);
 
     const urls = [...(sitemapUrls || []), ...(xmlUrls || []), ...(xmlIndexUrls || [])];
@@ -202,15 +202,15 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
       console.log('[web/domain.sync] Could not extract URLs from sitemap.  Preparing deep sync');
       inngest.send({
         v: event.v,
-        
+
         name: 'web/page.sync',
         data: {
           recursive: true,
-          parentId:`${new Date().valueOf()}-recursive`,
+          parentId: `${new Date().valueOf()}-recursive`,
           urls: [domain]
         },
         user: event.user
-      })
+      });
     } else {
       const uniqueUrls = getUniqueUrls(urls);
       const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
@@ -237,7 +237,11 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
   }
 };
 
-export const processWebScrape: EventVersionHandler<{ urls: string[], recursive: boolean, parentId?: string }> = {
+export const processWebScrape: EventVersionHandler<{
+  urls: string[];
+  recursive: boolean;
+  parentId?: string;
+}> = {
   event: 'web/page.sync',
   v: '1',
   handler: async ({ event }) => {
@@ -262,19 +266,18 @@ export const processWebScrape: EventVersionHandler<{ urls: string[], recursive: 
 
     const webPagesHtml = (await webPageLoader.loadMany(pendingSyncURLs)) as string[];
 
-
-    let recursiveUrls:string[] = [];
+    let recursiveUrls: string[] = [];
     const webPages = await Promise.all(
       pendingSyncURLs.map(async (url, index) => {
-        const domain = new URL(url).origin
+        const domain = new URL(url).origin;
         const webData: WebPage = {
           url,
           domain,
-          content: webPagesHtml[index],
+          content: webPagesHtml[index]
         };
 
         if (!webData.content.length) {
-          return {...webData, content: ''};
+          return { ...webData, content: '' };
         }
 
         webData.content = NodeHtmlMarkdown.translate(webData.content, {}, undefined, undefined);
@@ -282,9 +285,8 @@ export const processWebScrape: EventVersionHandler<{ urls: string[], recursive: 
         // Now that we have valid HTML, check if this should be recursive so we can build out the spidering
         if (recursive) {
           recursiveUrls = [...recursiveUrls, ...getDomainUrlsFromMarkdown(webData.content, domain)];
-          console.log({url, recursiveUrls});
           const recursiveId = parentId ?? new Date().valueOf();
-          const recursiveEvents = recursiveUrls.map(url => {
+          const recursiveEvents = recursiveUrls.map((url) => {
             return {
               v: event.v,
               id: `${recursiveId}-${url}`,
@@ -292,10 +294,10 @@ export const processWebScrape: EventVersionHandler<{ urls: string[], recursive: 
               data: {
                 urls: [url],
                 recursive,
-                parentId:recursiveId
+                parentId: recursiveId
               },
               user: event.user
-            }
+            };
           });
           await inngest.send(recursiveEvents);
         }
@@ -308,7 +310,7 @@ export const processWebScrape: EventVersionHandler<{ urls: string[], recursive: 
       validPages: WebPage[];
       invalidPages: WebPage[];
     }
-    
+
     const { validPages, invalidPages }: FilteredPages = webPages.reduce(
       (acc: FilteredPages, page: WebPage) => {
         if (page?.content && page.content !== '') {
@@ -323,7 +325,11 @@ export const processWebScrape: EventVersionHandler<{ urls: string[], recursive: 
 
     // TODO: Update to remove from Pinecone as well
     if (invalidPages.length) {
-      console.log(`Updating documents ${invalidPages.map((p) => p.url.toLowerCase())} from DB due to no valid content`);
+      console.log(
+        `Updating documents ${invalidPages.map((p) =>
+          p.url.toLowerCase()
+        )} from DB due to no valid content`
+      );
       await prisma.document.updateMany({
         where: {
           url: { in: invalidPages.map((p) => p.url.toLowerCase()) }
@@ -375,14 +381,20 @@ export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
       fetchSitemapUrls(domain),
       getSitemapUrls(`${domain}/sitemap.xml`),
       getSitemapUrls(`${domain}/sitemap-index.xml`),
-      getSitemapUrls(`${domain}/sitemap1.xml`),
+      getSitemapUrls(`${domain}/sitemap1.xml`)
     ]);
 
     const uniquePath = getUniqueUrl(path);
 
-    const uniqueUrls = getUniqueUrls(([...(sitemapUrls || []), ...(xmlUrls || []), ...(xmlIndexUrls || [])])).filter(url => {
-      console.log({url, uniquePath, starts:url.startsWith(uniquePath)})
-      return url.startsWith(uniquePath)
+    const uniqueUrls = getUniqueUrls([
+      ...(sitemapUrls || []),
+      ...(xmlUrls || []),
+      ...(xmlIndexUrls || [])
+    ]).filter((url) => {
+      // This will match anything that starts with this path.
+      // Ex: /blog as the path would match /blog/page and /blogger-was-here/page
+      // Potential TODO to use regex or hardcode a slash at the end of the startsWith check
+      return url.startsWith(uniquePath);
     });
 
     if (!uniqueUrls?.length) {
@@ -392,11 +404,11 @@ export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
         name: 'web/page.sync',
         data: {
           recursive: true,
-          parentId:`${new Date().valueOf()}-recursive`,
+          parentId: `${new Date().valueOf()}-recursive`,
           urls: [path]
         },
         user: event.user
-      })
+      });
     } else {
       const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
 
@@ -421,4 +433,3 @@ export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
     }
   }
 };
-
