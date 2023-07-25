@@ -107,6 +107,8 @@ export async function POST(req: Request) {
     }
   };
 
+  // hi
+
   completionRequest = await getCompletionRequest({
     context,
     user,
