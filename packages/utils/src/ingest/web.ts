@@ -297,7 +297,7 @@ export const processWebScrape: EventVersionHandler<{ urls: string[], recursive: 
               user: event.user
             }
           });
-          inngest.send(recursiveEvents);
+          await inngest.send(recursiveEvents);
         }
 
         return webData;
