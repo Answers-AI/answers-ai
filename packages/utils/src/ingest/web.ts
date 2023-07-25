@@ -389,7 +389,6 @@ export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
       console.log('[web/path.sync] Could not extract URLs from sitemap.  Calling Scraper');
       inngest.send({
         v: event.v,
-        
         name: 'web/page.sync',
         data: {
           recursive: true,
@@ -402,11 +401,10 @@ export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
       const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
 
       try {
-        await Promise.all(
+        // await Promise.all(
           chunkArray(pendingSyncURLs, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
             inngest.send({
               v: event.v,
-              
               name: 'web/page.sync',
               data: {
                 _total: pendingSyncURLs.length,
@@ -415,7 +413,7 @@ export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
               user: event.user
             })
           )
-        );
+        // );
       } catch (error) {
         console.log(error);
       } finally {
