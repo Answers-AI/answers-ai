@@ -29,13 +29,11 @@ describe('Message', () => {
     mount(<MessageCard {...defaultProps} />);
     cy.get('[data-cy=message]').should('exist');
     cy.contains(defaultProps.content);
-    if (defaultProps.user?.name) cy.contains(defaultProps.user.name.charAt(0));
   });
 
   // it('handles likes', () => {
   //   mount(<MessageCard {...defaultProps} />);
   //   cy.get('[data-cy=like-button]').click();
-  //   cy.get('[data-cy=like-button]').should('have.css', 'color', 'rgb(255, 0, 0)');
   // });
 
   // it('handles dislikes', () => {

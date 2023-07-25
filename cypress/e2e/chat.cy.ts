@@ -2,9 +2,9 @@ describe('homepage spec', () => {
   beforeEach(() => {
     cy.login();
   });
-  it('visits / and chats with the AI', () => {
+  it('visits /chat and chats with the AI', () => {
     cy.intercept('/api/ai/stream').as('completionRequest');
-    cy.visit('/');
+    cy.visit('/chat');
     cy.get('#user-chat-input').type("say 'hello world'" + '{enter}');
     cy.get('[data-cy="message"][data-role="user"]').should('exist');
     cy.get('[data-cy="message"][data-role="loading"]').should('exist');
@@ -16,7 +16,7 @@ describe('homepage spec', () => {
 
   it('creates a new chat from an existing chat', () => {
     cy.intercept('/api/ai/stream').as('completionRequest');
-    cy.visit('/');
+    cy.visit('/chat');
     cy.get('#user-chat-input').type("say 'hello world'" + '{enter}');
     cy.get('[data-cy="message"][data-role="user"]').should('exist');
     cy.get('[data-cy="message"][data-role="loading"]').should('exist');

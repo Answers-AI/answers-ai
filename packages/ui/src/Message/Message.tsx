@@ -298,6 +298,7 @@ export const MessageCard = ({
                   <IconButton
                     color={lastInteraction === 'like' ? 'secondary' : 'default'}
                     size="small"
+                    data-cy="like-button"
                     onClick={handleLike}>
                     <ThumbUpIcon sx={{ fontSize: 16 }} />
                   </IconButton>
