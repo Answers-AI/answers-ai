@@ -1,12 +1,35 @@
-POST /api/route
-Summary: This API endpoint handles a POST request to a specific route. It performs various operations related to chat and AI processing, and returns a response stream.
+Template:
+{{prompt}}
+{{fileContents}}
+API Summary:
+This file contains a single API endpoint that handles a POST request. The endpoint is responsible for processing user input, generating a response using an AI model, and sending the response back to the client.
 
+Import statements:
+- `getServerSession` from `next-auth`: This function is used to retrieve the server session for authentication purposes.
+- `OpenAIStream` from `@utils/OpenAIStream`: This is a utility function for interacting with the OpenAI API.
+- `inngest` from `@utils/ingest/client`: This is a utility function for sending data to an ingest service.
+- `getCompletionRequest` from `@utils/llm/getCompletionRequest`: This function is used to generate a completion request for the AI model.
+- `fetchContext` from `@utils/pinecone/fetchContext`: This function is used to fetch context data for the AI model.
+- `upsertChat` from `@utils/upsertChat`: This function is used to create or update a chat object in the database.
+- `prisma` from `@db/client`: This is the Prisma client for interacting with the database.
+- `authOptions` from `@ui/authOptions`: This is an object containing options for authentication.
+
+Internal Functions:
+- `handleStreamEnd`: This function is called when the AI model has finished generating a response. It processes the response and sends it to the client.
+
+External Services:
+- OpenAI API: This API is used to generate responses using an AI model.
+- Ingest service: This service is used to send data to a data ingestion system.
+- Prisma: This is the database client used to interact with the database.
+
+API Endpoints:
+POST /api/route
+Summary: This endpoint handles a POST request and processes user input, generates a response using an AI model, and sends the response back to the client.
 Example Usage:
 ```
 curl -X POST \
   http://localhost:3000/api/route \
   -H 'Content-Type: application/json' \
-  -H 'cache-control: no-cache' \
   -d '{
   "journeyId": "123",
   "chatId": "456",
@@ -14,54 +37,36 @@ curl -X POST \
   "prompt": "Hello",
   "messages": [],
   "sidekick": {},
-  "gptModel": "model1"
+  "gptModel": "gpt-3.5-turbo"
 }'
 ```
 
 Example Response:
+```json
+{
+  "response": "Hello, how can I help you?"
+}
 ```
-Response stream
-```
-
-Import statements:
-- `getServerSession` from 'next-auth': This import is used to get the server session for authentication purposes.
-- `OpenAIStream` from '@utils/OpenAIStream': This import is used to create a stream for interacting with the OpenAI API.
-- `inngest` from '@utils/ingest/client': This import is used to send data to an ingest service.
-- `getCompletionRequest` from '@utils/llm/getCompletionRequest': This import is used to get the completion request for the AI model.
-- `fetchContext` from '@utils/pinecone/fetchContext': This import is used to fetch the context for the AI model.
-- `upsertChat` from '@utils/upsertChat': This import is used to upsert a chat in the database.
-- `prisma` from '@db/client': This import is used to interact with the database using Prisma.
-- `authOptions` from '@ui/authOptions': This import provides authentication options.
-
-Internal Functions:
-- `handleStreamEnd`: This function is called when the stream ends and handles the response from the AI model. It saves the answer to the database and sends a message to the ingest service.
-
-External Services:
-- Ingest service: This service is used to send data related to the chat and AI processing.
-
-API Endpoints:
-- POST /api/route: This endpoint handles a POST request to the specified route. It expects the following parameters in the request body: `journeyId`, `chatId`, `filters`, `prompt`, `messages`, `sidekick`, and `gptModel`. It performs various operations related to chat and AI processing, and returns a response stream.
 
 Interaction Summary:
-1. The API endpoint receives a POST request with the required parameters.
-2. It retrieves the server session for authentication.
-3. It checks if the user is authenticated and has an email. If not, it returns a redirect response with a status code of 401.
-4. It extracts the required parameters from the request body.
-5. It checks if a sidekick object is provided and retrieves the sidekick from the database if it exists.
-6. It upserts the chat in the database.
-7. It sends a message to the ingest service to indicate that a prompt has been upserted.
-8. It fetches the context, pinecone filters, pinecone data, and context documents using the provided parameters.
-9. If there is an error fetching the context, it logs the error and throws it.
-10. It defines a function to handle the end of the stream.
-11. It gets the completion request for the AI model using the provided parameters.
-12. It creates a stream using the OpenAIStream function, passing the necessary parameters and the handleStreamEnd function.
-13. It returns the stream as a response with the appropriate headers.
+1. The endpoint retrieves the server session for authentication purposes.
+2. It checks if the user is authenticated and has an email. If not, it returns a 401 Unauthorized response.
+3. It extracts the necessary data from the request payload, such as journeyId, chatId, filters, prompt, messages, sidekick, and gptModel.
+4. It checks if a sidekick object is provided and retrieves the sidekick from the database if it exists.
+5. It upserts the chat object in the database, creating a new chat if it doesn't exist or updating an existing one.
+6. It sends a message to the ingest service to record the user's prompt.
+7. It sends a message to the ingest service to record the prompt being upserted.
+8. It fetches context data from the Pinecone service, including filters, data, and context documents.
+9. It generates a completion request for the AI model using the context, user, organization, input, messages, sidekick, and gptModel.
+10. It establishes a stream connection with the OpenAI API using the OpenAIStream utility function.
+11. When the AI model generates a response, the handleStreamEnd function is called to process the response and send it to the client.
 
 Developer Questions:
-1. What is the purpose of the `getServerSession` function and how does it work?
-2. How does the `upsertChat` function handle the upsert operation in the database?
-3. What is the purpose of the `fetchContext` function and what data does it fetch?
-4. How does the `handleStreamEnd` function save the answer to the database and send a message to the ingest service?
-5. What is the purpose of the `OpenAIStream` function and how does it interact with the OpenAI API?
-6. How can I test this API endpoint locally?
-7. Are there any known issues or limitations with this code?
+1. What is the purpose of the `getServerSession` function and how is it used?
+2. How does the `OpenAIStream` utility function interact with the OpenAI API?
+3. What data is sent to the ingest service and why?
+4. How does the `upsertChat` function work and what does it do?
+5. How is the completion request generated for the AI model?
+6. What is the purpose of the `fetchContext` function and what data does it fetch?
+7. How is the response from the AI model processed and sent back to the client?
+8. Are there any known issues or TODO items related to this file?
