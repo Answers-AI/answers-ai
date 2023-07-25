@@ -13,7 +13,10 @@ export async function POST(req: Request, res: any) {
 
   const message = await prisma.message.findFirst({
     where: {
-      id: messageId
+      id: messageId,
+      chat: {
+        users: { some: { email: user?.email } }
+      }
     }
   });
 

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 import axios from 'axios';
-
+import { Rating } from 'db/generated/prisma-client';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -20,16 +20,11 @@ import { useAnswers } from './AnswersContext';
 import { MessageFeedback, User } from 'types';
 import { FormControlLabel, Checkbox } from '@mui/material';
 
-interface IFormInput extends Partial<MessageFeedback> {
-  // messageId: string;
-  // rating: 'thumbsDown' | 'thumbsUp';
-  // content: string;
-  // tags: string[];
-}
+interface IFormInput extends Partial<MessageFeedback> {}
 
 interface ModalProps {
   messageId: string;
-  rating: 'thumbsDown' | 'thumbsUp';
+  rating: Rating;
   onSave?: (args?: any) => void;
   onClose?: () => void;
 }
@@ -113,7 +108,6 @@ const ShareModal: React.FC<ModalProps> = ({ messageId, rating, onSave, onClose }
           </Box>
 
           <Box sx={{ display: 'flex', gap: 1, width: '100%', flexDirection: 'column' }}>
-            {/* Content field */}
             <Controller
               name="content"
               control={control}
@@ -134,7 +128,6 @@ const ShareModal: React.FC<ModalProps> = ({ messageId, rating, onSave, onClose }
               )}
             />
 
-            {/* Tags field */}
             <Controller
               name="tags"
               control={control}

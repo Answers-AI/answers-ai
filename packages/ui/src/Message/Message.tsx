@@ -30,6 +30,7 @@ import { useAnswers } from '../AnswersContext';
 import { Accordion, AccordionSummary, AccordionDetails } from '../Accordion';
 import FeedbackModal from '@ui/FeedbackModal';
 import { AppService, Document, Message } from 'types';
+import { Rating } from 'db/generated/prisma-client';
 
 interface MessageExtra {
   prompt?: string;
@@ -53,7 +54,6 @@ interface MessageCardProps extends Partial<Message>, MessageExtra {
 
 export const MessageCard = ({
   id,
-  feedback,
   content,
   role,
   user,
@@ -79,8 +79,8 @@ export const MessageCard = ({
   const [showFeedback, setShowFeedback] = useState(false);
   const services: { [key: string]: AppService } =
     appSettings?.services?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};
-  const [lastInteraction, setLastInteraction] = React.useState<string>('');
-  const hasContent = role === 'assistant' ? content && Object.keys(other)?.length : content;
+  const [lastInteraction, setLastInteraction] = React.useState<Rating | undefined>();
+  const hasContent = role === 'assistant' ? content && Object.keys(other)?.length : !!content;
   if (error) {
     pineconeData = error?.response?.data.pineconeData;
     summary = error?.response?.data.summary;
@@ -101,7 +101,7 @@ export const MessageCard = ({
         });
         setShowFeedback(true);
       } catch (err) {
-        setLastInteraction('');
+        setLastInteraction(null);
       }
       // Show modal to ask for added feedback
     }
@@ -124,7 +124,7 @@ export const MessageCard = ({
         setShowFeedback(true);
         // Show modal to ask for added feedback } catch (err) {
       } catch (err) {
-        setLastInteraction('');
+        setLastInteraction(null);
       }
     }
   };
@@ -134,7 +134,7 @@ export const MessageCard = ({
       {showFeedback && id ? (
         <FeedbackModal
           messageId={id}
-          rating={lastInteraction as 'thumbsDown' | 'thumbsUp'}
+          rating={lastInteraction}
           onClose={() => setShowFeedback(false)}
         />
       ) : null}

@@ -291,7 +291,7 @@ export interface Message extends Partial<DB.Message> {
   chat?: Chat | null;
   user?: User | null;
   role: ChatCompletionRequestMessageRoleEnum | string;
-  feedback?: MessageFeedback | null;
+  feedbacks?: MessageFeedback[];
   content: string;
 }
 
