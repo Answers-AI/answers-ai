@@ -321,22 +321,27 @@ export const processWebScrape: EventVersionHandler<{
         // Now that we have valid HTML, check if this should be recursive so we can build out the spidering
         if (recursive) {
           recursiveUrls = [...recursiveUrls, ...getDomainUrlsFromMarkdown(webData.content, domain)];
-          const recursiveId = parentId ?? new Date().valueOf();
-          const recursiveEvents = recursiveUrls.map((url) => {
-            return {
-              v: event.v,
-              id: `${recursiveId}-${url}`,
-              name: 'web/page.sync',
-              data: {
-                urls: [url],
-                recursive,
-                parentId: recursiveId
-              },
-              user: event.user
-            };
-          });
-          if (recursiveEvents.length) {
-            await inngest.send(recursiveEvents);
+          // console.log({ recursiveUrls });
+          if (recursiveUrls.length) {
+            const recursiveId = parentId ?? new Date().valueOf();
+            const recursiveEvents = recursiveUrls.map((url) => {
+              return {
+                v: event.v,
+                id: `${recursiveId}-${url}`,
+                name: 'web/page.sync',
+                data: {
+                  urls: [url],
+                  recursive,
+                  parentId: recursiveId
+                },
+                user: event.user
+              };
+            });
+            // console.log({ recursiveEvents });
+
+            if (recursiveEvents.length) {
+              await inngest.send(recursiveEvents);
+            }
           }
         }
 
