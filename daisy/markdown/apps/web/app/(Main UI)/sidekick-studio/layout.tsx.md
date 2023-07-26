@@ -18,11 +18,12 @@ Rendered components:
 - SidekickFormLayout: This component is rendered and receives the children prop as its content.
 
 Interaction Summary:
-The SidekickUIFormLayout component is a layout component that can be used to structure a form in a larger application. It renders the SidekickFormLayout component and passes the children prop to it. The SidekickFormLayout component is responsible for rendering the actual form content.
+The SidekickUIFormLayout component is a layout component that can be used to structure a form in a larger application. It is typically used as a wrapper component for other form-related components. It does not have any direct interaction with other components in the application.
 
 Developer Questions:
 - How should the children prop be populated with nested layouts or pages?
-- What is the purpose of the SidekickFormLayout component and how does it interact with the SidekickUIFormLayout component?
+- Are there any specific requirements or restrictions for the content of the children prop?
 
 Known Issues / Todo:
-None.
+- No known issues or bugs.
+- No specific todo items related to this component.

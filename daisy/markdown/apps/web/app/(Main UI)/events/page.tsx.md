@@ -20,12 +20,12 @@ Rendered components:
 - iframe: An HTML element that renders the web page from the INNGEST_SERVER_URL.
 
 Interaction Summary:
-The Inngest component interacts with other components by receiving appSettings as a prop and passing it to the AppSyncToolbar component. It also renders an iframe to display a web page from the INNGEST_SERVER_URL.
+The Inngest component interacts with the rest of the application by fetching appSettings and passing it to the AppSyncToolbar component. It also renders a web page from the specified INNGEST_SERVER_URL.
 
 Developer Questions:
 1. How is the appSettings prop passed to the Inngest component?
-2. What is the purpose of the AppSyncToolbar component and how does it interact with the Inngest component?
-3. How is the INNGEST_SERVER_URL determined and can it be customized?
+2. What is the purpose of the AppSyncToolbar component and how does it interact with other components?
+3. How can the INNGEST_SERVER_URL be customized or changed?
 4. How does the getAppSettings function work and what data does it return?
 
 Known Issues / Todo:

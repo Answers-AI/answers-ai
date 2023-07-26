@@ -1,12 +1,12 @@
 Summary:
-The provided React file is a server-side component that renders a chat detail page. It fetches data from a database using Prisma and displays the chat messages, users, and other related information. It also includes error handling for cases where the chat or user is not found.
+The provided React file is a server-side component that renders a chat detail page. It fetches data from a database using Prisma and displays the chat messages, users, and other related information. If the user accessing the page is not a participant in the chat, it renders a "ChatNotFound" component. The main component used in this file is the "Chat" component.
 
 Import statements:
-- React: The core React library.
+- React: The main React library.
 - prisma: The Prisma client for interacting with the database.
-- Chat: The UI component for rendering the chat.
-- ChatNotFound: The UI component for rendering a message when the chat is not found.
-- getCachedSession: A utility function for retrieving the cached session.
+- Chat: The main chat component for rendering the chat detail page.
+- ChatNotFound: A component to render when the chat is not found.
+- getCachedSession: A utility function to retrieve the cached user session.
 
 Component:
 - ChatDetailPage: The main component that renders the chat detail page. It is an async function that takes the "params" object as a parameter.
@@ -18,16 +18,18 @@ Event Handlers:
 - None
 
 Rendered components:
-- Chat: Renders the chat component with the "params", "chat", and "journey" props.
+- Chat: The main chat component that renders the chat detail page. It receives the "params" object, the "chat" object, and the "journey" object as props.
 
 Interaction Summary:
-The ChatDetailPage component interacts with other components in the application by importing and using the Chat and ChatNotFound UI components. It also uses the Prisma client to fetch data from the database. The component expects to receive the "params" object as a prop, which contains the chatId. It then fetches the chat data from the database using the chatId and includes related information such as the prompt, journey, messages, and users. If the chat or user is not found, it renders the ChatNotFound component.
+The ChatDetailPage component interacts with the Prisma client to fetch the chat data from the database. It includes the chat messages, users, prompt, journey, and context documents. It also uses the getCachedSession utility function to retrieve the user session. If the user accessing the page is not a participant in the chat, it renders the ChatNotFound component. The Chat component is rendered with the fetched chat data and the journey object.
 
 Developer Questions:
-- How does the getCachedSession function work and what does it return?
-- What is the structure of the "params" object and what properties does it contain?
-- How does the Prisma client interact with the database and what queries are being executed?
+- How does the Prisma client connect to the database?
+- What is the structure of the "chat" object returned from the Prisma query?
+- How does the getCachedSession function work?
+- How is the "params" object passed to the Chat component?
 - How does the Chat component handle user interactions and state management?
 
 Known Issues / Todo:
-- None
+- No known issues or bugs.
+- No specific todo items related to this component.

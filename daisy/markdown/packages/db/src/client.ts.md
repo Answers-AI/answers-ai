@@ -1,24 +1,28 @@
 Summary:
-This code is a script that configures and extends the functionality of the PrismaClient from the '../generated/prisma-client' module. It modifies the behavior of certain Prisma queries to implement soft deletion for specific models. Soft deletion means that instead of permanently deleting records from the database, they are marked as deleted by setting a 'deleted' flag to true. The script also sets up logging levels for the PrismaClient based on the DEBUG_LEVEL environment variable.
+This code is responsible for configuring and customizing the PrismaClient, which is a database client used in the broader software application. It sets up soft delete functionality for certain models and modifies query actions to handle soft deletes.
 
 Import statements:
-- { PrismaClient } from '../generated/prisma-client': This imports the PrismaClient class from the '../generated/prisma-client' module.
+- `PrismaClient` is imported from the `../generated/prisma-client` file. This is the main class provided by Prisma for interacting with the database.
 
 Script Summary:
-The script configures the PrismaClient instance by modifying its behavior for soft deletion and setting up logging levels. It also exports the configured PrismaClient instance.
+- The script defines a constant `DEBUG_LEVEL` which is used to determine the level of debugging information to be logged.
+- The `prisma` variable is declared as a global variable, either using an existing global `prisma` object or creating a new instance of `PrismaClient` with the specified debug level.
+- If the environment is not production, the `prisma` object is assigned to the global `prisma` variable.
+- The `SOFT_DELETE_MODELS` constant is an array of model names that should support soft delete functionality.
+- The script adds middleware functions to the `prisma` object to handle soft deletes and modify query actions accordingly.
 
 Internal Functions:
-- prisma.$use: This function is a middleware that intercepts and modifies Prisma queries. It takes two parameters: params and next. The params parameter contains information about the current query, such as the model, action, and arguments. The next parameter is a function that should be called to continue the execution of the query. The function modifies the behavior of findUnique, findFirst, findMany, delete, and deleteMany actions for the specified soft delete models. It changes the action to findFirst for findUnique and findFirst actions, adds a 'deleted' filter to exclude deleted records, and changes delete and deleteMany actions to update and updateMany actions respectively, setting the 'deleted' flag to true.
+- None
 
 External Functions:
-- prisma: This is the configured PrismaClient instance that is exported from the script.
+- None
 
 Interaction Summary:
-This script interacts with the PrismaClient module and modifies its behavior for soft deletion. It can be used by other parts of the application to perform database operations using the configured PrismaClient instance.
+This script interacts with the PrismaClient to configure its behavior and add custom functionality. It modifies query actions for soft delete models and handles soft deletes by changing the action to an update and setting the `deleted` field to true.
 
 Developer Questions:
-- How can I configure the logging levels for the PrismaClient?
-- How can I add soft deletion behavior to other models?
-- How can I disable soft deletion for specific models?
-- How can I restrict updating "soft deleted" records?
-- How can I modify the behavior of other Prisma actions?
+- How can I enable soft delete functionality for additional models?
+- How can I customize the debug level for the `prisma` object?
+- How can I modify the middleware functions to handle additional query actions?
+- How can I restrict updating "soft deleted" records? (Uncommented code block)
+- How can I handle soft deletes for other types of actions, such as create or update?

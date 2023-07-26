@@ -18,11 +18,11 @@ External Functions:
 - `sleep(ms: number)`: This is a utility function that takes a number of milliseconds and returns a promise that resolves after the specified time. It is used for adding delays in the code.
 
 Interaction Summary:
-The `OpenAI` class can be used by other parts of the application to create embeddings and perform chat completions using the OpenAI API. Developers can create an instance of the `OpenAI` class and call its methods to interact with the API.
+The `OpenAI` class can be used by other parts of the application to create embeddings and perform chat completions using the OpenAI API. Developers can create an instance of the `OpenAI` class and call its methods to perform these tasks.
 
 Developer Questions:
 - How do I create an instance of the `OpenAI` class?
-- How do I set the API key for the `OpenAI` class?
-- How do I change the default model used by the `OpenAI` class?
+- How do I set a different default model for the `OpenAI` class?
 - How do I create an embedding for a given input?
 - How do I perform a chat completion using the `OpenAI` class?
+- How do I handle errors that occur during API calls?

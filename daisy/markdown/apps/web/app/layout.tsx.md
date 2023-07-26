@@ -15,16 +15,17 @@ Event Handlers:
 None.
 
 Rendered components:
-- html: The root HTML element with the Poppins font class applied.
-- body: The body element with the Poppins font class applied and the children components rendered within it.
+- html: Represents the HTML document.
+- body: Represents the body element of the HTML document.
+- {children}: Represents the nested layouts or pages to be rendered within the body element.
 
 Interaction Summary:
-This component is a server-side component as it is responsible for rendering the initial HTML structure of the application. It interacts with other components by rendering the children components within the body element, providing a consistent layout for the entire application.
+This component is a server-side component as it is responsible for rendering the initial HTML structure of the application. It interacts with other components by rendering the children components within the body element.
 
 Developer Questions:
 1. How can I customize the font weight and subsets used by the Poppins font?
 2. Can I use a different font instead of Poppins for the body element?
-3. What happens if the children prop is not provided or is null?
+3. How can I pass additional props to the children components?
 
 Known Issues / Todo:
 - There are no known issues or bugs with this component.

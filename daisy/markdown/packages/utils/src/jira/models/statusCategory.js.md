@@ -16,11 +16,11 @@ Internal Functions:
 - tidy(statusCategory): This static method takes a statusCategory object as a parameter and removes the fields "self", "colorName", and "key" from the object. It returns the tidied version of the statusCategory object.
 
 Interaction Summary:
-The JiraStatusCategory class can be used to represent and manipulate status categories in Jira. It extends the JiraObject class, suggesting that it may inherit or use functionality from the JiraObject class. Other parts of the application can create instances of the JiraStatusCategory class and interact with its methods to perform operations related to status categories in Jira.
+The JiraStatusCategory class can be used to represent and manipulate status categories in Jira. It extends the JiraObject class, suggesting that it may inherit or use functionality from the JiraObject class. Other parts of the application can create instances of the JiraStatusCategory class and interact with its methods to perform operations related to status categories.
 
 Developer Questions:
-- How can I create an instance of the JiraStatusCategory class?
 - What methods are available in the JiraStatusCategory class?
+- How can I create an instance of the JiraStatusCategory class?
+- What fields are present in the statusCategory object?
 - How does the JiraStatusCategory class interact with the JiraObject class?
-- What fields are required in the statusCategory object passed to the JiraStatusCategory constructor?
-- How can I use the tidy method to remove fields from a statusCategory object?
+- Are there any other dependencies or interactions with other parts of the application?

@@ -13,30 +13,23 @@ The SnackMessage component is a functional component that takes a prop called "m
 
 Hooks:
 - useState: The component uses the useState hook to manage the state of the snackbar being open or closed. It initializes the state to false using the useState function and provides a setter function to update the state.
+
 - useEffect: The component uses the useEffect hook to update the state of the snackbar based on changes to the "message" prop. If the "message" prop is empty, the snackbar is closed. Otherwise, it is opened.
 
 Event Handlers:
 - handleMessageClose: This event handler is called when the snackbar is closed. It sets the state of the snackbar to false, effectively closing it.
 
 Rendered components:
-- Snackbar: The main component rendered by SnackMessage. It displays the message in a snackbar at the top right corner of the screen. It receives several props:
-  - anchorOrigin: Specifies the position of the snackbar on the screen.
-  - open: Controls whether the snackbar is open or closed.
-  - autoHideDuration: Specifies the duration in milliseconds for which the snackbar should be displayed before automatically closing.
-  - onClose: Specifies the event handler to be called when the snackbar is closed.
-  - TransitionComponent: Specifies the transition animation to be used when the snackbar appears.
-  - message: The message to be displayed in the snackbar.
-  - key: A unique key used to identify the snackbar component.
+- Snackbar: The main component rendered by the SnackMessage component. It displays the message passed as a prop. It is configured with an anchor origin of top-right and a transition animation that slides in from the left.
 
 Interaction Summary:
-The SnackMessage component can be used in other components to display messages in a snackbar. It receives a "message" prop, which determines the content of the snackbar. The snackbar appears when the "message" prop is not empty and automatically closes after a specified duration. The snackbar can also be closed manually by the user.
+The SnackMessage component can be used in other components to display messages in a snackbar. Other components can pass a message as a prop to the SnackMessage component, and it will handle the opening and closing of the snackbar based on the message.
 
 Developer Questions:
 - How can I customize the appearance of the snackbar?
 - Can I change the position of the snackbar on the screen?
-- How can I change the transition animation of the snackbar?
-- Can I change the duration for which the snackbar is displayed?
-- How can I handle events when the snackbar is closed?
+- How can I change the duration for which the snackbar is displayed?
+- Can I use a different transition animation for the snackbar?
 
 Known Issues / Todo:
 - No known issues or bugs.

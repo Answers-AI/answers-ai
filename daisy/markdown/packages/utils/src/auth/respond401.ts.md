@@ -17,6 +17,6 @@ Interaction Summary:
 This code snippet can be used as a utility function to quickly generate a 401 Unauthorized response. It can be imported and used in other parts of the application that handle HTTP requests and responses.
 
 Developer Questions:
-- How can I customize the response body or status code?
-- Can I use this function with different HTTP methods?
-- How can I handle other types of HTTP responses?
+- How can I use this function in my application?
+- Can I customize the response body or status code?
+- Are there any other utility functions available for handling different HTTP status codes?

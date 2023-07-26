@@ -11,18 +11,17 @@ Script Summary:
 - The getVectors() method returns an array of vectors. It chunks the comments of the JiraThread object into groups of 10 comments per thread and creates a vector object for each chunk. The vector object contains the id, text, and other properties of the thread.
 
 Internal Functions:
-- createContext(metadata, jiraAdfToMarkdown): This function takes a metadata object and a jiraAdfToMarkdown function as arguments. It generates a context string by iterating over the comments in the metadata object and formatting them. The formatted comments include the author's display name, the comment body converted to markdown using the jiraAdfToMarkdown function, and the issue key. The function returns the generated context string.
+- The createContext() function takes metadata and a jiraAdfToMarkdown function as arguments. It generates a context string by iterating over the comments in the metadata and formatting them. The formatted comments include the author's display name, the comment body converted to markdown using the jiraAdfToMarkdown function, and the issue key. The function returns the generated context string.
 
 External Functions:
-- None
+- No external functions are defined in this module.
 
 Interaction Summary:
-The JiraThread class can be used within the broader software application to represent and manipulate JIRA comments threads. It provides methods for tidying the thread object, retrieving vectors, and generating context strings for the thread.
+- This module can be used within a broader software application to handle JIRA comments threads. It provides functionality for creating JiraThread objects, tidying thread objects, and generating vectors from the comments of a thread.
 
 Developer Questions:
-- How can I use the JiraThread class to create and manipulate JIRA comments threads?
-- What properties and methods are available in the JiraThread class?
-- How does the tidying process work in the JiraThread class?
+- How can I create a JiraThread object and pass a thread object to it?
+- What properties and methods are available on a JiraThread object?
+- How can I access the vectors generated from the comments of a JiraThread object?
+- How does the tidying of a thread object work in the tidy() method?
 - What is the purpose of the createContext() function and how is it used?
-- How can I customize the behavior of the JiraThread class to fit my application's needs?
-- Are there any known issues or bugs with the JiraThread class that I should be aware of?

@@ -16,9 +16,7 @@ The SidekickFormPage component is an async function that takes in a params objec
 
 Next, it queries the database using the prisma client to retrieve all unique tags associated with Sidekicks created by the current user. It then flattens and gets the unique values from the tags array.
 
-The component constructs a contextFields object using the getUserContextFields, getOrganizationContextFields, and getResultContextFields utility functions.
-
-Finally, it renders the SidekickForm component with the params, allTags, and contextFields as props.
+The component constructs a contextFields object using the session user, current organization, and result. Finally, it renders the SidekickForm component with the params, allTags, and contextFields as props.
 
 Hooks:
 None

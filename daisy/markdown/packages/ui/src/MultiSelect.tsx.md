@@ -3,40 +3,39 @@ The provided React file is a functional component called MultiSelect. It is a cl
 
 Import statements:
 - React: The core React library.
-- Theme and useTheme from '@mui/material/styles': These are used for theming the component.
-- Box, OutlinedInput, InputLabel, MenuItem, FormControl, Select, and Chip from '@mui/material': These are Material-UI components used in the rendering of the multi-select dropdown.
+- Theme and useTheme from '@mui/material/styles': These are used to access the MUI theme and apply styles to the component.
+- Box, OutlinedInput, InputLabel, MenuItem, FormControl, Select, and Chip from '@mui/material': These are MUI components used to build the multi-select dropdown menu.
 
 Component:
 The MultiSelect component is a functional component that takes in several props:
-- sx: Custom styling for the component.
-- label: The label for the multi-select dropdown.
-- value: An array of selected values.
-- options: An array of options to choose from.
-- onChange: A callback function to handle changes in the selected values.
+- sx: Custom styles for the component.
+- label: The label for the multi-select dropdown menu.
+- value: An array of selected options.
+- options: An array of available options.
+- onChange: A callback function to handle changes in the selected options.
 
 Hooks:
-- useTheme: This hook is used to access the current theme of the component.
+- useTheme: This hook is used to access the MUI theme.
 
 Event Handlers:
-- handleChange: This function is called when the selected values in the multi-select dropdown change. It updates the selected values by splitting the stringified value if it exists.
+- handleChange: This function is called when the selected options change. It updates the selected options based on the event target's value.
 
 Rendered components:
-- FormControl: This component wraps the multi-select dropdown and provides styling and accessibility features.
-- InputLabel: This component displays the label for the multi-select dropdown.
-- Select: This component renders the multi-select dropdown menu.
-- OutlinedInput: This component provides the input field for the multi-select dropdown.
-- MenuItem: This component represents each option in the dropdown menu.
-- Chip: This component represents each selected value as a chip.
+- FormControl: This component wraps the multi-select dropdown menu and provides styling.
+- InputLabel: This component displays the label for the multi-select dropdown menu.
+- Select: This component renders the actual multi-select dropdown menu.
+- OutlinedInput: This component provides the input field for the multi-select dropdown menu.
+- MenuItem: This component represents an option in the dropdown menu.
+- Chip: This component represents a selected option and is displayed as a chip.
 
 Interaction Summary:
-The MultiSelect component interacts with other components by receiving props and passing the selected values back to the parent component through the onChange callback. It relies on the Material-UI components for rendering the multi-select dropdown and handling user interactions.
+The MultiSelect component interacts with other components by rendering the multi-select dropdown menu and handling changes in the selected options. It communicates with the parent component through the onChange prop, which is called whenever the selected options change.
 
 Developer Questions:
-- How can I customize the styling of the MultiSelect component?
-- How can I change the number of visible options in the dropdown menu?
-- How can I change the appearance of the selected values (chips)?
-- How can I handle additional events or actions when the selected values change?
+- How can I customize the styles of the MultiSelect component?
+- How can I pass initial selected options to the MultiSelect component?
+- How can I handle the selected options in the parent component?
 
 Known Issues / Todo:
 - No known issues or bugs.
-- No specific todo items related to this component.
+- No todo items.

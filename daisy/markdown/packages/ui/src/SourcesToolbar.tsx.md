@@ -18,33 +18,27 @@ Hooks:
 - useAnswers: This hook is used to manage filters and answers. It returns an object with properties "filters", "showFilters", and "updateFilter".
 
 Event Handlers:
-- handleOpenToggle: This event handler is called when a service is clicked. It toggles the opened state of the service based on the provided serviceId.
+- handleOpenToggle: This event handler is called when a service is clicked. It toggles the opened state of the service by updating the "opened" state variable.
 
 Rendered components:
-- Accordion: This component is rendered to create a collapsible section for selected sources. It uses AccordionSummary and AccordionDetails components as its children.
-- AccordionSummary: This component is rendered as the header of the Accordion. It displays the text "Selected sources" and an expand/collapse icon.
-- AccordionDetails: This component is rendered as the content of the Accordion. It renders the Filters component.
-- Filters: This component is rendered to display and manage the filters.
-- Accordion: This component is rendered to create a collapsible section for adding new sources. It uses AccordionSummary and AccordionDetails components as its children.
-- AccordionSummary: This component is rendered as the header of the Accordion. It displays the text "Add new sources" and an expand/collapse icon.
-- AccordionDetails: This component is rendered as the content of the Accordion. It renders a List component.
-- List: This component is rendered to display a list of enabled services. It uses ListItem components as its children.
-- ListItem: This component is rendered to display a single enabled service. It uses ListItemButton, ListItemIcon, ListItemText, and Collapse components as its children.
-- ListItemButton: This component is rendered as the clickable area of the ListItem. It displays the service name, an avatar, and an expand/collapse icon.
-- ListItemIcon: This component is rendered to display the avatar of the service.
-- ListItemText: This component is rendered to display the name of the service.
-- Collapse: This component is rendered to create a collapsible section for the JourneySetting component. It renders the JourneySetting component as its child.
-- JourneySetting: This component is rendered to display and manage the settings for a specific service. It takes props like "app", "appSettings", "filters", and "updateFilter".
+- Accordion: This component renders a collapsible section with a summary and details. It is used to display the selected sources and add new sources sections.
+- AccordionSummary: This component renders the summary part of the Accordion. It displays the title of the section and an expand/collapse icon.
+- AccordionDetails: This component renders the details part of the Accordion. It contains the content of the section.
+- Filters: This component renders the filters based on the "filters" prop.
+- List, ListItem, ListItemButton, ListItemIcon, ListItemText: These components are used to render the list of enabled services. Each service is displayed as a ListItem with an Avatar, service name, and expand/collapse icon.
+- Collapse: This component is used to conditionally render the JourneySetting component based on the opened state of a service.
+- JourneySetting: This component renders the settings for a specific service. It receives props related to the app, appSettings, filters, and updateFilter.
 
 Interaction Summary:
-The SourcesToolbar component interacts with other components in the application by using props and hooks. It receives the "appSettings" prop, which is an object containing application settings. It uses the useFlags hook to fetch feature flags for services based on the appSettings. It also uses the useAnswers hook to manage filters and answers. The component renders sub-components like Accordion, Filters, and JourneySetting to display and manage the sources.
+The SourcesToolbar component interacts with other components in the application by using the useFlags and useAnswers hooks to fetch and manage data. It also renders sub-components like Accordion, Filters, and JourneySetting to display and manage the sources. The component receives the appSettings prop, which is used to determine the enabled services and their flags.
 
 Developer Questions:
-- How are the feature flags fetched and used in the component?
+- How are the feature flags fetched and used in this component?
 - How are the filters managed and updated in the useAnswers hook?
-- How does the handleOpenToggle event handler toggle the opened state of a service?
+- How does the handleOpenToggle event handler work?
+- How is the opened state variable used to conditionally render the JourneySetting component?
 - How are the enabled services filtered based on the feature flags?
-- How does the SourcesToolbar component receive the appSettings prop?
+- How are the filters passed to the JourneySetting component?
 
 Known Issues / Todo:
 - No known issues or bugs with the component.

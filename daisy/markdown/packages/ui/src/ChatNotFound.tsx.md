@@ -8,7 +8,7 @@ Import statements:
 - Typography: A component from the Material-UI library used for rendering text.
 
 Component:
-The ChatNotFound component is a functional component that takes no props. It renders a Box component that occupies the entire width and height of its parent container. Inside the Box, there is another Box component that displays its children in a column layout with a gap of 2 units.
+The ChatNotFound component is a functional component that takes no props. It renders a Box component that occupies the entire width and height of its parent container. Inside the Box, it renders another Box component that acts as a container for the message and button. The inner Box has a column layout and a gap of 2 between its child components.
 
 Hooks:
 None.
@@ -22,13 +22,13 @@ Rendered components:
 - Button: Renders a button with the text "Start your own". It is a NextLink component that navigates to "/chat" when clicked.
 
 Interaction Summary:
-The ChatNotFound component is typically used when a user tries to access a chat that does not exist. It can be rendered within a larger application, such as a chat application, to handle the case when a chat is not found. The component provides a message to the user and a button to start their own chat.
+The ChatNotFound component is typically used when a user tries to access a chat that does not exist. It can be rendered within a larger application, such as a chat application, to handle the scenario when a chat is not found. The component provides a message to the user and a button to start their own chat.
 
 Developer Questions:
-- How can I customize the text displayed by the Typography components?
-- Can I change the styling of the Button component?
-- How can I handle the case when the user clicks the button?
+1. How can I customize the text displayed in the ChatNotFound component?
+2. Can I change the styling of the components used in ChatNotFound?
+3. How can I handle the case when the user clicks the button in ChatNotFound?
 
 Known Issues / Todo:
-- No known issues or bugs.
+- No known issues or bugs with the component.
 - No specific todo items related to this component.

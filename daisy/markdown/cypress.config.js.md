@@ -11,7 +11,7 @@ Internal Functions:
 - None
 
 External Functions:
-- `defineConfig(config: object): object`: This function is used to define the configuration for Cypress tests. It takes an object as a parameter, which contains various configuration options. It returns an object representing the defined configuration.
+- `defineConfig(config: object): object`: This function is used to define the configuration for Cypress tests. It takes an object as a parameter, which contains various configuration options. It returns an object representing the configuration.
 
 Interaction Summary:
 This script is used by the Cypress testing framework to configure the behavior of tests. It can be used to specify options such as the number of retries, the project ID, the base URL, and the setup for the development server. Developers can modify this script to customize the testing configuration according to their needs.

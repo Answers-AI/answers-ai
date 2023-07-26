@@ -2,7 +2,7 @@ Script Purpose and Role:
 The purpose of this script is to alter the structure of a database table called "Message" by adding a new column called "context". The script is responsible for executing the SQL command that performs the alteration.
 
 Script Structure:
-The script consists of a single SQL command enclosed within triple quotes ("""). This command is used to alter the table structure.
+The script consists of a single SQL command enclosed within triple quotes. The command is executed directly when the script is run.
 
 Import Statements:
 There are no import statements in this script.
@@ -20,4 +20,4 @@ Potential Bugs or Issues:
 There are no potential bugs or issues in this script.
 
 Summary:
-This script is a simple SQL command that alters the structure of a database table by adding a new column. It does not contain any complex logic or functionality. To modify or extend this script, you can change the table name, column name, data type, or default value in the ALTER TABLE command to suit your requirements.
+This script is a simple SQL command that alters a database table by adding a new column. It does not contain any complex logic or functionality. The script can be executed as is to perform the alteration, or it can be modified to alter other tables or columns in the database.

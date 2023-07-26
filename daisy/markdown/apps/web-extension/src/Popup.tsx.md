@@ -6,26 +6,26 @@ Import statements:
 - Box: A component from the Material-UI library that provides a flexible container.
 
 Component:
-The App component is a functional component that renders a Box component containing an iframe. It also includes a useEffect hook that sets up a message listener using the chrome.runtime API. The useEffect hook is used to add and remove the message listener when the component mounts and unmounts.
+The "App" component is a functional component that uses the React.useState hook to manage its state. It also uses the React.useEffect hook to set up and clean up a message listener for receiving messages from the Chrome runtime.
 
 Hooks:
-- useEffect: This hook is used to set up the message listener using the chrome.runtime API. It takes a callback function as its first argument and an empty dependency array as its second argument. The callback function defines the messageListener and adds it to the chrome.runtime.onMessage event listener. It also returns a cleanup function that removes the messageListener from the event listener when the component unmounts.
+- React.useEffect: This hook is used to set up and clean up the message listener. It runs once when the component is mounted and returns a cleanup function to remove the listener when the component is unmounted.
 
 Event Handlers:
-- messageListener: This function is the callback function used in the useEffect hook. It takes three parameters: message, sender, and sendResponse. It is currently commented out and does not perform any actions.
+- messageListener: This function is the event handler for the message event. It receives a message, sender, and sendResponse as parameters. Currently, it is commented out and does not perform any actions.
 
 Rendered components:
-- Box: This component is imported from the Material-UI library and is used as a container for other components. It has various styling properties defined using the sx prop.
-- iframe: This HTML element is rendered inside the Box component and loads a webpage from the specified URL.
+- Box: This component is rendered as the root element of the component. It is a flexible container that applies styling and layout properties to its children.
+- iframe: This component is rendered as a child of the Box component. It displays a webpage from the specified URL.
 
 Interaction Summary:
-The App component interacts with the chrome.runtime API by setting up a message listener. It listens for messages sent by other parts of the application or external sources. Currently, the component does not perform any actions when a message is received.
+The "App" component interacts with the Chrome runtime by setting up a message listener using the chrome.runtime.onMessage.addListener method. It listens for messages from the runtime and can respond to them if necessary. The component also renders a webpage inside an iframe element.
 
 Developer Questions:
 - How can I customize the styling of the Box component?
-- How can I handle the received messages and perform actions based on their content?
-- How can I pass data from the App component to the iframe component?
+- How can I pass data from the iframe to the parent component?
+- How can I handle errors when loading the webpage in the iframe?
 
-Known Issues / Todo:
-- The messageListener function is currently commented out and does not perform any actions. It needs to be implemented to handle received messages.
+Known Issues and Todo Items:
 - There are no known issues or bugs with the component at the moment.
+- Todo: Uncomment and implement the functionality of the messageListener event handler.

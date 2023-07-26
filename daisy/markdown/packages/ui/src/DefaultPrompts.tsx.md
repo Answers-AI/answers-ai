@@ -1,43 +1,43 @@
 Summary:
-The provided React file is a client-side component that renders a list of prompts in an accordion format. It uses Material-UI components for styling and includes a sub-component called PromptCard to render individual prompts.
+The provided React file is a client-side component that renders a list of prompts in an accordion format. It uses Material-UI components for styling and interaction. The component receives props for handling the expanded state, changing the expanded state, and selecting a prompt. It also uses a custom hook called useAnswers to access the prompts data.
 
 Import statements:
 - React: The core React library.
-- Accordion, AccordionDetails, AccordionSummary: Material-UI components for creating accordions.
+- Accordion, AccordionDetails, AccordionSummary: Material-UI components for creating an accordion.
 - Box: Material-UI component for creating layout containers.
 - Typography: Material-UI component for displaying text.
 - ExpandMoreIcon: Material-UI icon component for the expand icon.
-- PromptCard: A custom sub-component for rendering individual prompts.
-- useAnswers: A custom hook for accessing answers data.
+- PromptCard: A custom component for rendering individual prompt cards.
+- useAnswers: A custom hook for accessing the prompts data.
 
 Component:
-The DefaultPrompts component is a functional component that takes in three props: expanded, handleChange, and onPromptSelected. It renders a list of prompts in an accordion format.
+The DefaultPrompts component is a functional component that renders a list of prompts in an accordion format. It receives props for handling the expanded state, changing the expanded state, and selecting a prompt. It uses the useAnswers hook to access the prompts data.
 
 Hooks:
-- useAnswers: This hook is used to access the prompts data and setInputValue function from the AnswersContext.
+- useAnswers: This custom hook provides access to the prompts data and the setInputValue function. It is used to retrieve the prompts array.
 
 Event Handlers:
-- handleChange: This event handler is called when the accordion is expanded or collapsed. It takes in an event object and the expanded state as arguments.
-- handlePromptClick: This event handler is called when a prompt is clicked. It takes in the prompt string as an argument and calls the onPromptSelected prop function.
+- handleChange: This event handler is called when the accordion is expanded or collapsed. It receives the event object and the expanded state as parameters.
+- onPromptSelected: This event handler is called when a prompt is selected. It receives the selected prompt as a parameter.
 
 Rendered components:
-- Accordion: Renders the main accordion component. It takes in the expanded prop to control its state and the handleChange prop to handle state changes.
-- AccordionSummary: Renders the summary section of the accordion. It includes the expand icon and the "Recommended prompts" text.
-- AccordionDetails: Renders the details section of the accordion. It contains the list of PromptCard components.
-- Box: Acts as a container for the PromptCard components.
-- Typography: Renders the "Recommended prompts" text.
-- PromptCard: Renders individual prompts. It takes in the prompt data as props and calls the onClick prop function when clicked.
+- Accordion: Renders the main accordion container.
+- AccordionSummary: Renders the summary section of the accordion, which displays the title "Recommended prompts" and an expand icon.
+- AccordionDetails: Renders the details section of the accordion, which contains the list of prompt cards.
+- Box: Renders a container for the prompt cards.
+- Typography: Renders the title "Recommended prompts".
+- ExpandMoreIcon: Renders the expand icon.
+- PromptCard: Renders individual prompt cards based on the prompts array.
 
 Interaction Summary:
-The DefaultPrompts component interacts with the AnswersContext through the useAnswers hook to access the prompts data and setInputValue function. It also interacts with the PromptCard component to render individual prompts and handle click events.
+The DefaultPrompts component renders a list of prompts in an accordion format. The user can expand or collapse the accordion to view or hide the prompt cards. When a prompt card is clicked, the onPromptSelected event handler is called, which allows the parent component to handle the selected prompt.
 
 Developer Questions:
-- How is the expanded state managed in the parent component?
-- How is the prompts data fetched and updated in the AnswersContext?
-- How can I customize the styling of the accordion and PromptCard components?
-- How can I add additional props to the PromptCard component?
-- How can I handle other events or interactions within the DefaultPrompts component?
+- How can I customize the styling of the accordion and prompt cards?
+- How can I pass additional props to the PromptCard component?
+- How can I modify the behavior of the handleChange event handler?
+- How can I access the selected prompt in the parent component?
 
 Known Issues / Todo:
 - No known issues or bugs.
-- No specific todo items mentioned in the provided code.
+- No specific todo items related to this component.

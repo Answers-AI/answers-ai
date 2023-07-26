@@ -22,22 +22,22 @@ Event Handlers:
 
 Rendered components:
 - SnackMessage: This component is rendered to display a snack message with the text "...Loading" when the isLoading state is true.
-- Typography: This component renders the heading "Sidekicks".
+- Typography: This component renders a heading with the text "Sidekicks".
 - Divider: This component renders a horizontal divider.
-- Button: This component renders a button with the label "Add New Sidekick". Clicking on the button navigates to the "/sidekick-studio/new" page.
-- Tabs: This component renders the set of tabs for selecting different lists of sidekicks.
-- Tab: These components represent individual tabs in the Tabs component.
+- Button: This component renders a button with the text "Add New Sidekick". Clicking on the button navigates to the "/sidekick-studio/new" page.
+- Tabs: This component renders a set of tabs for selecting different lists of sidekicks.
+- Tab: This component represents an individual tab in the Tabs component.
 - SidekickList: This component is rendered multiple times, each with a different endpoint prop based on the selected tab. It renders a list of sidekicks.
 
 Interaction Summary:
-The SidekickTabs component interacts with other components in the application by rendering the SidekickList component multiple times with different endpoints based on the selected tab. It also interacts with the Flagsmith library to conditionally render the "System" tab based on a feature flag. The component uses the NextLink component for client-side navigation to the "/sidekick-studio/new" page.
+The SidekickTabs component interacts with other components in the application by rendering the SidekickList component multiple times with different endpoints based on the selected tab. It also uses the useFlags hook from the Flagsmith library to conditionally render a "System" tab based on a feature flag. The component allows the user to switch between different lists of sidekicks by selecting different tabs. It also allows the user to add a new sidekick by clicking on the "Add New Sidekick" button.
 
 Developer Questions:
-- How can I customize the labels and values of the tabs?
-- How can I add more tabs to the component?
-- How can I change the endpoint URLs for fetching sidekick data?
-- How can I customize the appearance of the SidekickList component?
+- How are the different endpoints for the SidekickList component determined based on the selected tab?
+- How does the useFlags hook from the Flagsmith library work and how is it used to conditionally render the "System" tab?
+- How is the isLoading state used to display the loading snack message?
+- How is the currentTab state updated when the user selects a different tab?
 
 Known Issues / Todo:
-- No known issues or bugs.
-- Todo: Add error handling for failed API requests.
+- No known issues or bugs with the component.
+- No specific todo items related to this component.

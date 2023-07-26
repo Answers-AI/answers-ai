@@ -17,7 +17,7 @@ Variable Usage:
 There are no variables used in this script.
 
 Potential Bugs or Issues:
-There are no bugs or issues with this script as it is a simple SQL script that performs ALTER TABLE operations. However, it is important to ensure that the tables being altered ("Chat", "Journey", "Message", and "Prompt") exist in the database before running this script. Additionally, if the "deleted" column already exists in any of these tables, running this script may result in an error.
+There are no bugs or issues with this script as it is a simple SQL script that performs table alterations. However, it is important to ensure that the tables being altered ("Chat", "Journey", "Message", and "Prompt") exist in the database before running this script. Additionally, if the "deleted" column already exists in any of these tables, running this script may result in an error.
 
 Summary:
-This script is a straightforward SQL script that alters four database tables by adding a new column called "deleted". The script does not contain any complex logic or control flow. It is important to ensure the existence of the tables and handle any potential errors related to the alteration of the tables.
+This script is a straightforward SQL script that alters four database tables by adding a new column called "deleted". The script does not contain any complex logic or control flow. It is important to ensure the existence of the tables and the absence of the "deleted" column before running this script.

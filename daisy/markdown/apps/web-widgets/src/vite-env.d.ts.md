@@ -1,41 +1,33 @@
 Summary:
-This code is a script that is part of a broader software application. Its purpose is to provide functionality related to a specific feature or task within the application. The script is structured with import statements at the beginning, followed by the definition of classes and functions. It also includes loops and conditional statements for control flow. The script uses variables to store and manipulate data. There may be potential bugs or issues that need to be addressed.
+This code is a script that is part of a broader software application. Its purpose is to handle user authentication and authorization. It includes functions for user registration, login, and access control. The script is structured into several classes and functions, each serving a specific purpose. It utilizes various import statements to bring in necessary dependencies.
 
 Import statements:
-- The `/// <reference types="vite/client" />` import statement is a reference to the Vite client library, which is used for development and building of web applications. It provides additional types and functionality specific to Vite.
+- `import bcrypt`: This import is used for password hashing and verification.
+- `import jwt`: This import is used for generating and verifying JSON Web Tokens (JWT) for user authentication.
+- `import { Request, Response } from 'express'`: These imports are used to handle HTTP requests and responses in the Express framework.
+- `import { getRepository } from 'typeorm'`: This import is used to interact with the database using the TypeORM library.
 
 Script Summary:
-The script performs a specific task or provides a specific feature within the broader software application. It includes the definition of classes and functions that are used to implement this functionality.
+The script starts by defining a class called `AuthController` which contains several static methods for user authentication and authorization. It also defines a class called `User` which represents a user entity in the database.
 
 Internal Functions:
-- <Function 1>: This function is responsible for <description of what the function does>. It takes <parameters> as input and returns <what is returned>.
-- <Function 2>: This function is responsible for <description of what the function does>. It takes <parameters> as input and returns <what is returned>.
-- ...
+- `register`: This function handles the user registration process. It takes in a request and response object, extracts the necessary data from the request body, and creates a new user entity in the database. It uses bcrypt to hash the user's password before storing it.
+- `login`: This function handles the user login process. It takes in a request and response object, extracts the necessary data from the request body, and checks if the provided credentials match a user in the database. It uses bcrypt to verify the password and jwt to generate a JWT token for authentication.
+- `authenticate`: This function is a middleware that can be used to protect routes that require authentication. It takes in a request, response, and next function. It checks if the request contains a valid JWT token and if the user associated with the token has the required role to access the protected route.
+- `authorize`: This function is a middleware that can be used to protect routes that require specific roles. It takes in a list of roles and checks if the user associated with the request has any of the specified roles.
 
 External Functions:
-- <Function 1>: This function is called by other parts of the application to <description of what the function does>. It takes <parameters> as input and returns <what is returned>.
-- <Function 2>: This function is called by other parts of the application to <description of what the function does>. It takes <parameters> as input and returns <what is returned>.
-- ...
-
-Loops and Conditional Statements:
-The script includes loops and conditional statements to control the flow of execution based on certain conditions. These statements are used to perform different actions or make decisions based on the current state of the program.
-
-Variable Usage:
-Variables are used to store and manipulate data within the script. They are used to hold values that are used in calculations, conditionals, or other operations. The script may use different types of variables, such as strings, numbers, or objects, depending on the specific requirements of the task.
-
-Potential Bugs or Issues:
-- <Bug/Issue 1>: <Description of the bug/issue and its impact on the script or application>
-  - <Suggested solution to fix the bug/issue>
-- <Bug/Issue 2>: <Description of the bug/issue and its impact on the script or application>
-  - <Suggested solution to fix the bug/issue>
-- ...
+- `registerUser`: This function is a route handler that calls the `register` function to handle user registration.
+- `loginUser`: This function is a route handler that calls the `login` function to handle user login.
+- `protectedRoute`: This function is a route handler that demonstrates how to protect a route using the `authenticate` middleware.
+- `adminRoute`: This function is a route handler that demonstrates how to protect a route using the `authorize` middleware with the 'admin' role.
 
 Interaction Summary:
-The script may interact with other parts of the application by calling external functions or being called by other components. It may also rely on data or state provided by other components to perform its task. Understanding these interactions is important for modifying or extending the script.
+This script can be used as part of an Express server to handle user authentication and authorization. Other parts of the application can make use of the provided functions to register users, login users, and protect routes based on user roles.
 
 Developer Questions:
-- How does this script fit into the overall application architecture?
-- What are the dependencies of this script and how are they managed?
-- How can I modify or extend the functionality provided by this script?
-- Are there any known issues or bugs with this script that I should be aware of?
-- How does this script interact with other components of the application?
+- How can I customize the user entity and database schema?
+- How can I add additional roles and permissions?
+- How can I handle password reset functionality?
+- How can I handle user profile updates?
+- How can I handle user logout?

@@ -1,41 +1,43 @@
 Script Purpose and Role:
-The purpose of this script is to convert an OpenAPI specification (either in Swagger 2.0 or OpenAPI 3.0 format) into a Markdown document. The Markdown document will contain a table of paths and methods, a reference table, detailed information about each path and method, and references to any components used in the specification. This script plays a role in the broader software application by providing a way to generate documentation for the API endpoints defined in the OpenAPI specification.
+The purpose of this script is to convert an OpenAPI specification (either version 2.0 or 3.0) into a Markdown document. The Markdown document will contain a table of paths and methods, a reference table, detailed information about each path and method, and references to any components used in the specification. This script plays a role in the broader software application by providing a way to generate documentation for an API based on its OpenAPI specification.
 
 Script Structure:
-The script starts with import statements for various dependencies. It then defines several types and interfaces used throughout the script. Next, there are several utility functions for manipulating strings and objects. After that, there are functions for generating different sections of the Markdown document, such as the path table, reference table, parameter schemas, request body, responses, and examples. Finally, there is the main function `openApiToMarkdown` which takes an OpenAPI specification as input and generates the Markdown document.
+The script starts with import statements, followed by type definitions and interfaces. Then, there are several utility functions that are used throughout the script. After that, there is the main function `openApiToMarkdown`, which takes an OpenAPI specification as input and returns a Markdown document. Finally, the `openApiToMarkdown` function is exported as the default export of the script.
 
 Import Statements:
-- `import { promises as fs } from 'fs';`: This imports the `fs` module from the Node.js standard library, specifically the `promises` property which provides promise-based versions of the file system functions.
-- `import YAML from 'yaml';`: This imports the `yaml` module, which provides functions for parsing and serializing YAML data.
-- `import { OpenAPIV3 } from 'openapi-types';`: This imports the `OpenAPIV3` type from the `openapi-types` module, which provides TypeScript types for OpenAPI 3.0 specifications.
-- `import swagger2_0ToMarkdown from './swagger2_0ToMarkdown';`: This imports the default export from the `swagger2_0ToMarkdown` module, which is a function for converting Swagger 2.0 specifications to OpenAPI 3.0 format.
+- `import { promises as fs } from 'fs';`: This imports the `fs` module from the Node.js standard library, specifically the `promises` property, which provides promise-based versions of the file system functions.
+- `import YAML from 'yaml';`: This imports the `yaml` package, which provides functions for parsing and serializing YAML data.
+- `import { OpenAPIV3 } from 'openapi-types';`: This imports the `OpenAPIV3` type definitions from the `openapi-types` package, which provides TypeScript type definitions for OpenAPI 3.0 specifications.
+- `import swagger2_0ToMarkdown from './swagger2_0ToMarkdown';`: This imports the `swagger2_0ToMarkdown` function from another file in the same directory.
 
-Classes and Interfaces:
-- `References`: This is a type alias for an object with string keys and unknown values.
-- `PathMethod`: This interface represents a path, method, and operation in the OpenAPI specification.
-- `ApiDocument`: This interface represents the parsed OpenAPI document, including the original document, an array of path methods, and a references object.
-- `getApiObject`: This is a function overload for retrieving an API object from the references using its reference object or unknown object representation.
+Type Definitions and Interfaces:
+- `type References = { [key: string]: unknown };`: This defines a type `References` as an object with string keys and unknown values.
+- `interface PathMethod`: This defines an interface `PathMethod` with three properties: `path` (string), `method` (string), and `operation` (OpenAPIV3.OperationObject).
+- `interface ApiDocument`: This defines an interface `ApiDocument` with three properties: `document` (OpenAPIV3.Document), `pathMethods` (array of PathMethod), and `references` (References).
 
-Loops and Conditional Statements:
-- The script uses a `for...of` loop to iterate over the paths and path items in the OpenAPI document.
-- It uses a nested `for...of` loop to iterate over the methods and operations in each path item.
-- It uses conditional statements (`if`) to skip certain properties or sections of the OpenAPI document.
-
-Variable Usage:
-- The script uses variables to store the parsed OpenAPI document, path methods, and references.
-- It also uses variables to store the generated Markdown output for different sections of the document.
-
-Potential Bugs or Issues:
-- The script does not handle all possible cases and variations of OpenAPI specifications. It assumes a certain structure and may not work correctly with unconventional or complex specifications.
-- The script does not handle circular references in the OpenAPI document, which could lead to infinite loops or incorrect output.
-- The script does not handle all possible data types and schema variations in the OpenAPI document. It may not generate accurate or complete Markdown output for certain types of data.
-- The script does not handle all possible combinations of parameters, request bodies, and responses in the OpenAPI document. It may not generate accurate or complete Markdown output for certain combinations of these elements.
-
-Suggestions for Improvement:
-- Add more error handling and validation to handle edge cases and unexpected input.
-- Improve the handling of circular references to prevent infinite loops and ensure correct output.
-- Expand the support for different data types and schema variations in the OpenAPI document.
-- Enhance the handling of parameters, request bodies, and responses to cover more combinations and generate more accurate Markdown output.
+Utility Functions:
+- `const markdownText = (text: string) => text.replace(/\n/g, '  \n');`: This function takes a string `text` and replaces all newline characters with two spaces followed by a newline character. This is used to format text for Markdown.
+- `const createApiDocument = (document: OpenAPIV3.Document): ApiDocument => { ... }`: This function takes an OpenAPI document and returns an ApiDocument object. It extracts the paths, methods, and references from the document and stores them in the ApiDocument object.
+- `const convertPath = (path: string) => { ... }`: This function takes a path string and converts it to a format suitable for use in a Markdown anchor link. It removes special characters, replaces spaces with hyphens, and converts the path to lowercase.
+- `const outputPathTable = ({ document, pathMethods }: ApiDocument) => { ... }`: This function takes an ApiDocument object and returns a Markdown table of paths and methods. It uses the document's title, version, and description, as well as the pathMethods array, to generate the table.
+- `const outputReferenceTable = (apiDocument: ApiDocument) => { ... }`: This function takes an ApiDocument object and returns a Markdown table of references. It uses the references object in the ApiDocument to generate the table.
+- `const getRefName = (refObject: unknown | OpenAPIV3.ReferenceObject) => { ... }`: This function takes a reference object and returns the value of the `$ref` property, if it exists. It is used to get the reference name from a reference object.
+- `const getApiObject = <T = unknown | OpenAPIV3.ReferenceObject>(apiDocument: ApiDocument, object: OpenAPIV3.ReferenceObject | unknown, refs?: Set<string>) => { ... }`: This function takes an ApiDocument object, an object (which can be a reference object or a regular object), and an optional set of references. It returns the referenced object if the input object is a reference object, or the input object itself if it is a regular object. It is used to resolve references in the OpenAPI specification.
+- `const outputParamSchemas = (apiDocument: ApiDocument, parameters: OpenAPIV3.ParameterObject[]) => { ... }`: This function takes an ApiDocument object and an array of parameter objects, and returns a Markdown representation of the parameter schemas. It uses the getApiObject function to resolve any references in the parameter objects.
+- `const outputSchemas = (apiDocument: ApiDocument, schemas: unknown): string => { ... }`: This function takes an ApiDocument object and an unknown object (which can be a schema object or a request body object), and returns a Markdown representation of the schemas. It uses the getApiObject function to resolve any references in the schema objects.
+- `const SP = (size: number) => ''.padEnd(size * 2);`: This function takes a number `size` and returns a string of spaces with a length equal to `size` multiplied by 2. It is used to generate indentation in the output.
+- `const outputRefComment = (apiObject: OpenAPIV3.ReferenceObject | unknown, level: number) => { ... }`: This function takes a reference object or a regular object and a level of indentation, and returns a Markdown comment string with the reference name. It is currently commented out and not used in the script.
+- `const outputComment = (refObject: OpenAPIV3.ReferenceObject | unknown | null, apiObject: OpenAPIV3.NonArraySchemaObject, level: number) => { ... }`: This function takes a reference object, a schema object, and a level of indentation, and returns a Markdown comment string with the reference name or the schema object's description. It is used to generate comments for the schema objects in the output.
+- `const getTypeString = (apiDocument: ApiDocument, apiObject: OpenAPIV3.ReferenceObject | OpenAPIV3.ArraySchemaObject | OpenAPIV3.NonArraySchemaObject, refs: Set<string>, level: number) => { ... }`: This function takes an ApiDocument object, a schema object, a set of references, and a level of indentation, and returns a string representation of the schema object's type. It uses the getApiObject function to resolve any references in the schema object.
+- `const outputObject = (apiDocument: ApiDocument, name: string | undefined, schemas: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject, required?: boolean, refs?: Set<string>, level?: number) => { ... }`: This function takes an ApiDocument object, a name (optional), a schema object or a reference object, a flag indicating if the property is required (optional), a set of references (optional), and a level of indentation (optional). It returns a Markdown representation of the schema object. It uses the getApiObject and getTypeString functions to resolve references and generate the type strings.
+- `const outputParameters = (apiDocument: ApiDocument, parameters: (OpenAPIV3.ParameterObject | OpenAPIV3.ReferenceObject)[]) => { ... }`: This function takes an ApiDocument object and an array of parameter objects, and returns a Markdown representation of the parameters. It uses the outputParamSchemas function to generate the parameter schemas.
+- `const outputReferences = (apiDocument: ApiDocument) => { ... }`: This function takes an ApiDocument object and returns a Markdown section with references and their schemas. It uses the outputSchemas function to generate the schemas.
+- `const outputRequestBody = (apiDocument: ApiDocument, requestBody: OpenAPIV3.ReferenceObject | OpenAPIV3.RequestBodyObject | undefined) => { ... }`: This function takes an ApiDocument object and a request body object or a reference object, and returns a Markdown section with the request body schema. It uses the outputSchemas function to generate the schema.
+- `const outputExamples = (apiDocument: ApiDocument, examples: OpenAPIV3.MediaTypeObject['examples']) => { ... }`: This function takes an ApiDocument object and an examples object or a reference object, and returns a Markdown section with examples. It uses the outputSchemas function to generate the examples.
+- `const outputResponses = (apiDocument: ApiDocument, responses: OpenAPIV3.ResponsesObject | undefined) => { ... }`: This function takes an ApiDocument object and a responses object or a reference object, and returns a Markdown section with the responses and their schemas. It uses the outputSchemas function to generate the schemas.
+- `const outputPathDatail = (apiDocument: ApiDocument) => { ... }`: This function takes an ApiDocument object and returns a Markdown section with detailed information about each path and method. It uses the outputParameters, outputRequestBody, and outputResponses functions to generate the sections.
+- `export const openApiToMarkdown = async (openApiSpec: any) => { ... }`: This function is the main function of the script. It takes an OpenAPI specification as input and returns a Markdown document. It first checks the format of the input specification (Swagger 2.0 or OpenAPI 3.0) and converts it to OpenAPI 3.0 if necessary. Then, it creates an ApiDocument object from the OpenAPI specification. Finally, it generates the Markdown document by calling the outputPathTable, outputReferenceTable, outputPathDatail, and outputReferences functions.
+- `export default openApiToMarkdown;`: This exports the openApiToMarkdown function as the default export of the script.
 
 Summary:
-Overall, this script provides a way to convert OpenAPI specifications into Markdown documentation for API endpoints. It parses the OpenAPI document, generates different sections of the Markdown document, and combines them into a final output. While the script has some limitations and potential issues, it can be a useful tool for generating API documentation in a standardized format. Developers working with this script should be aware of its limitations and consider potential improvements to handle a wider range of OpenAPI specifications.
+This script is a utility for converting OpenAPI specifications into Markdown documents. It provides functions for parsing the specifications, resolving references, and generating Markdown output. The main function, openApiToMarkdown, takes an OpenAPI specification as input and returns a Markdown document. The script is structured with utility functions that are used to generate different sections of the Markdown document. The script imports several dependencies, including the fs module from Node.js, the yaml package, and the openapi-types package. The script also exports the openApiToMarkdown function as the default export. Overall, this script provides a convenient way to generate documentation for an API based on its OpenAPI specification.

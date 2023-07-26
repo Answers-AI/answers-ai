@@ -15,7 +15,7 @@ Event Handlers:
 - None.
 
 Rendered components:
-- Chat: This component is rendered with the 'params' object passed as props.
+- Chat: The Chat component is rendered with the 'params' object passed as props.
 
 Interaction Summary:
 This component is a client-side component that interacts with the Chat component. It receives the 'params' object as props and passes it down to the Chat component for rendering. The Chat component is responsible for displaying the current Answers AI chat.
@@ -25,8 +25,6 @@ Developer Questions:
 - What is the structure of the 'params' object?
 - How does the Chat component handle the 'params' object?
 
-Known Issues / Bugs:
-- None.
-
-Todo Items:
-- None.
+Known Issues / Todo:
+- No known issues or bugs.
+- No todo items.

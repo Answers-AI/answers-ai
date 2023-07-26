@@ -9,7 +9,7 @@ Import statements:
 Script Summary:
 - The script exports a constant variable named 'sidekicks' which is an array of Sidekick objects.
 - The Sidekick objects are imported from various modules and added to the 'sidekicks' array.
-- The 'sidekicks' array is then available for use in other parts of the application.
+- The 'sidekicks' array is then available for use by other parts of the application.
 
 Internal Functions:
 - There are no internal functions defined in this script.
@@ -19,7 +19,7 @@ External Functions:
 
 Interaction Summary:
 - This script provides a centralized location for managing and accessing the sidekick objects.
-- Other parts of the application can import the 'sidekicks' array and use it to access information about different sidekicks.
+- Other parts of the application can import the 'sidekicks' array from this script and use it to access information about different sidekicks.
 
 Developer Questions:
 - How can I add a new sidekick to the 'sidekicks' array?

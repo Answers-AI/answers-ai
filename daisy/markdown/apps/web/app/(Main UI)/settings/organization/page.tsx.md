@@ -9,25 +9,25 @@ Import statements:
 - getCachedSession: A function for retrieving the cached user session.
 
 Component:
-- OrganizationFormPage: This is the main component exported by the file. It is an async function that takes a "params" object as a parameter. It retrieves the user session using the getCachedSession function and checks if the user has an organizationId. If not, it returns null. It then retrieves the organization data from the database using the Prisma client and passes it as a prop to the OrganizationForm component.
+The OrganizationFormPage component is an async function that takes a params object as a parameter. It retrieves the user session using the getCachedSession function and checks if the user has an organizationId. If not, it returns null. It then queries the database using the prisma client to retrieve the organization data based on the user's organizationId. The selected fields are id, name, and contextFields. The retrieved data is parsed and passed as props to the OrganizationForm component.
 
 Hooks:
-- None
+None
 
 Event Handlers:
-- None
+None
 
 Rendered components:
-- OrganizationForm: This is a custom UI component that is rendered with the retrieved organization data as a prop.
+- OrganizationForm: A custom UI component for editing organization settings. It receives the params and organization props.
 
 Interaction Summary:
-This component is a client-side component that interacts with the Prisma client to retrieve organization data from the database. It also interacts with the OrganizationForm component to render the form for editing organization settings.
+This component interacts with the database using the prisma client to retrieve organization data. It also interacts with the OrganizationForm component by passing the retrieved organization data as props.
 
 Developer Questions:
 - How is the user session cached and retrieved using the getCachedSession function?
-- How does the Prisma client interact with the database to retrieve organization data?
+- How does the prisma client connect to the database and perform the query?
 - What are the available props for the OrganizationForm component and how are they used?
 
 Known Issues / Todo:
 - No known issues or bugs.
-- No specific todo items related to this component.
+- No todo items mentioned in the code.

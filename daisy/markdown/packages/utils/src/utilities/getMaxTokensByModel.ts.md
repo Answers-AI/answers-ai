@@ -1,22 +1,24 @@
 Summary:
-This code is a JavaScript module that exports a single function called `getMaxTokensByModel`. The function takes an optional parameter `gptModel` and returns the maximum number of tokens allowed for a given GPT model. The function uses a switch statement to determine the maximum tokens based on the provided `gptModel` value. If no `gptModel` is provided or if the provided value does not match any of the cases, the function defaults to returning 4000 tokens.
+This code snippet is a JavaScript function that returns the maximum number of tokens allowed for a given GPT model. It is a standalone script that can be used as a utility function within a broader software application.
 
 Import statements:
-There are no import statements in this code.
+There are no import statements in this code snippet.
 
 Script Summary:
-This script exports a single function that determines the maximum number of tokens allowed for a given GPT model.
+The script defines a function called `getMaxTokensByModel` that takes an optional parameter `gptModel`. It uses a switch statement to determine the maximum number of tokens allowed based on the value of `gptModel`. If `gptModel` matches one of the specified cases, the corresponding maximum token count is returned. If `gptModel` does not match any of the cases, a default value of 4000 is returned.
 
 Internal Functions:
-- `getMaxTokensByModel(gptModel?: string)`: This function takes an optional parameter `gptModel` which represents the GPT model. It uses a switch statement to determine the maximum number of tokens based on the provided `gptModel` value. If the `gptModel` matches any of the cases, the corresponding maximum token value is returned. If no `gptModel` is provided or if the provided value does not match any of the cases, the function defaults to returning 4000 tokens.
+- `getMaxTokensByModel(gptModel?: string)`: This function takes an optional parameter `gptModel` of type string. It uses a switch statement to determine the maximum number of tokens allowed based on the value of `gptModel`. It returns the maximum token count.
 
 External Functions:
-There are no external functions in this code.
+There are no external functions in this code snippet.
 
 Interaction Summary:
-This script can be imported and used by other parts of the application that need to determine the maximum number of tokens allowed for a specific GPT model. Other modules can import this script and call the `getMaxTokensByModel` function, passing the desired GPT model as an argument, to retrieve the maximum token value.
+This script can be used as a utility function within a larger software application. Other parts of the application can call the `getMaxTokensByModel` function to retrieve the maximum token count for a given GPT model. The returned value can then be used for various purposes, such as validating input or setting limits on token usage.
 
 Developer Questions:
-- How do I use this script to get the maximum tokens for a specific GPT model?
-- What happens if I don't provide a `gptModel` argument to the `getMaxTokensByModel` function?
-- What happens if I provide an invalid `gptModel` value that doesn't match any of the cases in the switch statement?
+- How can I use this function in my application?
+- What are the possible values for `gptModel`?
+- Can I modify the function to add support for additional GPT models?
+- Are there any limitations or known issues with this function?
+- How can I handle cases where the `gptModel` parameter is not provided?

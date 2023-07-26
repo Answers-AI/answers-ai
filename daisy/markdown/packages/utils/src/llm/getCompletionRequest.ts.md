@@ -1,30 +1,43 @@
 Summary:
-This code is a TypeScript module that exports a single function called `getCompletionRequest`. The function takes in several parameters, including `context`, `user`, `organization`, `messages`, `input`, `sidekick`, and `gptModel`. It performs various operations to generate a completion request object that can be used with an AI model to generate a response.
+This code is a TypeScript module that exports a function called `getCompletionRequest`. The function takes in several parameters, including `context`, `user`, `organization`, `messages`, `input`, `sidekick`, and `gptModel`. It performs various operations to generate a completion request object that can be used with an AI model to generate a response. The function utilizes several utility functions and imports various types and enums from external modules.
 
 Import statements:
-- `Message`, `Sidekick`, `User`, and `Organization` are imported from the 'types' module. These types likely define the structure of message objects, sidekick objects, user objects, and organization objects.
-- `ChatCompletionRequestMessageRoleEnum` is imported from the 'openai' module. This enum likely defines the different roles that a message can have in a chat completion request.
-- `countTokens` is imported from the '../utilities/countTokens' module. This function likely counts the number of tokens in a given text string.
-- `renderContext` is imported from the '../utilities/renderContext' module. This function likely renders a template string with the provided context variables.
-- `getMaxTokensByModel` is imported from the '../utilities/getMaxTokensByModel' module. This function likely returns the maximum number of tokens allowed for a given AI model.
-- `getUserContextFields` is imported from the '../utilities/getUserContextFields' module. This function likely retrieves custom context fields for a user.
-- `getOrganizationContextFields` is imported from the '../utilities/getOrganizationContextFields' module. This function likely retrieves custom context fields for an organization.
+- `Message`, `Sidekick`, `User`, `Organization`: These are types imported from the 'types' module. They are used to define the types of the `user`, `organization`, and `messages` parameters in the `getCompletionRequest` function.
+- `ChatCompletionRequestMessageRoleEnum`: This is an enum imported from the 'openai' module. It is used to define the role of a message in the completion request.
+- `countTokens`: This is a function imported from the '../utilities/countTokens' module. It is used to count the number of tokens in a given text.
+- `renderContext`: This is a function imported from the '../utilities/renderContext' module. It is used to render a template with the provided context and variables.
+- `getMaxTokensByModel`: This is a default export from the '../utilities/getMaxTokensByModel' module. It is used to get the maximum number of tokens allowed for a specific AI model.
+- `getUserContextFields`: This is a function imported from the '../utilities/getUserContextFields' module. It is used to get custom context fields for a user.
+- `getOrganizationContextFields`: This is a function imported from the '../utilities/getOrganizationContextFields' module. It is used to get custom context fields for an organization.
 
 Script Summary:
-The `getCompletionRequest` function is an asynchronous function that generates a completion request object based on the provided parameters. It performs several operations, including retrieving custom context fields for the user and organization, rendering system and user prompts with the provided templates and context variables, calculating token counts, filtering messages based on token count, and constructing the final completion request object.
+The `getCompletionRequest` function is the main function in this script. It takes in several parameters and performs the following steps:
+1. It retrieves custom context fields for the organization and user.
+2. It renders the system prompt and user prompt templates using the provided input, context, and context fields.
+3. It sets default values for temperature, frequency, presence, sidekickModel, and maxCompletionTokens if not provided.
+4. It counts the tokens in the system prompt and user prompt.
+5. It calculates the maximum number of tokens allowed for the completion request.
+6. It filters the messages based on the token count to ensure they fit within the maximum limit.
+7. It constructs the full message array by combining the filtered messages and the user prompt.
+8. It returns an object containing the completion request parameters.
 
 Internal Functions:
-- `getCompletionRequest`: This is the main function of the script. It takes in several parameters and returns a completion request object. It performs various operations, including retrieving custom context fields, rendering prompts, calculating token counts, filtering messages, and constructing the completion request object.
+- `getCompletionRequest`: This is the main function that generates a completion request object. It takes in several parameters and performs various operations to construct the completion request. It returns an object containing the completion request parameters.
 
 External Functions:
-- None
+- `countTokens`: This function takes in a text string and counts the number of tokens in it. It returns a promise that resolves to the token count.
+- `renderContext`: This function takes in a template string and an object of variables and renders the template by replacing the variables with their corresponding values. It returns the rendered string.
+- `getMaxTokensByModel`: This function takes in a GPT model name and returns the maximum number of tokens allowed for that model.
+- `getUserContextFields`: This function takes in a user object and returns custom context fields for the user.
+- `getOrganizationContextFields`: This function takes in an organization object and returns custom context fields for the organization.
 
 Interaction Summary:
-This script can be used as a utility function to generate completion request objects for interacting with an AI model. It takes in various parameters, including user and organization information, messages, input text, sidekick configuration, and AI model selection. The generated completion request object can then be used to make API calls to the AI model and receive a response.
+This script can be used as a module in a larger software application. Other parts of the application can import and use the `getCompletionRequest` function to generate completion requests for AI models. The function takes in various parameters, including the user, organization, messages, input, and sidekick information, and returns a completion request object that can be passed to an AI model for generating responses.
 
 Developer Questions:
-- How are the custom context fields for the user and organization retrieved?
-- What is the purpose of the `countTokens` function and how does it work?
-- How are the system and user prompts rendered with the provided templates and context variables?
-- How are messages filtered based on token count and what is the maximum number of tokens allowed?
-- How is the final completion request object constructed and what parameters are included?
+- How can I modify the system prompt and user prompt templates?
+- What are the default values for temperature, frequency, presence, sidekickModel, and maxCompletionTokens?
+- How are the messages filtered based on the token count?
+- How can I customize the completion request parameters?
+- How can I handle errors or exceptions that may occur during the execution of this function?
+- Are there any potential performance issues with counting tokens or filtering messages?

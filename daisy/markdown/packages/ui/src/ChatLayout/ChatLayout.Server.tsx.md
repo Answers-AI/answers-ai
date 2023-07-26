@@ -1,14 +1,18 @@
 Summary:
-The provided React file is a client-side component called ChatUILayout. It is responsible for rendering a layout for the chat UI in a larger application. It fetches data from a database using Prisma and passes it to the ChatLayout component.
+The provided React file is a client-side component called ChatUILayout. It is responsible for rendering a layout for the chat UI in a larger application. It fetches data from a database using Prisma and passes it to the ChatLayout component along with the children components.
 
 Import statements:
-- React: The React library is imported to use React components and hooks.
+- React: The React library is imported to use React components and JSX syntax.
 - prisma: The prisma object is imported from the '@db/client' module to interact with the database.
 - ChatLayout: The ChatLayout component is imported from './ChatLayout.Client' to render the chat UI layout.
-- getCachedSession: The getCachedSession function is imported from '../getCachedSession' to retrieve the user session.
+- getCachedSession: The getCachedSession function is imported from '../getCachedSession' to retrieve the user session data.
 
 Component:
-The ChatUILayout component is an async function that takes in three props: children, chatId, and journeyId. It renders the ChatLayout component with the fetched data from the database.
+The ChatUILayout component is an async function that takes in props including children, chatId, and journeyId. It first calls the getCachedSession function to retrieve the user session data. If the session does not contain a user email, the component returns null and does not render anything.
+
+The component then makes two asynchronous requests to the database using Prisma. The first request fetches chat data for the current user, including the latest message for each chat. The second request fetches journey data for the current user, including the latest message for each chat within each journey. The fetched data is parsed and stored in the chats and journeys variables.
+
+Finally, the component renders the ChatLayout component, passing in the chats, journeys, and appSettings from the user session as props. The children components are also rendered within the ChatLayout component.
 
 Hooks:
 - None
@@ -17,19 +21,21 @@ Event Handlers:
 - None
 
 Rendered components:
-- ChatLayout: The ChatLayout component is rendered with the following props:
-  - chats: The fetched chat data from the database.
-  - journeys: The fetched journey data from the database.
-  - appSettings: The user's app settings from the session.
-  - children: The nested components or pages.
+- ChatLayout: The ChatLayout component is rendered and receives the following props:
+  - chats: The fetched chat data for the current user.
+  - journeys: The fetched journey data for the current user.
+  - appSettings: The app settings from the user session.
+  - children: The children components passed to the ChatUILayout component.
 
 Interaction Summary:
-The ChatUILayout component interacts with the database using Prisma to fetch chat and journey data. It also relies on the getCachedSession function to retrieve the user session. The fetched data is then passed to the ChatLayout component for rendering the chat UI layout.
+The ChatUILayout component interacts with the database using Prisma to fetch chat and journey data for the current user. It then renders the ChatLayout component, passing the fetched data and user session information as props. The children components are also rendered within the ChatLayout component.
 
 Developer Questions:
-- How does the getCachedSession function work and what data does it return?
-- What is the structure of the data returned by the Prisma queries?
-- How does the ChatLayout component use the passed props to render the chat UI layout?
+- How is the user session data stored and retrieved?
+- What are the expected data structures for the fetched chat and journey data?
+- How are the children components used within the ChatLayout component?
+- Are there any additional props that can be passed to the ChatUILayout component?
 
 Known Issues / Todo:
-- None
+- No known issues or bugs.
+- No specific todo items related to this component.

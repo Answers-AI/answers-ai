@@ -20,33 +20,33 @@ Event Handlers:
 - handleOpen: sets the open state to true, opening the modal.
 - handleClose: sets the open state to false, closing the modal. If an onClose prop is provided, it is called before closing the modal.
 - onSubmit: handles form submission. It makes a POST request to the "/api/chats/{chatId}/share" endpoint with the entered email addresses and updates the chat data. If an error occurs, it sets an error message for the email field.
-- onDelete: handles deletion of a user. It makes a PATCH request to the "/api/chats/share" endpoint with the chatId and updated list of email addresses. It then updates the chat data.
+- onDelete: handles deletion of a user. It makes a PATCH request to the "/api/chats/share" endpoint with the chatId and updated list of email addresses. It then refreshes the router. If an error occurs, it sets an error message for the email field.
 
 Rendered components:
-- Modal: displays the modal component.
-- Paper: provides a styled container for the modal content.
-- Box: represents a container for the form and other components.
+- Modal: displays the modal dialog.
+- Paper: provides a container for the modal content.
+- Box: organizes the form and user list components.
 - Typography: displays text elements.
-- Autocomplete: provides an input field with autocomplete functionality for entering email addresses.
+- Autocomplete: provides an input field for entering email addresses.
 - TextField: displays a text input field.
-- Button: renders a button element.
-- List, ListItem, ListItemAvatar, ListItemText: display a list of chat users.
-- Avatar: displays the user's avatar image.
-- IconButton: renders an icon button element.
-- DeleteIcon: displays a delete icon.
+- Button: renders a button for submitting the form.
+- List: displays a list of users.
+- ListItem: represents an item in the user list.
+- ListItemAvatar: displays the avatar of a user.
+- ListItemText: displays the name and email of a user.
+- DeleteIcon: represents an icon for deleting a user.
+- LinearProgress: displays a loading indicator.
 
 Interaction Summary:
-The ShareModal component interacts with other components in the application by using the useAnswers hook to access the chat data. It also uses the useRouter hook for routing. The component communicates with the server-side API endpoints ("/api/chats/{chatId}/share" and "/api/chats/share") to share the chat and update the chat data.
+The ShareModal component interacts with other components in the application by using the useAnswers hook to access the chat data. It also uses the useRouter hook for routing. The component communicates with the server-side API endpoints ("/api/chats/{chatId}/share" and "/api/chats/share") to share the chat and update the user list.
 
 Developer Questions:
 - How is the useAnswers hook implemented and what data does it provide?
 - How does the routing work with the useRouter hook?
 - How are the form validation rules defined and enforced?
-- How does the Autocomplete component handle email input and validation?
 - How is the loading state managed and displayed?
-- How does the component handle errors and display error messages?
-- How are the chat users rendered and how is the delete functionality implemented?
+- How are errors handled and displayed for the email field?
 
 Known Issues / Todo:
 - No known issues or bugs with the component.
-- Todo: Add prop types for the ShareModal component.
+- Todo: Add error handling for API requests and display appropriate error messages.

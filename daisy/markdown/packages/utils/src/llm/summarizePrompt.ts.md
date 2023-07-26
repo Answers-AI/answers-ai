@@ -16,5 +16,5 @@ This script is a part of a broader software application that involves a chat-bas
 Developer Questions:
 - How can I use the 'summarizeQAPrompt' prompt template to generate a prompt for the language model?
 - What are the input variables for the 'summarizePrompt' prompt template and how can I use it to generate a prompt?
-- How can I modify the prompt templates to suit my specific text summarization task?
-- Are there any known issues or bugs with the prompt templates that I should be aware of?
+- How can I modify or extend these prompt templates to suit my specific requirements?
+- Are there any known issues or bugs with these prompt templates?

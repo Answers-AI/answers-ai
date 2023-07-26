@@ -7,24 +7,25 @@ Import statements:
 Component:
 The `MockNextRouter` component takes in the following props:
 - `children`: React.ReactNode - the child components to be wrapped with the mock router context.
-- `props`: Partial<AppRouterInstance> - partial router properties to be passed to the createRouter function.
+- `props`: Partial<AppRouterInstance> - partial router properties to be passed to the mock router.
 
 Hooks:
-N/A
+None.
 
 Event Handlers:
-N/A
+None.
 
 Rendered components:
-- `AppRouterContext.Provider`: Wraps the `children` components and provides the mock router object as the value of the context.
+The `MockNextRouter` component renders the `AppRouterContext.Provider` component, which wraps the `children` components.
 
 Interaction Summary:
-The `MockNextRouter` component is used to mock the Next.js router in a testing environment. It creates a mock router object with various methods and properties, and wraps the child components with the mock router context. This allows the child components to access and interact with the mock router object during testing.
+The `MockNextRouter` component is used as a wrapper around components that rely on the Next.js router. It provides a mock router object with methods such as `back`, `forward`, `prefetch`, `push`, `replace`, and `refresh`. This allows the components to be tested without relying on the actual router implementation.
 
 Developer Questions:
-- How do I use this component in my tests?
-- Can I customize the mock router object with additional methods or properties?
-- How does this component handle navigation actions like push, replace, back, and forward?
+- How do I use the `MockNextRouter` component in my tests?
+- Can I customize the behavior of the mock router?
+- Are there any limitations or caveats when using this mock router?
 
 Known Issues / Todo:
-- N/A
+- No known issues or bugs with the component.
+- No specific todo items related to this component.

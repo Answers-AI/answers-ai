@@ -1,14 +1,17 @@
 Summary:
-The provided React file is a functional component called "IntegrationSettings" that is responsible for rendering different integration settings based on the "app" prop. It imports three sub-components: JiraSettings, SlackSettings, and ConfluenceSettings. The component is client-side and handles rendering different integration settings based on the selected "app" prop.
+The provided React file is a functional component called IntegrationSettings. It is responsible for rendering different settings components based on the value of the "app" prop. It imports JiraSettings, SlackSettings, and ConfluenceSettings components and stores them in the SETTINGS object. If the "app" prop is not found in SETTINGS, it displays a message indicating that support for that integration is not yet available. If the "app" prop is found in SETTINGS, it renders the corresponding component with the "appSettings" and "editable" props.
 
 Import statements:
-- React: The core React library.
-- JiraSettings: A sub-component that handles Jira integration settings.
-- SlackSettings: A sub-component that handles Slack integration settings.
-- ConfluenceSettings: A sub-component that handles Confluence integration settings.
+- React: The React library is imported to define and use React components.
+
+- JiraSettings: The JiraSettings component is imported to render Jira-specific settings.
+
+- SlackSettings: The SlackSettings component is imported to render Slack-specific settings.
+
+- ConfluenceSettings: The ConfluenceSettings component is imported to render Confluence-specific settings.
 
 Component:
-The IntegrationSettings component takes three props: "app", "appSettings", and "editable". It renders the appropriate integration settings component based on the "app" prop. If the "app" prop is not found in the SETTINGS object, it displays a message indicating that support for that integration is not yet available. If the "app" prop is found in the SETTINGS object, it renders the corresponding integration settings component.
+IntegrationSettings is a functional component that takes three props: "app", "appSettings", and "editable". It renders a specific settings component based on the value of the "app" prop.
 
 Hooks:
 None.
@@ -17,18 +20,20 @@ Event Handlers:
 None.
 
 Rendered components:
-- JiraSettings: Renders Jira integration settings.
-- SlackSettings: Renders Slack integration settings.
-- ConfluenceSettings: Renders Confluence integration settings.
+- JiraSettings: Renders Jira-specific settings if the "app" prop is set to "jira".
+
+- SlackSettings: Renders Slack-specific settings if the "app" prop is set to "slack".
+
+- ConfluenceSettings: Renders Confluence-specific settings if the "app" prop is set to "confluence".
 
 Interaction Summary:
-The IntegrationSettings component interacts with other components by rendering the appropriate integration settings component based on the "app" prop. It communicates with the sub-components to pass the "appSettings" and "editable" props.
+The IntegrationSettings component interacts with other components by rendering the appropriate settings component based on the value of the "app" prop. It relies on the JiraSettings, SlackSettings, and ConfluenceSettings components to render the specific settings.
 
 Developer Questions:
-1. How can I add support for a new integration?
-2. How can I modify the rendering logic based on the "editable" prop?
-3. How can I handle additional props in the sub-components?
+- How can I add support for a new integration?
+- How can I customize the settings components for each integration?
+- How can I handle user input and update the appSettings state?
 
 Known Issues / Todo:
 - There are no known issues or bugs with the component.
-- No todo items are mentioned in the provided code.
+- Todo: Add support for more integrations by adding components to the SETTINGS object.

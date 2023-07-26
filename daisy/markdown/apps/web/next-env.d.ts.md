@@ -7,18 +7,19 @@ Import statements:
 - `/// <reference types="next/navigation-types/compat/navigation" />`: This import statement is a reference to the type definitions for navigation compatibility in Next.js.
 
 Script Summary:
-This script is a configuration file for a Next.js application. It provides type definitions and references for the Next.js framework.
+This script serves as a configuration file for TypeScript in a Next.js application. It provides type references for the Next.js framework and its features.
 
 Internal Functions:
-There are no internal functions in this script.
+There are no internal functions defined in this script.
 
 External Functions:
-There are no external functions in this script.
+There are no external functions defined in this script.
 
 Interaction Summary:
 This script does not directly interact with the rest of the application. It provides type definitions and references that can be used by other files in the application.
 
 Developer Questions:
 - What are the available type definitions for Next.js?
-- How can I use the global image types in Next.js?
-- What type definitions are available for navigation compatibility in Next.js?
+- How can I configure TypeScript in a Next.js application?
+- How can I reference global image types in Next.js?
+- How can I reference navigation compatibility types in Next.js?

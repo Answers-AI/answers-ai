@@ -17,28 +17,31 @@ The SourcesDocument component is a functional component that allows users to upl
 
 Hooks:
 - useState: Used to manage the state of showDocumentInput and theMessage variables.
-- useSWR: Used to fetch and cache data from the server. It fetches a list of documents from the /api/sources/document endpoint and updates the data and mutate variables accordingly.
+- useSWR: Used to fetch and cache data from the server. It fetches a list of documents from the /api/sources/document endpoint.
 
 Event Handlers:
-- handleDocuments: Called when the user selects files in the file input. It updates the documents state variable with the selected files.
-- handleSubmit: Called when the user submits the form. It uploads the selected documents to the server, verifies and signs the documents, indexes the documents, and updates the filters in the AnswersContext.
+- handleDocuments: Called when the user selects files to upload. It updates the state variable documents with the selected files.
+- handleSubmit: Called when the user submits the form to upload documents. It iterates over the selected documents, verifies them, uploads them to a presigned URL, indexes them, and updates the filters in the AnswersContext.
 
 Rendered components:
-- SnackMessage: Displays theMessage state variable as a snack message.
-- Box: A container component from Material-UI.
+- SnackMessage: Displays the value of theMessage variable as a snack message.
+- Box: A layout component from Material-UI.
 - AutocompleteSelect: A custom component for selecting documents from a dropdown.
 - Typography: A component from Material-UI for displaying text.
 - Input: A component from Material-UI for file input.
 - Button: A component from Material-UI for submitting the form.
 
 Interaction Summary:
-The SourcesDocument component interacts with other components in the application through the use of the AnswersContext and custom hooks. It fetches a list of documents from the server and updates the filters in the AnswersContext when new documents are uploaded. It also displays snack messages to provide feedback to the user during the document uploading process.
+The SourcesDocument component interacts with the AnswersContext through the useAnswers hook. It updates the filters in the AnswersContext when new documents are uploaded. It also interacts with the server through HTTP requests using the axios library. It fetches a list of documents from the server and uploads new documents to the server.
 
 Developer Questions:
-- How is the AnswersContext used in this component?
-- How does the useSWR hook work and how is it used to fetch data from the server?
-- How are the documents uploaded and indexed on the server?
-- How are the filters in the AnswersContext updated when new documents are uploaded?
+- How is the AnswersContext implemented and how are filters updated?
+- How are documents fetched from the server and how is the data cached?
+- How are presigned URLs generated for document uploads?
+- How are documents indexed and what is the purpose of the syncResponse?
+- How is the slugify function used and what does it do?
+- How is the SnackMessage component implemented and how are messages displayed?
 
-Known Issues / Todo Items:
-- None.
+Known Issues / Todo:
+- There are no known issues or bugs with the component.
+- Todo: Add error handling for failed HTTP requests and display appropriate error messages to the user.

@@ -1,7 +1,7 @@
 **Code Documentation:**
 
 API Summary:
-This file contains a PATCH endpoint for updating a favorite sidekick in a larger application. The endpoint requires authentication and interacts with a database using Prisma ORM.
+This file contains a PATCH endpoint for updating a favorite sidekick in a larger application. The endpoint requires authentication and interacts with a database using Prisma.
 
 Import statements:
 - `NextResponse` is imported from the `next/server` module and is used to send responses back to the client.
@@ -11,10 +11,10 @@ Import statements:
 - `respond401` is imported from the `@utils/auth/respond401` module and is used to send a 401 unauthorized response.
 
 Internal Functions:
-- `PATCH`: This function is the main entry point for the PATCH endpoint. It takes in the request (`req`), route parameters (`{ params: { id } }`), and response (`res`) as parameters. It first retrieves the user session using `getServerSession` and checks if the user is authenticated. If not, it returns a 401 unauthorized response using `respond401`. It then retrieves the sidekick ID from the route parameters and the user ID from the session. It queries the database to find the sidekick by ID and includes the favoritedBy relation. If the sidekick does not exist, it returns a 401 unauthorized response. It checks if the user has already favorited the sidekick and constructs the data object for updating the user's favoritedSidekicks field. It then updates the user in the database using `prisma.user.update` and returns a success response using `NextResponse.json`. If there is an error during the process, it returns an error response with a status of 422.
+- `PATCH`: This function is the main entry point for the PATCH endpoint. It takes in the request (`req`), route parameters (`{ params: { id } }`), and response (`res`) as parameters. It first retrieves the user session using `getServerSession` and checks if the user is authenticated. If not, it calls `respond401` to send a 401 unauthorized response. It then checks if the `id` parameter is present and throws an error if it's missing. Next, it retrieves the sidekick from the database using `prisma.sidekick.findUnique`, including the `favoritedBy` relation. If the sidekick doesn't exist, it calls `respond401` to send a 401 unauthorized response. It then checks if the user has already favorited the sidekick and constructs the `data` object accordingly. Finally, it updates the user's favorite sidekicks using `prisma.user.update` and returns a success response using `NextResponse.json`.
 
 External Services:
-- Database: The code interacts with a database using Prisma ORM. It uses the `prisma` client to query and update the database.
+- Database: The code interacts with a database using Prisma. It retrieves the sidekick and updates the user's favorite sidekicks.
 
 API Endpoints:
 - PATCH /api/sidekicks/:id
@@ -24,7 +24,7 @@ API Endpoints:
     curl -X PATCH \
       http://localhost:3000/api/sidekicks/123 \
       -H 'Content-Type: application/json' \
-      -H 'Authorization: Bearer <access_token>'
+      -H 'Authorization: Bearer <token>'
     ```
   - Example Response:
     ```json
@@ -34,11 +34,10 @@ API Endpoints:
     ```
 
 Interaction Summary:
-The PATCH endpoint in this file is responsible for updating the favorite status of a sidekick for the authenticated user. It first checks if the user is authenticated and retrieves the sidekick and user IDs. It then queries the database to find the sidekick and checks if the user has already favorited it. Based on the result, it constructs the data object for updating the user's favoritedSidekicks field. It then updates the user in the database and returns a success response. If there is an error, it returns an error response.
+The PATCH endpoint in this file allows authenticated users to update the favorite status of a sidekick. It first checks if the user is authenticated and if the required parameters are present. Then, it retrieves the sidekick from the database and checks if the user has already favorited it. Based on this information, it constructs the data object for updating the user's favorite sidekicks. Finally, it updates the user's favorite sidekicks and returns a success response.
 
 Developer Questions:
-- How is authentication handled in this code?
-- What happens if the sidekick ID is not provided?
-- What is the purpose of the `favoritedBy` relation in the sidekick query?
-- Are there any known issues or limitations with this code?
-- Are there any TODO items related to this file?
+- What authentication method is used for the `getServerSession` function?
+- What is the structure of the `favoritedBy` relation in the sidekick model?
+- Are there any additional error cases that should be handled in the PATCH endpoint?
+- Are there any performance considerations when updating the user's favorite sidekicks?

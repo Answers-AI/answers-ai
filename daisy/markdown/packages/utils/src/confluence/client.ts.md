@@ -2,32 +2,32 @@ Summary:
 This code is a TypeScript module that defines a class called "ConfluenceClient". The purpose of this class is to provide methods for interacting with the Confluence API, specifically for retrieving Confluence pages and spaces. The class uses the axios library for making HTTP requests and the redis library for caching data. The class also includes methods for handling rate limits and retrieving the cloud ID associated with the Confluence instance.
 
 Import statements:
-- `axios` and `AxiosResponse`: These imports are used for making HTTP requests to the Confluence API.
-- `ConfluencePage` and `ConfluenceSpace`: These imports are custom types used to define the structure of Confluence pages and spaces.
-- `redisLoader` and `redis`: These imports are used for caching data using Redis.
+- `import axios, { AxiosResponse } from 'axios';`: This imports the axios library for making HTTP requests. The `AxiosResponse` type is also imported for type annotations.
+- `import { ConfluencePage, ConfluenceSpace } from 'types';`: This imports the `ConfluencePage` and `ConfluenceSpace` types from a module called 'types'.
+- `import redisLoader from '../redisLoader';`: This imports the `redisLoader` function from a module located in the '../redisLoader' file.
+- `import { redis } from '../redis/client';`: This imports the `redis` object from a module located in the '../redis/client' file.
 
 Script Summary:
-The script defines a class called "ConfluenceClient" that provides methods for interacting with the Confluence API. The class includes methods for retrieving Confluence pages and spaces, handling rate limits, and caching data using Redis.
+The script defines a class called `ConfluenceClient` that provides methods for interacting with the Confluence API. The class has properties for storing the access token, cloud ID, headers, and cache expiration time. It also has two instances of the `redisLoader` function for caching Confluence pages. The class constructor initializes the properties and retrieves the cloud ID. The class includes methods for handling rate limits, retrieving app data, retrieving spaces, and fetching Confluence data. It also includes methods for getting a specific Confluence page and retrieving all Confluence pages.
 
 Internal Functions:
-- `handleRateLimit(response: AxiosResponse)`: This function is called when a rate limit is encountered. It waits for the specified amount of time and then resolves.
-- `getAppData()`: This function retrieves the accessible resources for the authenticated user and returns the data.
-- `getCloudId()`: This function retrieves the cloud ID associated with the Confluence instance.
-- `getSpaces()`: This function retrieves the list of spaces in the Confluence instance.
-- `fetchConfluenceData(endpoint: string, options: RequestOptions = {})`: This function fetches data from the Confluence API using the specified endpoint. It supports caching the data using Redis.
-- `getConfluencePage({ pageId }: { pageId: string })`: This function retrieves a specific Confluence page by its ID.
-- `getConfluencePages({ limit = 250, cursor = '' }: { limit?: number; cursor?: string } = {})`: This function retrieves all Confluence pages in the instance. It supports pagination and caching.
+- `handleRateLimit(response: AxiosResponse)`: This function takes an `AxiosResponse` object as a parameter and waits for the number of seconds specified in the 'retry-after' header before resolving.
+- `getAppData()`: This function makes a GET request to the 'https://api.atlassian.com/oauth/token/accessible-resources' endpoint to retrieve app data and returns the response data.
+- `getCloudId()`: This function retrieves the cloud ID associated with the Confluence instance by filtering the app data based on the 'confluence' scope and returning the ID.
+- `getSpaces()`: This function makes a GET request to the Confluence API to retrieve a list of spaces and returns the response data.
+- `fetchConfluenceData(endpoint: string, { cache = true }: RequestOptions = {})`: This function makes a GET request to the specified endpoint and returns the response data. It also supports caching the data using Redis.
+- `getConfluencePage({ pageId }: { pageId: string })`: This function retrieves a specific Confluence page by making a request to the Confluence API with the page ID. It returns the page data if it exists, otherwise it throws an error.
+- `getConfluencePages({ limit = 250, cursor = '' }: { limit?: number; cursor?: string } = {})`: This function retrieves all Confluence pages by making multiple requests to the Confluence API with pagination. It returns an array of page data.
 
 External Functions:
-None
+- None
 
 Interaction Summary:
-The ConfluenceClient class can be used by other parts of the application to retrieve Confluence pages and spaces. It requires an access token to authenticate with the Confluence API. The class also uses Redis for caching data, so a Redis server must be set up and configured.
+This script can be used as a module in a larger software application to interact with the Confluence API. It provides methods for retrieving Confluence pages and spaces, as well as handling rate limits and caching data. Other parts of the application can create an instance of the `ConfluenceClient` class and call its methods to retrieve Confluence data.
 
 Developer Questions:
-- How do I authenticate with the Confluence API using an access token?
-- How do I retrieve a specific Confluence page by its ID?
-- How do I retrieve all Confluence pages in the instance?
-- How do I retrieve the list of spaces in the Confluence instance?
+- How do I retrieve Confluence pages using this module?
+- How do I retrieve Confluence spaces using this module?
 - How do I handle rate limits when making requests to the Confluence API?
-- How do I enable caching of Confluence data using Redis?
+- How do I cache Confluence data using Redis?
+- How do I retrieve the cloud ID associated with the Confluence instance?

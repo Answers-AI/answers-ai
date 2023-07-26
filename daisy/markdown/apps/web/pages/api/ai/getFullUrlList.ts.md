@@ -93,7 +93,7 @@ Developer Questions:
 
 TODO Items:
 - Add error handling for failed authentication.
-- Implement pagination for the list of source URLs if it becomes too large.
+- Implement pagination for the list of source URLs.
 
 Known Issues:
-- None at the moment.
+- None.

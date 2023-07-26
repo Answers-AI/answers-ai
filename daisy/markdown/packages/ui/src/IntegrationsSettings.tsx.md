@@ -19,20 +19,21 @@ Event Handlers:
 - None
 
 Rendered components:
-- Container: A Material-UI component that provides a container for the content of the page.
+- Container: A Material-UI component that provides a container for the page content.
 - Typography: Material-UI components for displaying headings and text.
 - Box: A Material-UI component for creating a box container.
 - Grid2: A Material-UI component for creating a responsive grid layout.
 - AppsDrawer: A custom component that displays a drawer of apps.
 
 Interaction Summary:
-The IntegrationsSettings component interacts with the AppsDrawer component by passing the appSettings and activeApp props to it. It also wraps the AppsDrawer component with the AnswersProvider component to provide the appSettings prop to its child components.
+The IntegrationsSettings component receives the appSettings and activeApp props. It wraps the content of the page with the AnswersProvider component, which provides the appSettings to its child components. The page content is then rendered inside a Container component, with a header and description displayed using Typography components. The AppsDrawer component is rendered inside a Grid2 component, which creates a responsive grid layout.
 
 Developer Questions:
-- How are the appSettings and activeApp props used in the AppsDrawer component?
+- How are the appSettings and activeApp props used in this component?
 - What is the purpose of the AnswersProvider component and how does it work?
-- Are there any other components that interact with the IntegrationsSettings component?
+- How can I customize the styling of the page content?
+- How does the AppsDrawer component handle user interactions and state changes?
 
 Known Issues / Todo:
-- No known issues or bugs.
+- No known issues or bugs with the component.
 - No specific todo items related to this component.

@@ -65,15 +65,15 @@ The code sets up a server using the Inngest library and defines various API endp
 
 **Developer Questions:**
 
-- How are the event handler functions defined and how do they handle different types of events?
-- How can I add a new event handler function for a specific event type?
-- How does the server handle errors and return error responses to the client?
-- How can I test the server and the event handler functions locally?
+- How are the event handler functions defined and where are they located?
+- How can I add a new event type and corresponding handler function?
+- How can I modify the response sent back to the client for a specific event type?
 
-**TODO items:**
+**TODO:**
 
-- None
+- Add error handling for invalid event types.
+- Improve documentation for the event handler functions.
 
-**Known issues:**
+**Known Issues:**
 
-- None
+- None.

@@ -29,14 +29,15 @@ Rendered components:
 - Typography: Renders the AI-generated response.
 
 Interaction Summary:
-The Popup component interacts with other components in the application by using the useAI and syncAi hooks to handle AI-related functionality. It also communicates with the background script through message passing.
+The Popup component interacts with other components in the application by using the useAI hook to handle AI-related functionality. It also communicates with the background script of the Chrome extension through message passing.
 
 Developer Questions:
 - How does the useAI hook work and what are its dependencies?
 - How does the syncAi function synchronize AI data?
-- How does the messageListener function handle incoming messages from the background script?
+- How does the generateResponse function generate AI responses?
+- How does the component fetch the active tab and handle tab-related functionality?
+- How does the component communicate with the background script of the Chrome extension?
 
-Known Issues / Todo:
-- The code contains some commented out code that needs to be reviewed and potentially removed.
-- The code could benefit from more detailed comments and documentation.
-- There may be potential issues with the handling of tab IDs and active tabs.
+Known Issues / Todo Items:
+- There are no known issues or bugs with the component mentioned in the provided code.
+- The TODO comments indicate that there are some functionalities related to filtering by domain that need to be implemented.

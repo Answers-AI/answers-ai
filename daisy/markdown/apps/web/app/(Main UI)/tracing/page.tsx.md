@@ -18,12 +18,12 @@ Rendered components:
 - `iframe`: An iframe element that displays a web page.
 
 Interaction Summary:
-This component is a client-side component that renders a page for tracing in the Answers AI application. It relies on the `DB_STUDIO_SERVER_URL` environment variable to determine the source of the iframe. Developers can set this variable to point to a specific tracing server. In a local development environment, the default value of 'http://localhost:4173' will be used.
+This component is a client-side component that renders a page for tracing in the Answers AI application. It interacts with the `DB_STUDIO_SERVER_URL` environment variable or a local development server to display a web page within an iframe.
 
 Developer Questions:
-- How can I customize the source URL of the iframe?
-- What happens if the `DB_STUDIO_SERVER_URL` environment variable is not set?
-- Can I add additional content or components to this page?
+- How can I customize the styling of the container div and iframe?
+- How can I pass a different URL to the iframe?
+- How can I handle errors if the iframe fails to load the web page?
 
 Known Issues / Todo:
 - There are no known issues or bugs with this component.

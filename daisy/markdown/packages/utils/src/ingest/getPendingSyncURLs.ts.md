@@ -21,15 +21,14 @@ Internal Functions:
 - `getPendingSyncURLs`: This is the main function of the script. It takes an array of URLs as input and returns an array of URLs that are pending synchronization.
 
 External Functions:
-- `getUrlDomain`: This function is imported from another module. It takes a URL as input and returns the domain part of the URL.
+- `getUrlDomain`: This function is imported from the `../getUrlDomain` module. It likely takes a URL as input and returns the domain part of the URL.
 
 Interaction Summary:
-This script interacts with the database using the Prisma client to create and retrieve documents. It also depends on the `getUrlDomain` function to extract the domain from URLs. The script can be used as a standalone module or integrated into a larger application that utilizes the Prisma ORM and requires URL synchronization functionality.
+This script interacts with the database using the Prisma client to create and retrieve documents. It also depends on the `getUrlDomain` function to extract the domain from URLs. The script can be used as a standalone module or integrated into a larger application that utilizes the Prisma ORM.
 
 Developer Questions:
-- How does the `prisma` module connect to the database?
-- What is the structure of the `document` table in the database?
-- How is the `getUrlDomain` function implemented?
+- How can I modify the query conditions to retrieve documents with different criteria?
+- Can I use a different ORM or database library instead of Prisma?
 - How can I handle errors that may occur during database operations?
-- How can I modify the query conditions to retrieve different sets of pending sync URLs?
-- How can I optimize the performance of this script when dealing with a large number of URLs?
+- Can I optimize the performance of this script for large arrays of URLs?
+- How can I add additional properties to the documents being created in the database?

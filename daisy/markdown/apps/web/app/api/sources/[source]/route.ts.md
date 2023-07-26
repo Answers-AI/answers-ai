@@ -9,7 +9,7 @@ Import statements:
 - `respond401` is imported from the '@utils/auth/respond401' module and is used to handle unauthorized requests.
 
 Internal Functions:
-- `GET`: This is the main function that handles the GET request. It takes in the request object and an object containing the route parameters. It first retrieves the authenticated session using `getServerSession` and extracts the user ID. If the user ID is not available, it returns a 401 unauthorized response using `respond401`. If the source parameter is not provided, it returns a 422 unprocessable entity response with an error message. Otherwise, it queries the database using `prisma.document.findMany` to retrieve the filtered records based on the source and user permissions. It then maps the retrieved records to a new array containing only the url, title, and repo properties. Finally, it constructs a JSON response containing the sources array and returns it using `NextResponse.json`.
+- `GET`: This is the main function that handles the GET request. It takes in the request object and an object containing the route parameters. It first retrieves the authenticated session using `getServerSession` and extracts the user ID. If the user ID is not available, it returns a 401 unauthorized response using `respond401`. If the source parameter is not provided, it returns a 422 unprocessable entity response with an error message. Otherwise, it queries the database using `prisma.document.findMany` to retrieve the filtered records based on the source and user permissions. It then maps the retrieved records to a new array containing only the url, title, and repo properties. Finally, it constructs a JSON response containing the filtered records and returns it using `NextResponse.json`.
 
 External Services:
 - NextAuth: This module is used for authentication and provides the `getServerSession` function to retrieve the authenticated session.
@@ -27,6 +27,7 @@ curl -X GET \
   "source": "example"
 }'
 ```
+
 Example Response:
 ```json
 {
@@ -48,16 +49,13 @@ Interaction Summary:
 5. If the source parameter is not provided, the server returns a 422 unprocessable entity response with an error message.
 6. The server queries the database to retrieve the filtered records based on the source and user permissions.
 7. The server maps the retrieved records to a new array containing only the url, title, and repo properties.
-8. The server constructs a JSON response containing the sources array and returns it to the client.
+8. The server constructs a JSON response containing the filtered records and returns it to the client.
 
 Developer Questions:
 1. How is authentication handled in this code?
 2. What are the possible error responses that can be returned by this endpoint?
 3. How can I modify the code to increase the number of records returned?
-4. Are there any known performance issues with the database query in this code?
-
-TODO items:
-- None
-
-Known issues:
-- None
+4. Are there any performance considerations when querying the database for a large number of records?
+5. How can I add additional filtering criteria to the database query?
+6. Are there any known issues or limitations with this code?
+7. How can I test this endpoint locally?

@@ -21,13 +21,13 @@ Classes and Functions:
   - 'contextStringRender': A function that takes a 'context' parameter and returns a string representing the rendered context for the sidekick.
 
 Loops and Conditional Statements:
-There are no loops or conditional statements in this script.
+- There are no loops or conditional statements in this script.
 
 Variable Usage:
-- The 'sidekick' object is a constant variable that holds the instance of the Sidekick object. It is used to define the properties and methods of the sidekick.
+- The script uses the 'sidekick' variable to store an instance of the Sidekick object. The properties of the sidekick object are accessed and assigned values using dot notation.
 
 Potential Bugs or Issues:
-There are no apparent bugs or issues in this script.
+- There are no apparent bugs or issues in this script.
 
 Summary:
-This script defines and exports a Sidekick object, which represents a specific type of sidekick in a software application. The Sidekick object has various properties and methods that define its behavior and functionality. The script does not contain any loops or conditional statements. The variable usage is appropriate, with the 'sidekick' object being a constant variable that holds the instance of the Sidekick object. No bugs or issues were identified in the script.
+This script defines and exports a Sidekick object, which represents a specific type of sidekick in a software application. The Sidekick object has various properties and methods that define its behavior and functionality. The script does not contain any loops or conditional statements. The variable usage is straightforward, with the 'sidekick' variable being used to store and access the properties of the Sidekick object. No bugs or issues were identified in the script.

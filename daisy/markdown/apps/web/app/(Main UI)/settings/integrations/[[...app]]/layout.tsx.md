@@ -7,25 +7,26 @@ Import statements:
 - `IntegrationsSettings` from `@ui/IntegrationsSettings`: This is the component responsible for rendering the integrations settings.
 
 Component:
-The `SettingsIntegrationsAppLayout` component is an asynchronous function that takes in props as an argument. It destructures the `children`, `params`, and `other` props. It then awaits the `getAppSettings` function to fetch the app settings. It extracts the `activeApp` from the `params` prop and renders the `IntegrationsSettings` component with the `appSettings` and `activeApp` props. It also clones and renders the `children` component with the `appSettings` prop.
+The `SettingsIntegrationsAppLayout` component is an asynchronous function that takes in props as an argument. It destructures the `children`, `params`, and `other` props from the argument. It then calls the `getAppSettings` function to fetch the app settings asynchronously.
+
+The component extracts the `activeApp` value from the `params` prop, which is an array, and assigns it to the `activeApp` variable. It uses the `React.cloneElement` function to clone the `children` component and pass the `appSettings` prop to it.
 
 Hooks:
-None.
+- None
 
 Event Handlers:
-None.
+- None
 
 Rendered components:
 - `IntegrationsSettings`: This component is rendered with the `appSettings` and `activeApp` props.
 
 Interaction Summary:
-This component interacts with other components by rendering the `IntegrationsSettings` component and passing it the `appSettings` and `activeApp` props. It also renders the children components passed to it and clones them with the `appSettings` prop.
+This component interacts with other components by rendering the `IntegrationsSettings` component and passing the `appSettings` and `activeApp` props to it. It also renders the children components passed to it, cloning them and passing the `appSettings` prop to them.
 
 Developer Questions:
-- How are the `params` and `children` props passed to this component?
+- How are the `params` prop passed to this component?
 - What is the structure of the `appSettings` object returned by the `getAppSettings` function?
-- How does the `activeApp` prop affect the rendering of the `IntegrationsSettings` component?
+- How are the children components passed to this component?
 
 Known Issues / Todo:
-- No known issues or bugs.
-- No todo items.
+- None

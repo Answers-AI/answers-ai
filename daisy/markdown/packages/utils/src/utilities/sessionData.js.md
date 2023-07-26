@@ -10,18 +10,12 @@ The script defines a class called AnswerSession, which is responsible for managi
 
 Internal Functions:
 - constructor(config): This is the constructor function of the AnswerSession class. It takes a config object as a parameter and assigns its properties to the instance of the class. It also initializes an empty array called "vectors" as a property of the instance.
-
 - initPinecone(options): This method initializes a PineconeClient instance with the provided options and assigns it to the "pinecone" property of the AnswerSession instance.
-
 - addVectors(vectors): This method adds vectors to the "vectors" array property of the AnswerSession instance. It accepts either a single vector or an array of vectors as a parameter.
-
 - replaceVectors(vectors): This method replaces the "vectors" array property of the AnswerSession instance with the provided vectors. It accepts either a single vector or an array of vectors as a parameter.
-
 - clearVectors(): This method clears the "vectors" array property of the AnswerSession instance.
-
 - writeVectorsToFile(): This method writes the vectors stored in the "vectors" array property of the AnswerSession instance to files. It splits the vectors into multiple files if the total size exceeds a maximum file size. The files are organized in a folder structure based on the namespace and current date.
-
-- prepareAllForEmbedding(objects): This method prepares the provided objects for embedding. It calls the "prepareForEmbedding" method on each object in the "objects" array and returns an array of prepared statuses. It measures the execution time using console.time and console.timeEnd.
+- prepareAllForEmbedding(objects): This asynchronous method prepares all the provided objects for embedding. It calls the "prepareForEmbedding" method on each object and returns an array of prepared statuses.
 
 External Functions:
 - None
@@ -33,7 +27,7 @@ Developer Questions:
 - How do I initialize an AnswerSession instance?
 - How do I add vectors to an AnswerSession instance?
 - How do I replace vectors in an AnswerSession instance?
-- How do I clear vectors in an AnswerSession instance?
+- How do I clear vectors from an AnswerSession instance?
 - How do I write vectors to files using an AnswerSession instance?
 - How do I prepare objects for embedding using an AnswerSession instance?
-- How do I handle errors when preparing objects for embedding?
+- How do I interact with the PineconeClient instance associated with an AnswerSession instance?

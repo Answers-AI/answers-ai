@@ -14,10 +14,10 @@ External Functions:
 There are no external functions in this script.
 
 Interaction Summary:
-This script exports the "SourcesWeb" class, which can be imported and used by other parts of the application. The "SourcesWeb" class likely contains functionality related to web sources, such as fetching data from web APIs or handling web requests.
+This script exports the "SourcesWeb" class, which can be imported and used by other parts of the application. It acts as a connector between the "SourcesWeb" class and the rest of the application.
 
 Developer Questions:
-- How do I use the "SourcesWeb" class?
+- How can I use the "SourcesWeb" class in my code?
 - What methods and properties does the "SourcesWeb" class have?
 - Are there any specific configurations or dependencies required to use the "SourcesWeb" class?
 

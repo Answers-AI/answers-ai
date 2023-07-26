@@ -1,56 +1,81 @@
-**API Summary:**
+API Summary:
+This file contains code for a GET endpoint that retrieves a list of sidekicks from a database. The endpoint requires authentication and returns the sidekicks that are associated with the current user's organization. The response is in JSON format.
 
-This file contains code for a GET API endpoint that retrieves a list of sidekicks based on the user's session. The sidekicks are filtered based on the user's organization and whether they are shared with the organization. The response is a JSON object containing the normalized sidekick list.
+Import statements:
+- `NextResponse` is imported from the 'next/server' module and is used to send responses back to the client.
+- `getServerSession` is imported from the 'next-auth' module and is used to retrieve the current user's session.
+- `prisma` is imported from the '@db/client' module and is used to interact with the database.
+- `authOptions` is imported from the '@ui/authOptions' module and contains options for authentication.
+- `normalizeSidekickList` is imported from the '../../../../../utilities/normalizeSidekick' module and is used to normalize the sidekick data.
 
-**Import statements:**
+Internal Functions:
+- `GET`: This is the main function that handles the GET request. It takes a `req` parameter representing the request object. It first retrieves the current user's session using `getServerSession` and checks if the user is authenticated. If not, it redirects the user to the '/auth' page. Then, it retrieves the user's ID and queries the database for sidekicks associated with the user's organization. The retrieved sidekicks are then normalized using the `normalizeSidekickList` function. Finally, the normalized sidekicks are returned as a JSON response using `NextResponse.json`.
 
-- `NextResponse` from `'next/server'`: This import is used to handle the response from the API endpoint.
-- `getServerSession` from `'next-auth'`: This import is used to retrieve the user's session.
-- `prisma` from `'@db/client'`: This import is used to interact with the database.
-- `authOptions` from `'@ui/authOptions'`: This import provides options for session authentication.
-- `normalizeSidekickList` from `'../../../../../utilities/normalizeSidekick'`: This import is used to normalize the sidekick list.
+External Services:
+- Database: The code interacts with the database using the `prisma` client to retrieve sidekicks associated with the user's organization.
 
-**Internal Functions:**
+API Endpoints:
+GET /api/sidekicks
+Summary: Retrieves a list of sidekicks associated with the current user's organization.
+Example Usage:
+```
+curl -X GET \
+  http://localhost:3000/api/sidekicks \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache'
+```
 
-- `GET`: This function is the main handler for the GET API endpoint. It takes a `req` parameter representing the request object. It retrieves the user's session using `getServerSession` and checks if the user is authenticated. If the user is not authenticated, it redirects to the `/auth` page. It then retrieves the user's ID from the session and queries the database for sidekicks that are either created by the user's organization or shared with the organization. The function includes the favoritedBy relationship for each sidekick, filtering only for the current user. The resulting sidekicks are normalized using the `normalizeSidekickList` function. The function returns a JSON response containing the normalized sidekick list.
+Example Response:
+```json
+[
+  {
+    "id": 1,
+    "name": "Sidekick 1",
+    "createdByUser": {
+      "id": 1,
+      "name": "User 1"
+    },
+    "isSharedWithOrg": true,
+    "favoritedBy": [
+      {
+        "id": 1,
+        "name": "User 1"
+      },
+      {
+        "id": 2,
+        "name": "User 2"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Sidekick 2",
+    "createdByUser": {
+      "id": 2,
+      "name": "User 2"
+    },
+    "isSharedWithOrg": true,
+    "favoritedBy": [
+      {
+        "id": 1,
+        "name": "User 1"
+      }
+    ]
+  }
+]
+```
 
-**External Services:**
+Interaction Summary:
+1. The code imports necessary modules and functions.
+2. The `GET` function is defined to handle the GET request.
+3. The function retrieves the user's session and checks if the user is authenticated.
+4. If the user is not authenticated, the function redirects the user to the '/auth' page.
+5. The function retrieves the user's ID and queries the database for sidekicks associated with the user's organization.
+6. The retrieved sidekicks are normalized using the `normalizeSidekickList` function.
+7. The normalized sidekicks are returned as a JSON response.
 
-- `next/server`: This service is used to handle the response from the API endpoint.
-- `next-auth`: This service is used to retrieve the user's session.
-- `@db/client`: This service is used to interact with the database.
-- `@ui/authOptions`: This service provides options for session authentication.
-- `normalizeSidekick`: This utility function is used to normalize the sidekick list.
-
-**API Endpoints:**
-
-- `GET /api/route`
-  - Summary: This endpoint retrieves a list of sidekicks based on the user's session.
-  - Example Usage:
-    ```
-    curl -X GET \
-      http://localhost:3000/api/route \
-      -H 'Content-Type: application/json' \
-      -H 'cache-control: no-cache' \
-      -d '{
-      "data": "data"
-    }'
-    ```
-  - Example Response:
-    ```json
-    {
-      "response": "data"
-    }
-    ```
-
-**Interaction Summary:**
-
-The code in this file handles the GET API endpoint for retrieving a list of sidekicks. It first checks if the user is authenticated by retrieving the session. If the user is not authenticated, it redirects to the `/auth` page. It then retrieves the user's ID from the session and queries the database for sidekicks that are either created by the user's organization or shared with the organization. The resulting sidekicks are normalized and returned as a JSON response.
-
-**Developer Questions:**
-
-- How is the session retrieved and authenticated?
-- What is the structure of the normalized sidekick list?
-- How are the sidekicks filtered based on the user's organization?
-- How are the favorited sidekicks included in the response?
-- Are there any known issues or TODO items related to this code?
+Developer Questions:
+1. What is the purpose of the `normalizeSidekickList` function and how does it work?
+2. How is the authentication handled in this code?
+3. Are there any known issues or limitations with this code?
+4. Are there any TODO items related to this file?

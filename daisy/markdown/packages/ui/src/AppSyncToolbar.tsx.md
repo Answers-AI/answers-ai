@@ -20,16 +20,16 @@ Event Handlers:
 - handleSync: An async function that takes a serviceName parameter and makes an HTTP POST request to the '/api/sync/{serviceName}' endpoint with the filters data from the useAnswers hook. If the request is successful, it calls the onSync callback with the serviceName parameter.
 
 Rendered components:
-- Accordion: Represents the main container for the sync toolbar. It has a defaultExpanded prop for controlling the initial expanded state.
+- Accordion: Represents the main container for the sync toolbar. It has a defaultExpanded prop for controlling the initial expanded state and custom styling.
 - AccordionSummary: Represents the header of the accordion. It displays the "Sync" text and an expand icon.
 - AccordionDetails: Represents the content of the accordion. It contains a Box component for displaying the sync buttons.
-- Box: A container component for displaying the sync buttons. It uses the display, gap, and flexWrap props to control the layout.
-- Button: Represents a sync button. It has a variant prop set to "outlined", a color prop set to "primary", and an onClick event handler that calls the handleSync function with the corresponding service name.
+- Box: A container component for displaying the sync buttons. It uses flexbox for layout and has custom styling.
+- Button: Represents a sync button. It has a variant prop for styling and an onClick event handler for triggering the handleSync function.
 - Typography: Represents the "Sync" text in the AccordionSummary component.
 - ExpandMoreIcon: Represents the expand icon in the AccordionSummary component.
 
 Interaction Summary:
-The AppSyncToolbar component interacts with other components in the application through props. It receives the expanded state, app settings, and a callback for sync events. It uses the useAnswers hook to access answers data and the useFlags hook to access feature flags. When a sync button is clicked, it calls the handleSync function with the corresponding service name, which makes an HTTP POST request to the server. If the request is successful, it calls the onSync callback with the service name.
+The AppSyncToolbar component interacts with other components in the application through props. It receives the expanded state, app settings, and a callback for sync events. It uses the useAnswers hook to access answers data and the useFlags hook to access feature flags. When a sync button is clicked, it triggers the handleSync function, which makes an HTTP POST request to the server and calls the onSync callback if provided.
 
 Developer Questions:
 - How can I customize the styling of the sync toolbar?
@@ -39,6 +39,5 @@ Developer Questions:
 - How can I add loading indicators during the sync process?
 
 Known Issues / Todo:
-- There are no known issues or bugs with the component.
+- No known issues or bugs.
 - Todo: Add error handling for failed sync requests.
-- Todo: Add loading indicators during the sync process.

@@ -1,27 +1,32 @@
 Script Purpose and Role:
-The purpose of this script is to define a coding sidekick object that can be used within a broader software application. The coding sidekick object contains various properties and methods that can be utilized to assist with code analysis and writing. This script serves as a configuration file for the coding sidekick object.
+The purpose of this script is to define a coding sidekick object that can be used within a broader software application. The coding sidekick object contains various properties and methods related to code analysis and assistance. It can be used to provide code suggestions, analyze code, and generate prompts for user interactions.
 
 Script Structure:
-The script starts with an import statement for the `Sidekick` type from the 'types' module. It then defines a constant variable `coding` which is of type `Sidekick`. The `coding` object contains properties and methods that define the behavior of the coding sidekick.
+The script starts with import statements, followed by the definition of the coding sidekick object using TypeScript syntax. Finally, the coding sidekick object is exported as the default export of the module.
 
 Import Statements:
-- `import { Sidekick } from 'types';`: This import statement imports the `Sidekick` type from the 'types' module. The `Sidekick` type is used to define the structure of the coding sidekick object.
+- The script imports the `Sidekick` type from the 'types' module. This type is used to define the structure of the coding sidekick object.
 
 Classes and Functions:
-- `getSystemPromptTemplate(user)`: This function is a method of the `coding` object. It takes a `user` parameter and returns a string. The function generates a system prompt template for the coding sidekick based on the provided `user` information.
+- The script defines a constant variable `coding` of type `Sidekick`, which represents the coding sidekick object.
+- The `coding` object has the following properties:
+  - `departments`: An array of strings representing the departments related to coding.
+  - `label`: A string representing the label or name of the coding sidekick.
+  - `value`: A string representing the value or identifier of the coding sidekick.
+  - `maxCompletionTokens`: A number representing the maximum number of completion tokens allowed for code analysis.
+  - `placeholder`: A string representing the placeholder text for the coding sidekick.
+  - `getSystemPromptTemplate`: A function that takes a `user` parameter and returns a string representing the system prompt template for the coding sidekick.
+  - `getUserPromptTemplate`: A function that takes `query` and `context` parameters and returns a string representing the user prompt template for the coding sidekick.
+  - `contextStringRender`: A function that takes a `context` parameter and returns a string representing the rendered context for the coding sidekick.
 
-- `getUserPromptTemplate(query, context)`: This function is a method of the `coding` object. It takes `query` and `context` parameters and returns a string. The function generates a user prompt template for the coding sidekick based on the provided `query` and `context` information.
-
-- `contextStringRender(context)`: This function is a method of the `coding` object. It takes a `context` parameter and returns a string. The function generates a rendered string representation of the provided `context` information.
-
-Loops and Conditional Statements:
+Review of Loops and Conditional Statements:
 There are no loops or conditional statements in this script.
 
 Variable Usage:
-- `coding`: This variable is a constant of type `Sidekick` and represents the coding sidekick object. It contains properties such as `departments`, `label`, `value`, `maxCompletionTokens`, `placeholder`, and methods such as `getSystemPromptTemplate`, `getUserPromptTemplate`, and `contextStringRender`. The variable is used to define the behavior and configuration of the coding sidekick.
+- The `coding` object is the main variable used in this script. It is used to define the properties and methods of the coding sidekick object.
 
 Potential Bugs or Issues:
 There are no apparent bugs or issues in this script.
 
 Summary:
-This script defines a coding sidekick object that can be used within a software application. The coding sidekick object has properties and methods that define its behavior and configuration. The script provides functions for generating system and user prompt templates, as well as rendering context information. The script does not contain any loops or conditional statements. Overall, the script serves as a configuration file for the coding sidekick object and can be extended or modified as needed.
+This script defines a coding sidekick object that can be used within a software application. The object contains properties and methods related to code analysis and assistance. It can be customized to provide prompts and suggestions based on user queries and code contexts. The script is structured using TypeScript syntax and exports the coding sidekick object as the default export of the module.

@@ -41,8 +41,16 @@ The code file imports necessary dependencies for authentication, handling HTTP r
 
 Developer Questions:
 - What are the required environment variables for AWS S3 access?
-- How is the user session retrieved and authenticated?
-- What is the purpose of the `authOptions` object?
+- How does the authentication with NextAuth work?
 - How can I configure the AWS S3 bucket and region?
-- Are there any error handling mechanisms in place for failed S3 uploads?
-- How can I test this API endpoint locally?
+- What is the purpose of the `authOptions` object?
+- How can I handle errors and exceptions in this code?
+- Are there any limitations or known issues with the `getSignedUrl` function?
+
+TODO items:
+- Add error handling for AWS S3 operations.
+- Implement file validation and size restrictions.
+- Add logging for debugging and monitoring purposes.
+
+Known issues:
+- None.

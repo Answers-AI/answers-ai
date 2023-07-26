@@ -14,10 +14,10 @@ External Functions:
 There are no external functions in this code.
 
 Interaction Summary:
-This script does not directly interact with the rest of the application. It simply defines a constant variable that can be used by other parts of the application to access information about the available services.
+This script does not have any direct interaction with the rest of the application. It simply defines a constant variable that can be used by other parts of the application.
 
 Developer Questions:
-- How can I access the list of services defined in `NO_ORG_SETTINGS`?
-- Can I modify the properties of the services in `NO_ORG_SETTINGS`?
-- How can I add or remove services from `NO_ORG_SETTINGS`?
-- Can I use the `imageURL` property to display the service logos in the application?
+- How can I access the `NO_ORG_SETTINGS` variable in other parts of the application?
+- Can I modify the properties of the services in the `NO_ORG_SETTINGS` variable?
+- How can I add or remove services from the `NO_ORG_SETTINGS` variable?
+- Is there a way to dynamically generate the `imageURL` property for each service?

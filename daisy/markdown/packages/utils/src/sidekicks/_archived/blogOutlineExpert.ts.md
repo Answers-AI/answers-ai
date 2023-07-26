@@ -14,7 +14,7 @@ Loops and Conditional Statements:
 - There are no loops or conditional statements in this script.
 
 Variable Usage:
-- The 'sidekick' variable is used to define an object that represents a blog outline expert. It is assigned a Sidekick type and has several properties and methods.
+- The 'sidekick' variable is used to define an object that represents a blog outline expert. It is assigned a value that includes various properties and methods.
 
 Potential Bugs or Issues:
 - There are no apparent bugs or issues in this script.

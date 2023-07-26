@@ -16,11 +16,11 @@ External Functions:
 - redisLoader: This is the main function exported by the module. It takes in various configuration options and returns a DataLoader instance with caching capabilities. The configuration options include the key prefix for cache keys, the Redis configuration, a function for retrieving values based on keys, an optional cache expiration time, and an optional flag to disable caching. Inside the function, it defines a hashKey function for generating cache keys based on the provided key prefix and the SHA1 hash of the key. It also defines a batchLoadFn function for batch loading values from the cache. If caching is disabled, it directly calls the getValuesFn function to retrieve values. Otherwise, it retrieves cached values from Redis using the MGET command. It then checks each cached value, parses it if it exists, and adds it to the results array. If a cached value cannot be parsed, it adds the cache key to the cacheMissKeys array and logs an error. If a cache key is not found in the cache, it adds it to the cacheMissKeys array. If there are cache miss keys, it calls the getValuesFn function to retrieve the non-cached values. It then stores the non-cached key-value pairs in Redis using the MSET command and sets the expiration time for each cache key if a cache expiration time is provided. Finally, it updates the results array with the non-cached values. The function returns the results array.
 
 Interaction Summary:
-This module interacts with a Redis server for caching data. It uses the DataLoader library to batch and cache data loading operations. The exported redisLoader function can be used by other parts of the application to create a DataLoader instance with caching capabilities.
+This module can be used by other parts of the application to cache and batch load data from Redis. It provides a convenient way to configure and use a DataLoader instance with caching capabilities.
 
 Developer Questions:
-- How do I configure the redisLoader function to work with my Redis server?
-- How do I define the getValuesFn function to retrieve values based on keys?
-- How do I disable caching for certain data loading operations?
-- How do I set a cache expiration time for cache keys?
-- How do I use the redisLoader function in other parts of the application to load and cache data?
+- How do I configure and use the redisLoader function?
+- What are the available configuration options for the redisLoader function?
+- How does the caching mechanism work in this module?
+- How can I handle errors or exceptions when using the redisLoader function?
+- How can I extend or modify the caching behavior of this module?

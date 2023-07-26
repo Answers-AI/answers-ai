@@ -20,8 +20,7 @@ Interaction Summary:
 This script interacts with the database using Prisma to retrieve user accounts. It also interacts with the Confluence, Jira, and Slack APIs by creating instances of client classes and passing access tokens to them.
 
 Developer Questions:
-- How are the user accounts retrieved from the database?
-- What happens if an account provider is not supported?
-- How are the client instances created and initialized?
-- What methods are available on the client instances?
-- How are the access tokens obtained for each provider?
+- How are user accounts stored in the database?
+- What methods are available in the ConfluenceClient, JiraClient, and SlackApiClient classes?
+- How are access tokens obtained for each provider?
+- How can I use the `getUserClients` function in other parts of the application?

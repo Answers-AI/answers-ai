@@ -23,9 +23,10 @@ This component is a server-side component as it uses the `getServerSession` func
 
 Developer Questions:
 - How is the `params` object passed to this component?
-- What properties are expected in the `params` object?
+- What is the structure of the `params` object?
 - How does the `getServerSession` function work and what does it return?
+- How does the `ChatWidget` component handle the `params` and `session` props?
 
 Known Issues / Todo:
-- No known issues or bugs.
-- No todo items related to this component.
+- There are no known issues or bugs with this component.
+- No todo items are mentioned in the provided code.

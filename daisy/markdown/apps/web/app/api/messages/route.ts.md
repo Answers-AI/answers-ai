@@ -72,14 +72,13 @@ Import statements:
 - `authOptions` is imported from the `@ui/authOptions` module. It contains the options for authentication.
 
 Internal Functions:
-- `GET`: This function retrieves all messages associated with the authenticated user. It uses the `getServerSession` function to get the user's session and checks if the user's email is available. If not, it redirects the user to the authentication page. It then uses the `prisma.message.findMany` function to fetch all messages with the user's ID and returns them as a JSON response.
-- `DELETE`: This function deletes a specific message. It extracts the `id` parameter from the request URL's search parameters. It then uses the `getServerSession` function to get the user's session and checks if the user's email is available. If not, it redirects the user to the authentication page. It uses the `prisma.message.findFirst` function to find the message with the specified `id` and the user's ID. If the message does not exist, it redirects the user to the authentication page. It then uses the `prisma.message.delete` function to delete the message and returns the deleted message's ID as a JSON response.
-- `PATCH`: This function updates the likes and dislikes of a message. It first validates which fields are allowed to be updated (TODO). It uses the `getServerSession` function to get the user's session and checks if the user's email is available. If not, it redirects the user to the authentication page. It extracts the `id`, `likes`, and `dislikes` parameters from the request body. It then uses the `prisma.message.update` function to update the message with the specified `id` and sets the `likes` and `dislikes` fields to the provided values. It returns the updated message's ID as a JSON response.
+- `GET`: This function handles the GET request to retrieve all messages associated with the authenticated user. It uses the `getServerSession` function to get the user session and checks if the user has a valid email. If not, it redirects the user to the authentication page. It then uses the `prisma.message.findMany` function to retrieve all messages with the matching `userId` and returns the records as a JSON response.
+- `DELETE`: This function handles the DELETE request to delete a specific message. It extracts the `id` parameter from the request URL. It uses the `getServerSession` function to get the user session and checks if the user has a valid email. If not, it redirects the user to the authentication page. It then uses the `prisma.message.findFirst` function to find the message with the matching `id` and `userId`. If the message does not exist, it redirects the user to the authentication page. Finally, it uses the `prisma.message.delete` function to delete the message and returns the `id` of the deleted message as a JSON response.
+- `PATCH`: This function handles the PATCH request to update the likes and dislikes of a message. It first validates the user session and checks if the user has a valid email. If not, it redirects the user to the authentication page. It then extracts the `id`, `likes`, and `dislikes` from the request body. It uses the `prisma.message.update` function to update the message with the matching `id` and sets the `likes` and `dislikes` fields to the provided values. Finally, it returns the `id` of the updated message as a JSON response.
 
 External Services:
-- The code interacts with the Next.js server through the `NextResponse` module.
-- The code uses the `getServerSession` function from the `next-auth` module to retrieve the user's session.
-- The code uses the `prisma` client from the `@db/client` module to interact with the database.
+- The code interacts with the Prisma client (`prisma`) to perform database operations.
+- The code uses the `getServerSession` function from the `next-auth` module to retrieve the user session.
 
 API Endpoints:
 1. GET /api/route
@@ -151,9 +150,11 @@ Example Response:
 ```
 
 Interaction Summary:
-The code in this file provides API endpoints for retrieving, deleting, and updating messages. It requires authentication using the `getServerSession` function from the `next-auth` module. The `prisma` client is used to interact with the database and perform CRUD operations on the message data. The endpoints return JSON responses containing the requested data or the ID of the affected message.
+The code in this file provides API endpoints for retrieving, deleting, and updating messages. It requires authentication using the `getServerSession` function from the `next-auth` module. The `prisma` client is used to interact with the database and perform CRUD operations on the `message` table. The GET endpoint retrieves all messages associated with the authenticated user, the DELETE endpoint deletes a specific message, and the PATCH endpoint updates the likes and dislikes of a message.
 
 Developer Questions:
-1. What are the allowed fields to be updated in the PATCH endpoint? (TODO)
-2. How does the authentication process work with `getServerSession`?
+1. How is the authentication handled in this code?
+2. What are the allowed fields to be updated in the PATCH endpoint?
 3. Are there any known issues or limitations with this code?
+4. How can I test these API endpoints locally?
+5. Are there any additional dependencies required to run this code?
