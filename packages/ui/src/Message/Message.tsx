@@ -80,7 +80,7 @@ export const MessageCard = ({
   const services: { [key: string]: AppService } =
     appSettings?.services?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};
   const [lastInteraction, setLastInteraction] = React.useState<Rating | undefined>();
-  const hasContent = role === 'assistant' ? content && Object.keys(other)?.length : !!content;
+  const hasContent = role === 'assistant' ? content && id : !!content;
   if (error) {
     pineconeData = error?.response?.data.pineconeData;
     summary = error?.response?.data.summary;
@@ -182,7 +182,7 @@ export const MessageCard = ({
                 }}
                 title={role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
               />
-              {hasContent && content ? (
+              {hasContent ? (
                 <>
                   <Typography
                     variant="body1"

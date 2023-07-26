@@ -179,6 +179,7 @@ export const ChatDetail = ({
                   <>
                     <MessageCard
                       // user={user}
+                      id="error"
                       role="assistant"
                       content={`There was an error completing your request, please try again`}
                       error={error}
@@ -198,6 +199,7 @@ export const ChatDetail = ({
                 {isLoading ? (
                   <MessageCard
                     //  user={user}
+
                     role="loading"
                     content={'...'}
                   />
@@ -205,6 +207,7 @@ export const ChatDetail = ({
 
                 {!messages?.length ? (
                   <MessageCard
+                    id="placeholder"
                     // user={user}
                     role="assistant"
                     content={
