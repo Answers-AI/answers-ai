@@ -52,7 +52,9 @@ class WebClient {
       }
     } catch (error: unknown) {
       let message = getAxiosErrorMessage(error);
-      throw new Error(message);
+      console.log(`Error fetching ${url} via axios.  ${message}`);
+      return '';
+      // throw new Error(message);
     }
 
     try {
@@ -63,31 +65,31 @@ class WebClient {
             headless: 'new',
             args: [
               `--host-resovler-rules=MAP * 127.0.0.1, EXCLUDE ${url}`,
-              '--disable-gpu',
-              '--disable-dev-shm-usage',
-              '--single-process',
-              '--disable-software-rasterizer',
-              '--disable-background-networking',
-              '--disable-background-timer-throttling',
-              '--disable-backgrounding-occluded-windows',
-              '--disable-breakpad',
-              '--disable-client-side-phishing-detection',
-              '--disable-default-apps',
-              '--disable-extensions',
-              '--disable-hang-monitor',
-              '--disable-popup-blocking',
-              '--disable-infobars',
-              '--disable-session-crashed-bubble',
-              '--disable-translate',
-              '--disable-web-security',
-              '--metrics-recording-only',
-              '--mute-audio',
-              '--no-default-browser-check',
-              '--no-first-run',
-              '--safebrowsing-disable-auto-update',
-              '--disable-component-update',
-              '--window-size=1,1',
-              '--ignore-certificate-errors'
+              // '--disable-gpu',
+              // '--disable-dev-shm-usage',
+              // '--single-process',
+              // '--disable-software-rasterizer',
+              // '--disable-background-networking',
+              // '--disable-background-timer-throttling',
+              // '--disable-backgrounding-occluded-windows',
+              // '--disable-breakpad',
+              // '--disable-client-side-phishing-detection',
+              // '--disable-default-apps',
+              // '--disable-extensions',
+              // '--disable-hang-monitor',
+              // '--disable-popup-blocking',
+              // '--disable-infobars',
+              // '--disable-session-crashed-bubble',
+              // '--disable-translate',
+              // '--disable-web-security',
+              // '--metrics-recording-only',
+              // '--mute-audio',
+              // '--no-default-browser-check',
+              // '--no-first-run',
+              // '--safebrowsing-disable-auto-update',
+              // '--disable-component-update',
+              '--window-size=1,1'
+              // '--ignore-certificate-errors'
             ],
             defaultViewport: {
               width: 1,
