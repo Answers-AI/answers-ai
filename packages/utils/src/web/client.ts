@@ -98,7 +98,8 @@ class WebClient {
             }
           },
           gotoOptions: {
-            waitUntil: 'networkidle2'
+            // waitUntil: 'networkidle2',
+            timeout: 10000 // 10 Seconds
           }
         });
 
