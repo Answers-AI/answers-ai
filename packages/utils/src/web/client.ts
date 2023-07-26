@@ -61,10 +61,42 @@ class WebClient {
         const loader = new PuppeteerWebBaseLoader(url, {
           launchOptions: {
             headless: 'new',
-            args: [`--host-rules="MAP * 127.0.0.1, EXCLUDE ${url}"`]
+            args: [
+              `--host-resovler-rules=MAP * 127.0.0.1, EXCLUDE ${url}`,
+              '--disable-gpu',
+              '--disable-dev-shm-usage',
+              '--single-process',
+              '--disable-software-rasterizer',
+              '--no-zygote',
+              '--disable-background-networking',
+              '--disable-background-timer-throttling',
+              '--disable-backgrounding-occluded-windows',
+              '--disable-breakpad',
+              '--disable-client-side-phishing-detection',
+              '--disable-default-apps',
+              '--disable-extensions',
+              '--disable-hang-monitor',
+              '--disable-popup-blocking',
+              '--disable-infobars',
+              '--disable-session-crashed-bubble',
+              '--disable-translate',
+              '--disable-web-security',
+              '--metrics-recording-only',
+              '--mute-audio',
+              '--no-default-browser-check',
+              '--no-first-run',
+              '--safebrowsing-disable-auto-update',
+              '--disable-component-update',
+              '--window-size=1,1',
+              '--ignore-certificate-errors'
+            ],
+            defaultViewport: {
+              width: 1,
+              height: 1
+            }
           },
           gotoOptions: {
-            waitUntil: 'domcontentloaded'
+            waitUntil: 'networkidle2'
           }
         });
 

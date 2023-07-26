@@ -137,12 +137,52 @@ const embedVectors = async (event: any, vectors: any[]) => {
   return outVectors;
 };
 
-export const processWebUrlScrape: EventVersionHandler<{ urls: string[]; byDomain: boolean }> = {
+const getUrls = async (domain: string, path?: string) => {
+  const [sitemapUrls, sitemapXml, sitemapIndexXml, sitemap1Xml] = await Promise.all([
+    fetchSitemapUrls(domain),
+    getSitemapUrls(`${domain}/sitemap.xml`),
+    getSitemapUrls(`${domain}/sitemap-index.xml`),
+    getSitemapUrls(`${domain}/sitemap1.xml`)
+  ]);
+
+  const urls = [
+    ...(sitemapUrls || []),
+    ...(sitemapXml || []),
+    ...(sitemapIndexXml || []),
+    ...(sitemap1Xml || [])
+  ];
+
+  if (!path) {
+    return urls;
+  }
+
+  const uniquePath = getUniqueUrl(path);
+
+  const uniqueUrls = getUniqueUrls([
+    ...(sitemapUrls || []),
+    ...(sitemapXml || []),
+    ...(sitemapIndexXml || []),
+    ...(sitemap1Xml || [])
+  ]).filter((url) => {
+    // This will match anything that starts with this path.
+    // Ex: /blog as the path would match /blog/page and /blogger-was-here/page
+    // Potential TODO to use regex or hardcode a slash at the end of the startsWith check
+    return url.startsWith(uniquePath);
+  });
+
+  return uniqueUrls;
+};
+
+export const processWebUrlScrape: EventVersionHandler<{
+  urls: string[];
+  byDomain: boolean;
+  recursive: boolean;
+}> = {
   event: 'web/urls.sync',
   v: '1',
   handler: async ({ event }) => {
     const data = event.data;
-    const { urls, byDomain } = data;
+    const { urls, byDomain, recursive } = data;
 
     if (byDomain) {
       const domains = getUniqueDomains(urls);
@@ -179,37 +219,24 @@ export const processWebUrlScrape: EventVersionHandler<{ urls: string[]; byDomain
   }
 };
 
-export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
+export const processWebDomainScrape: EventVersionHandler<{ domain: string; recursive: boolean }> = {
   event: 'web/domain.sync',
   v: '1',
   handler: async ({ event }) => {
     const data = event.data;
-    const { domain } = data;
+    const { domain, recursive } = data;
 
     if (!domain) {
       console.log('[web/domain.sync] No domain provided');
       return;
     }
 
-    const [sitemapUrls, sitemapXml, sitemapIndexXml, sitemap1Xml] = await Promise.all([
-      fetchSitemapUrls(domain),
-      getSitemapUrls(`${domain}/sitemap.xml`),
-      getSitemapUrls(`${domain}/sitemap-index.xml`),
-      getSitemapUrls(`${domain}/sitemap1.xml`)
-    ]);
-
-    const urls = [
-      ...(sitemapUrls || []),
-      ...(sitemapXml || []),
-      ...(sitemapIndexXml || []),
-      ...(sitemap1Xml || [])
-    ];
+    const urls = await (!!recursive ? [] : getUrls(domain));
 
     if (!urls?.length) {
       console.log('[web/domain.sync] Could not extract URLs from sitemap.  Preparing deep sync');
       inngest.send({
         v: event.v,
-
         name: 'web/page.sync',
         data: {
           recursive: true,
@@ -308,7 +335,9 @@ export const processWebScrape: EventVersionHandler<{
               user: event.user
             };
           });
-          await inngest.send(recursiveEvents);
+          if (recursiveEvents.length) {
+            await inngest.send(recursiveEvents);
+          }
         }
 
         return webData;
@@ -355,95 +384,65 @@ export const processWebScrape: EventVersionHandler<{
     const embeddedVectors = await embedVectors(event, vectors);
 
     return pendingSyncURLs;
-    // TODO: Update webData with syncedAt
   }
 };
 
-export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
-  event: 'web/path.sync',
-  v: '1',
-  handler: async ({ event }) => {
-    const data = event.data;
-    const { path } = data;
+export const processWebPathScrape: EventVersionHandler<{ path: string; forceRecursion: boolean }> =
+  {
+    event: 'web/path.sync',
+    v: '1',
+    handler: async ({ event }) => {
+      const data = event.data;
+      const { path, forceRecursion } = data;
 
-    if (!path) {
-      console.log('[web/path.sync] No path provided');
-      return;
-    }
-    const domain = getUrlDomain(path);
+      if (!path) {
+        console.log('[web/path.sync] No path provided');
+        return;
+      }
+      const domain = getUrlDomain(path);
 
-    if (!domain) {
-      console.log('[web/path.sync] Could not fetch domain');
-      return;
-    }
+      if (!domain) {
+        console.log('[web/path.sync] Could not fetch domain');
+        return;
+      }
 
-    // if (path === domain) {
-    //   inngest.send({
-    //     name: 'web/domain.sync',
-    //     data: { domain },
-    //     user: event.user
-    //   });
-    //   return;
-    // }
+      const urls = forceRecursion ? [] : await getUrls(domain, path);
 
-    const [sitemapUrls, sitemapXml, sitemapIndexXml, sitemap1Xml] = await Promise.all([
-      fetchSitemapUrls(domain),
-      getSitemapUrls(`${domain}/sitemap.xml`),
-      getSitemapUrls(`${domain}/sitemap-index.xml`),
-      getSitemapUrls(`${domain}/sitemap1.xml`)
-    ]);
+      if (forceRecursion || !urls?.length) {
+        console.log('[web/path.sync] Could not extract URLs from sitemap.  Calling Scraper');
+        inngest.send({
+          v: event.v,
+          name: 'web/page.sync',
+          data: {
+            recursive: true,
+            parentId: `${new Date().valueOf()}-recursive`,
+            urls: [path]
+          },
+          user: event.user
+        });
+      } else {
+        const pendingSyncURLs = await getPendingSyncURLs(urls);
+        // Need to use the unique URLs' original case sensitivity as not all sites treat mixed cases the same
+        const finalUrls = urls.filter((url) => pendingSyncURLs.includes(url.toLocaleLowerCase()));
 
-    const uniquePath = getUniqueUrl(path);
-
-    const uniqueUrls = getUniqueUrls([
-      ...(sitemapUrls || []),
-      ...(sitemapXml || []),
-      ...(sitemapIndexXml || []),
-      ...(sitemap1Xml || [])
-    ]).filter((url) => {
-      // This will match anything that starts with this path.
-      // Ex: /blog as the path would match /blog/page and /blogger-was-here/page
-      // Potential TODO to use regex or hardcode a slash at the end of the startsWith check
-      return url.startsWith(uniquePath);
-    });
-
-    if (!uniqueUrls?.length) {
-      console.log('[web/path.sync] Could not extract URLs from sitemap.  Calling Scraper');
-      inngest.send({
-        v: event.v,
-        name: 'web/page.sync',
-        data: {
-          recursive: true,
-          parentId: `${new Date().valueOf()}-recursive`,
-          urls: [path]
-        },
-        user: event.user
-      });
-    } else {
-      const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
-      // Need to use the unique URLs' original case sensitivity as not all sites treat mixed cases the same
-      const finalUrls = uniqueUrls.filter((url) =>
-        pendingSyncURLs.includes(url.toLocaleLowerCase())
-      );
-
-      try {
-        await Promise.all(
-          chunkArray(finalUrls, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
-            inngest.send({
-              v: event.v,
-              name: 'web/page.sync',
-              data: {
-                _total: finalUrls.length,
-                urls
-              },
-              user: event.user
-            })
-          )
-        );
-      } catch (error) {
-        console.log(error);
-      } finally {
+        try {
+          await Promise.all(
+            chunkArray(finalUrls, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
+              inngest.send({
+                v: event.v,
+                name: 'web/page.sync',
+                data: {
+                  _total: finalUrls.length,
+                  urls
+                },
+                user: event.user
+              })
+            )
+          );
+        } catch (error) {
+          console.log(error);
+        } finally {
+        }
       }
     }
-  }
-};
+  };
