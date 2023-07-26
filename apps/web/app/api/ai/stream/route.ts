@@ -10,7 +10,7 @@ import { prisma } from '@db/client';
 
 import { authOptions } from '@ui/authOptions';
 
-import { Document } from 'types';
+import { Document, Sidekick } from 'types';
 
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
@@ -21,15 +21,27 @@ export async function POST(req: Request) {
     return Response.redirect('/', 401);
   }
 
-  const { journeyId, chatId, filters, prompt, messages, sidekick, gptModel } = await req.json();
+  const {
+    journeyId,
+    chatId,
+    filters,
+    prompt,
+    messages,
+    sidekick: { id: sidekickId = null } = {},
+    gptModel
+  } = await req.json();
   // TODO: Update for sharing in the future
-  const sidekickObject = !sidekick?.id
+  const sidekick = !sidekickId
     ? null
     : await prisma.sidekick.findFirst({
         where: {
-          id: sidekick.id
+          id: sidekickId
         }
       });
+
+  if (!sidekick) {
+    return new Response('Sidekick not found', { status: 404 });
+  }
 
   let completionRequest;
 
@@ -41,7 +53,8 @@ export async function POST(req: Request) {
     user,
     filters: filters,
     prompt,
-    journeyId
+    journeyId,
+    sidekick
   });
   // await inngest.send({
   //   v: '1',
@@ -76,7 +89,7 @@ export async function POST(req: Request) {
       prompt,
       messages,
       filters,
-      sidekick: sidekickObject!
+      sidekick: sidekick!
     }));
   } catch (contextError) {
     console.log('fetchContext', contextError);
@@ -113,7 +126,7 @@ export async function POST(req: Request) {
     organization: user?.currentOrganization,
     input: prompt,
     messages,
-    sidekick: sidekickObject!,
+    sidekick: sidekick!,
     gptModel
   });
 
@@ -123,6 +136,7 @@ export async function POST(req: Request) {
       stream: true
     },
     {
+      sidekick,
       user,
       prompt,
       chat: chat as any,

@@ -1,7 +1,7 @@
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser';
 import { prisma } from '@db/client';
 import { inngest } from './ingest/client';
-import { Chat, User, Document, Message } from 'types';
+import { Chat, User, Document, Message, Sidekick, AnswersFilters } from 'types';
 interface CompletionResponse {
   text: string;
   message: Message;
@@ -11,7 +11,10 @@ interface StreamExtra {
   chat: Chat;
   context: string;
   contextDocuments: Document[];
-  [key: string]: any;
+  sidekick?: Sidekick;
+  prompt: string;
+  filters?: AnswersFilters;
+  completionRequest: any;
 }
 
 export async function OpenAIStream(
@@ -21,7 +24,7 @@ export async function OpenAIStream(
 ) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
-  const { prompt, user, chat, context, contextDocuments } = extra;
+  const { prompt, user, sidekick, chat, context, contextDocuments } = extra;
   let counter = 0;
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -41,7 +44,6 @@ export async function OpenAIStream(
 
   const stream = new ReadableStream({
     async start(controller) {
-      controller.enqueue(encoder.encode(JSON.stringify(extra) + 'JSON_END')); // TODO: Need to get this back in. Was breaking the response when code was added to the prompt
       message = await prisma.message.create({
         data: {
           context,
@@ -50,9 +52,11 @@ export async function OpenAIStream(
           },
           content: '',
           chat: { connect: { id: chat.id } },
+          sidekickJson: sidekick as any,
           role: 'assistant'
         }
       });
+      controller.enqueue(encoder.encode(JSON.stringify({ id: message.id, ...extra }) + 'JSON_END'));
 
       function onParse(event: ParsedEvent | ReconnectInterval) {
         if (event.type === 'event') {

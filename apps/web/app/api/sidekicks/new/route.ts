@@ -6,7 +6,7 @@ import { Sidekick } from 'types';
 import { respond401 } from '@utils/auth/respond401';
 import { normalizeSidekickForUpdate } from 'utilities/normalizeSidekick';
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) return respond401();

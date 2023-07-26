@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 
-export async function GET(req: Request, res: Response) {
+export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) return NextResponse.redirect('/auth');
   const records = await prisma.message.findMany({
@@ -15,7 +15,7 @@ export async function GET(req: Request, res: Response) {
   return NextResponse.json(records);
 }
 
-export async function DELETE(req: Request, res: Response) {
+export async function DELETE(req: Request) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
 
@@ -39,7 +39,7 @@ export async function DELETE(req: Request, res: Response) {
   }
 }
 
-export async function PATCH(req: Request, res: Response) {
+export async function PATCH(req: Request) {
   try {
     // TODO: Validate which fields are allowed to be updated
     const user = await getServerSession(authOptions);

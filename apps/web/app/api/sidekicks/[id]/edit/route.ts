@@ -6,7 +6,7 @@ import { respond401 } from '@utils/auth/respond401';
 import { Sidekick } from 'types';
 import { normalizeSidekickForUpdate } from 'utilities/normalizeSidekick';
 
-export async function PATCH(req: Request, res: Response) {
+export async function PATCH(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return respond401();

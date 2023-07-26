@@ -104,12 +104,14 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
                     {opened == service.id ? <ExpandLess /> : <ExpandMore />}
                   </ListItemButton>
                   <Collapse in={opened == service.id} sx={{ width: '100%' }}>
-                    <JourneySetting
-                      app={service.id}
-                      appSettings={appSettings}
-                      filters={filters}
-                      updateFilter={updateFilter}
-                    />
+                    {opened == service.id ? (
+                      <JourneySetting
+                        app={service.id}
+                        appSettings={appSettings}
+                        filters={filters}
+                        updateFilter={updateFilter}
+                      />
+                    ) : null}
                   </Collapse>
                 </ListItem>
               </React.Fragment>

@@ -7,10 +7,11 @@ import { FlagsmithProvider } from 'flagsmith/react';
 import { darkModeTheme } from './theme';
 import { AnswersProvider } from './AnswersContext';
 import ChatExtensionWidget from './ChatExtensionWidget';
+import { User } from 'types';
 
 const ExtensionContentApp = ({ apiUrl }: { apiUrl: string }) => {
   return (
-    <AnswersProvider user={{}} appSettings={{}} apiUrl={apiUrl}>
+    <AnswersProvider user={{} as User} appSettings={{}} apiUrl={apiUrl}>
       <FlagsmithProvider
         options={{
           // @ts-expect-error

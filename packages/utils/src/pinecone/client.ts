@@ -89,7 +89,9 @@ class PineconeClient {
       await this.init();
 
       const index = this.client.Index(this.indexName);
-      const namespace = organizationId ? `org-${organizationId}` : 'public';
+      const namespace = organizationId
+        ? `org-${organizationId}`
+        : process.env.PINECONE_INDEX_NAMESPACE;
       //TODO: Remove after testing
       // await this.deleteIndex(index);
       // console.log('Vector', vectors[0]);

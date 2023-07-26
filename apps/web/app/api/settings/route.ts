@@ -6,7 +6,7 @@ import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { getAppSettings } from '@ui/getAppSettings';
 
-export async function GET(req: Request, res: Response) {
+export async function GET(req: Request) {
   const appSettings = await getAppSettings();
   return NextResponse.json(appSettings);
 }
