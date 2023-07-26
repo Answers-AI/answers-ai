@@ -1,12 +1,13 @@
 import { prisma } from '@db/client';
-import { User } from 'types';
+import { Sidekick, User } from 'types';
 
 export async function upsertChat({
   id,
   user,
   filters = {},
   prompt,
-  journeyId
+  journeyId,
+  sidekick
 }: {
   id?: string;
   user: User;
@@ -14,6 +15,7 @@ export async function upsertChat({
   filters?: object;
   prompt: string;
   journeyId?: string;
+  sidekick: Sidekick;
 }) {
   const journey = await (!journeyId
     ? null
@@ -35,6 +37,7 @@ export async function upsertChat({
       create: {
         role: 'user',
         content: prompt,
+        sidekickJson: sidekick as any,
         user: { connect: { email: user.email! } }
       }
     }

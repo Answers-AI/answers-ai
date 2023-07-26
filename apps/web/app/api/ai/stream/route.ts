@@ -21,13 +21,21 @@ export async function POST(req: Request) {
     return Response.redirect('/', 401);
   }
 
-  const { journeyId, chatId, filters, prompt, messages, sidekick, gptModel } = await req.json();
+  const {
+    journeyId,
+    chatId,
+    filters,
+    prompt,
+    messages,
+    sidekick: { id: sidekickId = null } = {},
+    gptModel
+  } = await req.json();
   // TODO: Update for sharing in the future
-  const sidekickObject = !sidekick?.id
+  const sidekick = !sidekickId
     ? null
     : await prisma.sidekick.findFirst({
         where: {
-          id: sidekick.id
+          id: sidekickId
         }
       });
 
@@ -41,7 +49,8 @@ export async function POST(req: Request) {
     user,
     filters: filters,
     prompt,
-    journeyId
+    journeyId,
+    sidekick
   });
   // await inngest.send({
   //   v: '1',
@@ -76,7 +85,7 @@ export async function POST(req: Request) {
       prompt,
       messages,
       filters,
-      sidekick: sidekickObject!
+      sidekick: sidekick!
     }));
   } catch (contextError) {
     console.log('fetchContext', contextError);
@@ -113,7 +122,7 @@ export async function POST(req: Request) {
     organization: user?.currentOrganization,
     input: prompt,
     messages,
-    sidekick: sidekickObject!,
+    sidekick: sidekick!,
     gptModel
   });
 
