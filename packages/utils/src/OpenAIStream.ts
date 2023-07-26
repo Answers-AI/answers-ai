@@ -1,7 +1,7 @@
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser';
 import { prisma } from '@db/client';
 import { inngest } from './ingest/client';
-import { Chat, User, Document, Message } from 'types';
+import { Chat, User, Document, Message, Sidekick } from 'types';
 interface CompletionResponse {
   text: string;
   message: Message;
@@ -11,7 +11,8 @@ interface StreamExtra {
   chat: Chat;
   context: string;
   contextDocuments: Document[];
-  [key: string]: any;
+  sidekick: Sidekick;
+  prompt: string;
 }
 
 export async function OpenAIStream(
@@ -21,7 +22,7 @@ export async function OpenAIStream(
 ) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
-  const { prompt, user, chat, context, contextDocuments } = extra;
+  const { prompt, user, sidekick, chat, context, contextDocuments } = extra;
   let counter = 0;
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -50,6 +51,7 @@ export async function OpenAIStream(
           },
           content: '',
           chat: { connect: { id: chat.id } },
+          sidekickJson: sidekick as any,
           role: 'assistant'
         }
       });
