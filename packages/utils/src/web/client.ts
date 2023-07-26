@@ -67,7 +67,6 @@ class WebClient {
               '--disable-dev-shm-usage',
               '--single-process',
               '--disable-software-rasterizer',
-              '--no-zygote',
               '--disable-background-networking',
               '--disable-background-timer-throttling',
               '--disable-backgrounding-occluded-windows',
