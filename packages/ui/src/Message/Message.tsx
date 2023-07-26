@@ -101,7 +101,7 @@ export const MessageCard = ({
         });
         setShowFeedback(true);
       } catch (err) {
-        setLastInteraction(null);
+        setLastInteraction(undefined);
       }
       // Show modal to ask for added feedback
     }
@@ -124,7 +124,7 @@ export const MessageCard = ({
         setShowFeedback(true);
         // Show modal to ask for added feedback } catch (err) {
       } catch (err) {
-        setLastInteraction(null);
+        setLastInteraction(undefined);
       }
     }
   };
@@ -134,7 +134,7 @@ export const MessageCard = ({
       {showFeedback && id ? (
         <FeedbackModal
           messageId={id}
-          rating={lastInteraction}
+          rating={lastInteraction!}
           onClose={() => setShowFeedback(false)}
         />
       ) : null}
@@ -182,7 +182,7 @@ export const MessageCard = ({
                 }}
                 title={role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
               />
-              {hasContent ? (
+              {hasContent && content ? (
                 <>
                   <Typography
                     variant="body1"

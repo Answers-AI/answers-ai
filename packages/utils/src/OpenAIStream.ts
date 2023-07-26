@@ -11,9 +11,10 @@ interface StreamExtra {
   chat: Chat;
   context: string;
   contextDocuments: Document[];
-  sidekick: Sidekick;
+  sidekick?: Sidekick;
   prompt: string;
-  filters: AnswersFilters;
+  filters?: AnswersFilters;
+  completionRequest: any;
 }
 
 export async function OpenAIStream(

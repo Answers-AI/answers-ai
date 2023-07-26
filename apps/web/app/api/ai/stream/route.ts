@@ -10,7 +10,7 @@ import { prisma } from '@db/client';
 
 import { authOptions } from '@ui/authOptions';
 
-import { Document } from 'types';
+import { Document, Sidekick } from 'types';
 
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
@@ -38,6 +38,10 @@ export async function POST(req: Request) {
           id: sidekickId
         }
       });
+
+  if (!sidekick) {
+    return new Response('Sidekick not found', { status: 404 });
+  }
 
   let completionRequest;
 
@@ -132,6 +136,7 @@ export async function POST(req: Request) {
       stream: true
     },
     {
+      sidekick,
       user,
       prompt,
       chat: chat as any,

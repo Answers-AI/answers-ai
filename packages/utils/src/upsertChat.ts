@@ -15,7 +15,7 @@ export async function upsertChat({
   filters?: object;
   prompt: string;
   journeyId?: string;
-  sidekick: Sidekick;
+  sidekick?: Sidekick | null;
 }) {
   const journey = await (!journeyId
     ? null
