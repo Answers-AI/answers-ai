@@ -14,13 +14,11 @@ interface SidekickSelectProps {
 }
 
 export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
-  const [allTags, setAllTags] = useState<string[] | null>(null);
   const [allSidekicks, setAllSidekicks] = useState<Sidekick[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedSidekick, setSelectedSidekick] = useState<string>('');
-  const [tagSidekicks, setTagSidekicks] = useState<Sidekick[]>([]);
 
   useEffect(() => {
+    
     const fetchSidekicks = async () => {
       try {
         const response = await axios.get('/api/sidekicks/list/chat');
@@ -39,7 +37,13 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
           )
         ).sort();
 
-        setAllTags(uniqueTags);
+        const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
+        const lastUsedSidekick = sidekickHistory?.lastUsed;
+        const sidekickToSet = (lastUsedSidekick && retrievedSidekicks.some(s => s.id === lastUsedSidekick))
+                              ? lastUsedSidekick 
+                              : retrievedSidekicks[0]?.id;
+
+        setSelectedSidekick(sidekickToSet);
         setAllSidekicks(retrievedSidekicks);
       } catch (error) {
         console.error('Error fetching sidekicks:', error);
@@ -50,65 +54,31 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
   }, []);
 
   useEffect(() => {
-    if (!allTags?.length) return;
-
     const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
-    const tags = sidekickHistory?.lastUsed?.tags?.filter((tag: string) => allTags.includes(tag));
+    const lastUsedSidekick = sidekickHistory?.lastUsed;
 
-    if (tags?.length) {
-      setSelectedTags(tags);
-      const sidekick = sidekickHistory?.lastUsed?.sidekick;
-
-      if (sidekick) {
-        setSelectedSidekick(sidekick);
-      } else {
-        setSelectedSidekick('');
-      }
-    } else if (allTags?.length) {
-      setSelectedTags([allTags[0]]);
-    }
-  }, [allTags]);
-
-  useEffect(() => {
-    if (!allSidekicks?.length || !selectedTags) {
+    if (lastUsedSidekick === allSidekicks[0]?.id || !lastUsedSidekick){
       return;
     }
+  
+    const sidekick = lastUsedSidekick ?? allSidekicks[0]?.id;
 
-    const sidekicksInTag = allSidekicks
-      .filter((s) =>
-        selectedTags.some((tag) => s.tags.map((t) => t.toLowerCase()).includes(tag.toLowerCase()))
-      )
-      .sort((a, b) => a.label.localeCompare(b.label));
+  
+    const sidekickToSet = (lastUsedSidekick && allSidekicks.some(s => s.id === lastUsedSidekick))
+                       ? lastUsedSidekick 
+                       : allSidekicks[0]?.id;
 
-    if (!sidekicksInTag?.length) {
-      return;
-    }
-
-    setTagSidekicks(sidekicksInTag);
-
-    const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
-    const lastUsedSidekick = sidekickHistory?.lastUsed?.sidekick;
-    if (lastUsedSidekick === sidekicksInTag[0].id) {
-      return;
-    }
-
-    const sidekick = lastUsedSidekick ?? sidekicksInTag[0].id;
-
-    setSelectedSidekick(
-      sidekicksInTag.some((s) => s.id === sidekick) ? sidekick : sidekicksInTag[0].id
-    );
-
+    setSelectedSidekick(sidekickToSet);
+  
     const curSidekick = allSidekicks.find((s: Sidekick) => s?.id === sidekick);
     if (curSidekick) {
       onSidekickSelected(curSidekick);
     }
-  }, [allSidekicks, onSidekickSelected, selectedTags]);
+  
+    sidekickHistory.lastUsed = sidekick;
+    Cookies.set('sidekickHistory', JSON.stringify(sidekickHistory));
+  }, [allSidekicks, onSidekickSelected]);
 
-  const handleTagChange = (event: SelectChangeEvent<string[]>) => {
-    const tagsValue = event.target.value;
-    let tags = Array.isArray(tagsValue) ? tagsValue : [tagsValue];
-    setSelectedTags(tags);
-  };
 
   const handleSidekickChange = (event: SelectChangeEvent<string>) => {
     const sidekickValue = event.target.value;
@@ -120,37 +90,12 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
     }
 
     const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
-    sidekickHistory.lastUsed = {
-      tags: selectedTags,
-      sidekick: sidekickValue
-    };
-    sidekickHistory[selectedTags.join(',')] = sidekickValue;
+    sidekickHistory.lastUsed = sidekickValue;
     Cookies.set('sidekickHistory', JSON.stringify(sidekickHistory));
   };
 
   return (
     <>
-      <Fieldset legend="Tag(s)">
-        <Select
-          labelId="tag-select-label"
-          id="tag-select"
-          size="small"
-          sx={{ 'boxShadow': 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
-          value={selectedTags}
-          multiple
-          onChange={handleTagChange}>
-          {allTags?.length ? (
-            allTags.map((tag, idx) => (
-              <MenuItem key={`${idx}-${tag}`} value={tag}>
-                {tag}
-              </MenuItem>
-            ))
-          ) : (
-            <MenuItem>Loading Tags</MenuItem>
-          )}
-        </Select>
-      </Fieldset>
-
       <Fieldset legend="Sidekick">
         <Select
           labelId="sidekick-select-label"
@@ -159,8 +104,8 @@ export const SidekickSelect = ({ onSidekickSelected }: SidekickSelectProps) => {
           sx={{ 'boxShadow': 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
           value={selectedSidekick ?? ''}
           onChange={handleSidekickChange}>
-          {tagSidekicks?.length ? (
-            tagSidekicks.map((sidekick) => (
+          {allSidekicks?.length ? (
+            allSidekicks.map((sidekick) => (
               <MenuItem key={sidekick.id} value={sidekick.id}>
                 {sidekick.label}
               </MenuItem>
