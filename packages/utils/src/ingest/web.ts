@@ -56,27 +56,6 @@ const customTranslators: TranslatorConfigObject = Object.assign(
 let CreateMarkdownTidied = new NodeHtmlMarkdown({ maxConsecutiveNewlines: 2 }, customTranslators);
 let CreateMarkdownForUrlParse = new NodeHtmlMarkdown();
 
-const prefixHeaders = (markdown: string): string => {
-  const lines = markdown.split('\n');
-  let headerStack: string[] = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (line.startsWith('#')) {
-      const header = line.replace(/^#+\s*/, '');
-      const levelMatch = line.match(/^#+/);
-      const level = levelMatch ? levelMatch[0].length : 0;
-      if (level <= headerStack.length) {
-        headerStack = headerStack.slice(0, level - 1);
-      }
-      headerStack.push(header);
-      lines[i] = `##### ${headerStack.join(' - ')}`;
-    }
-  }
-
-  return lines.join('\n');
-};
-
 const recursiveCharacterTextSplitter = RecursiveCharacterTextSplitter.fromLanguage('markdown', {
   chunkSize: 5000,
   chunkOverlap: 200,
@@ -276,7 +255,7 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string; recur
       const uniqueUrls = getUniqueUrls(urls);
       const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
 
-      if (!pendingSyncURLs.length) {
+      if (!pendingSyncURLs?.length) {
         console.log('No pending sync urls were found.');
       } else {
         try {
@@ -321,14 +300,14 @@ export const processWebScrape: EventVersionHandler<{
     const uniqueUrls = getUniqueUrls(Array.from(urls));
 
     const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
-    if (!pendingSyncURLs.length) {
+    if (!pendingSyncURLs?.length) {
       console.log('No pending sync urls were found.');
     }
 
     // Need to use the unique URLs' original case sensitivity as not all sites treat mixed cases the same
     const finalUrls = uniqueUrls.filter((url) => pendingSyncURLs.includes(url.toLocaleLowerCase()));
 
-    if (!finalUrls.length) {
+    if (!finalUrls?.length) {
       console.log('No final urls were found.');
     } else {
       await prisma.document.updateMany({
@@ -350,7 +329,7 @@ export const processWebScrape: EventVersionHandler<{
             content: webPagesHtml[index]
           };
 
-          if (!webData.content.length) {
+          if (!webData?.content?.length) {
             return { ...webData, content: '' };
           }
 
@@ -359,7 +338,7 @@ export const processWebScrape: EventVersionHandler<{
             const urlMarkdown = CreateMarkdownForUrlParse.translate(webData.content);
             recursiveUrls = [...recursiveUrls, ...getDomainUrlsFromMarkdown(urlMarkdown, domain)];
             // console.log({ recursiveUrls });
-            if (recursiveUrls.length) {
+            if (recursiveUrls?.length) {
               const recursiveId = parentId ?? new Date().valueOf();
               const recursiveEvents = recursiveUrls.map((url) => {
                 return {
@@ -376,7 +355,7 @@ export const processWebScrape: EventVersionHandler<{
               });
               // console.log({ recursiveEvents });
 
-              if (recursiveEvents.length) {
+              if (recursiveEvents?.length) {
                 await inngest.send(recursiveEvents);
               }
             }
@@ -406,7 +385,7 @@ export const processWebScrape: EventVersionHandler<{
       );
 
       // TODO: Update to remove from Pinecone as well
-      if (invalidPages.length) {
+      if (invalidPages?.length) {
         console.log(
           `Updating documents ${invalidPages.map((p) =>
             p.url.toLowerCase()
