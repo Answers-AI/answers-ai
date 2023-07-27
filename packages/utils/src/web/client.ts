@@ -20,6 +20,7 @@ class WebClient {
 
   async fetchWebData(url: string, { cache = true }: { cache?: boolean } = {}) {
     let data;
+    let htmlHasContent = false;
     // Add cache around this call to Web
     //TODO remove custom implementation when issue is fixed: https://github.com/RasCarlito/axios-cache-adapter/issues/272
     const hashKey = 'v4-get-' + url;
@@ -48,7 +49,10 @@ class WebClient {
         }
 
         data = response?.data;
-        data = prepareHtml(url, data);
+        htmlHasContent = prepareHtml(url, data, true).trim() !== '';
+        if (htmlHasContent) {
+          data = prepareHtml(url, data);
+        }
       }
     } catch (error: unknown) {
       let message = getAxiosErrorMessage(error);
@@ -59,7 +63,7 @@ class WebClient {
     }
 
     try {
-      if (!data || data.trim() === '') {
+      if (!htmlHasContent) {
         console.log(`No valid HTML from axios for ${url}.   Attempting Puppeteer...`);
         const loader = new PuppeteerWebBaseLoader(url, {
           launchOptions: {
@@ -109,10 +113,13 @@ class WebClient {
           throw new Error('Issue fetching document');
         }
 
-        data = prepareHtml(url, docs[0].pageContent);
+        htmlHasContent = prepareHtml(url, data, true).trim() !== '';
+        if (htmlHasContent) {
+          data = prepareHtml(url, docs[0].pageContent);
+        }
       }
 
-      if (!data || data.trim() === '') {
+      if (!htmlHasContent) {
         throw new Error(`Issue fetching ${url} using both axios and Puppeteer`);
       }
 

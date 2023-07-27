@@ -1,7 +1,6 @@
 import { URL } from 'url';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { Document } from 'langchain/document';
-import { NodeHtmlMarkdown } from 'node-html-markdown';
+import { NodeHtmlMarkdown, TranslatorConfigObject } from 'node-html-markdown';
 
 import { prisma } from '@db/client';
 
@@ -22,6 +21,40 @@ import getDomainUrlsFromMarkdown from '../utilities/getDomainUrlsFromMarkdown';
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
 const WEB_PAGE_SYNC_BATCH_SIZE = 10;
+
+const excludeTags = [
+  'header',
+  'footer',
+  'nav',
+  'head',
+  'noscript',
+  'iframe',
+  '.menu',
+  'script',
+  '.ad',
+  '.ads',
+  'style',
+  'aside',
+  'link',
+  '[role="tree"]',
+  '[role="navigation"]',
+  'svg',
+  'video',
+  'canvas',
+  'form',
+  '[role="alert"]',
+  'cite',
+  'sup',
+  'hr'
+];
+
+const customTranslators: TranslatorConfigObject = Object.assign(
+  {},
+  ...excludeTags.map((tag) => ({ [tag]: { ignore: true, recurse: false } }))
+);
+
+let CreateMarkdownTidied = new NodeHtmlMarkdown({ maxConsecutiveNewlines: 2 }, customTranslators);
+let CreateMarkdownForUrlParse = new NodeHtmlMarkdown();
 
 const prefixHeaders = (markdown: string): string => {
   const lines = markdown.split('\n');
@@ -45,9 +78,9 @@ const prefixHeaders = (markdown: string): string => {
 };
 
 const recursiveCharacterTextSplitter = RecursiveCharacterTextSplitter.fromLanguage('markdown', {
-  chunkSize: 2000,
-  chunkOverlap: 100,
-  separators: ['#####'],
+  chunkSize: 5000,
+  chunkOverlap: 200,
+  separators: ['##', '\n\n', '\n', ' ', ''],
   keepSeparator: true
 });
 
@@ -60,27 +93,21 @@ const getWebPagesVectors = async (webPages: WebPage[]) => {
           return [];
         }
 
-        const pageContent = prefixHeaders(page.content)
-          .replace(/\n{2,}/g, '\n')
-          .replace(/^(#+\s+.+)\n(#+\s+.+\n)/gm, '$2');
+        const pageContent = page.content.replace(/(\s){2,}/g, '$1').replace(/(.)\1{5,}/g, '$1');
 
-        // hash page content and send event to chunk page content
-
-        const markdownChunks = await recursiveCharacterTextSplitter.splitDocuments([
-          new Document({ pageContent })
-        ]);
+        const markdownChunks = await recursiveCharacterTextSplitter.splitText(pageContent);
 
         if (!markdownChunks?.length) {
           console.log(`[getWebPagesVectors] No markdownChunks found for ${page.url}`);
           return [];
         }
 
-        return markdownChunks.map((webDoc: Document, i: any) => ({
+        return markdownChunks.map((text: string, i: any) => ({
           uid: `WebPage_${page.url}_${i}`,
-          text: webDoc.pageContent,
+          text,
           metadata: {
             source: 'web',
-            text: webDoc.pageContent,
+            text,
             domain: page?.domain?.toLowerCase(),
             url: page?.url?.toLowerCase()
           }
@@ -316,11 +343,10 @@ export const processWebScrape: EventVersionHandler<{
           return { ...webData, content: '' };
         }
 
-        webData.content = NodeHtmlMarkdown.translate(webData.content, {}, undefined, undefined);
-
         // Now that we have valid HTML, check if this should be recursive so we can build out the spidering
         if (recursive) {
-          recursiveUrls = [...recursiveUrls, ...getDomainUrlsFromMarkdown(webData.content, domain)];
+          const urlMarkdown = CreateMarkdownForUrlParse.translate(webData.content);
+          recursiveUrls = [...recursiveUrls, ...getDomainUrlsFromMarkdown(urlMarkdown, domain)];
           // console.log({ recursiveUrls });
           if (recursiveUrls.length) {
             const recursiveId = parentId ?? new Date().valueOf();
@@ -344,6 +370,8 @@ export const processWebScrape: EventVersionHandler<{
             }
           }
         }
+
+        webData.content = CreateMarkdownTidied.translate(webData.content);
 
         return webData;
       })

@@ -1,6 +1,6 @@
 import cheerio from 'cheerio';
 
-const prepareHtml = (url: string, html: string): string => {
+const prepareHtml = (url: string, html: string, validateOnly?: boolean): string => {
   try {
     const $ = cheerio.load(html);
 
@@ -8,10 +8,6 @@ const prepareHtml = (url: string, html: string): string => {
       'head',
       'noscript',
       'iframe',
-      'header',
-      'footer',
-      'nav',
-      '.navbar',
       '.menu',
       'script',
       '.ad',
@@ -31,8 +27,17 @@ const prepareHtml = (url: string, html: string): string => {
       'hr'
     ];
 
+    if (validateOnly) {
+      excludeSelectors.push('header');
+      excludeSelectors.push('footer');
+      excludeSelectors.push('nav');
+      excludeSelectors.push('.navbar');
+    }
+
     // Remove elements matching the given selectors
-    $(excludeSelectors.join(',')).remove();
+    if (validateOnly) {
+      $(excludeSelectors.join(',')).remove();
+    }
 
     const textContent = $('body').text();
 
