@@ -1,9 +1,7 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import NextLink from 'next/link';
-import { useFlags } from 'flagsmith/react';
-import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 
 import { visuallyHidden } from '@mui/utils';
@@ -70,7 +68,6 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const flags = useFlags(['sidekicks_system']);
   const { order, orderBy, onRequestSort } = props;
   const createSortHandler =
     (property: keyof SidekickListItem) => (event: React.MouseEvent<unknown>) => {
@@ -110,17 +107,13 @@ const SidekickList = ({
   endpoint,
   appSettings,
   sidekicks,
-  isFavoritable = true,
-  isSystem
+  isFavoritable = true
 }: {
   endpoint: string;
   appSettings: AppSettings;
   sidekicks?: SidekickListItem[];
   isFavoritable?: boolean;
-  isSystem?: boolean;
 }) => {
-  const router = useRouter();
-  const flags = useFlags(['sidekicks_system']);
   const { data: currentSidekicks = [], isLoading } = useSWR(
     endpoint ? endpoint : null,
     (endpoint) => axios.get(endpoint).then((res) => res.data),
@@ -135,12 +128,6 @@ const SidekickList = ({
   const [rowsPerPage, setRowsPerPage] = React.useState(25);
   const [updatedSidekicks, setUpdatedSidekicks] = useState<SidekickListItem[]>([]);
 
-  useEffect(() => {
-    if (isSystem && !flags?.sidekicks_system?.enabled) {
-      router.push('/404');
-    }
-  }, [router, isSystem, flags?.sidekicks_system?.enabled]);
-
   const handleUpdateFavorite = async (id: string) => {
     try {
       setTheMessage('... Updating');
@@ -149,7 +136,7 @@ const SidekickList = ({
 
       if (!!sidekicks?.length) {
         // Update the specific row in the sidekicks state
-        const updatedSidekicks = currentSidekicks.map((sidekick:SidekickListItem) => {
+        const updatedSidekicks = currentSidekicks.map((sidekick: SidekickListItem) => {
           if (sidekick.id === id) {
             return { ...sidekick, isFavorite: !sidekick.isFavorite };
           }
