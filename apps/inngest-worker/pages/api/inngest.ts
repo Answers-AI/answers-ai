@@ -15,6 +15,7 @@ import * as fileFunctions from '@utils/ingest/file';
 import * as airtableFunctions from '@utils/ingest/airtable';
 import * as codebaseFunctions from '@utils/ingest/codebase';
 import * as documentFunctions from '@utils/ingest/document';
+import * as usageTracking from '@utils/ingest/usageTracking';
 
 // Create a client to send and receive events
 
@@ -32,7 +33,8 @@ const handlers = {
   ...fileFunctions,
   ...airtableFunctions,
   ...codebaseFunctions,
-  ...documentFunctions
+  ...documentFunctions,
+  ...usageTracking
 };
 
 const functions = Object.values(handlers);

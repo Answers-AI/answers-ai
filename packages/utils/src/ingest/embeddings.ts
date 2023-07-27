@@ -28,7 +28,7 @@ export const processVectorsUpserted: EventVersionHandler<{
 
     const vectorData = await Promise.all(
       vectors?.map((vector) =>
-        openAi.createEmbedding({ input: vector.text }).then((embedding) => ({
+        openAi.createEmbedding({ user: user, input: vector.text }).then((embedding) => ({
           id: vector.uid,
           metadata: { ...vector.metadata, text: vector.text, organizationId },
           values: embedding

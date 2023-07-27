@@ -1,7 +1,8 @@
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser';
 import { prisma } from '@db/client';
-import { inngest } from './ingest/client';
 import { Chat, User, Document, Message, Sidekick, AnswersFilters } from 'types';
+import { trackUsageFromMessages } from './openai/usageTracking';
+import { CreateChatCompletionRequest } from 'openai';
 interface CompletionResponse {
   text: string;
   message: Message;
@@ -18,7 +19,7 @@ interface StreamExtra {
 }
 
 export async function OpenAIStream(
-  payload: any,
+  payload: CreateChatCompletionRequest,
   extra: StreamExtra,
   onEnd: (response: CompletionResponse) => void
 ) {
@@ -90,7 +91,21 @@ export async function OpenAIStream(
         parser.feed(decoded);
       }
 
-      // TODO: Add tokens consumed in this completion
+      await trackUsageFromMessages({
+        method: 'createChatCompletion',
+        model: payload.model,
+        messageId: message.id,
+        messages: [
+          ...payload.messages,
+          {
+            role: 'assistant',
+            content: answer
+          }
+        ],
+        user,
+        request: payload
+      });
+
       onEnd({ ...extra, text: answer, message });
 
       message = await prisma.message.update({

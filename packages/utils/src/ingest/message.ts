@@ -3,6 +3,7 @@ import { prisma } from '@db/client';
 import { AnswersFilters, User } from 'types';
 import { EventVersionHandler } from './EventVersionHandler';
 import { openai } from '../openai/client';
+import { trackCompletionUsage } from '../openai/usageTracking';
 
 export const answersMessageSent: EventVersionHandler<{
   chatId: string;
@@ -34,19 +35,29 @@ export const answersMessageSent: EventVersionHandler<{
           content: content
         }
       });
-    await AIUpdateChatTitle(history, chatId);
+    await AIUpdateChatTitle(history, chatId, user);
     return message;
   }
 };
 
-async function AIUpdateChatTitle(history: string, chatId: string) {
+async function AIUpdateChatTitle(history: string, chatId: string, user?: User) {
   const titlePrompt = `Use the following conversation between a human and an AI assistant. Create a very short title for a story about the human. ${history} TITLE:`;
-  const res = await openai.createCompletion({
+  const req = {
     max_tokens: 500,
     prompt: titlePrompt,
     temperature: 0.1,
     model: 'text-davinci-003'
-  });
+  };
+
+  const res = await openai.createCompletion(req);
+
+  user &&
+    (await trackCompletionUsage({
+      method: 'createCompletion',
+      request: req,
+      response: res.data,
+      user
+    }));
 
   const title = res?.data?.choices?.[0]?.text!;
   // console.log('AITITLE', { history, chatId, title });
