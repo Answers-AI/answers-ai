@@ -1,6 +1,7 @@
 import { inngest } from '../ingest/client';
-import { chunkArray } from '../utilities/utils';
-import { PineconeVector } from 'types';
+import chunkArray from '../utilities/chunkArray';
+
+import type { PineconeVector } from 'types';
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
 

@@ -18,7 +18,7 @@ export async function GET(req: Request) {
   const url = searchParams.get('url');
 
   // TODO: Ensure this only shows documents are owned by the user
-  // For now only access to web which is """public"""
+  // For now only access to web which is stored in the PINECONE_INDEX_NAMESPACE env variable
   const filteredRecords = await prisma.document.findMany({
     where: {
       source: 'web',

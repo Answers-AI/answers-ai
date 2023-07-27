@@ -2,7 +2,7 @@ import PineconeClient from '../pinecone/client';
 
 // import { slackIssueLoader } from '../syncSlack';
 
-import { chunkArray } from '../utilities/utils';
+import chunkArray from '../utilities/chunkArray';
 import { inngest } from './client';
 
 import { EventVersionHandler } from './EventVersionHandler';
@@ -15,7 +15,7 @@ const DISABLE_EMBEDDING = true;
 
 import SlackMessageModel from '../slack/models/message';
 import { prepareAllForEmbedding } from '../prepareAllForEmbedding';
-import SlackClient from '../slack/client';
+// import SlackClient from '../slack/client';
 import { getUserClients } from '../auth/getUserClients';
 
 // slackClient.initDataLookups();

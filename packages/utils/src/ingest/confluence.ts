@@ -1,6 +1,6 @@
 import { inngest } from './client';
 import { EventVersionHandler } from './EventVersionHandler';
-import { chunkArray } from '../utilities/utils';
+import chunkArray from '../utilities/chunkArray';
 import { ConfluencePage, User } from 'types';
 import { jiraAdfToMarkdown } from '../utilities/jiraAdfToMarkdown';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';

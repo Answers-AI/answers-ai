@@ -1,12 +1,11 @@
-import { inngest } from './client';
 import Airtable from 'airtable';
-// import { Document } from 'langchain/document';
-import { EventVersionHandler } from './EventVersionHandler';
-import { AirtableRecord } from 'types';
-import { chunkArray } from '../utilities/utils';
-// import { chunkArray } from '../utilities/utils';
-// import { TokenTextSplitter } from 'langchain/text_splitter';
-// import { encoding_for_model } from "@dqbd/tiktoken";
+
+import { inngest } from './client';
+
+import chunkArray from '../utilities/chunkArray';
+
+import type { EventVersionHandler } from './EventVersionHandler';
+import type { AirtableRecord } from 'types';
 
 const AIRTABLE_VIEW_ID = 'viw0CqPKmPU2HNfel';
 const AIRTABLE_BASE_ID = 'tblTAWf8YYAqckiMH';

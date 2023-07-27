@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
-import { Chat } from 'types';
+import type { Chat } from 'types';
 
 export async function GET(
   req: Request,

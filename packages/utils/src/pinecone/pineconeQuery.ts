@@ -1,7 +1,8 @@
 import { Configuration, OpenAIApi } from 'openai';
-import { AnswersFilters } from 'types';
 import { PineconeClient, QueryRequest } from '@pinecone-database/pinecone';
+
 export const pinecone = new PineconeClient();
+
 const initializeOpenAI = () => {
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY
@@ -21,6 +22,7 @@ export const pineconeQuery = async (
 ) => {
   const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   const queryStr = JSON.stringify({ filter, topK, namespace });
+
   // TODO: Use metadata inferred from the question
   try {
     console.time(`[${ts}] PineconeQuery ${queryStr}`);
@@ -33,7 +35,6 @@ export const pineconeQuery = async (
       vector: embeddings,
       topK,
       filter,
-      // includeValues: true,
       includeMetadata: true,
       namespace
     };

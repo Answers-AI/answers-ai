@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+
 import { prisma } from '@db/client';
+
 import { authOptions } from '@ui/authOptions';
 
 export async function GET(req: Request, res: Response) {
@@ -8,7 +10,6 @@ export async function GET(req: Request, res: Response) {
   if (!session?.user?.email) return NextResponse.redirect('/auth');
 
   // TODO: Ensure this only shows documents are owned by the user
-  // For now only access to web which is """public"""
   const filteredRecords = await prisma.document.findMany({
     where: {
       source: 'codebase',

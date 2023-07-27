@@ -1,10 +1,13 @@
-import axios, { AxiosError } from 'axios';
-import puppeteer from 'puppeteer';
-import { redis } from '../redis/client';
+import axios from 'axios';
+import { PuppeteerWebBaseLoader } from 'langchain/document_loaders/web/puppeteer';
+
+import getAxiosErrorMessage from '../utilities/getAxiosErrorMessage';
+import prepareHtml from './prepareHtml';
 
 class WebClient {
   headers: { Authorization?: string; Accept: string; Cookie?: string };
   cacheExpireTime: number;
+
   constructor({ cacheExpireTime = 60 * 60 * 24 } = {}) {
     this.cacheExpireTime = cacheExpireTime;
     this.headers = {
@@ -14,24 +17,10 @@ class WebClient {
 
   async fetchWebData(url: string, { cache = true }: { cache?: boolean } = {}) {
     let data;
-    // Add cache around this call to Web
-    //TODO remove custom implementation when issue is fixed: https://github.com/RasCarlito/axios-cache-adapter/issues/272
-    const hashKey = 'v4-get-' + url;
-    if (cache) {
-      try {
-        const cachedData = await redis.get(hashKey);
+    let htmlHasContent = false;
 
-        if (cachedData) {
-          data = JSON.parse(cachedData);
-        }
-      } catch (err) {
-        console.warn('NO REDIS CONNECTION, SKIPPING CACHE LOOKUP');
-        console.log(err);
-      }
-    }
-
-    if (!data) {
-      try {
+    try {
+      if (!data) {
         const response = await axios.get(url, {
           method: 'GET',
           headers: this.headers
@@ -42,37 +31,90 @@ class WebClient {
         }
 
         data = response?.data;
-
-        // Rough Check if the page is fully loaded with JavaScript enabled
-        const regex = /<body\b[^>]*>([\s\S]*?)<\/body>/i;
-        const regexToRemove =
-          /<(\w+)\b[^>]*>([\s]*?|(?:(?!<\/\1>)(.|\n))*?)<\/\1>|<noscript\b[^>]*>(.*?)<\/noscript>/gi;
-        const htmlString = data;
-        const strippedHtml = htmlString.match(regex)[1].replace(regexToRemove, '');
-
-        if (strippedHtml.length < 100) {
-          const browser = await puppeteer.launch();
-          const page = await browser.newPage();
-
-          await page.goto(url);
-
-          data = await page.content();
-
-          await browser.close();
+        htmlHasContent = prepareHtml(url, data, true).trim() !== '';
+        if (htmlHasContent) {
+          data = prepareHtml(url, data);
         }
-
-        if (cache) {
-          await redis.set(hashKey, JSON.stringify(data));
-          await redis.expire(hashKey, this.cacheExpireTime);
-        }
-      } catch (err: AxiosError | any) {
-        console.error(
-          `Catch Error fetching data from ${url}.  Status: ${
-            err?.response?.status ?? err?.response?.code
-          }`
-        );
-        throw err;
       }
+    } catch (error: unknown) {
+      let message = getAxiosErrorMessage(error);
+      console.log(`Error fetching ${url} via axios.  ${message}`);
+      return '';
+    }
+    if (!htmlHasContent) {
+      console.log(`No valid HTML from axios for ${url}.`);
+      const puppeteerTimer = `[${new Date().valueOf()}] Pulling ${url} via Puppeteer`;
+
+      try {
+        console.time(puppeteerTimer);
+
+        const loader = new PuppeteerWebBaseLoader(url, {
+          launchOptions: {
+            headless: 'new',
+            args: [
+              `--host-resovler-rules=MAP * 127.0.0.1, EXCLUDE ${url}`,
+              // '--disable-gpu',
+              // '--disable-dev-shm-usage',
+              // '--single-process',
+              // '--disable-software-rasterizer',
+              // '--disable-background-networking',
+              // '--disable-background-timer-throttling',
+              // '--disable-backgrounding-occluded-windows',
+              // '--disable-breakpad',
+              // '--disable-client-side-phishing-detection',
+              // '--disable-default-apps',
+              // '--disable-extensions',
+              // '--disable-hang-monitor',
+              // '--disable-popup-blocking',
+              // '--disable-infobars',
+              // '--disable-session-crashed-bubble',
+              // '--disable-translate',
+              // '--disable-web-security',
+              // '--metrics-recording-only',
+              // '--mute-audio',
+              // '--no-default-browser-check',
+              // '--no-first-run',
+              // '--safebrowsing-disable-auto-update',
+              // '--disable-component-update',
+              '--window-size=1,1'
+              // '--ignore-certificate-errors'
+            ],
+            defaultViewport: {
+              width: 1,
+              height: 1
+            }
+          },
+          gotoOptions: {
+            waitUntil: 'networkidle2',
+            timeout: 10000 // 10 Seconds
+          }
+        });
+
+        const docs = await loader.load();
+
+        if (!docs.length) {
+          throw new Error('Issue fetching document');
+        }
+
+        htmlHasContent = prepareHtml(url, docs[0].pageContent, true).trim() !== '';
+        if (htmlHasContent) {
+          data = prepareHtml(url, docs[0].pageContent);
+        }
+      } catch (error: unknown) {
+        let message = getAxiosErrorMessage(error);
+        throw new Error(message);
+      } finally {
+        console.timeEnd(puppeteerTimer);
+      }
+    }
+
+    try {
+      if (!htmlHasContent) {
+        throw new Error(`Issue fetching ${url} using both axios and Puppeteer`);
+      }
+    } catch (error: unknown) {
+      let message = getAxiosErrorMessage(error);
+      throw new Error(message);
     }
 
     return data;

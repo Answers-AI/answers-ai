@@ -10,5 +10,5 @@ export const getUrlDomain = (url: string) => {
   } catch (e) {}
 };
 
-export const getUniqueDomainss = (urls: string[]) =>
+export const getUniqueDomains = (urls: string[]) =>
   Array.from(new Set(urls.map((url) => getUrlDomain(url))));
