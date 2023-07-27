@@ -276,23 +276,27 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string; recur
       const uniqueUrls = getUniqueUrls(urls);
       const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
 
-      try {
-        await Promise.all(
-          chunkArray(pendingSyncURLs, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
-            inngest.send({
-              v: event.v,
-              name: 'web/page.sync',
-              data: {
-                _total: pendingSyncURLs.length,
-                urls
-              },
-              user: event.user
-            })
-          )
-        );
-      } catch (error) {
-        console.log(error);
-      } finally {
+      if (!pendingSyncURLs.length) {
+        console.log('No pending sync urls were found.');
+      } else {
+        try {
+          await Promise.all(
+            chunkArray(pendingSyncURLs, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
+              inngest.send({
+                v: event.v,
+                name: 'web/page.sync',
+                data: {
+                  _total: pendingSyncURLs.length,
+                  urls
+                },
+                user: event.user
+              })
+            )
+          );
+        } catch (error) {
+          console.log(error);
+        } finally {
+        }
       }
     }
   }
@@ -317,106 +321,114 @@ export const processWebScrape: EventVersionHandler<{
     const uniqueUrls = getUniqueUrls(Array.from(urls));
 
     const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
+    if (!pendingSyncURLs.length) {
+      console.log('No pending sync urls were found.');
+    }
+
     // Need to use the unique URLs' original case sensitivity as not all sites treat mixed cases the same
     const finalUrls = uniqueUrls.filter((url) => pendingSyncURLs.includes(url.toLocaleLowerCase()));
 
-    await prisma.document.updateMany({
-      where: { url: { in: pendingSyncURLs } },
-      data: {
-        status: 'syncing'
-      }
-    });
-
-    const webPagesHtml = (await webPageLoader.loadMany(finalUrls)) as string[];
-
-    let recursiveUrls: string[] = [];
-    const webPages = await Promise.all(
-      finalUrls.map(async (url, index) => {
-        const domain = new URL(url).origin;
-        const webData: WebPage = {
-          url,
-          domain,
-          content: webPagesHtml[index]
-        };
-
-        if (!webData.content.length) {
-          return { ...webData, content: '' };
-        }
-
-        // Now that we have valid HTML, check if this should be recursive so we can build out the spidering
-        if (recursive) {
-          const urlMarkdown = CreateMarkdownForUrlParse.translate(webData.content);
-          recursiveUrls = [...recursiveUrls, ...getDomainUrlsFromMarkdown(urlMarkdown, domain)];
-          // console.log({ recursiveUrls });
-          if (recursiveUrls.length) {
-            const recursiveId = parentId ?? new Date().valueOf();
-            const recursiveEvents = recursiveUrls.map((url) => {
-              return {
-                v: event.v,
-                id: `${recursiveId}-${url}`,
-                name: 'web/page.sync',
-                data: {
-                  urls: [url],
-                  recursive,
-                  parentId: recursiveId
-                },
-                user: event.user
-              };
-            });
-            // console.log({ recursiveEvents });
-
-            if (recursiveEvents.length) {
-              await inngest.send(recursiveEvents);
-            }
-          }
-        }
-
-        webData.content = CreateMarkdownTidied.translate(webData.content);
-
-        return webData;
-      })
-    );
-
-    interface FilteredPages {
-      validPages: WebPage[];
-      invalidPages: WebPage[];
-    }
-
-    const { validPages, invalidPages }: FilteredPages = webPages.reduce(
-      (acc: FilteredPages, page: WebPage) => {
-        if (page?.content && page.content !== '') {
-          acc.validPages.push(page);
-        } else {
-          acc.invalidPages.push(page);
-        }
-        return acc;
-      },
-      { validPages: [], invalidPages: [] }
-    );
-
-    // TODO: Update to remove from Pinecone as well
-    if (invalidPages.length) {
-      console.log(
-        `Updating documents ${invalidPages.map((p) =>
-          p.url.toLowerCase()
-        )} from DB due to no valid content`
-      );
+    if (!finalUrls.length) {
+      console.log('No final urls were found.');
+    } else {
       await prisma.document.updateMany({
-        where: {
-          url: { in: invalidPages.map((p) => p.url.toLowerCase()) }
-        },
+        where: { url: { in: pendingSyncURLs } },
         data: {
-          status: 'error',
-          lastSyncedAt: new Date()
+          status: 'syncing'
         }
       });
+
+      const webPagesHtml = (await webPageLoader.loadMany(finalUrls)) as string[];
+
+      let recursiveUrls: string[] = [];
+      const webPages = await Promise.all(
+        finalUrls.map(async (url, index) => {
+          const domain = new URL(url).origin;
+          const webData: WebPage = {
+            url,
+            domain,
+            content: webPagesHtml[index]
+          };
+
+          if (!webData.content.length) {
+            return { ...webData, content: '' };
+          }
+
+          // Now that we have valid HTML, check if this should be recursive so we can build out the spidering
+          if (recursive) {
+            const urlMarkdown = CreateMarkdownForUrlParse.translate(webData.content);
+            recursiveUrls = [...recursiveUrls, ...getDomainUrlsFromMarkdown(urlMarkdown, domain)];
+            // console.log({ recursiveUrls });
+            if (recursiveUrls.length) {
+              const recursiveId = parentId ?? new Date().valueOf();
+              const recursiveEvents = recursiveUrls.map((url) => {
+                return {
+                  v: event.v,
+                  id: `${recursiveId}-${url}`,
+                  name: 'web/page.sync',
+                  data: {
+                    urls: [url],
+                    recursive,
+                    parentId: recursiveId
+                  },
+                  user: event.user
+                };
+              });
+              // console.log({ recursiveEvents });
+
+              if (recursiveEvents.length) {
+                await inngest.send(recursiveEvents);
+              }
+            }
+          }
+
+          webData.content = CreateMarkdownTidied.translate(webData.content);
+
+          return webData;
+        })
+      );
+
+      interface FilteredPages {
+        validPages: WebPage[];
+        invalidPages: WebPage[];
+      }
+
+      const { validPages, invalidPages }: FilteredPages = webPages.reduce(
+        (acc: FilteredPages, page: WebPage) => {
+          if (page?.content && page.content !== '') {
+            acc.validPages.push(page);
+          } else {
+            acc.invalidPages.push(page);
+          }
+          return acc;
+        },
+        { validPages: [], invalidPages: [] }
+      );
+
+      // TODO: Update to remove from Pinecone as well
+      if (invalidPages.length) {
+        console.log(
+          `Updating documents ${invalidPages.map((p) =>
+            p.url.toLowerCase()
+          )} from DB due to no valid content`
+        );
+        await prisma.document.updateMany({
+          where: {
+            url: { in: invalidPages.map((p) => p.url.toLowerCase()) }
+          },
+          data: {
+            status: 'error',
+            lastSyncedAt: new Date()
+          }
+        });
+      }
+
+      const vectors = await getWebPagesVectors(validPages);
+
+      const embeddedVectors = await embedVectors(event, vectors);
+
+      return pendingSyncURLs;
     }
-
-    const vectors = await getWebPagesVectors(validPages);
-
-    const embeddedVectors = await embedVectors(event, vectors);
-
-    return pendingSyncURLs;
   }
 };
 
