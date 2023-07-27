@@ -1,6 +1,10 @@
 import { prisma } from '@db/client';
 import { getUrlDomain } from '../getUrlDomain';
 
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
+// If development, then set cache duration to a large negative number, otherwise 1 day
+const CACHE_EXPIRATION = IS_DEVELOPMENT ? -10000000 : 1000 * 60 * 60 * 24;
+
 const getPendingSyncURLs = async (urls: string[]) => {
   const normalizedUrls = urls.map((url) => url.toLowerCase());
 
@@ -20,7 +24,7 @@ const getPendingSyncURLs = async (urls: string[]) => {
       url: { in: normalizedUrls },
       OR: [
         // 1 day has passed since last sync
-        { lastSyncedAt: { lte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+        { lastSyncedAt: { lte: new Date(Date.now() - CACHE_EXPIRATION) } },
         { status: 'pending' },
         { lastSyncedAt: null }
       ]
