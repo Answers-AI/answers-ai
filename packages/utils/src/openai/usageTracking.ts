@@ -76,6 +76,7 @@ export const trackUsageFromTokens = async ({
       type,
       method,
       model,
+      promptUsedTokens,
       completionUsedTokens,
       isCacheHit,
       messageId,

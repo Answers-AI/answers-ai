@@ -46,16 +46,11 @@ export const tokensToUSD = ({
   promptUsedTokens: number;
   completionUsedTokens: number;
   model: string;
-}) => {
+}) : Prisma.Decimal => {
   const usedTokens = promptUsedTokens + completionUsedTokens;
   let price = new Prisma.Decimal(0);
   if (['text-embedding-ada-002'].includes(model)) {
     price = new Prisma.Decimal(usedTokens).mul(embedding_ada_v2TokenUnit);
-    console.log('price', price);
-    console.log('toString', new Prisma.Decimal(usedTokens).mul(embedding_ada_v2TokenUnit).toString());
-    console.log('raw', new Prisma.Decimal(usedTokens).mul(embedding_ada_v2TokenUnit));
-    console.log('just numbers', (0.0001 / 1000) * usedTokens);
-    console.log('number to Prisma.Decimal', new Prisma.Decimal((0.0001 / 1000) * usedTokens));
   }
   if (['gpt-3.5-turbo', 'gpt-3.5-turbo-0301', 'gpt-3.5-turbo-0613'].includes(model))
     price = new Prisma.Decimal(usedTokens).mul(gpt3_5_turboTokenUnit);
@@ -83,8 +78,8 @@ export const processVectorsUpserted: EventVersionHandler<{
   type: string;
   method: string;
   model: string;
-  promptTokensUsed: number;
-  completionsTokensUsed: number;
+  promptUsedTokens: number;
+  completionUsedTokens: number;
   isCacheHit: boolean;
   messageId?: string;
   request?: any;
@@ -94,15 +89,16 @@ export const processVectorsUpserted: EventVersionHandler<{
   handler: async ({ event }) => {
     const data = event.data;
     const user = event.user;
+
     if (!user?.id) {
-      throw new Error(`No user found`);
+      throw new Error(`tracking/ai.usage: No user found`);
     }
 
-    const totalTokensUsed = data.promptTokensUsed + data.completionsTokensUsed;
+    const totalTokensUsed = (data.promptUsedTokens || 0) + (data.completionUsedTokens || 0);
     const costUsdTotal = tokensToUSD({
       model: data.model,
-      promptUsedTokens: data.promptTokensUsed,
-      completionUsedTokens: data.completionsTokensUsed
+      promptUsedTokens: data.promptUsedTokens || 0,
+      completionUsedTokens: data.completionUsedTokens || 0
     });
 
     // create a new usage tracking record
