@@ -256,7 +256,7 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string; recur
       const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
 
       if (!pendingSyncURLs?.length) {
-        console.log('No pending sync urls were found.');
+        console.log('[web/domain.sync] No pending sync urls were found.');
       } else {
         try {
           await Promise.all(
@@ -301,14 +301,14 @@ export const processWebScrape: EventVersionHandler<{
 
     const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
     if (!pendingSyncURLs?.length) {
-      console.log('No pending sync urls were found.');
+      console.log('[web/page.sync] No pending sync urls were found.');
     }
 
     // Need to use the unique URLs' original case sensitivity as not all sites treat mixed cases the same
     const finalUrls = uniqueUrls.filter((url) => pendingSyncURLs.includes(url.toLocaleLowerCase()));
 
     if (!finalUrls?.length) {
-      console.log('No final urls were found.');
+      console.log('[web/page.sync] No final urls were found.');
     } else {
       await prisma.document.updateMany({
         where: { url: { in: pendingSyncURLs } },
@@ -337,7 +337,7 @@ export const processWebScrape: EventVersionHandler<{
           if (recursive) {
             const urlMarkdown = CreateMarkdownForUrlParse.translate(webData.content);
             recursiveUrls = [...recursiveUrls, ...getDomainUrlsFromMarkdown(urlMarkdown, domain)];
-            // console.log({ recursiveUrls });
+
             if (recursiveUrls?.length) {
               const recursiveId = parentId ?? new Date().valueOf();
               const recursiveEvents = recursiveUrls.map((url) => {
@@ -385,9 +385,9 @@ export const processWebScrape: EventVersionHandler<{
       );
 
       // TODO: Update to remove from Pinecone as well
-      if (invalidPages?.length) {
+      if (!!invalidPages?.length) {
         console.log(
-          `Updating documents ${invalidPages.map((p) =>
+          `[web/page.sync] Updating documents ${invalidPages.map((p) =>
             p.url.toLowerCase()
           )} from DB due to no valid content`
         );
@@ -448,24 +448,27 @@ export const processWebPathScrape: EventVersionHandler<{ path: string; forceRecu
         const pendingSyncURLs = await getPendingSyncURLs(urls);
         // Need to use the unique URLs' original case sensitivity as not all sites treat mixed cases the same
         const finalUrls = urls.filter((url) => pendingSyncURLs.includes(url.toLocaleLowerCase()));
-
-        try {
-          await Promise.all(
-            chunkArray(finalUrls, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
-              inngest.send({
-                v: event.v,
-                name: 'web/page.sync',
-                data: {
-                  _total: finalUrls.length,
-                  urls
-                },
-                user: event.user
-              })
-            )
-          );
-        } catch (error) {
-          console.log(error);
-        } finally {
+        if (!finalUrls?.length) {
+          console.log('[web/path.sync] No final urls were found.');
+        } else {
+          try {
+            await Promise.all(
+              chunkArray(finalUrls, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
+                inngest.send({
+                  v: event.v,
+                  name: 'web/page.sync',
+                  data: {
+                    _total: finalUrls.length,
+                    urls
+                  },
+                  user: event.user
+                })
+              )
+            );
+          } catch (error) {
+            console.log(error);
+          } finally {
+          }
         }
       }
     }
