@@ -3,10 +3,13 @@ import redisLoader from '../redisLoader';
 
 export const webClient = new WebClient();
 
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
+const CACHE_EXPIRATION = 1000 * 60 * 60 * 24; // 1 day
+
 const getWebPageHtml = async ({ url }: { url: string }): Promise<string> => {
   console.log(`===Fetching webpage: ${url}`);
   try {
-    const pageHtml = await webClient.fetchWebData(url, { cache: false });
+    const pageHtml = await webClient.fetchWebData(url, { cache: !IS_DEVELOPMENT });
 
     if (!pageHtml) {
       throw new Error(`No valid HTML returned for url: ${url}`);
@@ -33,6 +36,6 @@ export const webPageLoader = redisLoader<string, string>({
     const allResults = await Promise.all(results);
     return allResults;
   },
-  cacheExpirationInSeconds: 1000 * 60 * 60,
-  disableCache: true
+  cacheExpirationInSeconds: CACHE_EXPIRATION,
+  disableCache: IS_DEVELOPMENT
 });

@@ -1,10 +1,7 @@
 import axios from 'axios';
-
 import { PuppeteerWebBaseLoader } from 'langchain/document_loaders/web/puppeteer';
-import { redis } from '../redis/client';
 
 import getAxiosErrorMessage from '../utilities/getAxiosErrorMessage';
-
 import prepareHtml from './prepareHtml';
 
 class WebClient {
@@ -21,21 +18,6 @@ class WebClient {
   async fetchWebData(url: string, { cache = true }: { cache?: boolean } = {}) {
     let data;
     let htmlHasContent = false;
-    // Add cache around this call to Web
-    //TODO remove custom implementation when issue is fixed: https://github.com/RasCarlito/axios-cache-adapter/issues/272
-    const hashKey = 'v4-get-' + url;
-    if (cache) {
-      try {
-        const cachedData = await redis.get(hashKey);
-
-        if (cachedData) {
-          data = JSON.parse(cachedData);
-        }
-      } catch (err) {
-        console.warn('NO REDIS CONNECTION, SKIPPING CACHE LOOKUP');
-        console.log(err);
-      }
-    }
 
     try {
       if (!data) {
@@ -58,13 +40,14 @@ class WebClient {
       let message = getAxiosErrorMessage(error);
       console.log(`Error fetching ${url} via axios.  ${message}`);
       return '';
-      //test
-      // throw new Error(message);
     }
+    if (!htmlHasContent) {
+      console.log(`No valid HTML from axios for ${url}.`);
+      const puppeteerTimer = `[${new Date().valueOf()}] Pulling ${url} via Puppeteer`;
 
-    try {
-      if (!htmlHasContent) {
-        console.log(`No valid HTML from axios for ${url}.   Attempting Puppeteer...`);
+      try {
+        console.time(puppeteerTimer);
+
         const loader = new PuppeteerWebBaseLoader(url, {
           launchOptions: {
             headless: 'new',
@@ -113,19 +96,21 @@ class WebClient {
           throw new Error('Issue fetching document');
         }
 
-        htmlHasContent = prepareHtml(url, data, true).trim() !== '';
+        htmlHasContent = prepareHtml(url, docs[0].pageContent, true).trim() !== '';
         if (htmlHasContent) {
           data = prepareHtml(url, docs[0].pageContent);
         }
+      } catch (error: unknown) {
+        let message = getAxiosErrorMessage(error);
+        throw new Error(message);
+      } finally {
+        console.timeEnd(puppeteerTimer);
       }
+    }
 
+    try {
       if (!htmlHasContent) {
         throw new Error(`Issue fetching ${url} using both axios and Puppeteer`);
-      }
-
-      if (cache) {
-        await redis.set(hashKey, JSON.stringify(data));
-        await redis.expire(hashKey, this.cacheExpireTime);
       }
     } catch (error: unknown) {
       let message = getAxiosErrorMessage(error);

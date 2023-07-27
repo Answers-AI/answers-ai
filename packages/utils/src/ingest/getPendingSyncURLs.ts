@@ -19,8 +19,8 @@ const getPendingSyncURLs = async (urls: string[]) => {
     where: {
       url: { in: normalizedUrls },
       OR: [
-        // 60 minutes have passed since last sync
-        { lastSyncedAt: { lte: new Date(Date.now() + 60 * 60 * 1000) } },
+        // 1 day has passed since last sync
+        { lastSyncedAt: { lte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
         { status: 'pending' },
         { lastSyncedAt: null }
       ]
