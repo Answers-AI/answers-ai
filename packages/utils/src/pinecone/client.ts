@@ -1,6 +1,11 @@
-import { chunkArray } from '../utilities/utils';
-import { PineconeClient as PC, UpsertRequest } from '@pinecone-database/pinecone';
-import { AxiosError, isAxiosError } from 'axios';
+import { PineconeClient as PC } from '@pinecone-database/pinecone';
+
+import chunkArray from '../utilities/chunkArray';
+import getAxiosErrorMessage from '../utilities/getAxiosErrorMessage';
+
+import type { UpsertRequest } from '@pinecone-database/pinecone';
+
+const PINECONE_INDEX_NAMESPACE = process.env.PINECONE_INDEX_NAMESPACE;
 
 class PineconeClient {
   client: PC;
@@ -9,6 +14,7 @@ class PineconeClient {
   namespace: any;
   indexName: any;
   index: undefined;
+
   constructor(config: { namespace: any; indexName: any; apiKey?: any; environment?: any }) {
     const apiKey = config.apiKey || process.env.PINECONE_API_KEY;
     const environment = config.environment || process.env.PINECONE_ENVIRONMENT;
@@ -35,6 +41,7 @@ class PineconeClient {
     this.index = undefined;
     this.init();
   }
+
   async init() {
     await this.client.init({
       apiKey: this.apiKey,
@@ -68,16 +75,7 @@ class PineconeClient {
       //@ts-ignore-next-line
       await index.upsert({ upsertRequest });
     } catch (error: unknown) {
-      let message = '';
-      if (isAxiosError(error)) {
-        message = error.response?.data;
-      } else if (typeof error === 'string' || typeof error === 'number') {
-        message = error.toString();
-      } else if (error instanceof Error) {
-        message = error.message;
-      } else if (error) {
-        message = JSON.stringify(error);
-      }
+      let message = getAxiosErrorMessage(error);
       throw new Error(`[Error in writeVectorToIndex] ${message}`);
     } finally {
       console.timeEnd(timerName);
@@ -89,9 +87,7 @@ class PineconeClient {
       await this.init();
 
       const index = this.client.Index(this.indexName);
-      const namespace = organizationId
-        ? `org-${organizationId}`
-        : process.env.PINECONE_INDEX_NAMESPACE;
+      const namespace = organizationId ? `org-${organizationId}` : PINECONE_INDEX_NAMESPACE;
       //TODO: Remove after testing
       // await this.deleteIndex(index);
       // console.log('Vector', vectors[0]);
@@ -106,16 +102,7 @@ class PineconeClient {
           try {
             await index.upsert(upsertRequest);
           } catch (error: unknown) {
-            let message = '';
-            if (isAxiosError(error)) {
-              message = error.response?.data;
-            } else if (typeof error === 'string' || typeof error === 'number') {
-              message = error.toString();
-            } else if (error instanceof Error) {
-              message = error.message;
-            } else if (error) {
-              message = JSON.stringify(error);
-            }
+            let message = getAxiosErrorMessage(error);
             return { error: `[Error in writeVectorsToIndex] ${message}` };
           }
         })
@@ -128,16 +115,7 @@ class PineconeClient {
         throw errors[0];
       }
     } catch (error: unknown) {
-      let message = '';
-      if (isAxiosError(error)) {
-        message = error.response?.data;
-      } else if (typeof error === 'string' || typeof error === 'number') {
-        message = error.toString();
-      } else if (error instanceof Error) {
-        message = error.message;
-      } else if (error) {
-        message = JSON.stringify(error);
-      }
+      let message = getAxiosErrorMessage(error);
       return { error: `[Error in writeVectorsToIndex] ${message}` };
     }
   }

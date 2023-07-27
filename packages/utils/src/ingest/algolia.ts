@@ -1,7 +1,7 @@
 import { inngest } from './client';
 import { EventVersionHandler } from './EventVersionHandler';
-import { chunkArray } from '../utilities/utils';
-import { AlgoliaHit } from 'types';
+import chunkArray from '../utilities/chunkArray';
+import type { AlgoliaHit } from 'types';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
 

@@ -3,7 +3,7 @@ import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import getCachedSession from '@ui/getCachedSession';
 import SidekickDetail from '@ui/SidekickDetail';
-import { Sidekick } from 'types';
+import type { Sidekick } from 'types';
 
 export const metadata = {
   title: 'Sidekick Studio | Answers AI',

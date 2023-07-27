@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@cypress/react18": "^2.0.0",
-    "cypress": "^12.10.0",
+    "cypress": "^12.17.1",
     "dotenv-cli": "latest",
     "eslint-config-custom": "workspace:*",
     "inngest-cli": "latest",

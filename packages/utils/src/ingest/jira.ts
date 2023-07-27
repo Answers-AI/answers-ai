@@ -1,5 +1,5 @@
 import { JiraIssue, JiraProject } from 'types';
-import { chunkArray } from '../utilities/utils';
+import chunkArray from '../utilities/chunkArray';
 
 import { EventVersionHandler } from './EventVersionHandler';
 import { AnswersFilters, AppSettings } from 'types';

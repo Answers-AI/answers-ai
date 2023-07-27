@@ -3,7 +3,7 @@ import { URL } from 'url';
 import { inngest } from './client';
 import { openApiLoader } from '../openapi';
 import { EventVersionHandler } from './EventVersionHandler';
-import { chunkArray } from '../utilities/utils';
+import chunkArray from '../utilities/chunkArray';
 import { OpenApiProvider } from 'types';
 import openApiToMarkdown from '../utilities/openApiToMarkdown';
 

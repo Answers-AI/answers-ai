@@ -1,7 +1,9 @@
 import { inngest } from './client';
-import { User, AppSettings } from 'types';
+
 import { createStepTools } from 'inngest/components/InngestStepTools';
-import { Organization } from 'db/generated/prisma-client';
+
+import type { Organization } from 'db/generated/prisma-client';
+import type { User, AppSettings } from 'types';
 
 export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknown>[]) => {
   // Group all functions by event name and version i.e eventHandlerMap['user.created']['1']

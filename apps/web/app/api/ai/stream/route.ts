@@ -10,7 +10,7 @@ import { prisma } from '@db/client';
 
 import { authOptions } from '@ui/authOptions';
 
-import { Document, Sidekick } from 'types';
+import type { Document } from 'types';
 
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 

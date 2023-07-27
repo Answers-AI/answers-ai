@@ -1,20 +1,18 @@
-import { inngest } from './client';
-import { EventVersionHandler } from './EventVersionHandler';
-import { chunkArray } from '../utilities/utils';
-import { DocumentRecord } from 'types';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import mammoth from 'mammoth';
 import path from 'path';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-import { pipeline } from 'stream';
-import { promisify } from 'util';
+import { inngest } from './client';
 import { Readable } from 'stream';
 import { getDocument } from 'pdfjs-dist';
-import { isAxiosError } from 'axios';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
-import { prisma } from '@db/client';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 
-const streamPipeline = promisify(pipeline);
+import { prisma } from '@db/client';
+import { EventVersionHandler } from './EventVersionHandler';
+import chunkArray from '../utilities/chunkArray';
+import getAxiosErrorMessage from '../utilities/getAxiosErrorMessage';
+
+import type { DocumentRecord } from 'types';
 
 const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
 const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
@@ -462,16 +460,7 @@ const embedVectors = async (organizationId: string, event: any, vectors: any[]) 
             });
             return vectorSends;
           } catch (error: unknown) {
-            let message = '';
-            if (isAxiosError(error)) {
-              message = error.response?.data;
-            } else if (typeof error === 'string' || typeof error === 'number') {
-              message = error.toString();
-            } else if (error instanceof Error) {
-              message = error.message;
-            } else if (error) {
-              message = JSON.stringify(error);
-            }
+            let message = getAxiosErrorMessage(error);
             return { error: `[Error in embedVectors] ${message}` };
           }
         })
@@ -484,16 +473,7 @@ const embedVectors = async (organizationId: string, event: any, vectors: any[]) 
         throw errors[0];
       }
     } catch (error: unknown) {
-      let message = '';
-      if (isAxiosError(error)) {
-        message = error.response?.data;
-      } else if (typeof error === 'string' || typeof error === 'number') {
-        message = error.toString();
-      } else if (error instanceof Error) {
-        message = error.message;
-      } else if (error) {
-        message = JSON.stringify(error);
-      }
+      let message = getAxiosErrorMessage(error);
       return { error: `[Error in writeVectorsToIndex] ${message}` };
     }
   }

@@ -1,18 +1,25 @@
 import { URL } from 'url';
-import cheerio from 'cheerio';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { Document } from "langchain/document";
+import { NodeHtmlMarkdown } from 'node-html-markdown';
+
 import { prisma } from '@db/client';
+
 import { inngest } from './client';
 import { webPageLoader } from '../web';
-import { convertWebPageToMarkdown } from '../web/getWebPage';
-import { EventVersionHandler } from './EventVersionHandler';
-import { WebPage } from 'types';
-import { extractUrlsFromSitemap } from '../utilities/getSitemapUrls';
-import { getUniqueUrls, getUniqueUrl } from '@utils/getUniqueUrls';
-import { chunkArray } from '../utilities/utils';
-import { isAxiosError } from 'axios';
+
+import getSitemapUrls from '../utilities/getSitemapUrls';
+import chunkArray from '../utilities/chunkArray';
+import getAxiosErrorMessage from '../utilities/getAxiosErrorMessage';
+import { getUniqueUrls, getUniqueUrl } from '../getUniqueUrls';
 import { fetchSitemapUrls } from '../fetchSitemapUrls';
-import { getPendingSyncURLs } from './getPendingSyncURLs';
+import getPendingSyncURLs from './getPendingSyncURLs';
+import { getUniqueDomains, getUrlDomain } from '../getUrlDomain';
+
+import type { EventVersionHandler } from './EventVersionHandler';
+import type { WebPage } from 'types';
+import getDomainUrlsFromMarkdown from '../utilities/getDomainUrlsFromMarkdown';
+
 
 const PINECONE_VECTORS_BATCH_SIZE = 100;
 const WEB_PAGE_SYNC_BATCH_SIZE = 10;
@@ -38,143 +45,40 @@ const prefixHeaders = (markdown: string): string => {
   return lines.join('\n');
 };
 
-const recursiveCharacterTextSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 3000 });
+const recursiveCharacterTextSplitter = RecursiveCharacterTextSplitter.fromLanguage("markdown", {
+  chunkSize: 2000,
+  chunkOverlap: 100, separators: ['#####'], keepSeparator: true
+});
 
-const splitPageHtmlChunkMore = async (markdownChunk: string) => {
-  const contextChunks = await recursiveCharacterTextSplitter.createDocuments([markdownChunk]);
-  const smallerChunks = contextChunks.map((chunk) => `${chunk.pageContent}`);
-
-  return smallerChunks;
-};
-
-const splitPageHtml = async (iPage: WebPage) => {
-  const page = await convertWebPageToMarkdown(iPage.url, iPage.content);
-  // console.log('PageMarkdown', page);
-  const headingsRegex = /\n+(?=\s*#####\s(?!#))/;
-  const markdown = prefixHeaders(page.content)
-    .replace(/\n{2,}/g, '\n')
-    .replace(/^(#+\s+.+)\n(#+\s+.+\n)/gm, '$2');
-
-  const markdownChunks = markdown.split(headingsRegex);
-
-  const contextChunks = await Promise.all(
-    markdownChunks.map(async (chunk) => {
-      const header = chunk.match(/(#+\s+.+)\n/)?.[1] ?? '';
-      const content = chunk.replace(header, '');
-      if (!content.trim().length || !header.trim().length) {
-        return [''];
-      }
-      const chunkMore = await splitPageHtmlChunkMore(content);
-      const chunksWithHeader = chunkMore.map((chunk) => `${header.replace('#####', '')}\n${chunk}`);
-      return chunksWithHeader;
-    })
-  );
-  return contextChunks.flat().filter((x) => x.trim() !== '');
-};
-
-const visitedUrls = new Set<string>();
-
-async function* scrapePage(
-  iUrl: string,
-  origin: string,
-  urls: Set<string>
-): AsyncGenerator<string | null> {
-  const url = getUniqueUrl(iUrl);
-
-  if (!url || visitedUrls.has(url)) {
-    // yield null;
-    return;
-  }
-
-  visitedUrls.add(url);
-  try {
-    let pageHtml;
-    try {
-      pageHtml = await webPageLoader.load(url);
-    } catch (err) {
-      console.log(`Error: Webpage ${url} returned a non-200 response.`);
-      yield null;
-      return;
-    }
-    if (!pageHtml) {
-      console.log(`Error: Webpage ${url} returned a non-200 response.`);
-      yield null;
-      return;
-    }
-
-    // Valid HTML Found
-    urls.add(url);
-
-    const $ = cheerio.load(pageHtml as string);
-    const links = $('a').get();
-
-    for (const link of links) {
-      const linkHref = $(link).attr('href');
-
-      if (!linkHref) {
-        continue;
-      }
-
-      const parsedLink = new URL(linkHref, origin);
-
-      // Check if the link is on the same domain as the input domain string
-      if (parsedLink.origin !== origin) {
-        continue;
-      }
-
-      // Check if the link points to an HTML page
-      const uniqueLink = getUniqueUrl(parsedLink.href);
-      const lowerCaseLink = uniqueLink.toLowerCase();
-
-      if (visitedUrls.has(lowerCaseLink)) {
-        continue;
-      }
-
-      if (
-        !lowerCaseLink.endsWith('.html') &&
-        !lowerCaseLink.endsWith('.htm') &&
-        !lowerCaseLink.endsWith('.php') &&
-        !lowerCaseLink.includes('.')
-      ) {
-        continue;
-      }
-
-      yield lowerCaseLink;
-
-      yield* scrapePage(lowerCaseLink, origin, urls);
-    }
-  } catch (err) {
-    console.log(`Error: ${url} returned a non-200 response.`);
-    console.error(err);
-    // If an error occurs, yield a null value and continue to the next link
-    return;
-  }
-}
-
-const getUniqueDomains = (urls: string[]) =>
-  urls?.map((url) => {
-    const parsedUrl = new URL(url);
-    return `https://${parsedUrl.hostname.replace(/^www\./i, '')}`;
-  });
 
 const getWebPagesVectors = async (webPages: WebPage[]) => {
   const vectors = (
     await Promise.all(
       webPages.map(async (page) => {
         if (!page?.content) {
+          console.log(`[getWebPagesVectors] No content found for ${page.url.toLowerCase}`)
           return [];
         }
 
-        const markdownChunks = await splitPageHtml(page);
+        const pageContent = prefixHeaders(page.content)
+          .replace(/\n{2,}/g, '\n')
+          .replace(/^(#+\s+.+)\n(#+\s+.+\n)/gm, '$2');
 
-        // console.log('Markdown', page, markdownChunks);
-        if (!markdownChunks?.length) return [];
+        const markdownChunks = await recursiveCharacterTextSplitter.splitDocuments([
+          new Document({ pageContent }),
+        ]);
 
-        return markdownChunks.map((headingChunk: string, i: any) => ({
+        if (!markdownChunks?.length) {
+          console.log(`[getWebPagesVectors] No markdownChunks found for ${page.url}`)
+          return [];
+        }
+
+        return markdownChunks.map((webDoc: Document, i: any) => ({
           uid: `WebPage_${page.url}_${i}`,
-          text: headingChunk,
+          text: webDoc.pageContent,
           metadata: {
             source: 'web',
+            text: webDoc.pageContent,
             domain: page?.domain?.toLowerCase(),
             url: page?.url?.toLowerCase()
           }
@@ -194,11 +98,11 @@ const embedVectors = async (event: any, vectors: any[]) => {
   if (vectors?.length && vectors?.every((x: any) => !!x)) {
     try {
       outVectors = await Promise.all(
-        chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map(async (batchVectors, i) => {
+        chunkArray(vectors, PINECONE_VECTORS_BATCH_SIZE).map(async (batchVectors: any, i: any) => {
           try {
             const vectorSends = await inngest.send({
               v: '1',
-              ts: new Date().valueOf(),
+              
               name: 'pinecone/vectors.upserted',
               data: {
                 _page: i,
@@ -210,16 +114,7 @@ const embedVectors = async (event: any, vectors: any[]) => {
             });
             return vectorSends;
           } catch (error: unknown) {
-            let message = '';
-            if (isAxiosError(error)) {
-              message = error.response?.data;
-            } else if (typeof error === 'string' || typeof error === 'number') {
-              message = error.toString();
-            } else if (error instanceof Error) {
-              message = error.message;
-            } else if (error) {
-              message = JSON.stringify(error);
-            }
+            let message = getAxiosErrorMessage(error);
             return { error: `[Error in embedVectors] ${message}` };
           }
         })
@@ -232,16 +127,7 @@ const embedVectors = async (event: any, vectors: any[]) => {
         throw errors[0];
       }
     } catch (error: unknown) {
-      let message = '';
-      if (isAxiosError(error)) {
-        message = error.response?.data;
-      } else if (typeof error === 'string' || typeof error === 'number') {
-        message = error.toString();
-      } else if (error instanceof Error) {
-        message = error.message;
-      } else if (error) {
-        message = JSON.stringify(error);
-      }
+      let message = getAxiosErrorMessage(error);
       return { error: `[Error in writeVectorsToIndex] ${message}` };
     }
   }
@@ -261,7 +147,7 @@ export const processWebUrlScrape: EventVersionHandler<{ urls: string[]; byDomain
       const domainPromises = domains.map((domain) =>
         inngest.send({
           v: event.v,
-          ts: new Date().valueOf(),
+          
           name: 'web/domain.sync',
           data: {
             domain
@@ -275,9 +161,12 @@ export const processWebUrlScrape: EventVersionHandler<{ urls: string[]; byDomain
       }
     } else {
       const uniqueUrls = getUniqueUrls(urls);
-      await inngest.send({
+      if (!uniqueUrls.length) {
+        return;
+      }
+
+      inngest.send({
         v: event.v,
-        ts: new Date().valueOf(),
         name: 'web/page.sync',
         data: {
           urls: uniqueUrls
@@ -295,41 +184,45 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
     const data = event.data;
     const { domain } = data;
 
-    let urls = await fetchSitemapUrls(domain);
-    if (!urls?.length) urls = await extractUrlsFromSitemap(`${domain}/sitemap.xml`);
-    if (!urls?.length) urls = await extractUrlsFromSitemap(`${domain}/sitemap-index.xml`);
+    if (!domain) {
+      console.log('[web/domain.sync] No domain provided');
+      return;
+    }
+
+    const [sitemapUrls, xmlUrls, xmlIndexUrls] = await Promise.all([
+      fetchSitemapUrls(domain),
+      getSitemapUrls(`${domain}/sitemap.xml`),
+      getSitemapUrls(`${domain}/sitemap-index.xml`),
+      getSitemapUrls(`${domain}/sitemap1.xml`),
+    ]);
+
+    const urls = [...(sitemapUrls || []), ...(xmlUrls || []), ...(xmlIndexUrls || [])];
 
     if (!urls?.length) {
-      console.log('Could not extract URLs from sitemap');
-      return;
-      // const uniqueDomain = getUniqueUrl(domain);
-      // try {
-      //   await inngest.send({
-      //     v: event.v,
-      //     ts: new Date().valueOf(),
-      //     name: 'web/deep.sync',
-      //     data: {
-      //       domain: uniqueDomain
-      //     },
-      //     user: event.user
-      //   });
-      // } catch (error) {}
+      console.log('[web/domain.sync] Could not extract URLs from sitemap.  Preparing deep sync');
+      inngest.send({
+        v: event.v,
+        
+        name: 'web/page.sync',
+        data: {
+          recursive: true,
+          parentId:`${new Date().valueOf()}-recursive`,
+          urls: [domain]
+        },
+        user: event.user
+      })
     } else {
       const uniqueUrls = getUniqueUrls(urls);
-      const pendingSyncURls = await getPendingSyncURLs(uniqueUrls);
-      console.log(
-        `EventName: web/domain.sync UniqueURLs: ${uniqueUrls?.length} PendingSyncURLs: ${pendingSyncURls?.length}`
-      );
+      const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
 
       try {
         await Promise.all(
-          chunkArray(pendingSyncURls, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
+          chunkArray(pendingSyncURLs, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
             inngest.send({
               v: event.v,
-              ts: new Date().valueOf(),
               name: 'web/page.sync',
               data: {
-                _total: pendingSyncURls.length,
+                _total: pendingSyncURLs.length,
                 urls
               },
               user: event.user
@@ -344,123 +237,190 @@ export const processWebDomainScrape: EventVersionHandler<{ domain: string }> = {
   }
 };
 
-export const processWebDeepScrape: EventVersionHandler<{ domain: string }> = {
-  event: 'web/deep.sync',
-  v: '1',
-  handler: async ({ event }) => {
-    try {
-      const data = event.data;
-      const { domain } = data;
-
-      const urls: Set<string> = new Set();
-      const uniqueUrl = getUniqueUrl(domain);
-      const origin = new URL(uniqueUrl).origin;
-
-      for await (const link of scrapePage(uniqueUrl, origin, urls)) {
-      }
-
-      const uniqueUrls = getUniqueUrls(Array.from(urls));
-
-      const allWebPages = await Promise.all(
-        uniqueUrls.map(async (url) => {
-          console.time(`processWebDeepScrape:sendWebPageSync for URL: ${url}`);
-          try {
-            const webPages = await inngest.send({
-              v: event.v,
-              ts: new Date().valueOf(),
-              name: 'web/page.sync',
-              data: {
-                urls: [url]
-              },
-              user: event.user
-            });
-          } catch (error: unknown) {
-            let message = '';
-            if (isAxiosError(error)) {
-              message = error.response?.data;
-            } else if (typeof error === 'string' || typeof error === 'number') {
-              message = error.toString();
-            } else if (error instanceof Error) {
-              message = error.message;
-            } else if (error) {
-              message = JSON.stringify(error);
-            }
-            return { error: `[Error in writeVectorsToIndex] ${message}` };
-          } finally {
-            console.timeEnd(`processWebDeepScrape:sendWebPageSync for URL: ${url}`);
-          }
-        })
-      );
-
-      const errors = allWebPages.filter((result) => !!result?.error);
-
-      if (errors?.length) {
-        // TODO - handle errors
-        throw errors[0];
-      }
-    } catch (error: unknown) {
-      let message = '';
-      if (isAxiosError(error)) {
-        message = error.response?.data;
-      } else if (typeof error === 'string' || typeof error === 'number') {
-        message = error.toString();
-      } else if (error instanceof Error) {
-        message = error.message;
-      } else if (error) {
-        message = JSON.stringify(error);
-      }
-      return { error: `[Error in writeVectorsToIndex] ${message}` };
-    }
-  }
-};
-
-export const processWebScrape: EventVersionHandler<{ urls: string[] }> = {
+export const processWebScrape: EventVersionHandler<{ urls: string[], recursive: boolean, parentId?: string }> = {
   event: 'web/page.sync',
   v: '1',
   handler: async ({ event }) => {
-    const { urls } = event?.data;
+    const { urls, recursive, parentId } = event?.data;
     if (!urls) {
       throw new Error('Invalid input data: missing "urls" property');
     }
+
     // TODO: Validate if the URL exists in database
     // TODO: Verify how long it passed since it was synced
 
     const uniqueUrls = getUniqueUrls(Array.from(urls));
 
-    const pendingSyncURls = await getPendingSyncURLs(uniqueUrls);
+    const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
 
     await prisma.document.updateMany({
-      where: { url: { in: pendingSyncURls } },
+      where: { url: { in: pendingSyncURLs } },
       data: {
         status: 'syncing'
       }
     });
 
-    const webPagesHtml = (await webPageLoader.loadMany(pendingSyncURls)) as string[];
+    const webPagesHtml = (await webPageLoader.loadMany(pendingSyncURLs)) as string[];
 
+
+    let recursiveUrls:string[] = [];
     const webPages = await Promise.all(
-      pendingSyncURls.map(async (url, index) => {
-        const content = webPagesHtml[index];
-        const domain = new URL(url).origin;
-
-        const webData = {
+      pendingSyncURLs.map(async (url, index) => {
+        const domain = new URL(url).origin
+        const webData: WebPage = {
           url,
           domain,
-          content
+          content: webPagesHtml[index],
         };
+
+        if (!webData.content.length) {
+          return {...webData, content: ''};
+        }
+
+        webData.content = NodeHtmlMarkdown.translate(webData.content, {}, undefined, undefined);
+
+        // Now that we have valid HTML, check if this should be recursive so we can build out the spidering
+        if (recursive) {
+          recursiveUrls = [...recursiveUrls, ...getDomainUrlsFromMarkdown(webData.content, domain)];
+          console.log({url, recursiveUrls});
+          const recursiveId = parentId ?? new Date().valueOf();
+          const recursiveEvents = recursiveUrls.map(url => {
+            return {
+              v: event.v,
+              id: `${recursiveId}-${url}`,
+              
+              name: 'web/page.sync',
+              data: {
+                urls: [url],
+                recursive,
+                parentId:recursiveId
+              },
+              user: event.user
+            }
+          });
+          inngest.send(recursiveEvents);
+        }
 
         return webData;
       })
     );
 
-    const filteredPages = webPages.filter((x) => !!x?.content);
+    interface FilteredPages {
+      validPages: WebPage[];
+      invalidPages: WebPage[];
+    }
+    
+    const { validPages, invalidPages }: FilteredPages = webPages.reduce(
+      (acc: FilteredPages, page: WebPage) => {
+        if (page?.content && page.content !== '') {
+          acc.validPages.push(page);
+        } else {
+          acc.invalidPages.push(page);
+        }
+        return acc;
+      },
+      { validPages: [], invalidPages: [] }
+    );
 
-    // console.log('filteredPages', filteredPages);
-    const vectors = await getWebPagesVectors(filteredPages);
-    // console.log('vectorrs', vectors);
+    // TODO: Update to remove from Pinecone as well
+    if (invalidPages.length) {
+      console.log(`Updating documents ${invalidPages.map((p) => p.url.toLowerCase())} from DB due to no valid content`);
+      await prisma.document.updateMany({
+        where: {
+          url: { in: invalidPages.map((p) => p.url.toLowerCase()) }
+        },
+        data: {
+          status: 'error',
+          lastSyncedAt: new Date()
+        }
+      });
+    }
+
+    const vectors = await getWebPagesVectors(validPages);
 
     const embeddedVectors = await embedVectors(event, vectors);
-    return pendingSyncURls;
+
+    return pendingSyncURLs;
     // TODO: Update webData with syncedAt
   }
 };
+
+export const processWebPathScrape: EventVersionHandler<{ path: string }> = {
+  event: 'web/path.sync',
+  v: '1',
+  handler: async ({ event }) => {
+    const data = event.data;
+    const { path } = data;
+
+    if (!path) {
+      console.log('[web/path.sync] No path provided');
+      return;
+    }
+    const domain = getUrlDomain(path);
+
+    if (!domain) {
+      console.log('[web/path.sync] Could not fetch domain');
+      return;
+    }
+
+    if (path === domain) {
+      inngest.send({
+        name: 'web/domain.sync',
+        data: { domain },
+        user: event.user
+      });
+      return;
+    }
+
+    const [sitemapUrls, xmlUrls, xmlIndexUrls] = await Promise.all([
+      fetchSitemapUrls(domain),
+      getSitemapUrls(`${domain}/sitemap.xml`),
+      getSitemapUrls(`${domain}/sitemap-index.xml`),
+      getSitemapUrls(`${domain}/sitemap1.xml`),
+    ]);
+
+    const uniquePath = getUniqueUrl(path);
+
+    const uniqueUrls = getUniqueUrls(([...(sitemapUrls || []), ...(xmlUrls || []), ...(xmlIndexUrls || [])])).filter(url => {
+      return url.startsWith(uniquePath)
+    });
+
+    if (!uniqueUrls?.length) {
+      console.log('[web/path.sync] Could not extract URLs from sitemap.  Calling Scraper');
+      inngest.send({
+        v: event.v,
+        
+        name: 'web/page.sync',
+        data: {
+          recursive: true,
+          parentId:`${new Date().valueOf()}-recursive`,
+          urls: [path]
+        },
+        user: event.user
+      })
+    } else {
+      const pendingSyncURLs = await getPendingSyncURLs(uniqueUrls);
+
+      try {
+        await Promise.all(
+          chunkArray(pendingSyncURLs, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
+            inngest.send({
+              v: event.v,
+              
+              name: 'web/page.sync',
+              data: {
+                _total: pendingSyncURLs.length,
+                urls
+              },
+              user: event.user
+            })
+          )
+        );
+      } catch (error) {
+        console.log(error);
+      } finally {
+      }
+    }
+  }
+};
+
