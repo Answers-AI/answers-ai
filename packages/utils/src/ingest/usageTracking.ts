@@ -46,7 +46,7 @@ export const tokensToUSD = ({
   promptUsedTokens: number;
   completionUsedTokens: number;
   model: string;
-}) : Prisma.Decimal => {
+}): Prisma.Decimal => {
   const usedTokens = promptUsedTokens + completionUsedTokens;
   let price = new Prisma.Decimal(0);
   if (['text-embedding-ada-002'].includes(model)) {
@@ -74,7 +74,7 @@ export const tokensToUSD = ({
   return model.startsWith('gpt-3.5-turbo') ? new Prisma.Decimal(price).mul(0.75) : price;
 };
 
-export const processVectorsUpserted: EventVersionHandler<{
+export const processAiUsage: EventVersionHandler<{
   type: string;
   method: string;
   model: string;

@@ -35,7 +35,7 @@ const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 export const AppDrawer = ({ session }: any) => {
   const flags = useFlags(['settings']);
-  const user = session.user;
+  const user = session?.user;
   // TODO - Use params from request: https://github.com/vercel/next.js/issues/43704
   const pathname = usePathname();
   return (
