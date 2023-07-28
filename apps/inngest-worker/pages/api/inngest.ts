@@ -1,16 +1,16 @@
 import { Inngest } from 'inngest';
 import { serve } from 'inngest/next';
 import { createInngestFunctions } from '@utils/ingest/EventVersionHandler';
-import * as algoliaFunctions from '@utils/ingest/algolia';
+// import * as algoliaFunctions from '@utils/ingest/algolia';
 import * as authFunctions from '@utils/ingest/auth';
 import * as confluenceFunctions from '@utils/ingest/confluence';
 import * as embeddingsFunctions from '@utils/ingest/embeddings';
 import * as messageFunctions from '@utils/ingest/message';
-import * as openApiFunctions from '@utils/ingest/openapi';
+// import * as openApiFunctions from '@utils/ingest/openapi';
 import * as promptFunctions from '@utils/ingest/prompt';
-import * as slackFunctions from '@utils/ingest/slack';
+// import * as slackFunctions from '@utils/ingest/slack';
 import * as webFunctions from '@utils/ingest/web';
-import * as jiraFunctions from '@utils/ingest/jira';
+// import * as jiraFunctions from '@utils/ingest/jira';
 import * as fileFunctions from '@utils/ingest/file';
 import * as airtableFunctions from '@utils/ingest/airtable';
 import * as codebaseFunctions from '@utils/ingest/codebase';
@@ -20,16 +20,16 @@ import * as usageTracking from '@utils/ingest/usageTracking';
 // Create a client to send and receive events
 
 const handlers = {
-  ...algoliaFunctions,
+  // ...algoliaFunctions,
   ...authFunctions,
   ...confluenceFunctions,
   ...embeddingsFunctions,
   ...messageFunctions,
-  ...openApiFunctions,
+  // ...openApiFunctions,
   ...promptFunctions,
-  ...slackFunctions,
+  // ...slackFunctions,
   ...webFunctions,
-  ...jiraFunctions,
+  // ...jiraFunctions,
   ...fileFunctions,
   ...airtableFunctions,
   ...codebaseFunctions,
