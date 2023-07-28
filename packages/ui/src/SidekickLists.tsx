@@ -17,7 +17,7 @@ import { AppSettings } from 'types';
 
 const SidekickTabs = ({ appSettings }: { appSettings: AppSettings }) => {
   const flags = useFlags(['sidekicks_system']);
-  const [currentTab, setCurrentTab] = useState('AnswerAI');
+  const [currentTab, setCurrentTab] = useState('Favorites');
   const [isLoading, setIsLoading] = useState(true);
 
   const getEndpoint = React.useCallback((tab: string) => {
@@ -64,9 +64,7 @@ const SidekickTabs = ({ appSettings }: { appSettings: AppSettings }) => {
         <Tab label="Organization" value="Organization" />
         <Tab label="Global" value="Global" />
       </Tabs>
-      <Box role="tabpanel" hidden={currentTab !== 'AnswerAI'}>
-        <SidekickList endpoint={getEndpoint('AnswerAI')} appSettings={appSettings} />
-      </Box>
+
       <Box role="tabpanel" hidden={currentTab !== 'Favorites'}>
         <SidekickList endpoint={getEndpoint('Favorites')} appSettings={appSettings} />
       </Box>
@@ -78,6 +76,9 @@ const SidekickTabs = ({ appSettings }: { appSettings: AppSettings }) => {
       </Box>
       <Box role="tabpanel" hidden={currentTab !== 'Global'}>
         <SidekickList endpoint={getEndpoint('Global')} appSettings={appSettings} />
+      </Box>
+      <Box role="tabpanel" hidden={currentTab !== 'AnswerAI'}>
+        <SidekickList endpoint={getEndpoint('AnswerAI')} appSettings={appSettings} />
       </Box>
     </Box>
   );
