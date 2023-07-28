@@ -35,6 +35,7 @@ const ChatDetailPage = async ({ params }: any) => {
 
   const sidekicks = dbSidekicks?.length ? normalizeSidekickList(dbSidekicks, user) : [];
 
+  // @ts-expect-error Async Server Component
   return <Chat {...params} sidekicks={sidekicks} />;
 };
 
