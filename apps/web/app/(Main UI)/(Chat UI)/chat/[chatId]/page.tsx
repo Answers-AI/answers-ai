@@ -3,6 +3,8 @@ import { prisma } from '@db/client';
 import Chat from '@ui/Chat';
 import ChatNotFound from '@ui/ChatNotFound';
 import getCachedSession from '@ui/getCachedSession';
+import { normalizeSidekickList } from '../../../../../utilities/normalizeSidekick';
+import type { Sidekick } from 'types';
 
 export const metadata = {
   title: 'Chats | Answers AI',
@@ -11,32 +13,65 @@ export const metadata = {
 
 const ChatDetailPage = async ({ params }: any) => {
   const session = await getCachedSession();
-  const chat = await prisma.chat
-    .findUnique({
-      where: {
-        id: params.chatId
-      },
-      include: {
-        prompt: true,
-        journey: true,
-        messages: {
-          include: {
-            user: { select: { id: true, email: true, image: true, name: true } },
-            contextDocuments: true
-          },
-          orderBy: { createdAt: 'asc' }
-        },
-        users: { select: { id: true, email: true, image: true, name: true } }
-      }
-    })
-    .then((data: any) => JSON.parse(JSON.stringify(data)));
 
-  if (!chat?.users?.find((user: any) => user.id === session?.user?.id)) {
+  if (!session?.user?.id) {
     return <ChatNotFound />;
   }
 
-  // @ts-expect-error Async Server Component
-  return <Chat {...params} chat={chat} journey={chat?.journey} />;
+  const user = session?.user;
+  const userId = user?.id;
+
+  const getChatPromise = prisma.chat.findUnique({
+    where: {
+      id: params.chatId,
+      users: {
+        some: {
+          id: userId
+        }
+      }
+    },
+    include: {
+      prompt: true,
+      journey: true,
+      messages: {
+        include: {
+          user: { select: { id: true, email: true, image: true, name: true } },
+          contextDocuments: true
+        },
+        orderBy: { createdAt: 'asc' }
+      },
+      users: { select: { id: true, email: true, image: true, name: true } }
+    }
+  });
+
+  const getSidekicksPromise = prisma.sidekick.findMany({
+    where: {
+      OR: [
+        {
+          favoritedBy: {
+            some: {
+              id: userId
+            }
+          }
+        },
+        {
+          isSystem: true
+        }
+      ]
+    }
+  });
+
+  const [chat, dbSidekicks] = await Promise.all([getChatPromise, getSidekicksPromise]);
+
+  if (!chat) {
+    return <ChatNotFound />;
+  }
+
+  const sidekicks = (dbSidekicks as Sidekick[])?.length
+    ? normalizeSidekickList(dbSidekicks as Sidekick[], user)
+    : [];
+
+  return <Chat {...params} chat={chat} journey={(chat as any)?.journey} sidekicks={sidekicks} />;
 };
 
 export default ChatDetailPage;

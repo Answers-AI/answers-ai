@@ -1,6 +1,5 @@
 'use client';
-import React, { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { Suspense, useRef } from 'react';
 
 import NextLink from 'next/link';
 
@@ -19,24 +18,23 @@ import ShareIcon from '@mui/icons-material/IosShare';
 
 import { MessageCard } from './Message';
 import { useAnswers } from './AnswersContext';
-import { ChatInput } from './ChatInput';
+import ChatInput from './ChatInput';
 import DrawerFilters from './DrawerFilters/DrawerFilters';
 import { Filters } from './Filters';
 
-import { AppService, AppSettings } from 'types';
+import type { AppService, AppSettings, Sidekick } from 'types';
 
 export const ChatDetail = ({
   appSettings,
-  prompts
+  prompts,
+  sidekicks = []
 }: {
   appSettings: AppSettings;
   prompts?: any;
+  sidekicks?: Sidekick[];
 }) => {
-  const scrollRef = React.useRef<HTMLDivElement>(null);
   const {
     error,
-
-    chatId,
     chat,
     journey,
     messages: clientMessages,
@@ -44,11 +42,11 @@ export const ChatDetail = ({
     regenerateAnswer,
     showFilters,
     filters,
-
     setShowFilters
   } = useAnswers();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const messages = clientMessages || chat?.messages;
-  const searchParams = useSearchParams();
 
   const filteredServices = Object.keys((filters?.datasources as Object) ?? {});
   const services: { [key: string]: AppService } =
@@ -58,7 +56,7 @@ export const ChatDetail = ({
 
   return (
     <>
-      <div
+      <Box
         style={{
           display: 'flex',
           flexDirection: 'column',
@@ -98,12 +96,13 @@ export const ChatDetail = ({
                   }
                 }}>
                 {chat ? <Typography variant="body1">{chat?.title ?? chat.id}</Typography> : null}
+
                 {journey ? (
                   <Typography variant="body2">{journey?.goal ?? journey?.title}</Typography>
                 ) : null}
               </Box>
+
               <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                {/* <SourcesToolbar appSettings={appSettings} /> */}
                 {chat ? (
                   <IconButton
                     size="large"
@@ -151,18 +150,10 @@ export const ChatDetail = ({
                     <ArrowBackIcon />
                   </IconButton>
                 )}
-                {/* <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                component={NextLink}
-                href={`${pathname}`}>
-                <MenuIcon />
-              </IconButton> */}
               </Box>
             </Toolbar>
           </AppBar>
+
           <Box ref={scrollRef} sx={{ height: '100%', overflow: 'auto', px: 2, py: 3 }}>
             <Suspense fallback={<div>Loading...</div>}>
               <Box
@@ -178,12 +169,12 @@ export const ChatDetail = ({
                 {error ? (
                   <>
                     <MessageCard
-                      // user={user}
                       id="error"
                       role="assistant"
                       content={`There was an error completing your request, please try again`}
                       error={error}
                     />
+
                     <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                       <Button
                         onClick={() => regenerateAnswer()}
@@ -196,19 +187,11 @@ export const ChatDetail = ({
                   </>
                 ) : null}
 
-                {isLoading ? (
-                  <MessageCard
-                    //  user={user}
-
-                    role="loading"
-                    content={'...'}
-                  />
-                ) : null}
+                {isLoading ? <MessageCard role="loading" content={'...'} /> : null}
 
                 {!messages?.length ? (
                   <MessageCard
                     id="placeholder"
-                    // user={user}
                     role="assistant"
                     content={
                       'Welcome! Try asking me something below, or select your data sources on the top right!'
@@ -216,7 +199,7 @@ export const ChatDetail = ({
                   />
                 ) : null}
 
-                {messages?.length && !isLoading && !error ? (
+                {!isLoading && !error && messages?.length ? (
                   <Box sx={{ py: 2, width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <Button onClick={() => regenerateAnswer()} variant="outlined" color="primary">
                       Regenerate answer
@@ -227,8 +210,10 @@ export const ChatDetail = ({
             </Suspense>
           </Box>
         </Box>
-        <ChatInput />
-      </div>
+
+        <ChatInput sidekicks={sidekicks} />
+      </Box>
+
       <Suspense fallback={<div>Loading...</div>}>
         <DrawerFilters appSettings={appSettings} />
       </Suspense>

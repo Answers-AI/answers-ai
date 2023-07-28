@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import { AppSettings, User } from 'types';
 import { MessageCard } from './Message';
 import { useAnswers } from './AnswersContext';
-import { ChatInput } from './ChatInput';
+import ChatInput from './ChatInput';
 import Refresh from '@mui/icons-material/Refresh';
 import CircularProgress from '@mui/material/CircularProgress';
 

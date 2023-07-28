@@ -1,24 +1,32 @@
 'use client';
-import NextLink from 'next/link';
-import React, { useState } from 'react';
-import { useFlags } from 'flagsmith/react';
+import React, { useState, useEffect, useRef, ChangeEvent } from 'react';
 
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import Tooltip from '@mui/material/Tooltip';
 
-import { debounce } from '@utils/debounce';
 import { useAnswers } from './AnswersContext';
-import { SidekickSelect } from './SidekickSelect';
+import SidekickSelect from './SidekickSelect';
 import Fieldset from './Fieldset';
 
-import { Sidekick } from 'types';
+import { debounce } from '@utils/debounce';
 
-export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?: boolean }) => {
+import type { Sidekick } from 'types';
+
+const ChatInput = ({
+  scrollRef,
+  isWidget,
+  sidekicks = []
+}: {
+  scrollRef?: any;
+  isWidget?: boolean;
+  sidekicks?: Sidekick[];
+}) => {
   const defaultPlaceholderValue = 'How can you help me accomplish my goal?';
   const [inputValue, setInputValue] = useState('');
   const [placeholder, setPlaceholder] = useState(defaultPlaceholderValue);
@@ -28,7 +36,6 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     journey,
     messages,
     sendMessage,
-    clearMessages,
     isLoading,
     sidekick,
     setSidekick,
@@ -37,14 +44,9 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     startNewChat
   } = useAnswers();
 
-  const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const [showPrompts, setShowPrompts] = useState(
-    !messages?.length && flags?.recommended_prompts_expand?.enabled
-  );
-
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  React.useEffect(() => {
+  useEffect(() => {
     const debouncedScroll = debounce(() => {
       if (messages?.length)
         scrollRef?.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -53,14 +55,13 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     debouncedScroll();
   }, [chat, journey, messages, scrollRef]);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
   const handleSubmit = () => {
     if (!inputValue) return;
     sendMessage({ content: inputValue, sidekick, gptModel });
-    setShowPrompts(false);
     setInputValue('');
   };
 
@@ -72,18 +73,6 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
 
   const handleGptModelSelected = (event: SelectChangeEvent<string>) => {
     setGptModel(event.target.value as string);
-  };
-
-  const handleInputFocus = () => {
-    if (flags?.recommended_prompts_expand?.value == 'blur') setShowPrompts(true);
-  };
-  const handleInputBlur = () => {
-    if (flags?.recommended_prompts_expand?.value == 'blur') setShowPrompts(false);
-  };
-
-  const handleNewChat = () => {
-    setInputValue('');
-    clearMessages();
   };
 
   const handleKeyPress = (e: any) => {
@@ -98,7 +87,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
       <Box sx={{ display: 'flex', gap: 2 }}>
-        <SidekickSelect onSidekickSelected={handleSidekickSelected} />
+        <SidekickSelect onSidekickSelected={handleSidekickSelected} sidekicks={sidekicks} />
         <Fieldset legend="Model">
           <Select
             labelId="model-select-label"
@@ -119,6 +108,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
           </Select>
         </Fieldset>
       </Box>
+
       <TextField
         id="user-chat-input"
         inputRef={inputRef}
@@ -135,13 +125,11 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
         fullWidth
         placeholder={placeholder}
         value={inputValue}
-        // onBlur={handleInputFocus}
         multiline
         onKeyPress={handleKeyPress}
         onChange={handleInputChange}
-        onFocus={handleInputFocus}
-        onBlur={handleInputBlur}
       />
+
       <Box
         sx={{
           display: 'flex',
@@ -151,21 +139,6 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
           bottom: 28,
           right: 28
         }}>
-        {/* Toggle component that updates when using query or streaming */}
-
-        {/* {flags.settings_stream.enabled ? (
-          <FormControlLabel
-            control={
-              <Switch
-                {...{ inputProps: { 'aria-label': 'Stream mode' } }}
-                checked={useStreaming}
-                onChange={() => setUseStreaming(!useStreaming)}
-                name="Stream"
-              />
-            }
-            label={'Stream'}
-          />
-        ) : null} */}
         {!isWidget && messages?.length ? (
           <Tooltip title="Start new chat">
             <Button
@@ -177,9 +150,7 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
             </Button>
           </Tooltip>
         ) : null}
-        {/* <Button variant="outlined" color="primary" onClick={() => setShowPrompts(true)}>
-                  <AddIcon />
-                </Button> */}
+
         <Button
           variant="contained"
           color="primary"
@@ -191,3 +162,5 @@ export const ChatInput = ({ scrollRef, isWidget }: { scrollRef?: any; isWidget?:
     </Box>
   );
 };
+
+export default ChatInput;
