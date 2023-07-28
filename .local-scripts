@@ -1,0 +1,2 @@
+node apps/inngest-worker/node_modules/puppeteer/install
+node -e "console.log(require('puppeteer').executablePath())"

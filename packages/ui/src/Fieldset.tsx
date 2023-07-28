@@ -1,18 +1,22 @@
 import Box from '@mui/material/Box';
 
 const fieldsetStyles = {
-  borderRadius: 1.5,
-  textAlign: 'left',
-  margin: 0,
-  borderStyle: 'solid',
-  borderWidth: '1px',
-  minWidth: '0%',
-  paddingRight: 1,
-  paddingLeft: 1.5,
-  pt: 1,
-  pb: 2,
-  position: 'relative',
-  borderColor: 'rgba(255, 255, 255, .23)'
+  'borderRadius': 1.5,
+  'textAlign': 'left',
+  'margin': 0,
+  'borderStyle': 'solid',
+  'borderWidth': '1px',
+  'minWidth': '0%',
+  'paddingRight': 0.25,
+  'paddingLeft': 0.5,
+  'pt': 0.25,
+  'pb': 1.25,
+  'position': 'relative',
+  'borderColor': 'rgba(255, 255, 255, .23)',
+
+  '& *': {
+    border: 'none !important'
+  }
 };
 
 const legendStyles = {
