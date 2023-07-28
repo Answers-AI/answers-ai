@@ -16,14 +16,12 @@ export async function GET(req: Request) {
 
     const dbSidekicks = await prisma.sidekick.findMany({
       where: {
-        createdByUser: { id: userId },
-        isGlobal: false,
-        isSharedWithOrg: false
+        createdByUser: { id: userId }
       },
       include: {
         favoritedBy: {
           where: {
-            id: {in: [user.id]}
+            id: { in: [user.id] }
           }
         }
       }

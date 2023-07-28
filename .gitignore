@@ -47,3 +47,6 @@ daisy/preview
 
 # puppeteer cache
 .cache
+
+# Used for anything personal dev scripts
+.local-scripts

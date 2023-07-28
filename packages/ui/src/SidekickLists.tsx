@@ -30,7 +30,7 @@ const SidekickTabs = ({ appSettings }: { appSettings: AppSettings }) => {
       return '/api/sidekicks/list/org';
     } else if (tab === 'Global') {
       return '/api/sidekicks/list/global';
-    } else if (tab === 'System') {
+    } else if (tab === 'AnswerAI') {
       return '/api/sidekicks/list/system';
     } else {
       return '';
@@ -58,12 +58,13 @@ const SidekickTabs = ({ appSettings }: { appSettings: AppSettings }) => {
       </Box>
 
       <Tabs value={currentTab} onChange={handleTabChange} centered sx={{ mb: 4 }}>
-        <Tab label="Favorites" value="Favorites" />
-        <Tab label="Private" value="Private" />
+        <Tab label="Answer AI" value="AnswerAI" />
+        <Tab label="My Favorites" value="Favorites" />
+        <Tab label="My Sidekicks" value="Private" />
         <Tab label="Organization" value="Organization" />
         <Tab label="Global" value="Global" />
-        {flags?.sidekicks_system?.enabled && <Tab label="System" value="System" />}
       </Tabs>
+
       <Box role="tabpanel" hidden={currentTab !== 'Favorites'}>
         <SidekickList endpoint={getEndpoint('Favorites')} appSettings={appSettings} />
       </Box>
@@ -76,15 +77,9 @@ const SidekickTabs = ({ appSettings }: { appSettings: AppSettings }) => {
       <Box role="tabpanel" hidden={currentTab !== 'Global'}>
         <SidekickList endpoint={getEndpoint('Global')} appSettings={appSettings} />
       </Box>
-      {flags?.sidekicks_system?.enabled && (
-        <Box role="tabpanel" hidden={currentTab !== 'System'}>
-          <SidekickList
-            endpoint={getEndpoint('System')}
-            appSettings={appSettings}
-            isSystem={true}
-          />
-        </Box>
-      )}
+      <Box role="tabpanel" hidden={currentTab !== 'AnswerAI'}>
+        <SidekickList endpoint={getEndpoint('AnswerAI')} appSettings={appSettings} />
+      </Box>
     </Box>
   );
 };
