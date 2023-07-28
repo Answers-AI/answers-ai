@@ -103,6 +103,7 @@ export const fetchContext = async ({
 
   const filters = parseFilters(clientFilters);
   const promptEmbedding = await openai.createEmbedding({
+    user,
     input: prompt?.toLowerCase(),
     model: EMBEDDING_MODEL
   });

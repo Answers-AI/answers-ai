@@ -64,6 +64,7 @@ const redisLoader = <K, V>({
       if (cachedValue) {
         try {
           const parsedValue = JSON.parse(cachedValue);
+          parsedValue.__redisLoaderCacheHit = true;
           results.push(parsedValue);
         } catch (err) {
           cacheMissKeys.push(cacheKey);

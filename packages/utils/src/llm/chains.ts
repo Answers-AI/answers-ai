@@ -52,6 +52,7 @@ export const createChatChain = ({ messages }: { messages?: Message[] }) => {
     }) => {
       // console.log('[ChatChain] context', context?.length);
       const completionRequest = await getCompletionRequest({ context, user, messages, input });
+      // ignoring tracking for now since this is not being used
       const response = await openai.createChatCompletion(completionRequest as any);
       const text = response.data.choices[0].message?.content;
       return { completionRequest, text };
