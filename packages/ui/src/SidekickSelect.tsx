@@ -17,16 +17,13 @@ const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectPr
   const [selectedSidekick, setSelectedSidekick] = useState<string>('');
 
   useEffect(() => {
-    console.log('useEffect');
     const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
     const lastUsedSidekick = sidekickHistory?.lastUsed;
-    const sidekickToSet =
-      lastUsedSidekick && sidekicks.some((s) => s.id === lastUsedSidekick)
-        ? lastUsedSidekick
-        : sidekicks[0]?.id;
+    const sidekick = sidekicks.find((s) => s.id === lastUsedSidekick) ?? sidekicks[0];
 
-    setSelectedSidekick(sidekickToSet);
-  }, [sidekicks]);
+    setSelectedSidekick(sidekick.id);
+    onSidekickSelected(sidekick);
+  }, [sidekicks, onSidekickSelected]);
 
   const handleSidekickChange = (event: SelectChangeEvent<string>) => {
     const sidekickValue = event.target.value;
