@@ -156,13 +156,16 @@ export const trackEmbeddingUsage = async ({
   response: CreateEmbeddingResponse;
   user: User;
   isCacheHit: boolean;
-}) =>
-  trackUsageFromTokens({
-    type,
-    method,
-    model,
-    promptUsedTokens: response.usage.prompt_tokens,
-    completionUsedTokens: response.usage.total_tokens - response.usage.prompt_tokens,
-    user,
-    isCacheHit
-  });
+}) => {
+  if (response.usage?.prompt_tokens && response.usage?.total_tokens) {
+    trackUsageFromTokens({
+      type,
+      method,
+      model,
+      promptUsedTokens: response.usage.prompt_tokens,
+      completionUsedTokens: response.usage.total_tokens - response.usage.prompt_tokens,
+      user,
+      isCacheHit
+    });
+  }
+};
