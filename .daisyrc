@@ -50,8 +50,10 @@ const config = (CODE_BASE_PATH) => {
       '.nextjs',
       '.next',
       '.git',
+      './local-scripts',
       'generated',
       '.yarn',
+      '.cache',
       'patches',
       'utils/src/sidekicks',
       DAISY_DIRECTORY
