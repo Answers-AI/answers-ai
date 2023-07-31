@@ -9,14 +9,16 @@ import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { useAnswers } from '../AnswersContext';
 import JourneySourceCard from './JourneySourceCard';
 
-import { AppSettings, AppService } from 'types';
+import { AppSettings, AppService, Journey, AnswersFilters } from 'types';
 
 export const JourneyAppsDrawer = ({
   appSettings,
-  activeApp
+  activeApp,
+  journey
 }: {
   appSettings: AppSettings;
   activeApp?: string;
+  journey?: Journey;
 }) => {
   const flags = useFlags(appSettings?.services?.map((s) => s.id) ?? []);
 
@@ -27,6 +29,16 @@ export const JourneyAppsDrawer = ({
 
   const [serviceOpen, setServiceOpen] = React.useState<string>('');
   const { filters, updateFilter } = useAnswers();
+  // Update the value of filters to journey?.filters if journey is set
+  const updatedFilters: AnswersFilters | undefined = journey?.filters ?? filters;
+  console.log('JourneyAppsDrawer', { filters, updatedFilters });
+
+  // React.useEffect(() => {
+  //   if (journey?.filters) {
+  //     updateFilter(journey?.filters);
+  //   }
+  // }, [journey?.filters, updateFilter]);
+
   const selectedService = enabledServices?.find((service) => service.id === serviceOpen);
 
   return (
@@ -45,7 +57,7 @@ export const JourneyAppsDrawer = ({
           ?.map((service) => (
             <JourneySourceCard
               appSettings={appSettings}
-              filters={filters}
+              filters={updatedFilters}
               updateFilter={updateFilter}
               key={service?.id}
               {...service}
@@ -86,7 +98,7 @@ export const JourneyAppsDrawer = ({
                 }}>
                 <JourneySourceCard
                   appSettings={appSettings}
-                  filters={filters}
+                  filters={updatedFilters}
                   updateFilter={updateFilter}
                   enabled={true}
                   {...selectedService}
