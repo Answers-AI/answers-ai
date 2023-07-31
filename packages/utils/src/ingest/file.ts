@@ -1,11 +1,7 @@
 import { EventVersionHandler } from './EventVersionHandler';
 import { prisma } from '@db/client';
-import { v4 as uuidV4 } from 'uuid';
-
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import embedVectors from '../pinecone/embedVectors';
-
-
 
 export const indexText: EventVersionHandler<{
   source?: string;

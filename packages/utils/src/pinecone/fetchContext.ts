@@ -30,35 +30,31 @@ const parseFilters = (filters: AnswersFilters) => {
     delete parsedFilters.datasources.confluence.spaces;
   }
 
-  if (parsedFilters?.datasources?.web?.url?.length) {
+  if (parsedFilters?.datasources?.web?.documents?.length) {
     // TODO: Define a type for the Pinecone filters which this function must return
-    (parsedFilters.datasources.web.url as any) = getUniqueUrls(
-      parsedFilters?.datasources?.web?.url.map((url) => (url as WebUrlType)?.url)
+    (parsedFilters.datasources.web.documents as any) = getUniqueUrls(
+      parsedFilters?.datasources?.web?.documents.map((url) => (url as WebUrlType)?.url)
     );
   }
 
   if (parsedFilters?.datasources?.file?.documents?.length) {
-    (parsedFilters.datasources.file.documents as any) = parsedFilters?.datasources?.file?.documents.map(
-      (url) => (url as any)?.url
-    );
+    (parsedFilters.datasources.file.documents as any) =
+      parsedFilters?.datasources?.file?.documents.map((url) => (url as any)?.url);
   }
 
   if (parsedFilters?.datasources?.youtube?.documents?.length) {
-    (parsedFilters.datasources.youtube.documents as any) = parsedFilters?.datasources?.youtube?.documents.map(
-      (url) => (url as any)?.url
-    );
+    (parsedFilters.datasources.youtube.documents as any) =
+      parsedFilters?.datasources?.youtube?.documents.map((url) => (url as any)?.url);
   }
 
   if (parsedFilters?.datasources?.document?.documents?.length) {
-    (parsedFilters.datasources.document.documents as any) = parsedFilters?.datasources?.document?.documents.map(
-      (url) => (url as any)?.url
-    );
+    (parsedFilters.datasources.document.documents as any) =
+      parsedFilters?.datasources?.document?.documents.map((url) => (url as any)?.url);
   }
 
   if (parsedFilters?.datasources?.zoom?.documents?.length) {
-    (parsedFilters.datasources.zoom.documents as any) = parsedFilters?.datasources?.zoom?.documents.map(
-      (url) => (url as any)?.url
-    );
+    (parsedFilters.datasources.zoom.documents as any) =
+      parsedFilters?.datasources?.zoom?.documents.map((url) => (url as any)?.url);
   }
 
   if (parsedFilters?.datasources?.codebase?.documents?.length) {
