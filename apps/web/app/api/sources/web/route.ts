@@ -30,8 +30,10 @@ export async function GET(req: Request) {
       permissions: { some: { organization: { users: { some: { id: session?.user?.id } } } } }
     },
     select: {
+      id: true,
       url: true,
-      title: true
+      title: true,
+      status: true
     },
     take: 100
   });
@@ -47,7 +49,7 @@ export async function GET(req: Request) {
     }
   }
 
-  const sources = filteredRecords?.map(({ url, title }) => ({ url, title, repo: title }));
+  const sources = filteredRecords?.map((record) => ({...record, repo: record.title}));
 
   return NextResponse.json({
     sources,

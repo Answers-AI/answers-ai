@@ -37,34 +37,34 @@ const parseFilters = (filters: AnswersFilters) => {
     );
   }
 
-  if (parsedFilters?.datasources?.file?.url?.length) {
-    (parsedFilters.datasources.file.url as any) = parsedFilters?.datasources?.file?.url.map(
+  if (parsedFilters?.datasources?.file?.documents?.length) {
+    (parsedFilters.datasources.file.documents as any) = parsedFilters?.datasources?.file?.documents.map(
       (url) => (url as any)?.url
     );
   }
 
-  if (parsedFilters?.datasources?.youtube?.url?.length) {
-    (parsedFilters.datasources.youtube.url as any) = parsedFilters?.datasources?.youtube?.url.map(
+  if (parsedFilters?.datasources?.youtube?.documents?.length) {
+    (parsedFilters.datasources.youtube.documents as any) = parsedFilters?.datasources?.youtube?.documents.map(
       (url) => (url as any)?.url
     );
   }
 
-  if (parsedFilters?.datasources?.document?.url?.length) {
-    (parsedFilters.datasources.document.url as any) = parsedFilters?.datasources?.document?.url.map(
+  if (parsedFilters?.datasources?.document?.documents?.length) {
+    (parsedFilters.datasources.document.documents as any) = parsedFilters?.datasources?.document?.documents.map(
       (url) => (url as any)?.url
     );
   }
 
-  if (parsedFilters?.datasources?.zoom?.url?.length) {
-    (parsedFilters.datasources.zoom.url as any) = parsedFilters?.datasources?.zoom?.url.map(
+  if (parsedFilters?.datasources?.zoom?.documents?.length) {
+    (parsedFilters.datasources.zoom.documents as any) = parsedFilters?.datasources?.zoom?.documents.map(
       (url) => (url as any)?.url
     );
   }
 
-  if (parsedFilters?.datasources?.codebase?.repo?.length) {
+  if (parsedFilters?.datasources?.codebase?.documents?.length) {
     // TODO: Define a type for the Pinecone filters which this function must return
-    (parsedFilters.datasources.codebase.repo as any) =
-      parsedFilters?.datasources?.codebase?.repo.map(({ title }) => title);
+    (parsedFilters.datasources.codebase.documents as any) =
+      parsedFilters?.datasources?.codebase?.documents.map(({ title }) => title);
   }
 
   return parsedFilters;

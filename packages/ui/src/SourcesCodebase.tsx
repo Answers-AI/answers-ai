@@ -24,8 +24,8 @@ const SourcesCodebase: React.FC<{}> = ({}) => {
       <Box marginBottom={1} sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
         <Autocomplete
           label="Choose a repo"
-          value={filters?.datasources?.codebase?.repo || []}
-          onChange={(value) => updateFilter({ datasources: { codebase: { repo: value } } })}
+          value={filters?.datasources?.codebase?.documents || []}
+          onChange={(value) => updateFilter({ datasources: { codebase: { documents: value } } })}
           getOptionLabel={(option) => (option?.metadata as any)?.repo!}
           options={sources ?? []}
           onFocus={() => mutate()}

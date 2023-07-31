@@ -18,7 +18,7 @@ import DomainCard from './DomainCard';
 
 import { WebUrlType, Document } from 'types';
 
-const isDomain = (url?: string) => {
+const isDomain = (url: string) => {
   try {
     if (!url) return false;
     const domain = getUrlDomain(url);
@@ -27,82 +27,45 @@ const isDomain = (url?: string) => {
     return false;
   }
 };
-interface SourceUrl {
-  id: string;
-  url: string;
-  domain: string;
-}
-
-const groupByDomain = (data: string[]) => {
-  const groups: { [key: string]: SourceUrl[] } = {};
-
-  data.forEach((webUrl) => {
-    const domain = getUrlDomain(webUrl);
-    if (domain) {
-      if (!groups[domain]) {
-        groups[domain] = [];
-      }
-      groups[domain].push({ id: webUrl, url: webUrl, domain });
-    }
-  });
-
-  return groups;
-};
 
 const SourcesWeb: React.FC<{}> = ({}) => {
   const { filters, updateFilter } = useAnswers();
-
-  const activeUrls = filters?.datasources?.web?.url?.map((webUrl) => webUrl.url) || [];
-  // const [activeDomains, setActiveDomains] = useState<string[]>([]);
-  const [allUrls, setAllUrls] = useState<string[]>(activeUrls);
-  const [newUrl, setNewUrl] = useState('');
-  const [entireDomain, setEntireDomain] = useState(false);
-
-  const [url, setUrl] = useState<string>('');
+  const [currentInput, setCurrentInput] = useState('');
+  const [url, setUrl] = useState('');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateUrl = React.useCallback(throttle(setUrl, 600), []);
   const { data, error, isLoading, mutate } = useSWR<{
     sources: Document[];
     domains: { domain: string; pageCount: number }[];
-  }>(url?.length > 10 ? `/api/sources/web?url=${url}` : null, (url) =>
+  }>(url.length > 10 ? `/api/sources/web?url=${url}` : null, (url) =>
     fetch(url).then((res) => res.json())
   );
 
+  const urlDomain = React.useMemo(() => {
+    if (!currentInput) return null;
+    return getUrlDomain(currentInput);
+  }, [currentInput]);
+
   const { sources, domains } = data || {};
-  const domainGroups = groupByDomain(sources?.map((source) => source.url) || []);
 
-  const handleAddUrl = async (newWebUrl: { url: string; entireDomain?: boolean }) => {
-    // const newWebUrl = { url: newUrl, entireDomain };
+  const handleAddUrl = async (newWebUrl: string) => {
+    const { data } = await axios.post(`/api/sync/web`, {
+      url: newWebUrl,
+      byDomain: false
+    });
+    const newWebURLs = [...(filters?.datasources?.web?.documents ?? []), data.web];
+    updateFilter({
+      datasources: { web: { documents: newWebURLs } }
+    });
 
-    if (newWebUrl) {
-      if (!newWebUrl.entireDomain) {
-        const newWebURLs = [...(filters?.datasources?.web?.url ?? []), newWebUrl];
-        updateFilter({
-          datasources: { web: { url: newWebURLs } }
-        });
-      } else {
-        const newDomains = [...(filters?.datasources?.web?.domain ?? []), newWebUrl.url];
-        updateFilter({
-          datasources: { web: { domain: newDomains } }
-        });
-      }
-      // setAllUrls(getUniqueUrls([...allUrls, newUrl]));
-
-      const urlRespn = await axios.post(`/api/sync/web`, {
-        urls: [newWebUrl.url],
-
-        byDomain: newWebUrl.entireDomain
-      });
-      setNewUrl('');
-      setEntireDomain(false);
-    }
+    setCurrentInput('');
   };
 
   const handleRemoveUrl = async (webUrl: WebUrlType) => {
     if (webUrl) {
       const domain = getUrlDomain(webUrl.url);
 
-      const newWebURLs = (filters?.datasources?.web?.url ?? []).filter((urlObj) => {
+      const newWebURLs = (filters?.datasources?.web?.documents ?? []).filter((urlObj) => {
         if (webUrl.entireDomain) {
           return getUrlDomain(urlObj.url) !== domain;
         } else {
@@ -111,51 +74,39 @@ const SourcesWeb: React.FC<{}> = ({}) => {
       });
 
       updateFilter({
-        datasources: { web: { url: newWebURLs } }
+        datasources: { web: { documents: newWebURLs } }
       });
     }
   };
 
   const handleRemoveDomain = async (domain: string) => {
-    const newDomain = (filters?.datasources?.web?.domain ?? []).filter((d) => {
+    const newDomain = (filters?.datasources?.web?.domains ?? []).filter((d) => {
       return domain !== d;
     });
 
     updateFilter({
-      datasources: { web: { domain: newDomain } }
+      datasources: { web: { domains: newDomain } }
     });
-  };
-
-  const toggleUrl = (url: string) => {
-    if (activeUrls.includes(url)) {
-      // setAllUrls(allUrls.filter((u) => u !== url));
-      handleRemoveUrl({ url });
-    } else {
-      const newWebURLs = [...(filters?.datasources?.web?.url ?? []), { url, entireDomain: false }];
-      updateFilter({
-        datasources: { web: { url: newWebURLs } }
-      });
-      // setAllUrls(getUniqueUrls([...allUrls, url]));
-    }
   };
 
   const addDomainFilter = async (domain?: string) => {
     if (!domain) return;
-    const newDomains = [...(filters?.datasources?.web?.domain ?? []), domain];
-    updateFilter({
-      datasources: { web: { domain: newDomains } }
-    });
-    await axios.post(`/api/sync/web`, {
-      urls: [domain],
+    const { data } = await axios.post(`/api/sync/web`, {
+      url: domain,
       byDomain: true
     });
+    const newDomains = [...(filters?.datasources?.web?.domains ?? []), ...data.web.domains];
+    updateFilter({
+      datasources: { web: { domains: newDomains } }
+    });
+
     await mutate();
   };
 
   return (
     <>
       <Box marginBottom={1} sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
-        {filters?.datasources?.web?.domain?.length ? (
+        {filters?.datasources?.web?.domains?.length ? (
           <Box>
             <Typography variant="overline">Domains</Typography>
             <Box sx={{ gap: 1, display: 'flex', flexWrap: 'wrap' }}>
@@ -171,16 +122,16 @@ const SourcesWeb: React.FC<{}> = ({}) => {
           </Box>
         ) : null}
 
-        {filters?.datasources?.web?.url?.length ? (
+        {filters?.datasources?.web?.documents?.length ? (
           <Box>
             <Typography variant="overline">Pages</Typography>
             <Box sx={{ gap: 1, display: 'flex', flexWrap: 'wrap' }}>
-              {filters?.datasources?.web?.url?.map((url) => (
+              {filters?.datasources?.web?.documents?.map((document) => (
                 <Chip
-                  key={`page-chip-${url.url}`}
+                  key={`page-chip-${document.url}`}
                   size="small"
-                  label={url.url}
-                  onDelete={() => handleRemoveUrl(url)}
+                  label={document.url}
+                  onDelete={() => handleRemoveUrl(document)}
                 />
               ))}
             </Box>
@@ -189,22 +140,16 @@ const SourcesWeb: React.FC<{}> = ({}) => {
 
         <Autocomplete
           freeSolo
-          options={
-            isDomain(newUrl)
-              ? []
-              : newUrl
-              ? [...(sources?.map((source) => source.url) ?? [])]
-              : sources?.map((source) => source.url) ?? []
-          }
+          options={isDomain(currentInput) ? [] : sources?.map((source) => source.url) ?? []}
+          // value={filters?.datasources?.web?.documents || []}
           onInputChange={(e: any, value: any) => {
-            setNewUrl(value);
+            setCurrentInput(value);
             updateUrl(value);
           }}
           onChange={(e: any, value: any) => {
             if (value) {
-              handleAddUrl({ url: value, entireDomain: false });
-
-              setNewUrl('');
+              handleAddUrl(value);
+              setCurrentInput('');
             }
           }}
           selectOnFocus
@@ -213,11 +158,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
             <TextField
               {...params}
               label="URL"
-              value={newUrl}
-              // onChange={(e) => {
-              //   setNewUrl(e.target.value);
-              //   updateUrl(e.target.value);
-              // }}
+              value={currentInput}
               sx={{ minHeight: 56 }}
               variant="outlined"
               fullWidth
@@ -229,7 +170,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
       {domains?.length ? (
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 1 }}>
           {domains.map(({ domain, pageCount }) =>
-            filters?.datasources?.web?.domain?.includes(domain) ? null : (
+            filters?.datasources?.web?.domains?.includes(domain) ? null : (
               <DomainCard
                 key={`domain-card-${domain}`}
                 domain={domain}
@@ -241,15 +182,9 @@ const SourcesWeb: React.FC<{}> = ({}) => {
         </Box>
       ) : null}
 
-      {getUrlDomain(newUrl) &&
-      !domains?.length &&
-      !filters?.datasources?.web?.domain?.includes(getUrlDomain(newUrl)!) ? (
+      {urlDomain && !domains?.length && !filters?.datasources?.web?.domains?.includes(urlDomain) ? (
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 1 }}>
-          <DomainCard
-            domain={getUrlDomain(newUrl)}
-            urls={[]}
-            onClick={() => addDomainFilter(getUrlDomain(newUrl))}
-          />
+          <DomainCard domain={urlDomain} urls={[]} onClick={() => addDomainFilter(urlDomain)} />
         </Box>
       ) : null}
 

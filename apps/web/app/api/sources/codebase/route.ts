@@ -11,6 +11,13 @@ export async function GET(req: Request, res: Response) {
 
   // TODO: Ensure this only shows documents are owned by the user
   const filteredRecords = await prisma.document.findMany({
+    select: {
+      id: true,
+      metadata: true,
+      status: true,
+      title: true,
+      url: true
+    },
     where: {
       source: 'codebase',
       permissions: { some: { organization: { users: { some: { id: session?.user?.id } } } } }

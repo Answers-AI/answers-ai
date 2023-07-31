@@ -283,6 +283,9 @@ importers:
       utils:
         specifier: workspace:*
         version: link:../../packages/utils
+      uuid:
+        specifier: ^9.0.0
+        version: 9.0.0
     devDependencies:
       '@babel/core':
         specifier: ^7.21.4
@@ -308,6 +311,9 @@ importers:
       '@types/react-dom':
         specifier: ^18.2.7
         version: 18.2.7
+      '@types/uuid':
+        specifier: ^9.0.1
+        version: 9.0.1
       copy-webpack-plugin:
         specifier: ^11.0.0
         version: 11.0.0(webpack@5.88.2)

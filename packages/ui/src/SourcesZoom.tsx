@@ -27,8 +27,8 @@ const SourcesZoom: React.FC<{}> = ({}) => {
         <Autocomplete
           label={'Choose transcript'}
           placeholder={`My zoom meeting`}
-          value={filters?.datasources?.[source]?.url || []}
-          onChange={(value) => updateFilter({ datasources: { [source]: { url: value } } })}
+          value={filters?.datasources?.[source]?.documents || []}
+          onChange={(value) => updateFilter({ datasources: { [source]: { documents: value } } })}
           getOptionLabel={(option) => option?.title ?? option?.url}
           options={sources ?? []}
           onFocus={() => mutate()}

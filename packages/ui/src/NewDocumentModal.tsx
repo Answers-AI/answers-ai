@@ -11,6 +11,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import SnackMessage from './SnackMessage';
+import { useAnswers } from './AnswersContext';
+import { DataSourcesFilters } from 'types';
 
 interface IFormInput {
   title: string;
@@ -31,6 +33,7 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
   const [loading, setLoading] = useState(false);
   const [theMessage, setTheMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const { updateFilter, filters } = useAnswers();
   const {
     register,
     handleSubmit,
@@ -49,8 +52,14 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
     setTheMessage('Indexing your text');
     setLoading(true);
     try {
-      await axios.post('/api/sync/file', data);
-      setTheMessage('Text indexed successfully');
+      const res = await axios.post('/api/sync/file', data);
+      if (res.data.file) {
+        const documents =
+          (filters?.datasources?.[source as keyof DataSourcesFilters] as any)?.documents ?? [];
+        updateFilter({
+          datasources: { [source]: { documents: [...documents, res.data.file] } }
+        });
+      }
       handleClose();
       onSave();
     } catch (err: any) {

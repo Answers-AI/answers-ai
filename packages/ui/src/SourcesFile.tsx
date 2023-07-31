@@ -27,8 +27,10 @@ const SourcesFile: React.FC<{}> = ({}) => {
         <Autocomplete
           label={'Choose file'}
           placeholder={`My custom file`}
-          value={filters?.datasources?.file?.url!}
-          onChange={(value) => updateFilter({ datasources: { file: { url: value } } })}
+          value={filters?.datasources?.file?.documents!}
+          onChange={(value) => {
+            updateFilter({ datasources: { file: { documents: value } } });
+          }}
           getOptionLabel={(option) => option?.title ?? option?.url}
           options={sources ?? []}
           onFocus={() => mutate()}

@@ -52,13 +52,14 @@ const SourcesDocument: React.FC<{}> = ({}) => {
       const documentName = document.name;
 
       let signedUrl;
+      let url;
       try {
         setTheMessage(`Verifying "${documentName}"`);
         const presignedUrlResponse = await axios.post('/api/aws/presigned-url', { documentName });
         if (presignedUrlResponse.data.status === 'error') {
           throw new Error(presignedUrlResponse.data.message);
         }
-        signedUrl = presignedUrlResponse.data.signedUrl;
+        ({ signedUrl, url } = presignedUrlResponse.data);
       } catch (err: any) {
         setTheMessage(`Error presigning "${documentName}": ${err.message}`);
         console.error(err);
@@ -82,11 +83,12 @@ const SourcesDocument: React.FC<{}> = ({}) => {
 
       try {
         setTheMessage(`Indexing "${documentName}"`);
-        const syncResponse = await axios.post(`/api/sync/document`, { documentName });
+        const syncResponse = await axios.post(`/api/sync/document`, { documentName, url });
         if (syncResponse.data.status === 'error') {
           throw new Error(syncResponse.data.message);
         }
-        setTheMessage(`${documentName} successfully indexed.`);
+        updateFilter({ datasources: { document: { documents: [syncResponse.data.document] } } });
+
         setTimeout(() => {
           setTheMessage('');
         }, 3000);
@@ -98,12 +100,12 @@ const SourcesDocument: React.FC<{}> = ({}) => {
 
       try {
         const newDocuments = [
-          ...(filters?.datasources?.document?.url ?? []),
+          ...(filters?.datasources?.document?.documents ?? []),
           { title: documentName, url: slugify(documentName) } as Document
         ];
 
         updateFilter({
-          datasources: { document: { url: newDocuments } }
+          datasources: { document: { documents: newDocuments } }
         });
       } catch (err: any) {
         setTheMessage(`Error updating filteers: ${err.message}`);
@@ -125,8 +127,8 @@ const SourcesDocument: React.FC<{}> = ({}) => {
         <AutocompleteSelect
           label={'Choose document'}
           placeholder={`My custom document`}
-          value={filters?.datasources?.document?.url ?? []}
-          onChange={(value) => updateFilter({ datasources: { document: { url: value } } })}
+          value={filters?.datasources?.document?.documents ?? []}
+          onChange={(value) => updateFilter({ datasources: { document: { documents: value } } })}
           getOptionLabel={(option) => option?.title ?? option?.url}
           options={sources ?? []}
           onFocus={() => mutate()}

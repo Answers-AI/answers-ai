@@ -119,15 +119,14 @@ export interface SlackFilters {
   channelId?: string[];
 }
 
-export interface WebUrlType {
+export interface WebUrlType extends Document {
   inputValue?: string;
-  url: string;
   entireDomain?: boolean;
 }
 export interface WebFilters {
   cleanedUrl?: string[];
-  url?: WebUrlType[];
-  domain?: string[];
+  documents?: WebUrlType[];
+  domains?: string[];
 }
 
 export interface AlgoliaFilters {
@@ -163,28 +162,22 @@ export interface AirtableFilters {
 }
 
 export interface CodebaseFilters {
-  repo?: Document[];
-  path?: string[];
-}
-
-export interface DocumentUrlType {
-  title: string;
-  url?: string;
+  documents?: Document[];
 }
 
 export interface DocumentFilters {
-  url?: Document[];
+  documents?: Document[];
 }
 
 export interface ZoomFilters {
-  url?: Document[];
+  documents?: Document[];
 }
 
 export interface YoutubeFilters {
-  url?: Document[];
+  documents?: Document[];
 }
 export interface FileFilters {
-  url?: Document[];
+  documents?: Document[];
 }
 
 export interface DataSourcesFilters {

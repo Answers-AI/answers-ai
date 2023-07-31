@@ -2,13 +2,8 @@ import { getAppSettings } from '@ui/getAppSettings';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
 import { inngest } from '@utils/ingest/client';
-import { getUniqueUrls } from '@utils/getUniqueUrls';
 import { NextResponse } from 'next/server';
-
-interface RequestBody {
-  url: string;
-  urls?: string[];
-}
+import { prisma } from '@db/client';
 
 export async function POST(req: Request, res: NextResponse) {
   const appSettings = await getAppSettings();
@@ -17,16 +12,41 @@ export async function POST(req: Request, res: NextResponse) {
 
   const user = session?.user;
 
-  const { urls, byDomain } = await req.json();
-  const uniqueUrls = getUniqueUrls(urls);
+  const { url, byDomain } = await req.json();
+
+  let web: any;
+
+  if (!byDomain) {
+    web = await prisma.document.upsert({
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        url: true
+      },
+      where: { url },
+      create: { url, source: 'web' },
+      update: { url, source: 'web' }
+    });
+  }
 
   await inngest.send({
     v: '1',
     ts: new Date().valueOf(),
     name: 'web/urls.sync',
     user,
-    data: { appSettings, urls: uniqueUrls, byDomain: !!byDomain }
+    data: { appSettings, urls: [url], byDomain: !!byDomain }
   });
 
-  return NextResponse.json({ status: 'ok' });
+  return NextResponse.json(
+    web
+      ? {
+          web
+        }
+      : {
+          web: {
+            domains: [url]
+          }
+        }
+  );
 }
