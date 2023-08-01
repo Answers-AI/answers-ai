@@ -74,10 +74,10 @@ interface AnswersContextType {
   setError: any;
   setChatId: any;
   setJourneyId: any;
-  setSidekick: any;
+  setSidekick: (arg: SetStateAction<Sidekick>) => void;
   sidekick?: Sidekick;
   gptModel: string;
-  setGptModel: any;
+  setGptModel: (arg: SetStateAction<string>) => void;
   sendMessageFeedback: (args: Partial<MessageFeedback>) => void;
 }
 // @ts-ignore
