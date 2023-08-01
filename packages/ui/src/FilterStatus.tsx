@@ -12,23 +12,23 @@ export const FilterStatus = ({ document }: { document: Document }) => {
   const [status, setStatus] = useState(document.status);
 
   const [urlCount, setUrlCount] = useState(0);
-  const [remainingPolls, setRemainingPolls] = useState(5);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const remainingPollsRef = useRef<number>(10);
 
   const pollStatus = useCallback(async () => {
     try {
-      if (document.source === 'web' && !document.status && document.url && remainingPolls > 0) {
-        const {
-          data: { count }
-        } = await axios.get(`/api/sources/web/${encodeURIComponent(document.url)}/count`);
+      if (document.source === 'web' && !document.status && document.url) {
+        if (remainingPollsRef.current > 0) {
+          const {
+            data: { count }
+          } = await axios.get(`/api/sources/web/${encodeURIComponent(document.url)}/count`);
 
-        if (count === urlCount) {
-          setRemainingPolls(remainingPolls - 1);
+          remainingPollsRef.current -= 1;
+
+          setUrlCount(count);
+          timeoutRef.current = setTimeout(pollStatus, POLLING_INTERVAL);
         }
-
-        setUrlCount(count);
-        timeoutRef.current = setTimeout(pollStatus, POLLING_INTERVAL);
       } else {
         const { data } = await axios.get(`/api/sources/status/${document.id}`);
         const { status: polledStatus } = data;
@@ -42,7 +42,7 @@ export const FilterStatus = ({ document }: { document: Document }) => {
     } catch (error) {
       console.error('Error occurred while polling status:', error);
     }
-  }, [document.id, document.source, document.status, document.url, remainingPolls, urlCount]);
+  }, [document.id, document.source, document.status, document.url]);
 
   useEffect(() => {
     if (

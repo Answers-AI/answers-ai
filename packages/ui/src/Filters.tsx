@@ -10,8 +10,8 @@ import { useAnswers } from './AnswersContext';
 import { AnswersFilters, AppService } from 'types';
 import { FilterStatus } from './FilterStatus';
 
-export const Filters = ({ filters, sx }: { filters: AnswersFilters; sx?: any }) => {
-  const { appSettings, updateFilter } = useAnswers();
+export const Filters = ({ sx }: { sx?: any }) => {
+  const { filters, appSettings, updateFilter } = useAnswers();
 
   const services: { [key: string]: AppService } = useMemo(
     () =>

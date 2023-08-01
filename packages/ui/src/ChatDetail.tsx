@@ -118,7 +118,7 @@ export const ChatDetail = ({
                 {!showFilters ? (
                   <Tooltip
                     PopperProps={{ placement: 'top-end' }}
-                    title={!Object.keys(services)?.length ? null : <Filters filters={filters} />}>
+                    title={!Object.keys(services)?.length ? null : <Filters />}>
                     <Button
                       size="large"
                       color="inherit"

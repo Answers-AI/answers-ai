@@ -42,7 +42,13 @@ const sourceConfigs: Partial<Record<SourceType, SourceConfig[]>> = {
       transform: getUniqueUrls
     }
   ],
-  codebase: [defaultSourceConfig],
+  codebase: [
+    {
+      objectName: 'documents',
+      sourceField: 'title',
+      targetField: 'repo'
+    }
+  ],
   file: [defaultSourceConfig],
   document: [defaultSourceConfig],
   youtube: [defaultSourceConfig],
