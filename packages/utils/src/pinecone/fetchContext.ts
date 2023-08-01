@@ -123,6 +123,8 @@ function mapFiltersToQueries(data: AnswersFilters, organizationId?: string) {
               ? { namespace: `org-${organizationId}` }
               : {}),
             filter: {
+              // TODO: in the future, we may want to also filter based on the model. not used right now
+              // model: { "$in": [data.model] }
               source,
               [configItem.targetField]: {
                 $in: uniqueValues
