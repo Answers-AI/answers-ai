@@ -123,11 +123,6 @@ export interface WebUrlType extends Document {
   inputValue?: string;
   entireDomain?: boolean;
 }
-export interface WebFilters {
-  cleanedUrl?: string[];
-  documents?: WebUrlType[];
-  domains?: string[];
-}
 
 export interface AlgoliaFilters {
   index?: string[];
@@ -161,23 +156,97 @@ export interface AirtableFilters {
   view?: string[];
 }
 
-export interface CodebaseFilters {
-  documents?: Document[];
+export interface DocumentFilter {
+  documentId?: string;
+  label: string;
+  status: string;
+  value: string;
+  count?: number;
 }
 
+export interface SourceFilterValue {
+  sources: DocumentFilter[];
+}
+export interface CodebaseFilters {
+  repo?: SourceFilterValue;
+}
+export interface WebFilters {
+  url?: SourceFilterValue;
+  domain?: SourceFilterValue;
+}
+
+const filters: AnswersFilters = {
+  datasources: {
+    file: {
+      url: {
+        sources: [
+          {
+            label: 'test', // Always the title or the value
+            value: 'file://smome-file-url',
+            status: 'synced'
+          },
+          {
+            label: 'test-2',
+            value: 'file://smome-file-url-2',
+            status: 'synced'
+          }
+        ]
+      }
+    },
+    web: {
+      url: {
+        sources: [
+          {
+            label: 'A single page',
+            value: 'domain.com/a-single-page',
+            status: 'synced'
+          },
+          {
+            label: 'Another page',
+            value: 'domain.com/another-page',
+            status: 'synced'
+          }
+        ]
+      },
+      domain: {
+        sources: [
+          {
+            label: 'domain.com',
+            value: 'domain.com',
+            status: 'synced',
+            count: 1000
+          }
+        ]
+      }
+    },
+    codebase: {
+      repo: {
+        sources: [
+          {
+            label: '@answerai/daisy-monorepo-v0.1.0-main',
+            value: '@answerai/daisy-monorepo-v0.1.0-main',
+            status: 'synced',
+            count: 10000
+          }
+        ]
+      }
+    }
+  }
+};
+
 export interface DocumentFilters {
-  documents?: Document[];
+  url?: SourceFilterValue;
 }
 
 export interface ZoomFilters {
-  documents?: Document[];
+  url?: SourceFilterValue;
 }
 
 export interface YoutubeFilters {
-  documents?: Document[];
+  url?: SourceFilterValue;
 }
 export interface FileFilters {
-  documents?: Document[];
+  url?: SourceFilterValue;
 }
 
 export interface DataSourcesFilters {
