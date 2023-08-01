@@ -1,16 +1,6 @@
-import { Configuration, OpenAIApi } from 'openai';
 import { PineconeClient, QueryRequest } from '@pinecone-database/pinecone';
 
 export const pinecone = new PineconeClient();
-
-const initializeOpenAI = () => {
-  const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY
-  });
-  return new OpenAIApi(configuration);
-};
-
-export const openai = initializeOpenAI();
 
 export const pineconeQuery = async (
   embeddings: number[],

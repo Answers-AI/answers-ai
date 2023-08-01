@@ -142,7 +142,7 @@ export async function POST(req: Request) {
         prompt,
         chat: chat as any,
         contextDocuments,
-        filters: pineconeFilters,
+        filters: pineconeFilters as any,
         context,
         completionRequest,
         ...(IS_DEVELOPMENT && {
