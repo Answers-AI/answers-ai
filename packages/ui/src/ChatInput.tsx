@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef, ChangeEvent } from 'react';
+import React, { useState, useEffect, useRef, ChangeEvent, useCallback } from 'react';
 
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -65,11 +65,13 @@ const ChatInput = ({
     setInputValue('');
   };
 
-  const handleSidekickSelected = (value: Sidekick) => {
+  const handleSidekickSelected = useCallback((value: Sidekick) => {
     setPlaceholder(value?.placeholder ?? defaultPlaceholderValue);
     setSidekick(value);
-    setGptModel(value.aiModel || gptModel);
-  };
+    if (value.aiModel) {
+      setGptModel(value.aiModel);
+    }
+  }, []);
 
   const handleGptModelSelected = (event: SelectChangeEvent<string>) => {
     setGptModel(event.target.value as string);
