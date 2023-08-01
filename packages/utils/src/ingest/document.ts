@@ -308,6 +308,14 @@ export const processDocument: EventVersionHandler<{
       organizationId = data.organizationId;
     }
 
+    const document = await prisma.document.findUnique({
+      where: { id: documentId }
+    });
+
+    if (!document) {
+      throw new Error('No document found');
+    }
+
     const documentExtension = path.extname(documentName).slice(1);
 
     const s3Client = new S3Client({
@@ -320,7 +328,7 @@ export const processDocument: EventVersionHandler<{
 
     const command = new GetObjectCommand({
       Bucket: AWS_S3_BUCKET,
-      Key: documentName
+      Key: document.url
     });
 
     const s3Response = await s3Client.send(command);

@@ -87,7 +87,15 @@ const SourcesDocument: React.FC<{}> = ({}) => {
         if (syncResponse.data.status === 'error') {
           throw new Error(syncResponse.data.message);
         }
-        updateFilter({ datasources: { document: { documents: [syncResponse.data.document] } } });
+        const newDocuments = [
+          ...(filters?.datasources?.document?.documents ?? []),
+          syncResponse.data.document
+        ];
+
+        updateFilter({
+          datasources: { document: { documents: newDocuments } }
+        });
+        updateFilter({ datasources: { document: { documents: newDocuments } } });
 
         setTimeout(() => {
           setTheMessage('');
@@ -96,20 +104,6 @@ const SourcesDocument: React.FC<{}> = ({}) => {
         setTheMessage(`Error indexing "${documentName}": ${err.message}`);
         console.error(err);
         break;
-      }
-
-      try {
-        const newDocuments = [
-          ...(filters?.datasources?.document?.documents ?? []),
-          { title: documentName, url: slugify(documentName) } as Document
-        ];
-
-        updateFilter({
-          datasources: { document: { documents: newDocuments } }
-        });
-      } catch (err: any) {
-        setTheMessage(`Error updating filteers: ${err.message}`);
-        console.error(err);
       }
     }
   }
