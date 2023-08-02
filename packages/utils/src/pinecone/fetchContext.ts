@@ -11,56 +11,20 @@ import getOrganizationContextFields from '../utilities/getOrganizationContextFie
 import getMaxTokensByModel from '../utilities/getMaxTokensByModel';
 import { getUniqueUrls } from '../getUniqueUrls';
 
-import { AnswersFilters, Message, User, Sidekick, Organization, DataSourcesFilters } from 'types';
+import {
+  AnswersFilters,
+  Message,
+  User,
+  Sidekick,
+  Organization,
+  DocumentFilter,
+  DataSourcesFilters
+} from 'types';
 
 const PUBLIC_SOURCES = ['web', 'drive', 'github', 'notion', 'airtable'];
 const EMBEDDING_MODEL = 'text-embedding-ada-002';
 const DEFAULT_THRESHOLD = 0.68;
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
-
-interface SourceConfig {
-  objectName: string;
-  sourceField?: string; // if no source field, read the value directly
-  targetField: string;
-  transform?: (values: string[]) => string[];
-}
-
-const defaultSourceConfig: SourceConfig = {
-  objectName: 'documents',
-  sourceField: 'url',
-  targetField: 'url'
-};
-
-type SourceType = keyof DataSourcesFilters;
-
-const sourceConfigs: Partial<Record<SourceType, SourceConfig[]>> = {
-  web: [
-    { ...defaultSourceConfig, transform: getUniqueUrls },
-    {
-      objectName: 'domains',
-      targetField: 'domain',
-      transform: getUniqueUrls
-    }
-  ],
-  codebase: [
-    {
-      objectName: 'documents',
-      sourceField: 'title',
-      targetField: 'repo'
-    }
-  ],
-  file: [defaultSourceConfig],
-  document: [defaultSourceConfig],
-  youtube: [defaultSourceConfig],
-  zoom: [defaultSourceConfig],
-  confluence: [
-    {
-      objectName: 'spaces',
-      sourceField: 'id',
-      targetField: 'spaceId'
-    }
-  ]
-};
 
 type PineconeQueryObject = {
   namespace?: string;
@@ -74,68 +38,39 @@ type PineconeQueryObject = {
   topK: 500;
 };
 
-function getUniqueValues(source: SourceType, data: any): string[] {
-  const configs = sourceConfigs[source];
-  if (!configs?.length) {
-    return [];
-  }
-
-  const uniqueValues: string[] = [];
-  configs.forEach((configItem) => {
-    const documents = data[configItem.objectName];
-    if (!documents || !Array.isArray(documents)) {
-      return;
-    }
-
-    let values = documents
-      .map((doc) => (configItem.sourceField ? doc[configItem.sourceField] : doc))
-      .filter(Boolean);
-
-    if (configItem.transform) {
-      values = configItem.transform(values);
-    }
-
-    uniqueValues.push(...values);
-  });
-
-  return Array.from(new Set(uniqueValues)).map((v) => v.toString().toLowerCase());
-}
-
 function mapFiltersToQueries(data: AnswersFilters, organizationId?: string) {
   const result: PineconeQueryObject[] = [];
 
   for (const source in data.datasources) {
-    if (Object.prototype.hasOwnProperty.call(data.datasources, source)) {
-      const uniqueValues = getUniqueValues(
-        source as SourceType,
-        data.datasources?.[source as SourceType]
-      );
-
-      const configs = sourceConfigs[source as SourceType];
-
-      if (configs?.length) {
-        configs.forEach((configItem) => {
-          if (!uniqueValues.length) {
-            return;
-          }
-          const pineconeQueryObject: PineconeQueryObject = {
-            ...(!PUBLIC_SOURCES.includes(source) && organizationId
-              ? { namespace: `org-${organizationId}` }
-              : {}),
-            filter: {
-              // TODO: in the future, we may want to also filter based on the model. not used right now
-              // model: { "$in": [data.model] }
-              source,
-              [configItem.targetField]: {
-                $in: uniqueValues
-              }
-            },
-            topK: 500
-          };
-
-          result.push(pineconeQueryObject);
-        });
+    const filterRecords: { [filterKey: string]: { $in: string[] } } = {};
+    Object.entries(data.datasources[source as keyof DataSourcesFilters] ?? {}).forEach(
+      ([filterKey, obj]) => {
+        const sources: DocumentFilter[] = obj?.sources || [];
+        let sourceValues = sources.map((source) => source.value);
+        if (source === 'web') {
+          sourceValues = getUniqueUrls(sourceValues);
+        }
+        if (sourceValues.length > 0) {
+          filterRecords[filterKey] = { $in: sourceValues };
+        }
       }
+    );
+
+    if (Object.keys(filterRecords).length > 0) {
+      const pineconeQueryObject: PineconeQueryObject = {
+        ...(!PUBLIC_SOURCES.includes(source) && organizationId
+          ? { namespace: `org-${organizationId}` }
+          : {}),
+        filter: {
+          // TODO: in the future, we may want to also filter based on the model. not used right now
+          // model: { "$in": [data.model] }
+          source,
+          ...filterRecords
+        },
+        topK: 500
+      };
+
+      result.push(pineconeQueryObject);
     }
   }
 

@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useAnswers } from './AnswersContext';
 
-import { AnswersFilters, AppService } from 'types';
+import { AppService, DocumentFilter, SourceFilters } from 'types';
 import { FilterStatus } from './FilterStatus';
 
 export const Filters = ({ sx }: { sx?: any }) => {
@@ -20,16 +20,8 @@ export const Filters = ({ sx }: { sx?: any }) => {
     [appSettings?.services]
   );
 
-  const datasources = useMemo(
-    () =>
-      !filters?.datasources
-        ? null
-        : Object.entries(filters?.datasources)?.filter(([source, sourceFilters]) => {
-            return (
-              sourceFilters &&
-              Object.values(sourceFilters)?.some((values) => (values as any[])?.length !== 0)
-            );
-          }),
+  const datasources: [string, SourceFilters][] = useMemo(
+    () => Object.entries(filters?.datasources ?? {}) ?? [],
     [filters?.datasources]
   );
 
@@ -53,11 +45,11 @@ export const Filters = ({ sx }: { sx?: any }) => {
               if (!sourceFilters || !Object.keys(sourceFilters).length) return null;
               return (
                 <React.Fragment key={source}>
-                  {Object.entries(sourceFilters)?.map(([field, values]) => (
-                    <React.Fragment key={`${source}_${field}`}>
-                      {!values
-                        ? null
-                        : (values as any[])?.map((value: any) => (
+                  {Object.entries(sourceFilters)?.map(([field, { sources }]) => {
+                    return (
+                      sources.length && (
+                        <React.Fragment key={`${source}_${field}`}>
+                          {sources.map((documentFilter: DocumentFilter) => (
                             <Button
                               color="inherit"
                               variant="text"
@@ -65,7 +57,9 @@ export const Filters = ({ sx }: { sx?: any }) => {
                               sx={{
                                 width: '100%',
                                 borderRadius: '24px',
-                                textTransform: 'none'
+                                textTransform: 'none',
+                                display: 'flex',
+                                alignItems: 'center'
                               }}
                               startIcon={
                                 <Avatar
@@ -82,17 +76,18 @@ export const Filters = ({ sx }: { sx?: any }) => {
                                         ((filters?.datasources as any)?.[source]?.[
                                           field
                                         ] as any[]) ?? []
-                                      )?.filter((v) => JSON.stringify(v) !== JSON.stringify(value))
+                                      )?.filter((v) => v.value !== documentFilter.value)
                                     }
                                   }
                                 });
                               }}
                               endIcon={
-                                <>
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                  <FilterStatus documentFilter={documentFilter} source={source} />
                                   <ClearIcon />
-                                </>
+                                </Box>
                               }
-                              key={`${field}:${value?.title}:${value?.name}:${value?.id}${value.url}`}>
+                              key={`${source}:${field}:${documentFilter.value}`}>
                               <Typography
                                 variant="body2"
                                 sx={{
@@ -103,21 +98,14 @@ export const Filters = ({ sx }: { sx?: any }) => {
                                   textOverflow: 'ellipsis',
                                   whiteSpace: 'nowrap'
                                 }}>
-                                {value?.title ??
-                                  value?.name ??
-                                  value.url ??
-                                  value?.id ??
-                                  JSON.stringify(value)}
+                                {documentFilter.value}
                               </Typography>
-                              <FilterStatus
-                                document={
-                                  typeof value === 'string' ? { source: 'web', url: value } : value
-                                }
-                              />
                             </Button>
                           ))}
-                    </React.Fragment>
-                  ))}
+                        </React.Fragment>
+                      )
+                    );
+                  })}
                 </React.Fragment>
               );
             })}

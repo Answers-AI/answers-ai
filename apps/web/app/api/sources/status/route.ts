@@ -1,0 +1,99 @@
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { prisma } from '@db/client';
+import { authOptions } from '@ui/authOptions';
+import { respond401 } from '@utils/auth/respond401';
+
+export async function GET(req: Request) {
+  const session = await getServerSession(authOptions);
+  const userId = session?.user?.id;
+  if (!userId) return respond401();
+
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get('id');
+  const source = searchParams.get('source');
+  const value = searchParams.get('value');
+
+  if (!source) {
+    return NextResponse.json({ error: 'A source was not provided' }, { status: 422 });
+  }
+
+  if (!id && !value) {
+    return NextResponse.json(
+      { error: 'A document ID, or value was not provided' },
+      { status: 422 }
+    );
+  }
+
+  let out: { error?: string; status?: string; count: number } = {
+    error: 'No status found',
+    count: 0
+  };
+
+  if (id) {
+    const document = await prisma.document.findFirst({
+      where: {
+        id,
+        source,
+        permissions: { some: { organization: { users: { some: { id: userId } } } } }
+      },
+      select: {
+        status: true
+      }
+    });
+    if (document) {
+      out = {
+        status: document.status,
+        count: 1
+      };
+    }
+  } else if (source === 'web') {
+    const [totalCount, syncedCount] = await Promise.all([
+      await prisma.document.count({
+        where: {
+          domain: value,
+          source,
+          status: {
+            not: 'error'
+          }
+        }
+      }),
+      await prisma.document.count({
+        where: {
+          source,
+          domain: value,
+          status: 'synced'
+        }
+      })
+    ]);
+    out = {
+      count: syncedCount,
+      status: syncedCount === totalCount ? 'synced' : 'pending'
+    };
+  } else if (source === 'codebase') {
+    const [totalCount, syncedCount] = await Promise.all([
+      await prisma.document.count({
+        where: {
+          title: value,
+          source,
+          status: {
+            not: 'error'
+          }
+        }
+      }),
+      await prisma.document.count({
+        where: {
+          title: value,
+          source,
+          status: 'synced'
+        }
+      })
+    ]);
+    out = {
+      count: syncedCount,
+      status: syncedCount === totalCount ? 'synced' : 'pending'
+    };
+  }
+
+  return NextResponse.json(out);
+}

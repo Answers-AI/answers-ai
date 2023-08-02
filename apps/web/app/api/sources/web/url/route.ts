@@ -3,12 +3,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { respond401 } from '@utils/auth/respond401';
-import { getUrlDomain } from '@utils/getUrlDomain';
-
-interface DomainInfo {
-  domain: string;
-  pageCount: number;
-}
+import { WebFilters } from 'types';
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
@@ -17,8 +12,6 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const url = searchParams.get('url');
 
-  // TODO: Ensure this only shows documents are owned by the user
-  // For now only access to web which is stored in the PINECONE_INDEX_NAMESPACE env variable
   const filteredRecords = await prisma.document.findMany({
     where: {
       source: 'web',
@@ -26,8 +19,7 @@ export async function GET(req: Request) {
         url: {
           contains: url
         }
-      }),
-      permissions: { some: { organization: { users: { some: { id: session?.user?.id } } } } }
+      })
     },
     select: {
       id: true,
@@ -38,21 +30,21 @@ export async function GET(req: Request) {
     take: 100
   });
 
-  let domains: DomainInfo[] = [];
+  const sources = filteredRecords?.map((record) => ({ ...record, repo: record.title }));
 
-  if (url) {
-    const domain = getUrlDomain(url);
-    if (domain) {
-      const domainCount = await prisma.document.count({ where: { source: 'web', domain } });
-
-      domains = [{ domain, pageCount: domainCount }];
+  const web: WebFilters = {
+    url: {
+      sources: filteredRecords.map((document) => ({
+        documentId: document.id,
+        label: document.url,
+        value: document.url,
+        status: document.status,
+        count: 1
+      }))
     }
-  }
-
-  const sources = filteredRecords?.map((record) => ({...record, repo: record.title}));
+  };
 
   return NextResponse.json({
-    sources,
-    domains
+    web
   });
 }

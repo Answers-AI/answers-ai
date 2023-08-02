@@ -17,6 +17,8 @@ interface Props<T> {
   options: T[];
   value: T[];
   onChange?: (value: T[]) => void;
+  onInputChange?: (event: React.SyntheticEvent, value: string) => void;
+  inputValue?: string;
   onFocus?: React.FocusEventHandler<HTMLDivElement>;
   getOptionLabel?: (value: T) => string;
   // getOptionValue?: (value: T) => string;
@@ -89,8 +91,8 @@ export default function AutocompleteSelect<T>({
         //   ))
         // }
         // @ts-expect-error
-        renderOption={({ key, ...itemProps }, option: any, { selected }) => (
-          <li key={`${key}-${option.url}`} {...itemProps}>
+        renderOption={({ key, ...itemProps }, option, { selected }) => (
+          <li key={(option as any).value || key} {...itemProps}>
             <Checkbox
               icon={icon}
               checkedIcon={checkedIcon}

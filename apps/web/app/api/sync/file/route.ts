@@ -4,6 +4,7 @@ import { inngest } from '@utils/ingest/client';
 import { prisma } from '@db/client';
 import { NextResponse } from 'next/server';
 import { getUniqueDocumentPath } from '@utils/getUniqueDocumentPath';
+import { DocumentFilter } from 'types';
 
 export async function POST(req: Request, res: NextResponse) {
   const session = await getServerSession(authOptions);
@@ -51,5 +52,13 @@ export async function POST(req: Request, res: NextResponse) {
     }
   });
 
-  return NextResponse.json({ file });
+  const fileFilter: DocumentFilter = {
+    documentId: file.id,
+    label: title,
+    value: url,
+    status: file.status,
+    count: 1
+  };
+
+  return NextResponse.json(fileFilter);
 }

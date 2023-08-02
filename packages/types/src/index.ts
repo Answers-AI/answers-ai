@@ -146,11 +146,7 @@ export type SourceFilters =
   | ConfluenceFilters
   | AirtableFilters
   | CodebaseFilters
-  | DocumentFilters
-  | FileFilters
-  | ZoomFilters
-  | YoutubeFilters;
-
+  | StandardDocumentUrlFilters;
 export interface AirtableFilters {
   table?: string[];
   view?: string[];
@@ -173,6 +169,34 @@ export interface CodebaseFilters {
 export interface WebFilters {
   url?: SourceFilterValue;
   domain?: SourceFilterValue;
+}
+
+export interface StandardDocumentUrlFilters {
+  url?: SourceFilterValue;
+}
+
+export interface StandardDocumentDataSourcesFilters {
+  document?: StandardDocumentUrlFilters;
+  zoom?: StandardDocumentUrlFilters;
+  youtube?: StandardDocumentUrlFilters;
+  file?: StandardDocumentUrlFilters;
+}
+
+export interface DataSourcesFilters extends StandardDocumentDataSourcesFilters {
+  user?: UserFilters;
+  jira?: JiraFilters;
+  slack?: SlackFilters;
+  web?: WebFilters;
+  openapi?: OpenApiFilters;
+  confluence?: ConfluenceFilters;
+  airtable?: AirtableFilters;
+  codebase?: CodebaseFilters;
+}
+export interface AnswersFilters {
+  models?: {
+    [key: string]: string[];
+  };
+  datasources?: DataSourcesFilters;
 }
 
 const filters: AnswersFilters = {
@@ -233,42 +257,6 @@ const filters: AnswersFilters = {
     }
   }
 };
-
-export interface DocumentFilters {
-  url?: SourceFilterValue;
-}
-
-export interface ZoomFilters {
-  url?: SourceFilterValue;
-}
-
-export interface YoutubeFilters {
-  url?: SourceFilterValue;
-}
-export interface FileFilters {
-  url?: SourceFilterValue;
-}
-
-export interface DataSourcesFilters {
-  user?: UserFilters;
-  jira?: JiraFilters;
-  slack?: SlackFilters;
-  web?: WebFilters;
-  openapi?: OpenApiFilters;
-  confluence?: ConfluenceFilters;
-  airtable?: AirtableFilters;
-  codebase?: CodebaseFilters;
-  document?: DocumentFilters;
-  zoom?: ZoomFilters;
-  youtube?: YoutubeFilters;
-  file?: FileFilters;
-}
-export interface AnswersFilters {
-  models?: {
-    [key: string]: string[];
-  };
-  datasources?: DataSourcesFilters;
-}
 
 type Models = {
   jira: string[];

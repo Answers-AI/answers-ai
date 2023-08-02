@@ -3,6 +3,7 @@ import { authOptions } from '@ui/authOptions';
 import { inngest } from '@utils/ingest/client';
 import { NextResponse } from 'next/server';
 import { prisma } from '@db/client';
+import { DocumentFilter } from 'types';
 
 const AWS_S3_BUCKET = process.env.AWS_S3_BUCKET;
 const AWS_S3_REGION = process.env.AWS_S3_REGION;
@@ -70,5 +71,13 @@ export async function POST(req: Request, res: NextResponse) {
     }
   });
 
-  return NextResponse.json({ document });
+  const documentFilter: DocumentFilter = {
+    documentId: document.id,
+    label: documentName,
+    value: url,
+    status: document.status,
+    count: 1
+  };
+
+  return NextResponse.json(documentFilter);
 }

@@ -12,23 +12,28 @@ import { useAnswers } from './AnswersContext';
 import AutocompleteSelect from './AutocompleteSelect';
 import SnackMessage from './SnackMessage';
 
-import { Document } from 'types';
+import { Document, DocumentFilter } from 'types';
 
 const SourcesDocument: React.FC<{}> = ({}) => {
   const source = 'document';
   const { filters, updateFilter } = useAnswers();
-  const { data, mutate } = useSWR<{
-    sources: Document[];
-  }>(`/api/sources/${source}`, (url) => fetch(url).then((res) => res.json()), {
-    dedupingInterval: 1000
-  });
-
-  const { sources } = data || {};
+  const { data: sources, mutate } = useSWR<DocumentFilter[]>(
+    `/api/sources/${source}`,
+    (url) =>
+      fetch(url)
+        .then((res) => res.json())
+        .then((data) => data.sources),
+    {
+      dedupingInterval: 1000
+    }
+  );
 
   const [showDocumentInput, setShowDocumentInput] = useState(true);
   const [theMessage, setTheMessage] = useState('');
 
   const [documents, setDocuments] = useState<FileList | null>();
+
+  const filterDocumentSources = filters?.datasources?.document?.url?.sources ?? [];
 
   function handleDocuments(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
     const newDocs = (e.target as HTMLInputElement).files;
@@ -84,18 +89,15 @@ const SourcesDocument: React.FC<{}> = ({}) => {
       try {
         setTheMessage(`Indexing "${documentName}"`);
         const syncResponse = await axios.post(`/api/sync/document`, { documentName, url });
-        if (syncResponse.data.status === 'error') {
+        if (syncResponse.data?.status === 'error') {
           throw new Error(syncResponse.data.message);
         }
-        const newDocuments = [
-          ...(filters?.datasources?.document?.documents ?? []),
-          syncResponse.data.document
-        ];
+        const newDocuments = [...filterDocumentSources, syncResponse.data];
 
         updateFilter({
-          datasources: { document: { documents: newDocuments } }
+          datasources: { document: { url: { sources: newDocuments } } }
         });
-        updateFilter({ datasources: { document: { documents: newDocuments } } });
+        updateFilter({ datasources: { document: { url: { sources: newDocuments } } } });
 
         setTimeout(() => {
           setTheMessage('');
@@ -121,9 +123,11 @@ const SourcesDocument: React.FC<{}> = ({}) => {
         <AutocompleteSelect
           label={'Choose document'}
           placeholder={`My custom document`}
-          value={filters?.datasources?.document?.documents ?? []}
-          onChange={(value) => updateFilter({ datasources: { document: { documents: value } } })}
-          getOptionLabel={(option) => option?.title ?? option?.url}
+          value={filterDocumentSources}
+          onChange={(value) =>
+            updateFilter({ datasources: { document: { url: { sources: value } } } })
+          }
+          getOptionLabel={(option) => option.label}
           options={sources ?? []}
           onFocus={() => mutate()}
         />
