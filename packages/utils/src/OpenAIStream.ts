@@ -28,17 +28,19 @@ export async function OpenAIStream(
   const { prompt, user, sidekick, chat, context, contextDocuments } = extra;
   let counter = 0;
 
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+  const res = await fetch('https://api.openai.com/v1/chat/completionsasdfasdf', {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${process.env.OPENAI_API_KEY ?? ''}`
     },
     method: 'POST',
     body: JSON.stringify(payload)
-  }).catch((e) => {
-    console.log('OpenAIStream', e);
-    throw e;
   });
+
+  if (!res.ok) {
+    const body = await res.json();
+    throw new Error(body.error.message);
+  }
 
   let answer = '';
   let message;

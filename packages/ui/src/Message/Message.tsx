@@ -411,7 +411,7 @@ export const MessageCard = ({
                 </AccordionSummary>
                 <AccordionDetails>
                   <JsonViewer
-                    rootName=""
+                    rootName="completionRequest"
                     value={completionRequest}
                     theme={'dark'}
                     // defaultInspectDepth={0}

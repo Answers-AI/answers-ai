@@ -17,12 +17,14 @@ const parseMessages = (messages?: any[]) =>
 export const useStreamedResponse = ({
   apiUrl,
   onChunk,
-  onEnd
+  onEnd,
+  onError
 }: // setChat
 {
   apiUrl: string;
   onChunk: (chunk: Message) => void;
   onEnd: (chunk: Message) => void;
+  onError: (err: any) => void;
   // setChat: (chat: Chat) => void;
 }) => {
   const [isStreaming, setIsStreaming] = useState(false);
@@ -58,7 +60,15 @@ export const useStreamedResponse = ({
     });
 
     if (!response.ok) {
-      throw new Error(response.statusText);
+      const body = await response.json();
+      setGeneratedResponse({});
+      setIsStreaming(false);
+
+      if (body.code) {
+        return onError(body);
+      } else {
+        return onError({ code: response.statusText });
+      }
     }
 
     const data = response.body;
@@ -97,5 +107,6 @@ export const useStreamedResponse = ({
     setIsStreaming(false);
     onEnd({ role: 'assistant', content, ...extra });
   };
+
   return { isStreaming, generatedResponse, generateResponse };
 };

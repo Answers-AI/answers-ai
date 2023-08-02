@@ -1,7 +1,7 @@
 import { Message, Sidekick, User, Organization } from 'types';
 import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { countTokens } from '../utilities/countTokens';
-import { renderContext } from '../utilities/renderContext';
+import { renderTemplate } from '../utilities/renderTemplate';
 import getMaxTokensByModel from '../utilities/getMaxTokensByModel';
 import getUserContextFields from '../utilities/getUserContextFields';
 import getOrganizationContextFields from '../utilities/getOrganizationContextFields';
@@ -30,7 +30,7 @@ export async function getCompletionRequest({
   const userContext: Record<string, any> = getUserContextFields(user);
 
   const systemPrompt = sidekick?.systemPromptTemplate
-    ? renderContext(sidekick.systemPromptTemplate, {
+    ? renderTemplate(sidekick.systemPromptTemplate, {
         input,
         context,
         user: userContext,
@@ -39,7 +39,7 @@ export async function getCompletionRequest({
     : '';
 
   const userPrompt = sidekick?.userPromptTemplate
-    ? renderContext(sidekick.userPromptTemplate, {
+    ? renderTemplate(sidekick.userPromptTemplate, {
         userInput: input,
         context,
         user: userContext,

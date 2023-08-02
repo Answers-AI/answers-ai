@@ -5,7 +5,7 @@ import { prisma } from '@db/client';
 
 import OpenAIClient from '../openai/openai';
 import { countTokens } from '../utilities/countTokens';
-import { renderContext } from '../utilities/renderContext';
+import { renderTemplate } from '../utilities/renderTemplate';
 import getUserContextFields from '../utilities/getUserContextFields';
 import getOrganizationContextFields from '../utilities/getOrganizationContextFields';
 import getMaxTokensByModel from '../utilities/getMaxTokensByModel';
@@ -242,7 +242,7 @@ export const fetchContext = async ({
         sidekick?.contextStringRender?.trim() !== '' ? sidekick?.contextStringRender : null;
 
       if (contextStringRender && totalTokens + preTokenCount <= maxTokens) {
-        renderedContext = renderContext(contextStringRender, {
+        renderedContext = renderTemplate(contextStringRender, {
           result: item.metadata,
           organization: organizationContext,
           user: userContext

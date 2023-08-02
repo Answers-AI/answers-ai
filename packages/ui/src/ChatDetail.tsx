@@ -171,7 +171,7 @@ export const ChatDetail = ({
                     <MessageCard
                       id="error"
                       role="assistant"
-                      content={`There was an error completing your request, please try again`}
+                      content={`${error.message} `}
                       error={error}
                     />
 

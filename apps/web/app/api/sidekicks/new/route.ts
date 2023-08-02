@@ -14,24 +14,22 @@ export async function POST(req: Request) {
   const userId = session.user.id;
 
   const data: Sidekick = await req.json();
-  const normalizedSidekick: any = normalizeSidekickForUpdate(data);
 
-  let sidekick;
   try {
-    sidekick = await prisma.sidekick.create({
+    const normalizedSidekick: any = normalizeSidekickForUpdate(data);
+    const sidekick = await prisma.sidekick.create({
       data: {
         ...normalizedSidekick,
         favoritedBy: { connect: { id: userId } },
         createdByUser: { connect: { id: userId } }
       }
     });
-  } catch (error) {
+    return NextResponse.json(sidekick);
+  } catch (error: any) {
     console.log('[POST] error', error);
     return NextResponse.json(
-      { error: 'There was an error creating your sidekick.' },
+      { error: 'There was an error creating your sidekick.', code: error.message },
       { status: 422 }
     );
   }
-
-  return NextResponse.json(sidekick);
 }
