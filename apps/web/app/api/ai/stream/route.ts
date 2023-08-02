@@ -156,6 +156,7 @@ export async function POST(req: Request) {
       headers: { 'Content-Type': 'text/html; charset=utf-8' }
     });
   } catch (error: any) {
+    // TODO: Register Chat errors to Sentry under special tag
     return new Response(
       JSON.stringify({
         message: 'There was an error replying to your message. Please try again.',
