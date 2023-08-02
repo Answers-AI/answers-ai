@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { MouseEventHandler, useState } from 'react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -35,7 +35,7 @@ const JourneyCard = ({ journey }: Props) => {
 
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleMenuOpen = (event) => {
+  const handleMenuOpen = (event: any) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
@@ -44,7 +44,7 @@ const JourneyCard = ({ journey }: Props) => {
     setAnchorEl(null);
   };
 
-  const handleMenuCompleteClick = async (event) => {
+  const handleMenuCompleteClick = async (event: any) => {
     // Perform complete action
     setTheMessage('Completing journey...');
     event.stopPropagation();
@@ -57,15 +57,15 @@ const JourneyCard = ({ journey }: Props) => {
     setTheMessage('Completed Journey!');
   };
 
-  const handleMenuEditClick = (event) => {
+  const handleMenuEditClick = (event: any) => {
     event.stopPropagation();
     router.push(`/journey/${journey.id}/edit`);
     handleMenuClose();
   };
 
-  const handleCardClick = (event) => {
+  const handleCardClick: MouseEventHandler<HTMLDivElement> = (event) => {
     // Check if the target element is the card header
-    if (!event.target.classList.contains('MuiBackdrop-root')) {
+    if (!event?.target?.classList?.contains('MuiBackdrop-root')) {
       // Navigate to the journey using NextLink
       router.push(`/journey/${journey.id}`);
     }

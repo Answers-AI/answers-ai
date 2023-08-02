@@ -31,7 +31,7 @@ const HomepageClientWrapped = ({
   );
 };
 
-const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
+const HomepageClient = ({ journeys }: { journeys?: Journey[] }) => {
   return (
     <Box p={8}>
       <Image
