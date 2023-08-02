@@ -14,6 +14,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import WifiTetheringIcon from '@mui/icons-material/WifiTethering';
 import BusinessIcon from '@mui/icons-material/Business';
 import UserIcon from '@mui/icons-material/ManageAccounts';
+import FolderIcon from '@mui/icons-material/Folder';
 
 import closedMixin from './theme/closedMixin';
 import openedMixin from './theme/openedMixin';
@@ -51,6 +52,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     })
   })
 );
+
 export interface Setting {
   id: string;
   icon: any;
@@ -75,19 +77,8 @@ const DEFAULT_SETTINGS = [
     link: '/settings/organization',
     icon: <BusinessIcon />
   },
-  { id: 'user-icon', title: 'User', link: '/settings/user', icon: <UserIcon /> }
-  // {
-  //   id: 'general',
-  //   link: '/settings/general',
-  //   title: 'general',
-  //   icon: <SettingsIcon />
-  // },
-  // {
-  //   id: 'members',
-  //   link: '/settings/members',
-  //   title: 'members',
-  //   icon: <BusinessIcon />
-  // }
+  { id: 'user-icon', title: 'User', link: '/settings/user', icon: <UserIcon /> },
+  { id: 'sync-icon', title: 'Documents', link: '/settings/sync-status', icon: <FolderIcon /> }
 ];
 export default function SettingsDrawer({
   settings = DEFAULT_SETTINGS,
@@ -105,11 +96,7 @@ export default function SettingsDrawer({
           transition: '.2s',
           paddingTop: 8,
           ...(open ? { opacity: 0 } : { opacity: 1, transitionDelay: '.25s' })
-        }}>
-        {/* <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
-          {!open ? <Add /> : <ChevronLeftIcon />}
-        </IconButton> */}
-      </DrawerHeader>
+        }}></DrawerHeader>
       <Drawer
         sx={{
           'flexShrink': 0,
@@ -147,22 +134,8 @@ export default function SettingsDrawer({
           <Typography variant="body1">
             <strong>Settings</strong>
           </Typography>
-
-          {/* <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
-            {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </IconButton> */}
         </DrawerHeader>
 
-        {/* <ListItem sx={{ flexDirection: 'column' }} disablePadding>
-          <Button
-            href={`/`}
-            sx={{ px: 2, width: '100%', textTransform: 'capitalize' }}
-            onClick={handleNewSetting}
-            color="primary">
-            <ListItemText primary={'Create new setting'} />
-            <Add />
-          </Button>
-        </ListItem> */}
         <List
           disablePadding
           sx={{ flex: 1 }}
@@ -199,14 +172,6 @@ export default function SettingsDrawer({
                   }}>
                   <ListItemIcon sx={{ minWidth: 24 }}>{setting.icon}</ListItemIcon>
                   <ListItemText primary={`${setting.title}`} />
-                  {/* {setting?.chats?.length ? (
-                    <IconButton onClick={handleExpandSetting(idx)}>
-                      {opened[idx] ? <ExpandLess /> : <ExpandMore />}
-                    </IconButton>
-                  ) : null}
-                  <IconButton onClick={() => handleAddChat({ setting })}>
-                    <Add />
-                  </IconButton> */}
                 </ListItemButton>
               </ListItem>
             </React.Fragment>
