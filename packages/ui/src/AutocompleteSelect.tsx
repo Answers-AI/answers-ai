@@ -5,6 +5,7 @@ import Checkbox from '@mui/material/Checkbox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import Box from '@mui/material/Box';
+import { Document } from 'types';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -58,7 +59,7 @@ export default function AutocompleteSelect<T>({
         options={options}
         getOptionLabel={getOptionLabel as any}
         value={value ?? []}
-        isOptionEqualToValue={(option, value) => option.url === value.url}
+        isOptionEqualToValue={(option: any, value: any) => option.url === value.url}
         onChange={handleChange}
         PopperComponent={({
           children,

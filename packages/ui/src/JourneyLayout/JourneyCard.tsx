@@ -63,7 +63,7 @@ const JourneyCard = ({ journey }: Props) => {
     handleMenuClose();
   };
 
-  const handleCardClick: MouseEventHandler<HTMLDivElement> = (event) => {
+  const handleCardClick = (event: any) => {
     // Check if the target element is the card header
     if (!event?.target?.classList?.contains('MuiBackdrop-root')) {
       // Navigate to the journey using NextLink
