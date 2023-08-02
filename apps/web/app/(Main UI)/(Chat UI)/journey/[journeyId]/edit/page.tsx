@@ -1,7 +1,7 @@
 import React from 'react';
 import { prisma } from '@db/client';
 import { getAppSettings } from '@ui/getAppSettings';
-import JourneyFormNew from '@ui/JourneyFormNew';
+import JourneyForm from '@ui/JourneyForm';
 import getCachedSession from '@ui/getCachedSession';
 
 export const metadata = {
@@ -25,7 +25,7 @@ const JourneyEditPage = async ({ params }: any) => {
   const [journey] = await Promise.all([journeyPromise]);
 
   return (
-    <JourneyFormNew {...params} user={session?.user!} appSettings={appSettings} journey={journey} />
+    <JourneyForm {...params} user={session?.user!} appSettings={appSettings} journey={journey} />
   );
 };
 

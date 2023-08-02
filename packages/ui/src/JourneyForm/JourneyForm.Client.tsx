@@ -28,7 +28,7 @@ const JourneyFormNew = ({
   journey?: Journey;
 }): JSX.Element => {
   return (
-    <AnswersProvider user={user} appSettings={appSettings}>
+    <AnswersProvider user={user} appSettings={appSettings} journey={journey}>
       <JourneyForm appSettings={appSettings} journey={journey} />
     </AnswersProvider>
   );
@@ -93,10 +93,15 @@ const JourneyForm = ({ appSettings, journey }: { appSettings: AppSettings; journ
   return (
     <Box p={8} width="100%">
       <SnackMessage message={theMessage} />
-
-      <Typography variant="h2" component="h1">
-        Create New Journey
-      </Typography>
+      {journey ? (
+        <Typography variant="h2" component="h1">
+          Edit Journey
+        </Typography>
+      ) : (
+        <Typography variant="h2" component="h1">
+          Create New Journey
+        </Typography>
+      )}
 
       <Divider sx={{ my: 2 }} />
 

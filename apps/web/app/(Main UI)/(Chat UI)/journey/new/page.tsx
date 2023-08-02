@@ -1,6 +1,6 @@
 import { getAppSettings } from '@ui/getAppSettings';
 import React from 'react';
-import JourneyFormNew from '@ui/JourneyFormNew';
+import JourneyForm from '@ui/JourneyForm';
 
 import getCachedSession from '@ui/getCachedSession';
 
@@ -10,7 +10,7 @@ const NewJourneyPage = async ({}: any) => {
 
   return (
     <>
-      <JourneyFormNew user={session?.user!} appSettings={appSettings}></JourneyFormNew>
+      <JourneyForm user={session?.user!} appSettings={appSettings}></JourneyForm>
     </>
   );
 };

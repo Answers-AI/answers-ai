@@ -12,7 +12,24 @@ import MessageIcon from '@mui/icons-material/Message';
 import AddIcon from '@mui/icons-material/EditRoad';
 
 import JourneyCard from '../JourneyLayout/JourneyCard';
-import { Journey } from 'types';
+import { Journey, User, AppSettings } from 'types';
+import { AnswersProvider, useAnswers } from '../AnswersContext';
+
+const HomepageClientWrapped = ({
+  appSettings,
+  user,
+  journeys
+}: {
+  appSettings: AppSettings;
+  user: User;
+  journeys?: Journey[];
+}): JSX.Element => {
+  return (
+    <AnswersProvider user={user} appSettings={appSettings}>
+      <HomepageClient journeys={journeys} />
+    </AnswersProvider>
+  );
+};
 
 const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
   return (
@@ -54,30 +71,6 @@ const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
             endIcon={<MessageIcon fontSize="large" />}>
             <strong>Quick chat</strong>
           </Button>
-          {/* <Box>
-            <Card>
-              <NextLink href="/journey/new">
-                <CardActionArea>
-                  <CardHeader
-                    titleTypographyProps={{ variant: 'h6' }}
-                    avatar={<AddIcon />}
-                    title="New Journey"></CardHeader>
-                </CardActionArea>
-              </NextLink>
-            </Card>
-          </Box> */}
-          {/* <Box>
-            <Card>
-              <NextLink href="/chat">
-                <CardActionArea>
-                  <CardHeader
-                    titleTypographyProps={{ variant: 'h6' }}
-                    avatar={<MessageIcon />}
-                    title="Quick Chat"></CardHeader>
-                </CardActionArea>
-              </NextLink>
-            </Card>
-          </Box> */}
         </Box>
       </Box>
       <Box my={4}>
@@ -97,7 +90,7 @@ const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
           {journeys &&
             !!journeys.length &&
             journeys
-              ?.filter((journey) => !!journey?.goal)
+              ?.filter((journey) => !journey?.completed)
               ?.map((journey, idx) => (
                 <Box key={journey.id}>
                   <JourneyCard journey={journey as any} />
@@ -109,4 +102,4 @@ const HomepageClient = ({ journeys }: { journeys: Journey[] }) => {
   );
 };
 
-export default HomepageClient;
+export default HomepageClientWrapped;

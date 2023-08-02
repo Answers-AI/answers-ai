@@ -14,16 +14,12 @@ const HomepageServer = async () => {
   const journeysPromise = prisma.journey
     .findMany({
       where: {
-        chats: {
+        users: {
           some: {
-            users: {
-              some: { email: session.user.email }
-            }
+            id: session.user.id
           }
         },
-        goal: {
-          not: null
-        }
+        completed: false
       },
       orderBy: {
         updatedAt: 'desc'
@@ -41,6 +37,7 @@ const HomepageServer = async () => {
     .then((data: any) => JSON.parse(JSON.stringify(data)));
 
   const journeys = await journeysPromise;
+  console.log('Journeys: ', journeys);
 
   return <HomepageClient journeys={journeys} />;
 };

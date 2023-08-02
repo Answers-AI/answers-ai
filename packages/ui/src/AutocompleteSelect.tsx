@@ -58,6 +58,7 @@ export default function AutocompleteSelect<T>({
         options={options}
         getOptionLabel={getOptionLabel as any}
         value={value ?? []}
+        isOptionEqualToValue={(option, value) => option.url === value.url}
         onChange={handleChange}
         PopperComponent={({
           children,
@@ -88,7 +89,7 @@ export default function AutocompleteSelect<T>({
         // }
         // @ts-expect-error
         renderOption={({ key, ...itemProps }, option, { selected }) => (
-          <li key={key} {...itemProps}>
+          <li key={`${key}-${option.url}`} {...itemProps}>
             <Checkbox
               icon={icon}
               checkedIcon={checkedIcon}

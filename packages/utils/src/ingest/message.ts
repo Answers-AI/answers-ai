@@ -43,9 +43,9 @@ export const answersMessageSent: EventVersionHandler<{
 async function AIUpdateChatTitle(history: string, chatId: string, user?: User) {
   const titlePrompt = `Use the following conversation between a human and an AI assistant. Create a very short title for a story about the human. ${history} TITLE:`;
   const req = {
-    max_tokens: 500,
+    max_tokens: 20,
     prompt: titlePrompt,
-    temperature: 0.1,
+    temperature: 1,
     model: 'text-davinci-003'
   };
 

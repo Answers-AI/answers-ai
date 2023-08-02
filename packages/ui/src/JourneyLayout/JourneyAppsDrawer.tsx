@@ -30,17 +30,8 @@ export const JourneyAppsDrawer = ({
   const [serviceOpen, setServiceOpen] = React.useState<string>('');
   const { filters, updateFilter } = useAnswers();
   // Update the value of filters to journey?.filters if journey is set
-  const updatedFilters: AnswersFilters | undefined = journey?.filters ?? filters;
-  console.log('JourneyAppsDrawer', { filters, updatedFilters });
-
-  // React.useEffect(() => {
-  //   if (journey?.filters) {
-  //     updateFilter(journey?.filters);
-  //   }
-  // }, [journey?.filters, updateFilter]);
 
   const selectedService = enabledServices?.find((service) => service.id === serviceOpen);
-
   return (
     <>
       <Box
@@ -57,7 +48,7 @@ export const JourneyAppsDrawer = ({
           ?.map((service) => (
             <JourneySourceCard
               appSettings={appSettings}
-              filters={updatedFilters}
+              filters={filters}
               updateFilter={updateFilter}
               key={service?.id}
               {...service}
@@ -98,7 +89,7 @@ export const JourneyAppsDrawer = ({
                 }}>
                 <JourneySourceCard
                   appSettings={appSettings}
-                  filters={updatedFilters}
+                  filters={filters}
                   updateFilter={updateFilter}
                   enabled={true}
                   {...selectedService}

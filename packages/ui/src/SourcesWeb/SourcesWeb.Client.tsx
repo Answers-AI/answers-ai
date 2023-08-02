@@ -160,7 +160,12 @@ const SourcesWeb: React.FC<{}> = ({}) => {
             <Typography variant="overline">Domains</Typography>
             <Box sx={{ gap: 1, display: 'flex', flexWrap: 'wrap' }}>
               {filters?.datasources?.web?.domain?.map((domain) => (
-                <Chip key={`domain-chip-${domain}`} size="small" label={domain} onDelete={() => handleRemoveDomain(domain)} />
+                <Chip
+                  key={`domain-chip-${domain}`}
+                  size="small"
+                  label={domain}
+                  onDelete={() => handleRemoveDomain(domain)}
+                />
               ))}
             </Box>
           </Box>

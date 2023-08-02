@@ -267,9 +267,14 @@ export function AnswersProvider({
     axios.patch(`${apiUrl}/messages`, message).then(() => router.refresh());
 
   const startNewChat = () => {
-    router.push('/chat');
+    if (journey) {
+      router.push(`/journey/${journey.id}`);
+      setJourneyId(journey.id);
+    } else {
+      router.push('/chat');
+      setJourneyId(undefined);
+    }
     setChatId(undefined);
-    setJourneyId(undefined);
     setMessages([]);
     setFilters({});
   };
