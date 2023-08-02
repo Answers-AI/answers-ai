@@ -76,7 +76,7 @@ interface SidekickInput
     | 'isSystem'
     | 'isSharedWithOrg'
     | 'isFavoriteByDefault'
-  > { }
+  > {}
 
 const SidekickForm = ({
   appSettings,
@@ -171,8 +171,31 @@ const SidekickForm = ({
       setTheMessage('');
       if (err.response) {
         // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        setError('root.serverError', { type: 'custom', message: err.response.data });
+        if (err.response.data.code) {
+          switch (err.response.data.code) {
+            case 'InvalidSystemPromptTemplate':
+              setError('systemPromptTemplate', {
+                message: 'Please fix all errors in the template.'
+              });
+              setCurrentTab('System');
+              break;
+            case 'InvalidUserPromptTemplate':
+              setError('userPromptTemplate', {
+                message: 'Please fix all errors in the template.'
+              });
+              setCurrentTab('User');
+              break;
+            case 'InvalidContextRenderTemplate':
+              setCurrentTab('Context');
+              setError('contextStringRender', {
+                message: 'Please fix all errors in the template.'
+              });
+              break;
+          }
+        } else {
+          // that falls out of the range of 2xx
+          setError('root.serverError', { type: 'custom', message: err.response.data });
+        }
       } else if (err.request) {
         // The request was made but no response was received
         setError('root.serverError', {
@@ -327,7 +350,6 @@ const SidekickForm = ({
                     )}
                   />
                 </Grid>
-              
 
                 <Grid item xs={12}>
                   <Tabs value={currentTab} onChange={handleTabChange} sx={{ mb: 4 }}>
@@ -351,30 +373,40 @@ const SidekickForm = ({
                                 <HandlebarsEditor
                                   key="systemPromptTemplate"
                                   code={sidekick?.systemPromptTemplate ?? ''}
-                                  setCode={(value: string) => setValue('systemPromptTemplate', value)}
+                                  setCode={(value: string) =>
+                                    setValue('systemPromptTemplate', value)
+                                  }
                                   contextFields={{ ...contextFields, userInput: '', context: '' }}
                                   readOnly={false}
                                 />
                                 {errors.systemPromptTemplate && (
-                                  <FormHelperText error>Required.</FormHelperText>
+                                  <FormHelperText error>
+                                    {errors.systemPromptTemplate.message}
+                                  </FormHelperText>
                                 )}
                               </FormControl>
                             )}
                           />
                         </Box>
-
                       </Grid>
                       <Grid item xs={12} md={4}>
-                        <Typography  sx={{ mb: 2 }}>
+                        <Typography sx={{ mb: 2 }}>
                           <h4>Rules & Persona</h4>
-                          Give your Sidekick a persona and set rules for what it can, and can not do. This tells the Sidekick how it can help you and what it should focus its attention on.
+                          Give your Sidekick a persona and set rules for what it can, and can not
+                          do. This tells the Sidekick how it can help you and what it should focus
+                          its attention on.
                           <h5>Global Context Settings</h5>
-                          You can create Organization and User speicific context by first creating them in the <a href="/settings">Settings</a>
+                          You can create Organization and User speicific context by first creating
+                          them in the <a href="/settings">Settings</a>
                           <h5>Organization Context</h5>
-                          Organiztion context can be used for things like your organization's name, brand voice, core values, and other things that are specific for your entire organization.
+                          Organiztion context can be used for things like your organization's name,
+                          brand voice, core values, and other things that are specific for your
+                          entire organization.
                           <code>{`{{organization.brandVoice}}`}</code>
                           <h5>User Context</h5>
-                          User context can be used for things like the users name, title, learning style, response preference and other things that are specific for the user.
+                          User context can be used for things like the users name, title, learning
+                          style, response preference and other things that are specific for the
+                          user.
                           <code>{`{{user.name}}`}</code>
                           <h5>Example:</h5>
                           <code>{`You are a digital marketing expert that works for {{user.name}} at {{organization.name}}
@@ -403,7 +435,9 @@ const SidekickForm = ({
                                   readOnly={false}
                                 />
                                 {errors.userPromptTemplate && (
-                                  <FormHelperText error>Required.</FormHelperText>
+                                  <FormHelperText error>
+                                    {errors.userPromptTemplate.message}
+                                  </FormHelperText>
                                 )}
                               </FormControl>
                             )}
@@ -411,17 +445,23 @@ const SidekickForm = ({
                         </Box>
                       </Grid>
                       <Grid item xs={12} md={4}>
-                        <Typography  sx={{ mb: 2 }}>
-                        <h4>User Prompt & Instructions</h4>
-                          This is the prompt that will wrap the `userInput` and `context` when the user interacts with the Sidekick.
+                        <Typography sx={{ mb: 2 }}>
+                          <h4>User Prompt & Instructions</h4>
+                          This is the prompt that will wrap the `userInput` and `context` when the
+                          user interacts with the Sidekick.
                           <h5>userInput</h5>
-                          The `userInput` is the variable that will be replaced with the user's input into the chat window.
+                          The `userInput` is the variable that will be replaced with the user's
+                          input into the chat window.
                           <code>{`{{userInput}}`}</code>
                           <h5>context</h5>
-                          The `context` variable is used when the Sidekick interacts with a data source. For example, if the Sidekick is interacting with a PDF, the `context` variable will be replaced with the text from the PDF that is relevant to the user's input.
+                          The `context` variable is used when the Sidekick interacts with a data
+                          source. For example, if the Sidekick is interacting with a PDF, the
+                          `context` variable will be replaced with the text from the PDF that is
+                          relevant to the user's input.
                           <code>{`{{context}}`}</code>
                           <h5>User & Org Context</h5>
-                          you can also use the `user` and `organization` context variables to personalize the user prompt and instructions.
+                          you can also use the `user` and `organization` context variables to
+                          personalize the user prompt and instructions.
                           <code>{`{{organization.name}} or {{user.name}}`}</code>
                           <h5>Example:</h5>
                           <code>{`The user input these instructions: {{userInput}} Use the following context to help you with your response: {{context}}`}</code>
@@ -433,7 +473,6 @@ const SidekickForm = ({
                   <Box role="tabpanel" hidden={currentTab !== 'Context'}>
                     <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
                       <Grid item xs={12} md={8}>
-
                         <Box component="fieldset" sx={editorStyles}>
                           <legend>Data & Context Parser</legend>
                           <Controller
@@ -445,22 +484,28 @@ const SidekickForm = ({
                                 <HandlebarsEditor
                                   key="contextStringRender"
                                   code={sidekick?.contextStringRender ?? ''}
-                                  setCode={(value: string) => setValue('contextStringRender', value)}
+                                  setCode={(value: string) =>
+                                    setValue('contextStringRender', value)
+                                  }
                                   readOnly={false}
                                 />
                                 {errors.contextStringRender && (
-                                  <FormHelperText error>Required.</FormHelperText>
+                                  <FormHelperText error>
+                                    {errors.contextStringRender.message}
+                                  </FormHelperText>
                                 )}
                               </FormControl>
                             )}
                           />
                         </Box>
-
                       </Grid>
                       <Grid item xs={12} md={4}>
-                        <Typography  sx={{ mb: 2 }}>
+                        <Typography sx={{ mb: 2 }}>
                           <h4>Data & Context Parser</h4>
-                          This is the code that will be used to create the `context` string variable. Every relevant result that the Sidekick uses for context will go through this process. This is useful when you want to parse the `context` variable to extract only the relevant information from the data source.
+                          This is the code that will be used to create the `context` string
+                          variable. Every relevant result that the Sidekick uses for context will go
+                          through this process. This is useful when you want to parse the `context`
+                          variable to extract only the relevant information from the data source.
                           <h5>Result Object:</h5>
                           <code>{`result: {
                             "title": "The title of the data source",
@@ -486,7 +531,6 @@ const SidekickForm = ({
                     <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
                       <Grid item xs={12} md={6}>
                         <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
-
                           <Grid item xs={12} md={6}>
                             <FormControl fullWidth size="small">
                               <Controller
@@ -502,14 +546,22 @@ const SidekickForm = ({
                                     defaultValue={sidekick?.aiModel ?? 'gpt-3.5-turbo'}
                                     fullWidth
                                     label="AI Model"
-                                    sx={{ ...selectStyles, pt: 1, pb: 0, width: '100%', mx: 'auto' }}>
+                                    sx={{
+                                      ...selectStyles,
+                                      pt: 1,
+                                      pb: 0,
+                                      width: '100%',
+                                      mx: 'auto'
+                                    }}>
                                     <MenuItem value="gpt-3.5-turbo">GPT 3.5</MenuItem>
                                     <MenuItem value="gpt-3.5-turbo-16k">GPT 3.5 16k</MenuItem>
                                     <MenuItem value="gpt-4">GPT 4</MenuItem>
                                   </Select>
                                 )}
                               />
-                              <FormHelperText error={true}>{errors.aiModel?.message}</FormHelperText>
+                              <FormHelperText error={true}>
+                                {errors.aiModel?.message}
+                              </FormHelperText>
                             </FormControl>
                           </Grid>
                           <Grid item xs={12} md={6}>
@@ -620,7 +672,7 @@ const SidekickForm = ({
                             </Box>
                           </Grid>
 
-                          <Grid item xs={12}  md={6}>
+                          <Grid item xs={12} md={6}>
                             <Box
                               sx={{
                                 display: 'flex',
@@ -656,15 +708,29 @@ const SidekickForm = ({
                             </Box>
                           </Grid>
                         </Grid>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                          <Typography  sx={{ mb: 2 }}>
-                            <h4>Advanced Model Settings</h4>
-                            <p>These settings are for fine tuning the AI model. You can learn more on the <a href="https://platform.openai.com/docs/api-reference/completions/create" target="_blank">Open AI website</a></p>
-                            <h4>Handlebars Templates</h4>
-                            All of the prompts and responses are written in Handlebars. You can learn more about Handlebars <a href="https://handlebarsjs.com/guide/builtin-helpers.html" target="_blank">here</a>.
-                            <p>Here is an example of how to use a Handlebars conditional:</p>
-                            <code>{`You are teaching {{user.name}}
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Typography sx={{ mb: 2 }}>
+                          <h4>Advanced Model Settings</h4>
+                          <p>
+                            These settings are for fine tuning the AI model. You can learn more on
+                            the{' '}
+                            <a
+                              href="https://platform.openai.com/docs/api-reference/completions/create"
+                              target="_blank">
+                              Open AI website
+                            </a>
+                          </p>
+                          <h4>Handlebars Templates</h4>
+                          All of the prompts and responses are written in Handlebars. You can learn
+                          more about Handlebars{' '}
+                          <a
+                            href="https://handlebarsjs.com/guide/builtin-helpers.html"
+                            target="_blank">
+                            here
+                          </a>
+                          .<p>Here is an example of how to use a Handlebars conditional:</p>
+                          <code>{`You are teaching {{user.name}}
                             {{#if user.skillLevel == 'beginner'}}
                               Explain it so a 5 year old can understand it.
                             {{/if}}
@@ -672,8 +738,8 @@ const SidekickForm = ({
                               Use the following context to help in your response: {{context}}
                             {{/if}}
                             `}</code>
-                          </Typography>
-                        </Grid>
+                        </Typography>
+                      </Grid>
                     </Grid>
                   </Box>
                 </Grid>
@@ -684,9 +750,7 @@ const SidekickForm = ({
                     name="multipleErrorInput"
                     render={({ messages }) =>
                       messages &&
-                      Object.entries(messages).map(([type, message]) => (
-                        <p key={type}>{message}</p>
-                      ))
+                      Object.entries(messages).map(([type, message]) => <p key={type}>{message}</p>)
                     }
                   />
                   <Button type="submit" variant="contained" sx={{ margin: '0 auto' }}>

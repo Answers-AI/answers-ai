@@ -13,7 +13,7 @@ export function getTemplate(precompiled) {
   return Handlebars.template(eval('(' + precompiled + ')'));
 }
 
-export function renderContext(templateString, context) {
+export function renderTemplate(templateString, context) {
   // console.log(JSON.stringify(context, null, 2));
   const template = Handlebars.compile(templateString);
   const renderedTemplate = template(context);

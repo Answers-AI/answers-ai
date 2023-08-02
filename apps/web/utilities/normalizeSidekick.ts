@@ -1,7 +1,8 @@
 import toSentenceCase from '@utils/utilities/toSentenceCase';
+import { renderTemplate } from '@utils/utilities/renderTemplate';
 import { Sidekick, SidekickListItem, User } from 'types';
 
-export const normalizeSidekickListItem = (sidekick: Sidekick, user?:User): SidekickListItem => {
+export const normalizeSidekickListItem = (sidekick: Sidekick, user?: User): SidekickListItem => {
   switch (true) {
     case sidekick.isGlobal:
       sidekick.sharedWith = 'global';
@@ -36,7 +37,7 @@ export const normalizeSidekickListItem = (sidekick: Sidekick, user?:User): Sidek
   return sidekickListItem;
 };
 
-export const normalizeSidekickList = (sidekicks: Sidekick[], user?:User): SidekickListItem[] => {
+export const normalizeSidekickList = (sidekicks: Sidekick[], user?: User): SidekickListItem[] => {
   const normalizedSidekicks: SidekickListItem[] = sidekicks.map((sidekick) =>
     normalizeSidekickListItem(sidekick, user)
   );
@@ -67,6 +68,26 @@ export const normalizeSidekickForUpdate = (sidekick: Sidekick): Sidekick => {
     isGlobal,
     isSharedWithOrg
   };
+
+  // Validate handlebars template
+  try {
+    const prompt = renderTemplate(normalizedSidekick.systemPromptTemplate, {});
+  } catch (err) {
+    console.log(err);
+    throw new Error('InvalidSystemPromptTemplate');
+  }
+  try {
+    const prompt = renderTemplate(normalizedSidekick.userPromptTemplate, {});
+  } catch (err) {
+    console.log(err);
+    throw new Error('InvalidUserPromptTemplate');
+  }
+  try {
+    const prompt = renderTemplate(normalizedSidekick.contextStringRender, {});
+  } catch (err) {
+    console.log(err);
+    throw new Error('InvalidContextRenderTemplate');
+  }
 
   return normalizedSidekick;
 };

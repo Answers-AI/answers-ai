@@ -49,6 +49,9 @@ export async function PATCH(req: Request) {
     return NextResponse.json(sidekick);
   } catch (error) {
     console.log('[POST] error', error);
-    throw error;
+    return NextResponse.json(
+      { error: 'There was an error creating your sidekick.', code: error.message },
+      { status: 422 }
+    );
   }
 }

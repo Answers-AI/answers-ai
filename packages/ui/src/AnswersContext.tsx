@@ -155,6 +155,10 @@ export function AnswersProvider({
 
   const { isStreaming, generateResponse } = useStreamedResponse({
     apiUrl,
+    onError: (err) => {
+      setIsLoading(false);
+      setError(err);
+    },
     // setChat,
     onChunk: (chunk: Message) => {
       // const idx = messages?.length;
