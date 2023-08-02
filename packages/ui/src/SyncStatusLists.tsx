@@ -14,7 +14,7 @@ import SyncStatusList from './SyncStatusList';
 import { AppSettings } from 'types';
 
 const SyncStausLists = ({ appSettings }: { appSettings: AppSettings }) => {
-  const flags = useFlags(['sidekicks_system']);
+  const flags = useFlags(['web_sync_status']);
   const [currentTab, setCurrentTab] = useState('UserDocs');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -45,18 +45,22 @@ const SyncStausLists = ({ appSettings }: { appSettings: AppSettings }) => {
 
       <Tabs value={currentTab} onChange={handleTabChange} centered sx={{ mb: 4 }}>
         <Tab label="My Stuff" value="UserDocs" />
-        <Tab label="Web" value="Web" />
+        {flags?.web_sync_status?.enabled ? <Tab label="Web" value="Web" /> : null}
       </Tabs>
+
       <Box role="tabpanel" hidden={currentTab !== 'UserDocs'}>
         <SyncStatusList endpoint={getEndpoint('UserDocs')} appSettings={appSettings} />
       </Box>
-      <Box role="tabpanel" hidden={currentTab !== 'Web'}>
-        <SyncStatusList
-          endpoint={getEndpoint('Web')}
-          appSettings={appSettings}
-          prefilterSource="web"
-        />
-      </Box>
+
+      {flags?.web_sync_status?.enabled ? (
+        <Box role="tabpanel" hidden={currentTab !== 'Web'}>
+          <SyncStatusList
+            endpoint={getEndpoint('Web')}
+            appSettings={appSettings}
+            prefilterSource="web"
+          />
+        </Box>
+      ) : null}
     </Box>
   );
 };

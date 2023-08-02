@@ -245,7 +245,7 @@ const SyncStatusList = ({
                 sx={{ 'boxShadow': 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
                 fullWidth
                 onChange={handleDocTypeChange}>
-                <MenuItem key="doc-type-all" value="All Types">
+                <MenuItem key="doc-type-all" value="">
                   All Types
                 </MenuItem>
 
@@ -283,7 +283,7 @@ const SyncStatusList = ({
               sx={{ 'boxShadow': 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
               fullWidth
               onChange={handleStatusTypeChange}>
-              <MenuItem key="status-type-all" value="All Statuses">
+              <MenuItem key="status-type-all" value="">
                 All Statuses
               </MenuItem>
 
