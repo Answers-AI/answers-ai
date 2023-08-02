@@ -89,7 +89,7 @@ export default function AutocompleteSelect<T>({
         //   ))
         // }
         // @ts-expect-error
-        renderOption={({ key, ...itemProps }, option, { selected }) => (
+        renderOption={({ key, ...itemProps }, option: any, { selected }) => (
           <li key={`${key}-${option.url}`} {...itemProps}>
             <Checkbox
               icon={icon}

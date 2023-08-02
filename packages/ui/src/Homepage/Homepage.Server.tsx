@@ -39,7 +39,13 @@ const HomepageServer = async () => {
   const journeys = await journeysPromise;
   console.log('Journeys: ', journeys);
 
-  return <HomepageClient journeys={journeys} />;
+  return (
+    <HomepageClient
+      user={session.user}
+      journeys={journeys}
+      appSettings={session.user.appSettings}
+    />
+  );
 };
 
 export default HomepageServer;
