@@ -20,12 +20,14 @@ export const Filters = ({ sx }: { sx?: any }) => {
     [appSettings?.services]
   );
 
-  const datasources: [string, SourceFilters][] = useMemo(
+  const datasourceEntries: [string, SourceFilters][] = useMemo(
     () => Object.entries(filters?.datasources ?? {}) ?? [],
     [filters?.datasources]
   );
 
-  return datasources ? (
+  console.log('datasources', datasourceEntries);
+
+  return datasourceEntries.length ? (
     <>
       {/* <strong>
         <Typography variant="overline">Selected sources</Typography>
@@ -39,78 +41,80 @@ export const Filters = ({ sx }: { sx?: any }) => {
           width: '100%',
           ...sx
         }}>
-        {datasources?.length ? (
-          <>
-            {datasources.map(([source, sourceFilters]) => {
-              if (!sourceFilters || !Object.keys(sourceFilters).length) return null;
-              return (
-                <React.Fragment key={source}>
-                  {Object.entries(sourceFilters)?.map(([field, { sources }]) => {
-                    return (
-                      sources.length && (
-                        <React.Fragment key={`${source}_${field}`}>
-                          {sources.map((documentFilter: DocumentFilter) => (
-                            <Button
-                              color="inherit"
-                              variant="text"
-                              size="small"
-                              sx={{
-                                width: '100%',
-                                borderRadius: '24px',
-                                textTransform: 'none',
-                                display: 'flex',
-                                alignItems: 'center'
-                              }}
-                              startIcon={
-                                <Avatar
-                                  variant="source"
-                                  sx={{ height: 20, width: 20 }}
-                                  src={services[source]?.imageURL}
-                                />
-                              }
-                              onClick={() => {
-                                updateFilter({
-                                  datasources: {
-                                    [source]: {
-                                      [field]: (
-                                        ((filters?.datasources as any)?.[source]?.[
-                                          field
-                                        ] as any[]) ?? []
-                                      )?.filter((v) => v.value !== documentFilter.value)
+        <>
+          {datasourceEntries.map(([source, sourceFilters]) => {
+            if (!sourceFilters || !Object.keys(sourceFilters).length) return null;
+            return (
+              <React.Fragment key={source}>
+                {Object.entries(sourceFilters)?.map(([filterKey, { sources }]) => {
+                  return (
+                    sources?.length && (
+                      <React.Fragment key={`${source}_${filterKey}`}>
+                        {sources.map((documentFilter: DocumentFilter) => (
+                          <Button
+                            color="inherit"
+                            variant="text"
+                            size="small"
+                            sx={{
+                              width: '100%',
+                              borderRadius: '24px',
+                              textTransform: 'none',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}
+                            startIcon={
+                              <Avatar
+                                variant="source"
+                                sx={{ height: 20, width: 20 }}
+                                src={services[source]?.imageURL}
+                              />
+                            }
+                            onClick={() => {
+                              const newSources: DocumentFilter[] = (
+                                ((filters?.datasources as any)?.[source]?.[filterKey]
+                                  ?.sources as any[]) ?? []
+                              )?.filter(
+                                (v) => JSON.stringify(v) !== JSON.stringify(documentFilter)
+                              );
+                              updateFilter({
+                                datasources: {
+                                  [source]: {
+                                    [filterKey]: {
+                                      sources: newSources
                                     }
                                   }
-                                });
-                              }}
-                              endIcon={
-                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                  <FilterStatus documentFilter={documentFilter} source={source} />
-                                  <ClearIcon />
-                                </Box>
-                              }
-                              key={`${source}:${field}:${documentFilter.value}`}>
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  textAlign: 'left',
-                                  width: '100%',
+                                }
+                              });
+                            }}
+                            endIcon={
+                              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <FilterStatus documentFilter={documentFilter} source={source} />
+                                <ClearIcon />
+                              </Box>
+                            }
+                            key={`${source}:${filterKey}:${documentFilter.value}`}>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                textAlign: 'left',
+                                width: '100%',
 
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'nowrap'
-                                }}>
-                                {documentFilter.value}
-                              </Typography>
-                            </Button>
-                          ))}
-                        </React.Fragment>
-                      )
-                    );
-                  })}
-                </React.Fragment>
-              );
-            })}
-          </>
-        ) : null}
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap'
+                              }}>
+                              {documentFilter.label}
+                            </Typography>
+                          </Button>
+                        ))}
+                      </React.Fragment>
+                    )
+                  );
+                })}
+              </React.Fragment>
+            );
+          })}
+        </>
       </Box>
     </>
   ) : null;
