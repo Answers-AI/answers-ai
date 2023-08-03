@@ -9,17 +9,9 @@ import { renderTemplate } from '../utilities/renderTemplate';
 import getUserContextFields from '../utilities/getUserContextFields';
 import getOrganizationContextFields from '../utilities/getOrganizationContextFields';
 import getMaxTokensByModel from '../utilities/getMaxTokensByModel';
-import { getUniqueUrls } from '../getUniqueUrls';
+import { getUniqueUrl } from '../getUniqueUrls';
 
-import {
-  AnswersFilters,
-  Message,
-  User,
-  Sidekick,
-  Organization,
-  DocumentFilter,
-  DataSourcesFilters
-} from 'types';
+import { AnswersFilters, Message, User, Sidekick, Organization, SourceFilters } from 'types';
 
 const PUBLIC_SOURCES = ['web', 'drive', 'github', 'notion', 'airtable'];
 const EMBEDDING_MODEL = 'text-embedding-ada-002';
@@ -35,47 +27,35 @@ type PineconeQueryObject = {
         }
       | string;
   };
-  topK: 500;
+  topK: number;
 };
 
-function mapFiltersToQueries(data: AnswersFilters, organizationId?: string) {
-  const result: PineconeQueryObject[] = [];
-
-  for (const source in data.datasources) {
-    const filterRecords: { [filterKey: string]: { $in: string[] } } = {};
-    Object.entries(data.datasources[source as keyof DataSourcesFilters] ?? {}).forEach(
-      ([filterKey, obj]) => {
-        const sources: DocumentFilter[] = obj?.sources || [];
-        let sourceValues = sources.map((source) => source.value);
-        if (source === 'web') {
-          sourceValues = getUniqueUrls(sourceValues);
-        }
-        if (sourceValues.length > 0) {
-          filterRecords[filterKey] = { $in: sourceValues };
-        }
-      }
-    );
-
-    if (Object.keys(filterRecords).length > 0) {
-      const pineconeQueryObject: PineconeQueryObject = {
-        ...(!PUBLIC_SOURCES.includes(source) && organizationId
-          ? { namespace: `org-${organizationId}` }
-          : {}),
-        filter: {
-          // TODO: in the future, we may want to also filter based on the model. not used right now
-          // model: { "$in": [data.model] }
-          source,
-          ...filterRecords
-        },
-        topK: 500
-      };
-
-      result.push(pineconeQueryObject);
-    }
-  }
-
-  return result;
-}
+const mapFiltersToQueries = (data: AnswersFilters, organizationId?: string) => {
+  return Object.entries(data.datasources || {}).reduce((acc, [source, sourceObject]) => {
+    Object.entries(sourceObject as SourceFilters).forEach(([filterKey, { sources }]) => {
+      acc.push(
+        ...sources.map(({ filter }) => ({
+          ...(!PUBLIC_SOURCES.includes(source) && organizationId
+            ? { namespace: `org-${organizationId}` }
+            : {}),
+          filter: {
+            // TODO: in the future, we may want to also filter based on the model. not used right now
+            // model: { "$in": [data.model] }
+            source,
+            ...filter,
+            ...(filterKey === 'url' &&
+              source === 'web' &&
+              filter.url && {
+                url: getUniqueUrl(filter.url)
+              })
+          },
+          topK: 500
+        }))
+      );
+    });
+    return acc;
+  }, [] as PineconeQueryObject[]);
+};
 
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
@@ -112,6 +92,9 @@ export const fetchContext = async ({
   const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
   const queries = mapFiltersToQueries(clientFilters, organizationId);
+
+  console.log('client filters', clientFilters);
+  console.log('queries', queries);
 
   const promptEmbedding = await openai.createEmbedding({
     user,

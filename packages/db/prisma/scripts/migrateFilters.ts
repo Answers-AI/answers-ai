@@ -13,9 +13,7 @@ const convertFilter = (source: string, filterObj: any) => {
             acc[filterKey] = {
               sources: documents.map((domain) => ({
                 label: domain,
-                value: domain,
-                status: 'pending',
-                count: 0
+                filter: { domain }
               }))
             };
           } else if (filterKey === 'url') {
@@ -23,9 +21,7 @@ const convertFilter = (source: string, filterObj: any) => {
               sources: documents.map((doc) => ({
                 documentId: doc.id,
                 label: doc.url,
-                value: doc.title,
-                status: 'pending',
-                count: 1
+                filter: { url: doc.url }
               }))
             };
           }
@@ -34,9 +30,7 @@ const convertFilter = (source: string, filterObj: any) => {
           acc[filterKey] = {
             sources: documents.map((doc) => ({
               label: doc.title || doc.repo,
-              value: doc.title || doc.repo,
-              status: 'pending',
-              count: 0
+              filter: { repo: doc.title || doc.repo }
             }))
           };
           break;
@@ -46,9 +40,7 @@ const convertFilter = (source: string, filterObj: any) => {
               sources: documents.map((doc) => ({
                 documentId: doc.id,
                 label: doc.title || doc.url,
-                value: doc.url,
-                status: 'pending',
-                count: 1
+                filter: { url: doc.url }
               }))
             };
           }
@@ -89,17 +81,10 @@ const red = (text: string) => `\x1b[31m${text}\x1b[0m`;
 const green = (text: string) => `\x1b[32m${text}\x1b[0m`;
 
 async function main() {
-  const modelNames = Object.keys(prisma); // Get all model names from the PrismaClient instance
-  const modelsWithFilters = modelNames.filter((modelName) => {
-    if (modelName.startsWith('_') || modelName.startsWith('$')) return false; // Ignore internal models (e.g. _DocumentCount)
-    // console.log('here', modelName, prisma[modelName as any] as any);
-    const modelFields = (prisma[modelName as any] as any).fields;
-    const filtersField = modelFields['filters'];
-    // console.log('filtersField', filtersField);
-    return filtersField?.typeName === 'Json'; // Check if the model has a field named "filters" with type JSON
-  });
+  const modelNames = ['chat', 'journey'];
+  let recordsCount = 0;
 
-  for (const modelName of modelsWithFilters) {
+  for (const modelName of modelNames) {
     const recordsWithFilters = await (prisma[modelName as any] as any).findMany({
       where: {
         filters: { not: null }
@@ -107,6 +92,7 @@ async function main() {
     });
 
     for (const record of recordsWithFilters) {
+      recordsCount++;
       const updateFilters = convertDatasources(record.filters);
       console.log('\n');
       console.log(`Updating`);
@@ -126,7 +112,7 @@ async function main() {
 
   console.log(
     isDryRun
-      ? 'Dry run completed. run with --commit flag to commit to the database'
+      ? `Dry run completed (${recordsCount} records). run with --commit flag to commit to the database`
       : 'Migration completed successfully!'
   );
 }

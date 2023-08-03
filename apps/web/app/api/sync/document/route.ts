@@ -74,9 +74,7 @@ export async function POST(req: Request, res: NextResponse) {
   const documentFilter: DocumentFilter = {
     documentId: document.id,
     label: documentName,
-    value: url,
-    status: document.status,
-    count: 1
+    filter: { url }
   };
 
   return NextResponse.json(documentFilter);

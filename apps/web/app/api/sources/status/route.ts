@@ -12,18 +12,20 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
   const source = searchParams.get('source');
-  const value = searchParams.get('value');
+  const filter = searchParams.get('filter');
 
   if (!source) {
     return NextResponse.json({ error: 'A source was not provided' }, { status: 422 });
   }
 
-  if (!id && !value) {
+  if (!id && !filter) {
     return NextResponse.json(
       { error: 'A document ID, or value was not provided' },
       { status: 422 }
     );
   }
+
+  const filterObj = JSON.parse(filter || '{}');
 
   let out: { error?: string; status?: string; count: number } = {
     error: 'No status found',
@@ -48,11 +50,11 @@ export async function GET(req: Request) {
         count: 1
       };
     }
-  } else if (source === 'web') {
+  } else if (source === 'web' && filterObj.domain) {
     const [totalCount, syncedCount] = await Promise.all([
       await prisma.document.count({
         where: {
-          domain: value,
+          domain: filterObj.domain,
           source,
           status: {
             not: 'error'
@@ -62,20 +64,20 @@ export async function GET(req: Request) {
       await prisma.document.count({
         where: {
           source,
-          domain: value,
+          domain: filterObj.domain,
           status: 'synced'
         }
       })
     ]);
     out = {
       count: syncedCount,
-      status: syncedCount === totalCount ? 'synced' : 'pending'
+      status: syncedCount > 1 && syncedCount === totalCount ? 'synced' : 'pending'
     };
-  } else if (source === 'codebase') {
+  } else if (source === 'codebase' && filterObj.repo) {
     const [totalCount, syncedCount] = await Promise.all([
       await prisma.document.count({
         where: {
-          title: value,
+          title: filterObj.repo,
           source,
           status: {
             not: 'error'
@@ -84,7 +86,7 @@ export async function GET(req: Request) {
       }),
       await prisma.document.count({
         where: {
-          title: value,
+          title: filterObj.repo,
           source,
           status: 'synced'
         }
@@ -92,7 +94,7 @@ export async function GET(req: Request) {
     ]);
     out = {
       count: syncedCount,
-      status: syncedCount === totalCount ? 'synced' : 'pending'
+      status: syncedCount > 1 && syncedCount === totalCount ? 'synced' : 'pending'
     };
   }
 

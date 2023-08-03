@@ -14,7 +14,8 @@ import { useAnswers } from '../AnswersContext';
 
 import DomainCard from './DomainCard';
 
-import { WebFilters, DocumentFilter } from 'types';
+import { DocumentFilter } from 'types';
+import { getDocumentSourceKey } from '@utils/getDocumentSourceKey';
 
 const SourcesWeb: React.FC<{}> = ({}) => {
   const { filters, updateFilter } = useAnswers();
@@ -23,21 +24,22 @@ const SourcesWeb: React.FC<{}> = ({}) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateUrl = React.useCallback(throttle(setUrl, 600), []);
 
-  const { data, mutate } = useSWR<WebFilters>(url, (urlVal) =>
+  interface Data {
+    urlSources: DocumentFilter[];
+    domainSources: (DocumentFilter & { count: number })[];
+  }
+
+  const { data, mutate } = useSWR<Data>(url, (urlVal) =>
     Promise.all([
       fetch(`/api/sources/web/url?url=${urlVal}`)
         .then((res) => res.json())
-        .then((data) => data?.web?.url?.sources ?? ([] as DocumentFilter[])),
+        .then((data) => data?.sources ?? []),
       fetch(`/api/sources/web/domain?url=${urlVal}`)
         .then((res) => res.json())
-        .then((data) => data?.web?.domain?.sources ?? ([] as DocumentFilter[]))
+        .then((data) => data?.sources ?? [])
     ]).then(([urlSources, domainSources]) => ({
-      url: {
-        sources: urlSources
-      },
-      domain: {
-        sources: domainSources
-      }
+      urlSources: urlSources,
+      domainSources: domainSources
     }))
   );
 
@@ -46,11 +48,9 @@ const SourcesWeb: React.FC<{}> = ({}) => {
     return getUrlDomain(currentInput);
   }, [currentInput]);
 
-  const currentUrlSources = React.useMemo(() => data?.url?.sources ?? [], [data?.url?.sources]);
-  const currentDomainSources = React.useMemo(
-    () => data?.domain?.sources ?? [],
-    [data?.domain?.sources]
-  );
+  const currentUrlSources = data?.urlSources ?? [];
+  const currentDomainSources = data?.domainSources ?? [];
+
   const filterUrlSources = React.useMemo(
     () => filters?.datasources?.web?.url?.sources ?? [],
     [filters?.datasources?.web?.url?.sources]
@@ -61,10 +61,11 @@ const SourcesWeb: React.FC<{}> = ({}) => {
   );
 
   const handleAddUrl = async (newWebUrl: string) => {
+    if (!newWebUrl) return;
     const { data } = await axios.post<DocumentFilter>(`/api/sync/web/url`, {
       url: newWebUrl
     });
-    const newWebURLs = [...(filters?.datasources?.web?.url?.sources ?? []), data];
+    const newWebURLs = [...(filterUrlSources ?? []), data];
     updateFilter({
       datasources: { web: { url: { sources: newWebURLs } } }
     });
@@ -72,7 +73,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
     setCurrentInput('');
   };
 
-  const addDomainFilter = async (domain?: string) => {
+  const addDomainFilter = async (domain: string) => {
     if (!domain) return;
     const { data } = await axios.post<DocumentFilter>(`/api/sync/web/domain`, {
       domain
@@ -120,12 +121,12 @@ const SourcesWeb: React.FC<{}> = ({}) => {
       {currentDomainSources?.length ? (
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 1 }}>
           {currentDomainSources.map((source) =>
-            filterDomainSources.map((d) => d.value).includes(source.value) ? null : (
+            filterDomainSources.map((d) => d.filter).includes(source.filter) ? null : (
               <DomainCard
-                key={`domain-card-${source.value}`}
+                key={`domain-card-${getDocumentSourceKey('web', 'domain', source)}`}
                 domain={source.label}
                 pageCount={source.count}
-                onClick={() => addDomainFilter(source.value)}
+                onClick={() => addDomainFilter(source.filter.domain)}
               />
             )
           )}
@@ -134,7 +135,7 @@ const SourcesWeb: React.FC<{}> = ({}) => {
 
       {urlDomain &&
       !currentDomainSources?.length &&
-      !filterDomainSources.map((d) => d.value).includes(urlDomain) ? (
+      !filterDomainSources.map((d) => d.filter.domain).includes(urlDomain) ? (
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 1 }}>
           <DomainCard domain={urlDomain} urls={[]} onClick={() => addDomainFilter(urlDomain)} />
         </Box>

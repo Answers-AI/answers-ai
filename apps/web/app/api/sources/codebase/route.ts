@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 
 import { authOptions } from '@ui/authOptions';
-import { CodebaseFilters, DocumentFilter } from 'types';
+import { DocumentFilter } from 'types';
 
 export async function GET(req: Request, res: Response) {
   const session = await getServerSession(authOptions);
@@ -14,10 +14,7 @@ export async function GET(req: Request, res: Response) {
   const repo = searchParams.get('repo');
 
   const groupedByRecords = await prisma.document.groupBy({
-    by: ['title', 'status'],
-    _count: {
-      title: true
-    },
+    by: ['title'],
     where: {
       source: 'codebase',
       ...(repo && {
@@ -29,30 +26,15 @@ export async function GET(req: Request, res: Response) {
     }
   });
 
-  const groupedData = groupedByRecords.reduce<
-    Record<string, { title: string; totalCount: number; syncedCount: number }>
-  >((acc, group) => {
-    const { title, status, _count } = group;
-    if (!title) return acc;
-
-    if (!acc[title]) {
-      acc[title] = { title, totalCount: 0, syncedCount: 0 };
-    }
-
-    acc[title].totalCount += _count.title;
-    acc[title].syncedCount += status === 'synced' ? _count.title : 0;
-
-    return acc;
-  }, {});
-
-  const sources: DocumentFilter[] = Object.entries(groupedData).map(
-    ([repo, { title, totalCount, syncedCount }]) => ({
-      label: repo,
-      value: repo,
-      status: syncedCount === totalCount ? 'synced' : 'pending',
-      count: syncedCount
-    })
-  );
+  const sources: DocumentFilter[] = groupedByRecords
+    .filter(({ title }) => !!title)
+    .map(
+      ({ title }) =>
+        ({
+          label: title,
+          filter: { repo: title }
+        } as DocumentFilter)
+    );
 
   return NextResponse.json({ sources });
 }

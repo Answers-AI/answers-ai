@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { respond401 } from '@utils/auth/respond401';
-import { WebFilters } from 'types';
+import { DocumentFilter } from 'types';
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
@@ -30,21 +30,13 @@ export async function GET(req: Request) {
     take: 100
   });
 
-  const sources = filteredRecords?.map((record) => ({ ...record, repo: record.title }));
-
-  const web: WebFilters = {
-    url: {
-      sources: filteredRecords.map((document) => ({
-        documentId: document.id,
-        label: document.url,
-        value: document.url,
-        status: document.status,
-        count: 1
-      }))
-    }
-  };
+  const sources: DocumentFilter[] = filteredRecords.map((document) => ({
+    documentId: document.id,
+    label: document.url,
+    filter: { url: document.url }
+  }));
 
   return NextResponse.json({
-    web
+    sources
   });
 }

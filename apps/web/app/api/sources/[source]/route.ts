@@ -39,9 +39,7 @@ export async function GET(req: Request, { params: { source } }: { params: { sour
   const sources: DocumentFilter[] = filteredRecords.map((document) => ({
     documentId: document.id,
     label: document.title || document.url,
-    value: document.url,
-    status: document.status,
-    count: 1
+    filter: { url: document.url }
   }));
 
   return NextResponse.json({

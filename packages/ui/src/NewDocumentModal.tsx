@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import SnackMessage from './SnackMessage';
 import { useAnswers } from './AnswersContext';
-import { DataSourcesFilters } from 'types';
+import { FilterDatasources } from 'types';
 
 interface IFormInput {
   title: string;
@@ -55,7 +55,7 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
       const res = await axios.post('/api/sync/file', data);
       if (res.data.file) {
         const documents =
-          (filters?.datasources?.[source as keyof DataSourcesFilters] as any)?.documents ?? [];
+          (filters?.datasources?.[source as keyof FilterDatasources] as any)?.documents ?? [];
         updateFilter({
           datasources: { [source]: { documents: [...documents, res.data.file] } }
         });

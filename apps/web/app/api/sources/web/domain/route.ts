@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { respond401 } from '@utils/auth/respond401';
-import { WebFilters } from 'types';
+import { DocumentFilter } from 'types';
 import { getUrlDomain } from '@utils/getUrlDomain';
 
 export async function GET(req: Request) {
@@ -15,13 +15,9 @@ export async function GET(req: Request) {
 
   const domain = getUrlDomain(url || '');
 
-  const web: WebFilters = {
-    domain: {
-      sources: []
-    }
-  };
-
   const MINIMUM_DOMAIN_LENGTH = 9;
+
+  const sources: (DocumentFilter & { count: number })[] = [];
 
   if (domain && domain.length > MINIMUM_DOMAIN_LENGTH) {
     const groupedByRecords = await prisma.document.groupBy({
@@ -37,33 +33,30 @@ export async function GET(req: Request) {
       }
     });
 
-    const groupedData = groupedByRecords.reduce<
-      Record<string, { totalCount: number; syncedCount: number }>
-    >((acc, group) => {
-      const { domain, status, _count } = group;
-      if (!domain) return acc;
+    const groupedData = groupedByRecords.reduce<Record<string, { syncedCount: number }>>(
+      (acc, group) => {
+        const { domain, status, _count } = group;
+        if (!domain) return acc;
 
-      if (!acc[domain]) {
-        acc[domain] = { totalCount: 0, syncedCount: 0 };
-      }
+        if (!acc[domain]) {
+          acc[domain] = { syncedCount: 0 };
+        }
 
-      acc[domain].totalCount += _count.domain;
-      acc[domain].syncedCount += status === 'synced' ? _count.domain : 0;
+        acc[domain].syncedCount += status === 'synced' ? _count.domain : 0;
 
-      return acc;
-    }, {});
+        return acc;
+      },
+      {}
+    );
 
-    web.domain?.sources.push(
-      ...Object.entries(groupedData).map(([domainKey, { totalCount, syncedCount }]) => ({
+    sources.push(
+      ...Object.entries(groupedData).map(([domainKey, { syncedCount }]) => ({
         label: domainKey,
-        value: domainKey,
-        status: syncedCount === totalCount ? 'synced' : 'pending',
+        filter: { domain: domainKey },
         count: syncedCount
       }))
     );
   }
 
-  return NextResponse.json({
-    web
-  });
+  return NextResponse.json({ sources });
 }

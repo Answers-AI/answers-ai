@@ -138,26 +138,19 @@ export interface ConfluenceFilters {
 
 export interface UserFilters {}
 
-export type SourceFilters =
-  | JiraFilters
-  | SlackFilters
-  | WebFilters
-  | OpenApiFilters
-  | ConfluenceFilters
-  | AirtableFilters
-  | CodebaseFilters
-  | StandardDocumentUrlFilters;
 export interface AirtableFilters {
   table?: string[];
   view?: string[];
 }
 
+export interface SourceFilters {
+  [key: string]: SourceFilterValue;
+}
+
 export interface DocumentFilter {
   documentId?: string;
   label: string;
-  status: string;
-  value: string;
-  count?: number;
+  filter: Record<string, string>;
 }
 
 export interface SourceFilterValue {
@@ -166,6 +159,7 @@ export interface SourceFilterValue {
 export interface CodebaseFilters {
   repo?: SourceFilterValue;
 }
+
 export interface WebFilters {
   url?: SourceFilterValue;
   domain?: SourceFilterValue;
@@ -182,7 +176,7 @@ export interface StandardDocumentDataSourcesFilters {
   file?: StandardDocumentUrlFilters;
 }
 
-export interface DataSourcesFilters extends StandardDocumentDataSourcesFilters {
+export interface FilterDatasources extends StandardDocumentDataSourcesFilters {
   user?: UserFilters;
   jira?: JiraFilters;
   slack?: SlackFilters;
@@ -196,7 +190,7 @@ export interface AnswersFilters {
   models?: {
     [key: string]: string[];
   };
-  datasources?: DataSourcesFilters;
+  datasources?: FilterDatasources;
 }
 
 type Models = {

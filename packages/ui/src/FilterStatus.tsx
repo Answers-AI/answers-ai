@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CheckCircle from '@mui/icons-material/CheckCircle';
 import { DocumentFilter } from 'types';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { CircularProgress, Typography } from '@mui/material';
 import SyncProblem from '@mui/icons-material/SyncProblem';
 import axios from 'axios';
 
@@ -15,16 +15,18 @@ export const FilterStatus = ({
   documentFilter: DocumentFilter;
   source: string;
 }) => {
-  const [status, setStatus] = useState<string | undefined>(documentFilter.status);
-  const [itemsCount, setItemsCount] = useState(documentFilter.count ?? 0);
+  const [status, setStatus] = useState<string | undefined>();
+  const [itemsCount, setItemsCount] = useState(0);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const remainingPollsRef = useRef<number>(10);
 
   const statusUrl = useMemo(
     () =>
-      `/api/sources/status?id=${documentFilter.documentId}&source=${source}&value=${documentFilter.value}`,
-    [documentFilter.value, documentFilter.documentId, source]
+      `/api/sources/status?source=${source}&${
+        documentFilter.documentId ? `id=${documentFilter.documentId}&` : ''
+      }filter=${JSON.stringify(documentFilter.filter)}`,
+    [documentFilter.filter, documentFilter.documentId, source]
   );
 
   const pollStatus = useCallback(async () => {
@@ -45,6 +47,10 @@ export const FilterStatus = ({
       if (polledStatus !== 'synced' && polledStatus != 'error' && remainingPollsRef.current > 0) {
         remainingPollsRef.current--;
         timeoutRef.current = setTimeout(pollStatus, POLLING_INTERVAL);
+        return;
+      }
+      if (remainingPollsRef.current <= 0) {
+        setStatus(undefined);
       }
     } catch (err: any) {
       console.error(err);
@@ -53,10 +59,6 @@ export const FilterStatus = ({
   }, [statusUrl]);
 
   useEffect(() => {
-    if (documentFilter.status === 'synced' || documentFilter.status === 'error') {
-      return; // do nothing if status is already "synced" or "error"
-    }
-
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -67,7 +69,7 @@ export const FilterStatus = ({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [documentFilter.status, pollStatus]);
+  }, [pollStatus]);
 
   return (
     <>

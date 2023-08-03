@@ -19,11 +19,13 @@ export async function POST(req: Request, res: NextResponse) {
 
   const { url } = await req.json();
 
+  if (!url) {
+    return NextResponse.json({ error: 'No url provided' }, { status: 400 });
+  }
+
   const web = await prisma.document.upsert({
     select: {
       id: true,
-      title: true,
-      status: true,
       url: true
     },
     where: { url },
@@ -42,9 +44,7 @@ export async function POST(req: Request, res: NextResponse) {
   const webDocumentFilter: DocumentFilter | undefined = {
     documentId: web.id,
     label: web.url,
-    value: web.url,
-    status: web.status,
-    count: 1
+    filter: { url: web.url }
   };
 
   return NextResponse.json(webDocumentFilter);

@@ -25,8 +25,6 @@ export const Filters = ({ sx }: { sx?: any }) => {
     [filters?.datasources]
   );
 
-  console.log('datasources', datasourceEntries);
-
   return datasourceEntries.length ? (
     <>
       {/* <strong>
@@ -92,7 +90,7 @@ export const Filters = ({ sx }: { sx?: any }) => {
                                 <ClearIcon />
                               </Box>
                             }
-                            key={`${source}:${filterKey}:${documentFilter.value}`}>
+                            key={`${source}:${filterKey}:${documentFilter.filter}`}>
                             <Typography
                               variant="body2"
                               sx={{

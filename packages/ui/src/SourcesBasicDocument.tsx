@@ -8,10 +8,10 @@ import Autocomplete from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
 import NewDocumentModal from './NewDocumentModal';
 
-import { DataSourcesFilters, DocumentFilter, StandardDocumentUrlFilters } from 'types';
+import { FilterDatasources, DocumentFilter, StandardDocumentUrlFilters } from 'types';
 
 const SourcesBasicDocument: React.FC<{
-  source: keyof DataSourcesFilters;
+  source: keyof FilterDatasources;
   label: string;
   placeholder: string;
 }> = ({ source, label, placeholder }) => {
