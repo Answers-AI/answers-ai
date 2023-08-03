@@ -224,12 +224,15 @@ export function AnswersProvider({
   );
 
   const updateFilter = React.useCallback(
-    (newFilter: AnswersFilters) => {
+    async (newFilter: AnswersFilters) => {
       const mergedSettings = clearEmptyValues(deepmerge({}, filters, newFilter));
 
       setFilters(mergedSettings);
+      if (journeyId) {
+        await upsertJourney({ id: journeyId, filters: mergedSettings });
+      }
     },
-    [filters]
+    [filters, journeyId]
   );
 
   const regenerateAnswer = (retry?: boolean) => {
