@@ -37,7 +37,6 @@ const HomepageServer = async () => {
     .then((data: any) => JSON.parse(JSON.stringify(data)));
 
   const journeys = await journeysPromise;
-  console.log('Journeys: ', journeys);
 
   return (
     <HomepageClient
