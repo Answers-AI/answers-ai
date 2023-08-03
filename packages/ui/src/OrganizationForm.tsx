@@ -19,6 +19,7 @@ import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 
 import Edit from '@mui/icons-material/Edit';
+import Delete from '@mui/icons-material/Delete';
 
 import { Organization, AppSettings, ContextField } from 'types';
 
@@ -114,6 +115,12 @@ const OrganizationForm = ({
     }
   };
 
+  const handleDeleteField = (index: number) => {
+    const updatedFields = [...fields];
+    updatedFields.splice(index, 1);
+    setValue('contextFields', updatedFields);
+  };
+
   return (
     <Box p={8}>
       <Typography variant="h2" component="h1">
@@ -153,82 +160,74 @@ const OrganizationForm = ({
                   {fields.map((field, index) => (
                     <TableRow key={field.fieldId}>
                       <TableCell sx={{ width: '20%' }}>
-                        {editIndex === index && !field.organizationId ? (
-                          <TextField
-                            {...register(`contextFields.${index}.fieldId`, {
-                              required: true
-                            })}
-                            onChange={(e) => {
-                              const updatedFields = [...fields];
-                              updatedFields[index].fieldId = e.target.value;
-                              setValue(`contextFields.${index}.fieldId`, e.target.value);
-                            }}
-                            label="Field ID"
-                            required
-                            placeholder="Enter a Field ID that will be used to reference this field in your Sidekicks."
-                            multiline
-                            rows={3}
-                            fullWidth
-                            size="small"
-                            error={Boolean(errors.contextFields?.[index]?.fieldId)}
-                          />
-                        ) : (
-                          field.fieldId
-                        )}
+                        <TextField
+                          {...register(`contextFields.${index}.fieldId`, {
+                            required: true
+                          })}
+                          onChange={(e) => {
+                            const updatedFields = [...fields];
+                            updatedFields[index].fieldId = e.target.value;
+                            setValue(`contextFields.${index}.fieldId`, e.target.value);
+                          }}
+                          // label="Field ID"
+                          required
+                          placeholder="Enter a Field ID that will be used to reference this field in your Sidekicks."
+                          multiline
+                          rows={3}
+                          fullWidth
+                          size="small"
+                          error={Boolean(errors.contextFields?.[index]?.fieldId)}
+                        />
                       </TableCell>
                       <TableCell sx={{ width: '30%' }}>
-                        {editIndex === index ? (
-                          <TextField
-                            {...register(`contextFields.${index}.helpText`, {
-                              required: true
-                            })}
-                            onChange={(e) => {
-                              const updatedFields = [...fields];
-                              updatedFields[index].helpText = e.target.value;
-                              setValue(`contextFields.${index}.helpText`, e.target.value);
-                            }}
-                            label="Field Help Text"
-                            placeholder="Enter help text that will allow users to understand how this field could be used."
-                            multiline
-                            rows={3}
-                            fullWidth
-                            size="small"
-                            error={Boolean(errors.contextFields?.[index]?.helpText)}
-                          />
-                        ) : (
-                          field.helpText
-                        )}
+                        <TextField
+                          {...register(`contextFields.${index}.helpText`, {
+                            required: true
+                          })}
+                          onChange={(e) => {
+                            const updatedFields = [...fields];
+                            updatedFields[index].helpText = e.target.value;
+                            setValue(`contextFields.${index}.helpText`, e.target.value);
+                          }}
+                          // label="Field Help Text"
+                          placeholder="Enter help text that will allow users to understand how this field could be used."
+                          multiline
+                          rows={3}
+                          fullWidth
+                          size="small"
+                          error={Boolean(errors.contextFields?.[index]?.helpText)}
+                        />
                       </TableCell>
                       <TableCell sx={{ width: '40%' }}>
-                        {editIndex === index ? (
-                          <TextField
-                            {...register(`contextFields.${index}.fieldTextValue`, {
-                              required: true
-                            })}
-                            onChange={(e) => {
-                              const updatedFields = [...fields];
-                              updatedFields[index].fieldTextValue = e.target.value;
-                              setValue(`contextFields.${index}.fieldTextValue`, e.target.value);
-                            }}
-                            label="Field Value"
-                            required
-                            placeholder="Enter the value that will be returned when the Field ID is referenced in a Sidekick."
-                            multiline
-                            rows={3}
-                            fullWidth
-                            size="small"
-                            error={Boolean(errors.contextFields?.[index]?.fieldTextValue)}
-                          />
-                        ) : (
-                          field.fieldTextValue
-                        )}
+                        <TextField
+                          {...register(`contextFields.${index}.fieldTextValue`, {
+                            required: true
+                          })}
+                          onChange={(e) => {
+                            const updatedFields = [...fields];
+                            updatedFields[index].fieldTextValue = e.target.value;
+                            setValue(`contextFields.${index}.fieldTextValue`, e.target.value);
+                          }}
+                          // label="Field Value"
+                          required
+                          placeholder="Enter the value that will be returned when the Field ID is referenced in a Sidekick."
+                          multiline
+                          rows={3}
+                          fullWidth
+                          size="small"
+                          error={Boolean(errors.contextFields?.[index]?.fieldTextValue)}
+                        />
                       </TableCell>
                       <TableCell sx={{ width: '10%' }}>
-                        {editIndex !== index ? (
-                          <IconButton onClick={() => setEditIndex(index)}>
-                            <Edit />
-                          </IconButton>
-                        ) : null}
+                        {/* <IconButton
+                          disabled={editIndex === index}
+                          onClick={() => setEditIndex(index)}>
+                          <Edit />
+                        </IconButton> */}
+
+                        <IconButton onClick={() => handleDeleteField(index)}>
+                          <Delete />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   ))}
