@@ -50,7 +50,7 @@ const JourneyCard = ({ journey }: Props) => {
     event.stopPropagation();
     const { data } = await upsertJourney({
       id: journey.id,
-      completed: true
+      completedAt: new Date()
     });
 
     handleMenuClose();

@@ -19,7 +19,7 @@ const HomepageServer = async () => {
             id: session.user.id
           }
         },
-        completed: false
+        completedAt: null
       },
       orderBy: {
         updatedAt: 'desc'

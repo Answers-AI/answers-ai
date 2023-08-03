@@ -235,11 +235,11 @@ model Chat {
 }
 
 model Journey {
-  id        String  @id @default(uuid())
-  title     String?
-  goal      String?
-  completed Boolean @default(false)
-  filters   Json
+  id          String    @id @default(uuid())
+  title       String?
+  goal        String?
+  completedAt DateTime?
+  filters     Json
 
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id])
