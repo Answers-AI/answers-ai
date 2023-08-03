@@ -26,7 +26,6 @@ const JOURNEY_SETTINGS: { [key: string]: any } = {
 
 const JourneySettings = ({ app, ...other }: any) => {
   const Component = JOURNEY_SETTINGS[app];
-
   if (!Component && app) return <div>There are currently no filters available for {app}.</div>;
   if (Component) return <Component {...other} />;
 

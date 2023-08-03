@@ -44,7 +44,7 @@ export const JourneyAppsDrawer = ({
           transition: '.3s'
         }}>
         {appSettings?.services
-          ?.filter((s) => s.enabled || (flags?.[s.name] as any)?.enabled)
+          ?.filter((s) => s.enabled || (flags?.[s.id] as any)?.enabled)
           ?.map((service) => (
             <JourneySourceCard
               appSettings={appSettings}

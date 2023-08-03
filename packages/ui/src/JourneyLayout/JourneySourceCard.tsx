@@ -140,7 +140,7 @@ const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
                 }}>
                 {/* <Typography variant="overline">Filter Options</Typography> */}
                 <JourneySetting
-                  app={name}
+                  app={id}
                   filters={filters}
                   updateFilter={updateFilter}
                   appSettings={appSettings}
