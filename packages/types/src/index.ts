@@ -264,6 +264,7 @@ export interface Journey extends Omit<DB.Journey, 'filters'> {
   chats: Chat[] | null;
   appSettings: AppSettings;
   filters: AnswersFilters;
+  completed: boolean;
 }
 
 export type SlackChannel = { id: string; name: string };

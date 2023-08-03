@@ -16,25 +16,27 @@ import { AnswersProvider, useAnswers } from '../AnswersContext';
 import SnackMessage from '../SnackMessage';
 import { debounce } from '@utils/debounce';
 
-import { AppSettings, User } from 'types';
+import { AppSettings, User, Journey } from 'types';
 
 const JourneyFormNew = ({
   appSettings,
-  user
+  user,
+  journey
 }: {
   appSettings: AppSettings;
   user: User;
+  journey?: Journey;
 }): JSX.Element => {
   return (
-    <AnswersProvider user={user} appSettings={appSettings}>
-      <JourneyForm appSettings={appSettings} />
+    <AnswersProvider user={user} appSettings={appSettings} journey={journey}>
+      <JourneyForm appSettings={appSettings} journey={journey} />
     </AnswersProvider>
   );
 };
 
-const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
+const JourneyForm = ({ appSettings, journey }: { appSettings: AppSettings; journey?: Journey }) => {
   const router = useRouter();
-  const [goal, setGoal] = useState('');
+  const [goal, setGoal] = useState(journey?.goal || '');
   const [query, setQuery] = useState<string>('');
   const [theMessage, setTheMessage] = useState('');
   const { updateFilter, upsertJourney, filters } = useAnswers();
@@ -70,13 +72,36 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
       console.error(err);
     }
   };
+
+  const handleUpdateJourney = async (id: any) => {
+    try {
+      setTheMessage('... Updating your journey');
+
+      const { data: journey } = await upsertJourney({
+        id,
+        goal,
+        filters
+      });
+      router.push(`/journey/${id}`);
+      setTheMessage('Your journey is ready....taking you there now.');
+    } catch (err: any) {
+      setTheMessage('There was an error creating your journey.   Please try again.');
+      console.error(err);
+    }
+  };
+
   return (
     <Box p={8} width="100%">
       <SnackMessage message={theMessage} />
-
-      <Typography variant="h2" component="h1">
-        Create New Journey
-      </Typography>
+      {journey ? (
+        <Typography variant="h2" component="h1">
+          Edit Journey
+        </Typography>
+      ) : (
+        <Typography variant="h2" component="h1">
+          Create New Journey
+        </Typography>
+      )}
 
       <Divider sx={{ my: 2 }} />
 
@@ -111,7 +136,7 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
             {isLoading ? <CircularProgress size={20} sx={{ ml: 1 }} /> : null}
           </Box>
           <Grid2 container sx={{ pt: 3, gap: 2, width: '100%' }}>
-            <JourneyAppsDrawer appSettings={appSettings} />
+            <JourneyAppsDrawer appSettings={appSettings} journey={journey} />
           </Grid2>
         </Box>
         <Box
@@ -126,15 +151,27 @@ const JourneyForm = ({ appSettings }: { appSettings: AppSettings }) => {
             zIndex: 1000,
             background: (theme) => theme.palette.background.paper
           }}>
-          <Button
-            sx={{}}
-            variant="contained"
-            color="primary"
-            type="submit"
-            size="large"
-            onClick={handleCreateNewJourney}>
-            Create New Journey
-          </Button>
+          {journey ? (
+            <Button
+              sx={{}}
+              variant="contained"
+              color="primary"
+              type="submit"
+              size="large"
+              onClick={() => handleUpdateJourney(journey.id)}>
+              Update Journey
+            </Button>
+          ) : (
+            <Button
+              sx={{}}
+              variant="contained"
+              color="primary"
+              type="submit"
+              size="large"
+              onClick={handleCreateNewJourney}>
+              Create New Journey
+            </Button>
+          )}
         </Box>
       </>
     </Box>

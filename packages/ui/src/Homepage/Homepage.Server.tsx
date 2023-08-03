@@ -14,16 +14,12 @@ const HomepageServer = async () => {
   const journeysPromise = prisma.journey
     .findMany({
       where: {
-        chats: {
+        users: {
           some: {
-            users: {
-              some: { email: session.user.email }
-            }
+            id: session.user.id
           }
         },
-        goal: {
-          not: null
-        }
+        completedAt: null
       },
       orderBy: {
         updatedAt: 'desc'
@@ -42,7 +38,13 @@ const HomepageServer = async () => {
 
   const journeys = await journeysPromise;
 
-  return <HomepageClient journeys={journeys} />;
+  return (
+    <HomepageClient
+      user={session.user}
+      journeys={journeys}
+      appSettings={session.user.appSettings}
+    />
+  );
 };
 
 export default HomepageServer;

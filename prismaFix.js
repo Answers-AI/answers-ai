@@ -33,6 +33,9 @@ const PATHS = [
   './apps/web/.next/server/app/api/sidekicks/list/private',
   './apps/web/.next/server/app/api/sidekicks/new',
   './apps/web/.next/server/app/api/sources',
+  './apps/web/.next/server/app/api/sources/document',
+  './apps/web/.next/server/app/api/sources/zoom',
+  './apps/web/.next/server/app/api/sources/youtube',
   './apps/web/.next/server/app/api/sync',
   './apps/web/.next/server/app/api/sync/file',
   './apps/web/.next/server/app/api/sync/web'

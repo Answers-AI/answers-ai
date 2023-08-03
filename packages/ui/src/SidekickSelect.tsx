@@ -39,6 +39,8 @@ const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectPr
     Cookies.set('sidekickHistory', JSON.stringify(sidekickHistory));
   };
 
+  const sortedSidekicks = [...sidekicks].sort((a, b) => a.label.localeCompare(b.label));
+
   return (
     <>
       <Fieldset legend="Sidekick">
@@ -49,7 +51,7 @@ const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectPr
           sx={{ 'boxShadow': 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
           value={selectedSidekick ?? ''}
           onChange={handleSidekickChange}>
-          {sidekicks.map((sidekick: Sidekick) => (
+          {sortedSidekicks.map((sidekick: Sidekick) => (
             <MenuItem key={sidekick.id} value={sidekick.id}>
               {sidekick.label}
             </MenuItem>
