@@ -51,7 +51,6 @@ const OrganizationForm = ({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
 
   const {
     handleSubmit,
@@ -72,12 +71,6 @@ const OrganizationForm = ({
     control,
     name: 'contextFields'
   });
-
-  useEffect(() => {
-    if (fields.length > 0) {
-      setEditIndex(fields.length - 1);
-    }
-  }, [fields]);
 
   if (!organization) return null;
 
@@ -116,9 +109,7 @@ const OrganizationForm = ({
   };
 
   const handleDeleteField = (index: number) => {
-    const updatedFields = [...fields];
-    updatedFields.splice(index, 1);
-    setValue('contextFields', updatedFields);
+    remove(index);
   };
 
   return (
@@ -158,18 +149,12 @@ const OrganizationForm = ({
                 </TableHead>
                 <TableBody>
                   {fields.map((field, index) => (
-                    <TableRow key={field.fieldId}>
+                    <TableRow key={`${index}`}>
                       <TableCell sx={{ width: '20%' }}>
                         <TextField
                           {...register(`contextFields.${index}.fieldId`, {
                             required: true
                           })}
-                          onChange={(e) => {
-                            const updatedFields = [...fields];
-                            updatedFields[index].fieldId = e.target.value;
-                            setValue(`contextFields.${index}.fieldId`, e.target.value);
-                          }}
-                          // label="Field ID"
                           required
                           placeholder="Enter a Field ID that will be used to reference this field in your Sidekicks."
                           multiline
@@ -184,12 +169,6 @@ const OrganizationForm = ({
                           {...register(`contextFields.${index}.helpText`, {
                             required: true
                           })}
-                          onChange={(e) => {
-                            const updatedFields = [...fields];
-                            updatedFields[index].helpText = e.target.value;
-                            setValue(`contextFields.${index}.helpText`, e.target.value);
-                          }}
-                          // label="Field Help Text"
                           placeholder="Enter help text that will allow users to understand how this field could be used."
                           multiline
                           rows={3}
@@ -203,12 +182,6 @@ const OrganizationForm = ({
                           {...register(`contextFields.${index}.fieldTextValue`, {
                             required: true
                           })}
-                          onChange={(e) => {
-                            const updatedFields = [...fields];
-                            updatedFields[index].fieldTextValue = e.target.value;
-                            setValue(`contextFields.${index}.fieldTextValue`, e.target.value);
-                          }}
-                          // label="Field Value"
                           required
                           placeholder="Enter the value that will be returned when the Field ID is referenced in a Sidekick."
                           multiline
@@ -219,12 +192,6 @@ const OrganizationForm = ({
                         />
                       </TableCell>
                       <TableCell sx={{ width: '10%' }}>
-                        {/* <IconButton
-                          disabled={editIndex === index}
-                          onClick={() => setEditIndex(index)}>
-                          <Edit />
-                        </IconButton> */}
-
                         <IconButton onClick={() => handleDeleteField(index)}>
                           <Delete />
                         </IconButton>
