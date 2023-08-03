@@ -97,7 +97,6 @@ const SourcesDocument: React.FC<{}> = ({}) => {
         updateFilter({
           datasources: { document: { url: { sources: newDocuments } } }
         });
-        updateFilter({ datasources: { document: { url: { sources: newDocuments } } } });
 
         setTimeout(() => {
           setTheMessage('');
