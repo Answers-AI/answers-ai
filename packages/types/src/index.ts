@@ -199,65 +199,6 @@ export interface AnswersFilters {
   datasources?: DataSourcesFilters;
 }
 
-const filters: AnswersFilters = {
-  datasources: {
-    file: {
-      url: {
-        sources: [
-          {
-            label: 'test', // Always the title or the value
-            value: 'file://smome-file-url',
-            status: 'synced'
-          },
-          {
-            label: 'test-2',
-            value: 'file://smome-file-url-2',
-            status: 'synced'
-          }
-        ]
-      }
-    },
-    web: {
-      url: {
-        sources: [
-          {
-            label: 'A single page',
-            value: 'domain.com/a-single-page',
-            status: 'synced'
-          },
-          {
-            label: 'Another page',
-            value: 'domain.com/another-page',
-            status: 'synced'
-          }
-        ]
-      },
-      domain: {
-        sources: [
-          {
-            label: 'domain.com',
-            value: 'domain.com',
-            status: 'synced',
-            count: 1000
-          }
-        ]
-      }
-    },
-    codebase: {
-      repo: {
-        sources: [
-          {
-            label: '@answerai/daisy-monorepo-v0.1.0-main',
-            value: '@answerai/daisy-monorepo-v0.1.0-main',
-            status: 'synced',
-            count: 10000
-          }
-        ]
-      }
-    }
-  }
-};
-
 type Models = {
   jira: string[];
   slack: string[];
