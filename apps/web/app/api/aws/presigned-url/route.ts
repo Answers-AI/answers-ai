@@ -28,10 +28,6 @@ export async function POST(req: Request, res: NextResponse) {
   }
 
   const { documentName } = await req.json();
-  const url = getUniqueDocumentPath({
-    organizationId: user.organizationId,
-    title: documentName
-  })
 
   if (!documentName) {
     return NextResponse.json({
@@ -39,6 +35,11 @@ export async function POST(req: Request, res: NextResponse) {
       message: 'You must pass a valid documentname to perform this action.'
     });
   }
+
+  const url = getUniqueDocumentPath({
+    organizationId: user.organizationId,
+    title: documentName
+  });
 
   const s3Client = new S3Client({
     region: AWS_S3_REGION,
