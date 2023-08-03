@@ -19,7 +19,7 @@ export const FilterStatus = ({
   const [itemsCount, setItemsCount] = useState(0);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const remainingPollsRef = useRef<number>(10);
+  const remainingPollsRef = useRef<number>(30);
 
   const statusUrl = useMemo(
     () =>
