@@ -27,7 +27,7 @@ class OpenAI {
     });
     this.openai = new OpenAIApi(configuration);
     this.embeddingsLoader = redisLoader({
-      keyPrefix: 'openai',
+      keyPrefix: 'v2-openai',
       redisConfig: process.env.REDIS_URL as string,
       disableCache: false,
       getValuesFn: (keys) =>
