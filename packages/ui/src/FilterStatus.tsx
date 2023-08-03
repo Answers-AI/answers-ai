@@ -48,7 +48,7 @@ export const FilterStatus = ({
       }
     } catch (err: any) {
       console.error(err);
-      setStatus('error');
+      setStatus(undefined);
     }
   }, [statusUrl]);
 
