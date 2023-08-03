@@ -18,7 +18,6 @@ import TableRow from '@mui/material/TableRow';
 import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 
-import Edit from '@mui/icons-material/Edit';
 import Delete from '@mui/icons-material/Delete';
 
 import { Organization, AppSettings, ContextField } from 'types';
@@ -58,7 +57,7 @@ const OrganizationForm = ({
     setValue,
     register,
     reset,
-    formState: { touchedFields, errors },
+    formState: { isDirty, touchedFields, errors },
     getValues
   } = useForm<OrgInput>({
     defaultValues: {
@@ -99,7 +98,9 @@ const OrganizationForm = ({
 
     try {
       await axios.patch(`/api/organizations`, { ...formData });
-      router.refresh();
+      setTimeout(() => {
+        router.refresh();
+      }, 500);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -111,7 +112,9 @@ const OrganizationForm = ({
   const handleDeleteField = (index: number) => {
     remove(index);
   };
-
+  const handleCancel = () => {
+    reset();
+  };
   return (
     <Box p={8}>
       <Typography variant="h2" component="h1">
@@ -123,6 +126,7 @@ const OrganizationForm = ({
         <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
           <Grid item sm={12}>
             <TextField
+              id={`name`}
               {...register('name', { required: true })}
               rows={2}
               label="Organization Name"
@@ -152,6 +156,7 @@ const OrganizationForm = ({
                     <TableRow key={`${index}`}>
                       <TableCell sx={{ width: '20%' }}>
                         <TextField
+                          id={`contextFields.${index}.fieldId`}
                           {...register(`contextFields.${index}.fieldId`, {
                             required: true
                           })}
@@ -166,6 +171,7 @@ const OrganizationForm = ({
                       </TableCell>
                       <TableCell sx={{ width: '30%' }}>
                         <TextField
+                          id={`contextFields.${index}.helpText`}
                           {...register(`contextFields.${index}.helpText`, {
                             required: true
                           })}
@@ -179,6 +185,7 @@ const OrganizationForm = ({
                       </TableCell>
                       <TableCell sx={{ width: '40%' }}>
                         <TextField
+                          id={`contextFields.${index}.fieldTextValue`}
                           {...register(`contextFields.${index}.fieldTextValue`, {
                             required: true
                           })}
@@ -209,9 +216,14 @@ const OrganizationForm = ({
           </Grid>
         </Grid>
         {/* Need to check both because the context fields don't trigger dirtyFields unless a new one is added */}
-        <Button variant="contained" type="submit">
-          Save Organization
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="contained" type="submit">
+            Save Organization
+          </Button>
+          <Button disabled={!isDirty} color="error" variant="outlined" onClick={handleCancel}>
+            Cancel
+          </Button>
+        </Box>
       </Box>
     </Box>
   );

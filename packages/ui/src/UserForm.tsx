@@ -18,7 +18,7 @@ import TableRow from '@mui/material/TableRow';
 import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 
-import Edit from '@mui/icons-material/Edit';
+import Delete from '@mui/icons-material/Delete';
 import { User, AppSettings, ContextField } from 'types';
 
 interface ContextFieldInput extends Partial<ContextField> {}
@@ -43,7 +43,6 @@ const UserForm = ({ appSettings, user }: { appSettings: AppSettings; user?: User
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
 
   const {
     handleSubmit,
@@ -51,7 +50,7 @@ const UserForm = ({ appSettings, user }: { appSettings: AppSettings; user?: User
     setValue,
     register,
     reset,
-    formState: { touchedFields, errors },
+    formState: { isDirty, touchedFields, errors },
     getValues
   } = useForm<OrgInput>({
     defaultValues: {
@@ -64,12 +63,6 @@ const UserForm = ({ appSettings, user }: { appSettings: AppSettings; user?: User
     control,
     name: 'contextFields'
   });
-
-  useEffect(() => {
-    if (fields.length > 0) {
-      setEditIndex(fields.length - 1);
-    }
-  }, [fields]);
 
   if (!user) return null;
 
@@ -106,7 +99,12 @@ const UserForm = ({ appSettings, user }: { appSettings: AppSettings; user?: User
       reset();
     }
   };
-
+  const handleDeleteField = (index: number) => {
+    remove(index);
+  };
+  const handleCancel = () => {
+    reset();
+  };
   return (
     <Box p={8}>
       <Typography variant="h2" component="h1">
@@ -136,82 +134,68 @@ const UserForm = ({ appSettings, user }: { appSettings: AppSettings; user?: User
                   {fields.map((field, index) => (
                     <TableRow key={field.fieldId}>
                       <TableCell sx={{ width: '20%' }}>
-                        {editIndex === index && !field.userId ? (
-                          <TextField
-                            {...register(`contextFields.${index}.fieldId`, {
-                              required: true
-                            })}
-                            onChange={(e) => {
-                              const updatedFields = [...fields];
-                              updatedFields[index].fieldId = e.target.value;
-                              setValue(`contextFields.${index}.fieldId`, e.target.value);
-                            }}
-                            label="Field ID"
-                            required
-                            placeholder="Enter a Field ID that will be used to reference this field in your Sidekicks."
-                            multiline
-                            rows={3}
-                            fullWidth
-                            size="small"
-                            error={Boolean(errors.contextFields?.[index]?.fieldId)}
-                          />
-                        ) : (
-                          field.fieldId
-                        )}
+                        <TextField
+                          {...register(`contextFields.${index}.fieldId`, {
+                            required: true
+                          })}
+                          onChange={(e) => {
+                            const updatedFields = [...fields];
+                            updatedFields[index].fieldId = e.target.value;
+                            setValue(`contextFields.${index}.fieldId`, e.target.value);
+                          }}
+                          label="Field ID"
+                          required
+                          placeholder="Enter a Field ID that will be used to reference this field in your Sidekicks."
+                          multiline
+                          rows={3}
+                          fullWidth
+                          size="small"
+                          error={Boolean(errors.contextFields?.[index]?.fieldId)}
+                        />
                       </TableCell>
                       <TableCell sx={{ width: '30%' }}>
-                        {editIndex === index ? (
-                          <TextField
-                            {...register(`contextFields.${index}.helpText`, {
-                              required: true
-                            })}
-                            onChange={(e) => {
-                              const updatedFields = [...fields];
-                              updatedFields[index].helpText = e.target.value;
-                              setValue(`contextFields.${index}.helpText`, e.target.value);
-                            }}
-                            label="Field Help Text"
-                            placeholder="Enter help text that will allow users to understand how this field could be used."
-                            multiline
-                            rows={3}
-                            fullWidth
-                            size="small"
-                            error={Boolean(errors.contextFields?.[index]?.helpText)}
-                          />
-                        ) : (
-                          field.helpText
-                        )}
+                        <TextField
+                          {...register(`contextFields.${index}.helpText`, {
+                            required: true
+                          })}
+                          onChange={(e) => {
+                            const updatedFields = [...fields];
+                            updatedFields[index].helpText = e.target.value;
+                            setValue(`contextFields.${index}.helpText`, e.target.value);
+                          }}
+                          label="Field Help Text"
+                          placeholder="Enter help text that will allow users to understand how this field could be used."
+                          multiline
+                          rows={3}
+                          fullWidth
+                          size="small"
+                          error={Boolean(errors.contextFields?.[index]?.helpText)}
+                        />
                       </TableCell>
                       <TableCell sx={{ width: '40%' }}>
-                        {editIndex === index ? (
-                          <TextField
-                            {...register(`contextFields.${index}.fieldTextValue`, {
-                              required: true
-                            })}
-                            onChange={(e) => {
-                              const updatedFields = [...fields];
-                              updatedFields[index].fieldTextValue = e.target.value;
-                              setValue(`contextFields.${index}.fieldTextValue`, e.target.value);
-                            }}
-                            label="Field Value"
-                            required
-                            placeholder="Enter the value that will be returned when the Field ID is referenced in a Sidekick."
-                            multiline
-                            rows={3}
-                            fullWidth
-                            size="small"
-                            error={Boolean(errors.contextFields?.[index]?.fieldTextValue)}
-                          />
-                        ) : (
-                          field.fieldTextValue
-                        )}
+                        <TextField
+                          {...register(`contextFields.${index}.fieldTextValue`, {
+                            required: true
+                          })}
+                          onChange={(e) => {
+                            const updatedFields = [...fields];
+                            updatedFields[index].fieldTextValue = e.target.value;
+                            setValue(`contextFields.${index}.fieldTextValue`, e.target.value);
+                          }}
+                          label="Field Value"
+                          required
+                          placeholder="Enter the value that will be returned when the Field ID is referenced in a Sidekick."
+                          multiline
+                          rows={3}
+                          fullWidth
+                          size="small"
+                          error={Boolean(errors.contextFields?.[index]?.fieldTextValue)}
+                        />
                       </TableCell>
                       <TableCell sx={{ width: '10%' }}>
-                        {editIndex !== index ? (
-                          <IconButton onClick={() => setEditIndex(index)}>
-                            <Edit />
-                          </IconButton>
-                        ) : null}
+                        <IconButton onClick={() => handleDeleteField(index)}>
+                          <Delete />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -226,9 +210,14 @@ const UserForm = ({ appSettings, user }: { appSettings: AppSettings; user?: User
           </Grid>
         </Grid>
         {/* Need to check both because the context fields don't trigger dirtyFields unless a new one is added */}
-        <Button variant="contained" type="submit">
-          Save User
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="contained" type="submit">
+            Save User
+          </Button>
+          <Button disabled={!isDirty} color="error" variant="outlined" onClick={handleCancel}>
+            Cancel
+          </Button>
+        </Box>
       </Box>
     </Box>
   );
