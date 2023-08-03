@@ -34,8 +34,9 @@ export async function GET(req: Request) {
     const document = await prisma.document.findFirst({
       where: {
         id,
-        source,
-        permissions: { some: { organization: { users: { some: { id: userId } } } } }
+        source
+        // not needed since we are only selecting the status
+        // permissions: { some: { organization: { users: { some: { id: userId } } } } }
       },
       select: {
         status: true

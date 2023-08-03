@@ -15,7 +15,7 @@ export const FilterStatus = ({
   documentFilter: DocumentFilter;
   source: string;
 }) => {
-  const [status, setStatus] = useState(documentFilter.status);
+  const [status, setStatus] = useState<string | undefined>(documentFilter.status);
   const [itemsCount, setItemsCount] = useState(documentFilter.count ?? 0);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -30,7 +30,12 @@ export const FilterStatus = ({
   const pollStatus = useCallback(async () => {
     try {
       const { data } = await axios.get(statusUrl);
-      const { count, status: polledStatus } = data;
+      const { count, status: polledStatus, error } = data;
+
+      if (error) {
+        setStatus(undefined);
+        return;
+      }
 
       if (polledStatus) {
         setStatus(polledStatus);
