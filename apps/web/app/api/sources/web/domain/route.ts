@@ -37,8 +37,6 @@ export async function GET(req: Request) {
       }
     });
 
-    console.log('found grouped records', groupedByRecords.length);
-
     const groupedData = groupedByRecords.reduce<
       Record<string, { totalCount: number; syncedCount: number }>
     >((acc, group) => {
