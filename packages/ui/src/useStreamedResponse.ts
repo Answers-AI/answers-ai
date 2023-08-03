@@ -1,7 +1,6 @@
-'use client';
-// useStreamedResponse.ts
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Message, Sidekick } from 'types';
+
 interface GenerateResponseArgs {
   content: string;
   journeyId?: string;
@@ -12,24 +11,25 @@ interface GenerateResponseArgs {
   gptModel?: string;
 }
 
+const JSON_SPLIT_STRING: string = process.env.JSON_SPLIT_STRING || '';
+
 const parseMessages = (messages?: any[]) =>
   messages?.map(({ role, content }) => ({ role, content }));
+
 export const useStreamedResponse = ({
   apiUrl,
   onChunk,
   onEnd,
   onError
-}: // setChat
-{
+}: {
   apiUrl: string;
   onChunk: (chunk: Message) => void;
   onEnd: (chunk: Message) => void;
   onError: (err: any) => void;
-  // setChat: (chat: Chat) => void;
 }) => {
   const [isStreaming, setIsStreaming] = useState(false);
-
   const [generatedResponse, setGeneratedResponse] = useState<any>({});
+  const [controller, setController] = useState<AbortController | null>(null);
 
   const generateResponse = async ({
     content,
@@ -40,73 +40,92 @@ export const useStreamedResponse = ({
     sidekick,
     gptModel
   }: GenerateResponseArgs) => {
-    setGeneratedResponse('');
+    setGeneratedResponse({});
     setIsStreaming(true);
 
-    const response = await fetch(`${apiUrl || '/api'}/ai/stream`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        journeyId,
-        chatId,
-        prompt: content,
-        filters,
-        messages: parseMessages(messages),
-        sidekick: sidekick, // Add sidekick parameter
-        gptModel // Add gptModel parameter
-      })
-    });
+    const abortController = new AbortController();
+    setController(abortController);
 
-    if (!response.ok) {
-      const body = await response.json();
-      setGeneratedResponse({});
-      setIsStreaming(false);
-
-      if (body.code) {
-        return onError(body);
-      } else {
-        return onError({ code: response.statusText });
-      }
-    }
-
-    const data = response.body;
-    if (!data) {
-      return;
-    }
-    const reader = data.getReader();
-    const decoder = new TextDecoder();
     let done = false;
-    let extra: any;
-    let answer = '';
+    try {
+      const response = await fetch(`${apiUrl || '/api'}/ai/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          journeyId,
+          chatId,
+          prompt: content,
+          filters,
+          messages: parseMessages(messages),
+          sidekick,
+          gptModel
+        }),
+        signal: abortController.signal
+      });
 
-    while (!done) {
-      const { value, done: doneReading } = await reader.read();
-      done = doneReading;
-      const chunkValue = decoder.decode(value);
-
-      answer = (answer || '') + chunkValue;
-      if (!extra) {
-        const [jsonData, ...rest] = answer.split('JSON_END');
-        if (jsonData && rest?.length) {
-          try {
-            extra = JSON.parse(jsonData);
-            // if (extra.chat) setChat(extra.chat);
-          } catch (e) {
-            console.log('ParseError', e);
-          }
-          answer = rest.join('');
-        }
-        onChunk({ role: 'assistant', content: answer, ...extra });
-      } else {
-        onChunk({ role: 'assistant', content: answer, ...extra });
+      if (!response.ok) {
+        const body = await response.json();
+        throw body.code ? body : { code: response.statusText };
       }
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('Response body reader is not available.');
+      }
+
+      let extra: any;
+      let answer = '';
+
+      while (!done) {
+        try {
+          const { value, done: doneReading } = await reader.read().catch((error) => {
+            throw new Error('Error reading response stream: ' + error.message);
+          });
+          done = doneReading;
+
+          if (value) {
+            const chunkValue = new TextDecoder().decode(value);
+            answer += chunkValue;
+
+            const [jsonData, ...rest] = answer.split(JSON_SPLIT_STRING);
+
+            if (jsonData && rest?.length) {
+              try {
+                extra = JSON.parse(jsonData);
+              } catch (e) {
+                console.log('ParseError', e);
+                done = true;
+              }
+              answer = rest.join('');
+            }
+
+            onChunk({ role: 'assistant', content: answer, ...extra });
+          }
+        } catch (e) {
+          console.log('While Error', e);
+          done = true;
+        }
+      }
+
+      onEnd({ role: 'assistant', content, ...extra });
+    } catch (error) {
+      onError(error);
+    } finally {
+      setIsStreaming(false);
+      setGeneratedResponse({});
+      done = true;
     }
-    setGeneratedResponse({});
-    setIsStreaming(false);
-    onEnd({ role: 'assistant', content, ...extra });
   };
+
+  useEffect(() => {
+    return () => {
+      if (controller) {
+        controller.abort();
+      }
+    };
+  }, [controller]);
 
   return { isStreaming, generatedResponse, generateResponse };
 };

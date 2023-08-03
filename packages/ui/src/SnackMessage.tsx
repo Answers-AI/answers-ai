@@ -4,10 +4,20 @@ import Slide, { SlideProps } from '@mui/material/Slide';
 
 type TransitionProps = Omit<SlideProps, 'direction'>;
 
+/**
+ * Slide component with left direction.
+ * @param {TransitionProps} props - Props for the Slide component.
+ * @returns {JSX.Element} - Slide component with left direction.
+ */
 function TransitionLeft(props: TransitionProps) {
   return <Slide {...props} direction="left" />;
 }
 
+/**
+ * Snackbar message component.
+ * @param {string} message - The message to be displayed.
+ * @returns {JSX.Element} - Snackbar message component.
+ */
 const SnackMessage = ({ message }: { message: string }) => {
   const [theMessageOpen, setTheMessageOpen] = useState(false);
   const [theMessageTransition, setTheMessageTransition] = useState<
@@ -22,12 +32,16 @@ const SnackMessage = ({ message }: { message: string }) => {
     }
   }, [message]);
 
+  /**
+   * Handles the closing of the message.
+   */
   const handleMessageClose = () => {
     setTheMessageOpen(false);
   };
 
   return (
     <Snackbar
+      data-cy="snackbar" // data-cy attribute for testing
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       open={theMessageOpen}
       autoHideDuration={6000}

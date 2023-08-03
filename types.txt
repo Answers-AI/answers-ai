@@ -1,0 +1,271 @@
+type Events{  }
+
+interface DomainInfo{ domain:string;pageCount:number; }
+
+interface RequestBody{ keywords:string; }
+
+interface RequestBody{ url:string;urls?:string[]; }
+
+type Data{ domains:string[]; }
+
+type SourceUrl{ id:string;domain:string;url:string; }
+
+type Data{ urls:string[]; }
+
+type Data{ pineconeData?:any;context?:any;error?:any; }
+
+interface Props{ src:string;width:string;height:string; }
+
+interface ChatApp{ id:number;apiKey:string;name:string;organizationId:string;organization:Organization;userId:string;user:User; }
+
+interface User{ id:string;role:string;name:string;email:string;emailVerified:Date;invited:Date;image:string;accounts:Account;sessions:Session;currentOrganization:Organization;organizations:Organization;appSettings:any;chats:Chat;chatsCreated:Chat;messages:Message;prompts:Prompt;journeys:Journey;feedbacks:MessageFeedback;createdAt:Date;updatedAt:Date;ChatApp:ChatApp;organizationId:string;apiKeys:ApiKey;aiRequests:AiRequest;favoritedSidekicks:Sidekick;Sidekick:Sidekick;contextFields:ContextField; }
+
+interface ApiKey{ id:string;userId:string;organizationId:string;type:ApiKeyType;user:User;organization:Organization;key:string; }
+
+interface Organization{ id:string;name:string;image:string;users:User;usersSelected:User;documentPermissions:DocumentPermission;createdAt:Date;updatedAt:Date;ChatApp:ChatApp;contextFields:ContextField;journeys:Journey;chats:Chat;appSettings:any;apiKeys:ApiKey; }
+
+interface ContextField{ id:string;fieldId:string;helpText:string;fieldType:string;fieldTextValue:string;organizationId:string;organization:Organization;User:User;userId:string; }
+
+interface Sidekick{ id:string;isGlobal:boolean;isSystem:boolean;isSharedWithOrg:boolean;isFavoriteByDefault:boolean;tags:string;label:string;placeholder:string;temperature:number;frequency:number;presence:number;maxCompletionTokens:number;aiModel:string;systemPromptTemplate:string;userPromptTemplate:string;contextStringRender:string;createdAt:Date;updatedAt:Date;createdByUser:User;userId:string;favoritedBy:User; }
+
+interface WebDocument{ id:string;url:string;domain:string;content:string;pageTitle:string;pageLastUpdatedAt:Date;createdAt:Date;updatedAt:Date; }
+
+interface Document{ id:string;source:string;title:string;domain:string;url:string;content:string;metadata:any; }
+
+interface DocumentPermission{ id:string;document:Document;documentId:string;organization:Organization;organizationId:string;createdAt:Date;updatedAt:Date; }
+
+interface Account{ id:string;userId:string;type:string;provider:string;providerAccountId:string;refresh_token:string;refresh_token_expires_in:number;access_token:string;expires_at:number;token_type:string;scope:string;id_token:string;session_state:string;state:string;ok:boolean;user:User; }
+
+interface Session{ id:string;sessionToken:string;userId:string;expires:Date;user:User; }
+
+interface VerificationToken{ identifier:string;token:string;expires:Date; }
+
+interface Chat{ id:string;title:string;prompt:Prompt;promptId:string;journey:Journey;journeyId:string;owner:User;ownerId:string;users:User;messages:Message;organizationId:string;organization:Organization;filters:any;deleted:boolean;createdAt:Date;updatedAt:Date; }
+
+interface Journey{ id:string;title:string;goal:string;filters:any;organizationId:string;organization:Organization;chats:Chat;users:User;deleted:boolean;createdAt:Date;updatedAt:Date; }
+
+interface Prompt{ id:string;title:string;description:string;content:string;chat:Chat;usages:number;likes:number;dislikes:number;deleted:boolean;createdAt:Date;updatedAt:Date;answers:Message;users:User;tags:string; }
+
+interface Message{ id:string;role:string;content:string;contextSourceFilesUsed:string;context:string;contextDocuments:Document;sidekickJson:any; }
+
+interface MessageFeedback{ id:string;rating:Rating;content:string;tags:string;user:User;userId:string;message:Message;messageId:string;createdAt:Date;updatedAt:Date; }
+
+interface AppSettings{ id:string;services:AppService;jiraSettings:JiraSettings;jiraSettingsId:string;createdAt:Date;updatedAt:Date; }
+
+interface AppService{ id:string;name:string;enabled:boolean;AppSettings:AppSettings;appSettingsId:string;createdAt:Date;updatedAt:Date; }
+
+interface JiraSettings{ id:string;projects:JiraProjectSetting;AppSettings:AppSettings;createdAt:Date;updatedAt:Date; }
+
+interface JiraProjectSetting{ id:string;key:string;enabled:boolean;JiraSettings:JiraSettings;jiraSettingsId:string;createdAt:Date;updatedAt:Date; }
+
+interface AiRequest{ id:string;type:string;method:string;model:string;tokensUsed:number;tokensUsedUser:number;costUsdTotal:number;costUsdTotalUser:number;user:User;userId:string;message:Message;request:any;createdAt:Date;updatedAt:Date; }
+
+type PineconeObject{ vectors:PineconeVector[]; }
+
+type PineconeVector{ text:string;metadata:any;uid:string; }
+
+type RecommendedPrompt{ id:string;title?:string;content:string;actor?:string;likes?:number;views?:number; }
+
+interface AppService{ id:string;name:string;description?:string;providerId?:string;enabled?:boolean;imageURL?:string; }
+
+interface ConfluenceSettings{ enabled:boolean;accessToken?:string;spaces?:ConfluenceSpaceSetting[];pages?:{key:string;enabled:boolean; }
+
+interface AppSettings{ services?:AppService[];jira?:{projects?:{key:string;enabled:boolean; }
+
+interface JiraFilters{ project?:string[];account?:string[];assignee?:string[];priority?:string[];status_category?:string[]; }
+
+interface SlackFilters{ channelId?:string[]; }
+
+interface WebUrlType{ inputValue?:string;url:string;entireDomain?:boolean; }
+
+interface WebFilters{ cleanedUrl?:string[];url?:WebUrlType[];domain?:string[]; }
+
+interface AlgoliaFilters{ index?:string[];preview?:string[]; }
+
+interface OpenApiFilters{  }
+
+interface ConfluenceFilters{ spaceId?:string[];spaces?:ConfluenceSpaceSetting[]; }
+
+interface UserFilters{  }
+
+interface AirtableFilters{ table?:string[];view?:string[]; }
+
+interface CodebaseFilters{ repo?:Document[];path?:string[]; }
+
+interface DocumentUrlType{ title:string;url?:string; }
+
+interface DocumentFilters{ url?:Document[]; }
+
+interface ZoomFilters{ url?:Document[]; }
+
+interface YoutubeFilters{ url?:Document[]; }
+
+interface FileFilters{ url?:Document[]; }
+
+interface DataSourcesFilters{ user?:UserFilters;jira?:JiraFilters;slack?:SlackFilters;web?:WebFilters;openapi?:OpenApiFilters;confluence?:ConfluenceFilters;airtable?:AirtableFilters;codebase?:CodebaseFilters;document?:DocumentFilters;zoom?:ZoomFilters;youtube?:YoutubeFilters;file?:FileFilters; }
+
+interface AnswersFilters{ models?:{[key:string]:string[]; }
+
+type Models{ jira:string[];slack:string[];web:string[];algolia:string[];openapi:string[];airtable:string[];codebase:string[];document:string[];file:string[];zoom:string[];youtube:string[];[key:string]:string[]; }
+
+type FeatureFlag{ enabled?:boolean; }
+
+type Flags{ [key:string]:FeatureFlag; }
+
+type SlackChannel{ id:string;name:string }
+
+type SlackMessage{  }
+
+type ConfluenceSpace{ key:string;id:string;name:string;type:string;status:string;expand:string;_links:{self:string; }
+
+type WebPage{ url:string;content:string;domain:string;title?:string;description?:string; }
+
+type OpenApi{ paths:string[];info:{title:string;version:string; }
+
+interface OpenApiProvider{ added:string;preferred:string;versions:{[version:string]:{added:string;info:{'contact'?:{'email'?:string;'name'?:string;'url'?:string;'x-twitter'?:string; }
+
+type ConfluencePage{ id:number;status:string;title:string;spaceId:number;parentId:number;authorId:string;createdAt:string;version:{createdAt:string;message:string;number:number;minorEdit:boolean;authorId:string; }
+
+type AirtableRecord{ id:number;title:string;fields:{[key:string]:string; }
+
+type CodebaseRecord{ id:number;title:string; }
+
+type DocumentRecord{ title:string;url:string;content:string; }
+
+type FileRecord{ content:string;fileId:string;title?:string; }
+
+type ZoomRecord{ id:number;title:string; }
+
+type YoutubeRecord{ id:number;title:string; }
+
+type JiraProject{ key:string;name:string;archived:any }
+
+type JiraIssue{ key:string;self:string;id:string;fields:any;archived:any }
+
+type JiraComment{ key:string;self:string;id:string;fields:any;archived:any }
+
+interface AnswersContextType{ user:User;appSettings:AppSettings;error?:any;chat?:Chat|null;setChat:(action:SetStateAction<Chat>)=>void;journey?:Journey|null;setJourney:(action:SetStateAction<Journey>)=>void;messages?:Array<Message>;prompts?:Array<Prompt>;chats?:Array<Chat>;sendMessage:(args:{content:string;isNewJourney?:boolean;sidekick?:Sidekick;gptModel?:string; }
+
+interface AnswersProviderProps{ children:React.ReactNode;user?:User;appSettings:AppSettings;apiUrl?:string;useStreaming?:boolean;chat?:Chat;journey?:Journey;prompts?:Prompt[];//chats?:Chat[]; }
+
+type AuthFormInputs{ email:string;password:string; }
+
+interface AuthProps{ session?:Session;//appSettings:AppSettings;providers:Record<string,ClientSafeProvider>|null; }
+
+interface Params{ chat?:Chat;journey?:Journey;sidekicks?:Sidekick[]; }
+
+interface ChatDrawerProps{ journeys?:Journey[];chats?:Chat[];defaultOpen?:boolean; }
+
+interface ChatExtensionWidgetProps{ user?:User; }
+
+interface ChatWidgetProps{ params:any;session:Session; }
+
+interface ConfluenceSettingsProps{ appSettings:AppSettings;editable?:boolean; }
+
+interface ConfluenceSettingsProps{ appSettings:AppSettings; }
+
+interface DefaultPromptsProps{ expanded?:boolean;handleChange:(evt:any,expanded:boolean)=>void;onPromptSelected:(prompt:string)=>void; }
+
+interface DrawerFiltersProps{ appSettings:AppSettings; }
+
+interface ModalProps{ messageId:string;rating:Rating;onSave?:(args?:any)=>void;onClose?:()=>void; }
+
+interface GptModelSelectProps{ onGptModelSelected:(value:string)=>void;selectedGptModel:string; }
+
+type HandlebarsEditorProps{ code:string;setCode?:any;//Dispatch<SetStateAction<string>>;editorOptions?:any;contextFields?:any;readOnly?:boolean;onInitializePane?:MonacoOnInitializePane; }
+
+interface JiraSettingsProps{ appSettings:AppSettings;editable:boolean; }
+
+interface Props{ journey:JourneyCardProps; }
+
+interface Props{ journeys?:Journey[];chats?:Chat[]; }
+
+interface Props{ journeys?:Journey[]; }
+
+interface MessageExtra{ prompt?:string;extra?:object;pineconeData?:object;filteredData?:object;unfilteredData?:object;context?:string;summary?:string;completionData?:object;completionRequest?:object;filters?:object;isWidget?:boolean;contextDocuments?:Document[]; }
+
+interface IFormInput{ title:string;content:string;source:string;organizationId:string; }
+
+interface ModalProps{ title?:string;source?:string;onSave:(args?:any)=>void; }
+
+type ResizePanelProps{ direction:'n'|'s'|'e'|'w';containerClass?:string;handleClass?:string;borderClass?:string;sx?:SxProps<Theme>&CSSObject; }
+
+interface SelectedListItemProps{ items:{text:string;icon:React.ReactElement;link:string }
+
+interface Setting{ id:string;icon:any;title:string;link:string; }
+
+interface SettingsDrawerProps{ settings?:Setting[];chats?:Chat[]; }
+
+interface IFormInput{ chatId:string;email:string[];users:User[]; }
+
+interface ModalProps{ title?:string;source?:string;onSave?:(args?:any)=>void;onClose?:()=>void; }
+
+interface HeadCell{ disablePadding:boolean;id:keyofSidekickListItem;label:string;numeric:boolean; }
+
+interface EnhancedTableProps{ onRequestSort:(event:React.MouseEvent<unknown>,property:keyofSidekickListItem)=>void;order:Order;orderBy:string; }
+
+interface SidekickSelectProps{ onSidekickSelected:(sidekick:Sidekick)=>void;sidekicks?:Sidekick[]; }
+
+interface SidekickStudioDrawerProps{ sidekicks?:Sidekick[];defaultOpen?:boolean; }
+
+interface SlackSettingsProps{ appSettings:AppSettings; }
+
+interface Props{ appSettings:AppSettings;filters:AnswersFilters;updateFilter:(newFilter:AnswersFilters)=>void; }
+
+interface TreeNode{ id:string;path:string;children?:readonlyTreeNode[]; }
+
+interface JourneySourceCardProps{ domain?:string;urls?:string[];pageCount?:number;onClick:any; }
+
+interface SourceUrl{ id:string;url:string;domain:string; }
+
+interface TreeNode{ id:string;path:string;children:TreeNode[];pageCount:number;//Newpropertytostorethetotalnumberofpagesinchildren }
+
+interface HeadCell{ disablePadding:boolean;id:keyofDocument;label:string;numeric:boolean;hidden?:boolean; }
+
+interface EnhancedTableProps{ onRequestSort:(event:MouseEvent<unknown>,property:keyofDocument)=>void;order:Order;orderBy:string;prefilterSource?:boolean; }
+
+interface JWT{ //id:string;//access_token:string;//expires_at:number;//refresh_token:string;//error?:'RefreshAccessTokenError';// }
+
+interface CorsOptions{ origin?:StaticOrigin|OriginFn;methods?:string|string[];allowedHeaders?:string|string[];exposedHeaders?:string|string[];credentials?:boolean;maxAge?:number;preflightContinue?:boolean;optionsSuccessStatus?:number; }
+
+interface ProcessEnv{ PINECONE_ENVIRONMENT:string;PINECONE_API_KEY:string;PINECONE_INDEX:string;REDIS_URL:string;INNGEST_EVENT_KEY:string;INNGEST_SIGNING_KEY:string;INNGEST_SERVER_URL?:string;GITHUB_ID:string;GITHUB_SECRET:string;DB_STUDIO_SERVER_URL?:string;NODE_ENV:'development'|'production'; }
+
+interface ClosedMixinProps{ theme:Theme;spacing?:number; }
+
+interface OpenedMixinProps{ theme:Theme;width?:number;maxWidth?:number; }
+
+interface AvatarPropsVariantOverrides{ source:true; }
+
+interface BreakpointOverrides{ xxl:true; }
+
+interface GenerateResponseArgs{ content:string;journeyId?:string;chatId?:string;messages?:any[];filters?:any;sidekick?:Sidekick;gptModel?:string; }
+
+interface CompletionResponse{ text:string;message:Message; }
+
+interface StreamExtra{ user:User;chat:Chat;context:string;contextDocuments:Document[];sidekick?:Sidekick;prompt:string;filters?:AnswersFilters;completionRequest:any; }
+
+type UserClients{ jiraClient:JiraClient;confluenceClient:ConfluenceClient;slackClient:SlackApiClient; }
+
+interface RequestOptions{ cache?:boolean; }
+
+type JiraUpdatedInput{ appSettings:AppSettings; }
+
+interface TextMarkedContent{ type:'beginMarkedContent'|'beginMarkedContentProps'|'endMarkedContent';id?:string; }
+
+interface TextItem{ str:string;dir:string|'ttb'|'ltr'|'rtl';transform:Array<any>;width:number;height:number;fontName:string;hasEOL:boolean; }
+
+interface PDFMetadataInfo{ PDFFormatVersion:string;Language:string|null;EncryptFilterName:string|null;IsLinearized:boolean;IsAcroFormPresent:boolean;IsXFAPresent:boolean;IsCollectionPresent:boolean;IsSignaturesPresent:boolean;Title:string;Producer:string; }
+
+interface PDFMetadata{ info:PDFMetadataInfo|Object;contentDispositiondocumentName?:string|null;contentLength?:number|null; }
+
+interface GuruListOptions{ domain?:string;format?:string;version?:string; }
+
+interface FilteredPages{ validPages:WebPage[];invalidPages:WebPage[]; }
+
+interface Node{ type:string;content?:Node[];text?:string;parent?:{type:string; }
+
+type References{ [key:string]:unknown }
+
+interface PathMethod{ path:string;method:string;operation:OpenAPIV3.OperationObject; }
+
+interface ApiDocument{ document:OpenAPIV3.Document;pathMethods:PathMethod[];references:References; }

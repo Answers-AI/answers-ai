@@ -81,7 +81,6 @@ class OpenAI {
         user &&
         trackEmbeddingUsage({
           method: 'createEmbedding',
-
           model,
           response,
           user,
