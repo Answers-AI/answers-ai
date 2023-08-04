@@ -5,7 +5,8 @@ import Checkbox from '@mui/material/Checkbox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import Box from '@mui/material/Box';
-import { Document } from 'types';
+import { Document, DocumentFilter } from 'types';
+import { getDocumentSourceKey } from '../../utils/src/getDocumentSourceKey';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -92,7 +93,7 @@ export default function AutocompleteSelect<T>({
         // }
         // @ts-expect-error
         renderOption={({ key, ...itemProps }, option, { selected }) => (
-          <li key={(option as any).value || key} {...itemProps}>
+          <li key={key} {...itemProps}>
             <Checkbox
               icon={icon}
               checkedIcon={checkedIcon}
