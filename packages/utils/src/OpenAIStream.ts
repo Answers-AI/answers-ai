@@ -57,9 +57,21 @@ export async function OpenAIStream(
           chat: { connect: { id: chat.id } },
           sidekickJson: sidekick as any,
           role: 'assistant'
+        },
+        include: {
+          contextDocuments: true
         }
       });
-      controller.enqueue(encoder.encode(JSON.stringify({ id: message.id, ...extra }) + 'JSON_END'));
+      controller.enqueue(
+        encoder.encode(
+          JSON.stringify({
+            ...extra,
+            id: message.id,
+            contextDocuments: message.contextDocuments,
+            role: message.role
+          }) + 'JSON_END'
+        )
+      );
 
       function onParse(event: ParsedEvent | ReconnectInterval) {
         if (event.type === 'event') {

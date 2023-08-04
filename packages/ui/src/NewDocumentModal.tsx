@@ -62,12 +62,12 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
       }
       handleClose();
       onSave();
+      reset();
     } catch (err: any) {
       setTheMessage(`There was an error indexing your ${source} text.`);
       setError(err.message);
     } finally {
       setLoading(false);
-      reset();
     }
   };
 
