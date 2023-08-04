@@ -53,11 +53,11 @@ const NewDocumentModal: React.FC<ModalProps> = ({ title, onSave, source = 'file'
     setLoading(true);
     try {
       const res = await axios.post('/api/sync/file', data);
-      if (res.data.file) {
+      if (res.data) {
         const documents =
-          (filters?.datasources?.[source as keyof FilterDatasources] as any)?.documents ?? [];
+          (filters?.datasources?.[source as keyof FilterDatasources] as any)?.url?.sources ?? [];
         updateFilter({
-          datasources: { [source]: { documents: [...documents, res.data.file] } }
+          datasources: { [source]: { url: { sources: [...documents, res.data] } } }
         });
       }
       handleClose();

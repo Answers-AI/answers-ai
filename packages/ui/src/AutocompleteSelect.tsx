@@ -62,7 +62,9 @@ export default function AutocompleteSelect<T>({
         options={options}
         getOptionLabel={getOptionLabel as any}
         value={value ?? []}
-        isOptionEqualToValue={(option: any, value: any) => option.url === value.url}
+        isOptionEqualToValue={(option: any, value: any) =>
+          JSON.stringify(option) === JSON.stringify(value)
+        }
         onChange={handleChange}
         PopperComponent={({
           children,
@@ -92,18 +94,20 @@ export default function AutocompleteSelect<T>({
         //   ))
         // }
         // @ts-expect-error
-        renderOption={({ key, ...itemProps }, option, { selected }) => (
-          <li key={key} {...itemProps}>
-            <Checkbox
-              icon={icon}
-              checkedIcon={checkedIcon}
-              style={{ marginRight: 8 }}
-              checked={selected}
-              size={'small'}
-            />
-            {getOptionLabel ? getOptionLabel(option) : (option as object).toString()}
-          </li>
-        )}
+        renderOption={({ key, ...itemProps }, option, { selected }) => {
+          return (
+            <li key={`${key}:${JSON.stringify(option)}`} {...itemProps}>
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={selected}
+                size={'small'}
+              />
+              {getOptionLabel ? getOptionLabel(option) : (option as object).toString()}
+            </li>
+          );
+        }}
         renderInput={(params) => (
           <TextField
             {...params}
