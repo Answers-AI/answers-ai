@@ -11,7 +11,7 @@ interface GenerateResponseArgs {
   gptModel?: string;
 }
 
-const JSON_SPLIT_STRING: string = process.env.JSON_SPLIT_STRING || '';
+const NEXT_PUBLIC_JSON_SPLIT_STRING: string = process.env.NEXT_PUBLIC_JSON_SPLIT_STRING || '';
 
 const parseMessages = (messages?: any[]) =>
   messages?.map(({ role, content }) => ({ role, content }));
@@ -89,7 +89,7 @@ export const useStreamedResponse = ({
             const chunkValue = new TextDecoder().decode(value);
             answer += chunkValue;
 
-            const [jsonData, ...rest] = answer.split(JSON_SPLIT_STRING);
+            const [jsonData, ...rest] = answer.split(NEXT_PUBLIC_JSON_SPLIT_STRING);
 
             if (jsonData && rest?.length) {
               try {

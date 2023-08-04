@@ -18,7 +18,7 @@ interface StreamExtra {
   completionRequest: any;
 }
 
-const JSON_SPLIT_STRING: string = process.env.JSON_SPLIT_STRING || '';
+const NEXT_PUBLIC_JSON_SPLIT_STRING: string = process.env.NEXT_PUBLIC_JSON_SPLIT_STRING || '';
 
 export async function OpenAIStream(
   payload: CreateChatCompletionRequest,
@@ -62,7 +62,7 @@ export async function OpenAIStream(
         }
       });
       controller.enqueue(
-        encoder.encode(JSON.stringify({ id: message.id, ...extra }) + JSON_SPLIT_STRING)
+        encoder.encode(JSON.stringify({ id: message.id, ...extra }) + NEXT_PUBLIC_JSON_SPLIT_STRING)
       );
 
       function onParse(event: ParsedEvent | ReconnectInterval) {
