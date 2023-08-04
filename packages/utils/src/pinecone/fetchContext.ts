@@ -8,10 +8,10 @@ import { countTokens } from '../utilities/countTokens';
 import { renderTemplate } from '../utilities/renderTemplate';
 import getUserContextFields from '../utilities/getUserContextFields';
 import getOrganizationContextFields from '../utilities/getOrganizationContextFields';
-import getMaxTokensByModel from '../utilities/getMaxTokensByModel';
 import { getUniqueUrl } from '../getUniqueUrls';
 
 import { AnswersFilters, Message, User, Sidekick, Organization, SourceFilters } from 'types';
+import { getRemainingAvailableTokens } from '../getRemainingAvailableTokens';
 
 const PUBLIC_SOURCES = ['web', 'drive', 'github', 'notion', 'airtable'];
 const EMBEDDING_MODEL = 'text-embedding-ada-002';
@@ -136,11 +136,15 @@ export const fetchContext = async ({
 
   if (!!relevantData?.length) {
     // Render the context string based on the sidekick and number of tokens
-    let totalTokens = 0;
 
-    const maxCompletionTokens = sidekick?.maxCompletionTokens || 500;
-    const model = sidekick?.aiModel || gptModel;
-    const maxTokens = getMaxTokensByModel(model) - maxCompletionTokens;
+    // get the number of tokens remaining for the context string
+    let remainingAvailableTokens = await getRemainingAvailableTokens({
+      sidekick,
+      input: prompt,
+      user,
+      organization,
+      model: gptModel
+    });
 
     // Get organization's custom contact fields
     const organizationContext: Record<string, any> = getOrganizationContextFields(organization);
@@ -148,8 +152,8 @@ export const fetchContext = async ({
     // Get user's custom contect fields
     const userContext: Record<string, any> = getUserContextFields(user);
 
-    const contextPromises = relevantData.map((item) => {
-      if (totalTokens > maxTokens) {
+    const contexts = relevantData.map((item) => {
+      if (remainingAvailableTokens <= 0) {
         return null;
       }
 
@@ -160,7 +164,11 @@ export const fetchContext = async ({
       const contextStringRender =
         sidekick?.contextStringRender?.trim() !== '' ? sidekick?.contextStringRender : null;
 
-      if (contextStringRender && totalTokens + preTokenCount <= maxTokens) {
+      if (preTokenCount > remainingAvailableTokens) {
+        return null;
+      }
+
+      if (contextStringRender) {
         renderedContext = renderTemplate(contextStringRender, {
           result: item.metadata,
           organization: organizationContext,
@@ -171,17 +179,17 @@ export const fetchContext = async ({
       if (renderedContext === '') return null;
 
       const tokenCount = countTokens(renderedContext);
-      if (tokenCount && totalTokens + tokenCount > maxTokens) {
+      if (tokenCount > remainingAvailableTokens) {
         return null;
       }
 
       // TODO: standardize the canonical location (UUID) of the file
       contextSourceFilesUsed.add(item?.metadata?.filePath || item?.metadata?.url);
-      totalTokens += tokenCount;
+      remainingAvailableTokens -= tokenCount;
       return renderedContext;
     });
 
-    filteredData = contextPromises;
+    filteredData = contexts;
     context = filteredData.filter((result) => result !== null).join('\n\n');
   }
 
