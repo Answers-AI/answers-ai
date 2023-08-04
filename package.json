@@ -11,6 +11,7 @@
     "db:migrate": "dotenv -- pnpm db migrate dev",
     "db:deploy": "dotenv -- pnpm db migrate deploy",
     "db:reset": "dotenv -- pnpm db migrate reset",
+    "db:run:script": "dotenv -- pnpm --filter db run:script",
     "db:studio": "dotenv -- pnpm db studio",
     "db:seed": "dotenv -- pnpm db db seed",
     "test:e2e": "pnpm cypress run",

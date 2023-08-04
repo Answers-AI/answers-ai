@@ -5,7 +5,8 @@ import Checkbox from '@mui/material/Checkbox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import Box from '@mui/material/Box';
-import { Document } from 'types';
+import { Document, DocumentFilter } from 'types';
+import { getDocumentSourceKey } from '../../utils/src/getDocumentSourceKey';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -17,6 +18,8 @@ interface Props<T> {
   options: T[];
   value: T[];
   onChange?: (value: T[]) => void;
+  onInputChange?: (event: React.SyntheticEvent, value: string) => void;
+  inputValue?: string;
   onFocus?: React.FocusEventHandler<HTMLDivElement>;
   getOptionLabel?: (value: T) => string;
   // getOptionValue?: (value: T) => string;
@@ -59,7 +62,9 @@ export default function AutocompleteSelect<T>({
         options={options}
         getOptionLabel={getOptionLabel as any}
         value={value ?? []}
-        isOptionEqualToValue={(option: any, value: any) => option.url === value.url}
+        isOptionEqualToValue={(option: any, value: any) =>
+          JSON.stringify(option) === JSON.stringify(value)
+        }
         onChange={handleChange}
         PopperComponent={({
           children,
@@ -89,18 +94,20 @@ export default function AutocompleteSelect<T>({
         //   ))
         // }
         // @ts-expect-error
-        renderOption={({ key, ...itemProps }, option: any, { selected }) => (
-          <li key={`${key}-${option.url}`} {...itemProps}>
-            <Checkbox
-              icon={icon}
-              checkedIcon={checkedIcon}
-              style={{ marginRight: 8 }}
-              checked={selected}
-              size={'small'}
-            />
-            {getOptionLabel ? getOptionLabel(option) : (option as object).toString()}
-          </li>
-        )}
+        renderOption={({ key, ...itemProps }, option, { selected }) => {
+          return (
+            <li key={`${key}:${JSON.stringify(option)}`} {...itemProps}>
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={selected}
+                size={'small'}
+              />
+              {getOptionLabel ? getOptionLabel(option) : (option as object).toString()}
+            </li>
+          );
+        }}
         renderInput={(params) => (
           <TextField
             {...params}

@@ -2,31 +2,38 @@ import { getAppSettings } from '@ui/getAppSettings';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
 import { inngest } from '@utils/ingest/client';
-import { getUniqueUrls } from '@utils/getUniqueUrls';
 import { NextResponse } from 'next/server';
-
-interface RequestBody {
-  url: string;
-  urls?: string[];
-}
+import { respond401 } from '@utils/auth/respond401';
+import { DocumentFilter } from 'types';
 
 export async function POST(req: Request, res: NextResponse) {
   const appSettings = await getAppSettings();
 
   const session = await getServerSession(authOptions);
-
   const user = session?.user;
 
-  const { urls, byDomain } = await req.json();
-  const uniqueUrls = getUniqueUrls(urls);
+  if (!user) {
+    return respond401();
+  }
+
+  const { domain } = await req.json();
+
+  if (!domain) {
+    return NextResponse.json({ error: 'No domain provided' }, { status: 400 });
+  }
 
   await inngest.send({
     v: '1',
     ts: new Date().valueOf(),
     name: 'web/urls.sync',
     user,
-    data: { appSettings, urls: uniqueUrls, byDomain: !!byDomain }
+    data: { appSettings, urls: [domain], byDomain: true }
   });
 
-  return NextResponse.json({ status: 'ok' });
+  const filter: DocumentFilter = {
+    label: domain,
+    filter: { domain }
+  };
+
+  return NextResponse.json(filter);
 }

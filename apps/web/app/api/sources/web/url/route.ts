@@ -3,29 +3,23 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { respond401 } from '@utils/auth/respond401';
-import { DocumentFilter, StandardDocumentUrlFilters } from 'types';
+import { DocumentFilter } from 'types';
 
-export async function GET(req: Request, { params: { source } }: { params: { source: string } }) {
+export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
-  if (!userId) return respond401();
-
-  if (!source) {
-    return NextResponse.json({ error: 'A source was not provided' }, { status: 422 });
-  }
+  if (!session?.user?.id) return respond401();
 
   const { searchParams } = new URL(req.url);
-  const input = searchParams.get('input');
+  const url = searchParams.get('url');
 
   const filteredRecords = await prisma.document.findMany({
     where: {
-      source,
-      ...(input && {
-        title: {
-          contains: input
+      source: 'web',
+      ...(url && {
+        url: {
+          contains: url
         }
-      }),
-      permissions: { some: { organization: { users: { some: { id: userId } } } } }
+      })
     },
     select: {
       id: true,
@@ -38,7 +32,7 @@ export async function GET(req: Request, { params: { source } }: { params: { sour
 
   const sources: DocumentFilter[] = filteredRecords.map((document) => ({
     documentId: document.id,
-    label: document.title || document.url,
+    label: document.url,
     filter: { url: document.url }
   }));
 

@@ -62,7 +62,7 @@ export default function SourcesToolbar({ appSettings }: { appSettings: AppSettin
           <Typography variant="overline">Selected sources</Typography>
         </AccordionSummary>
         <AccordionDetails sx={{ padding: '8px!important', px: 1 }}>
-          <Filters filters={filters} />
+          <Filters />
         </AccordionDetails>
       </Accordion>
 

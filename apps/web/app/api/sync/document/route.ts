@@ -1,8 +1,9 @@
-import { getAppSettings } from '@ui/getAppSettings';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
 import { inngest } from '@utils/ingest/client';
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import { prisma } from '@db/client';
+import { DocumentFilter } from 'types';
 
 const AWS_S3_BUCKET = process.env.AWS_S3_BUCKET;
 const AWS_S3_REGION = process.env.AWS_S3_REGION;
@@ -15,7 +16,6 @@ export async function POST(req: Request, res: NextResponse) {
     });
   }
 
-  const appSettings = await getAppSettings();
   const session = await getServerSession(authOptions);
   const user = session?.user;
 
@@ -26,22 +26,56 @@ export async function POST(req: Request, res: NextResponse) {
     });
   }
 
-  const { documentName } = await req.json();
+  const { documentName: iDocumentName, url } = await req.json();
 
-  if (!documentName) {
+  if (!iDocumentName) {
     return NextResponse.json({
       status: 'error',
       message: 'No documentName found in request headers.'
     });
   }
 
+  const documentName = decodeURI(iDocumentName);
+
+  const document = await prisma.document.upsert({
+    where: {
+      url
+    },
+    update: {
+      title: documentName,
+      url,
+      source: 'document'
+    },
+    create: {
+      title: documentName,
+      url,
+      source: 'document'
+    },
+    select: {
+      id: true,
+      title: true,
+      status: true,
+      url: true
+    }
+  });
+
   await inngest.send({
     v: '1',
     ts: new Date().valueOf(),
     name: 'documents/aws.index',
     user,
-    data: { appSettings, documentName }
+    data: {
+      documentName,
+      url,
+      documentId: document.id
+    }
   });
 
-  return NextResponse.json({ status: 'ok' });
+  const documentFilter: DocumentFilter = {
+    documentId: document.id,
+    label: documentName,
+    filter: { url }
+  };
+
+  return NextResponse.json(documentFilter);
 }

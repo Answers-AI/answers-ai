@@ -52,7 +52,7 @@ function JourneySection({ journeys }: Props) {
             ))}
           </TreeView>
           {/* {title ? <Typography variant="h6">{title}</Typography> : null}
-            <Filters filters={filters} />
+            <Filters/>
             <Box
               sx={{
                 width: '100%',

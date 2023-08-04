@@ -119,15 +119,9 @@ export interface SlackFilters {
   channelId?: string[];
 }
 
-export interface WebUrlType {
+export interface WebUrlType extends Document {
   inputValue?: string;
-  url: string;
   entireDomain?: boolean;
-}
-export interface WebFilters {
-  cleanedUrl?: string[];
-  url?: WebUrlType[];
-  domain?: string[];
 }
 
 export interface AlgoliaFilters {
@@ -144,50 +138,45 @@ export interface ConfluenceFilters {
 
 export interface UserFilters {}
 
-export type SourceFilters =
-  | JiraFilters
-  | SlackFilters
-  | WebFilters
-  | OpenApiFilters
-  | ConfluenceFilters
-  | AirtableFilters
-  | CodebaseFilters
-  | DocumentFilters
-  | FileFilters
-  | ZoomFilters
-  | YoutubeFilters;
-
 export interface AirtableFilters {
   table?: string[];
   view?: string[];
 }
 
+export interface SourceFilters {
+  [key: string]: SourceFilterValue;
+}
+
+export interface DocumentFilter {
+  documentId?: string;
+  label: string;
+  filter: Record<string, string>;
+}
+
+export interface SourceFilterValue {
+  sources: DocumentFilter[];
+}
 export interface CodebaseFilters {
-  repo?: Document[];
-  path?: string[];
+  repo?: SourceFilterValue;
 }
 
-export interface DocumentUrlType {
-  title: string;
-  url?: string;
+export interface WebFilters {
+  url?: SourceFilterValue;
+  domain?: SourceFilterValue;
 }
 
-export interface DocumentFilters {
-  url?: Document[];
+export interface StandardDocumentUrlFilters {
+  url?: SourceFilterValue;
 }
 
-export interface ZoomFilters {
-  url?: Document[];
+export interface StandardDocumentDataSourcesFilters {
+  document?: StandardDocumentUrlFilters;
+  zoom?: StandardDocumentUrlFilters;
+  youtube?: StandardDocumentUrlFilters;
+  file?: StandardDocumentUrlFilters;
 }
 
-export interface YoutubeFilters {
-  url?: Document[];
-}
-export interface FileFilters {
-  url?: Document[];
-}
-
-export interface DataSourcesFilters {
+export interface FilterDatasources extends StandardDocumentDataSourcesFilters {
   user?: UserFilters;
   jira?: JiraFilters;
   slack?: SlackFilters;
@@ -196,16 +185,12 @@ export interface DataSourcesFilters {
   confluence?: ConfluenceFilters;
   airtable?: AirtableFilters;
   codebase?: CodebaseFilters;
-  document?: DocumentFilters;
-  zoom?: ZoomFilters;
-  youtube?: YoutubeFilters;
-  file?: FileFilters;
 }
 export interface AnswersFilters {
   models?: {
     [key: string]: string[];
   };
-  datasources?: DataSourcesFilters;
+  datasources?: FilterDatasources;
 }
 
 type Models = {

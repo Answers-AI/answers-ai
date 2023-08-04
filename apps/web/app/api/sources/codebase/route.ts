@@ -4,24 +4,37 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 
 import { authOptions } from '@ui/authOptions';
+import { DocumentFilter } from 'types';
 
 export async function GET(req: Request, res: Response) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) return NextResponse.redirect('/auth');
 
-  // TODO: Ensure this only shows documents are owned by the user
-  const filteredRecords = await prisma.document.findMany({
+  const { searchParams } = new URL(req.url);
+  const repo = searchParams.get('repo');
+
+  const groupedByRecords = await prisma.document.groupBy({
+    by: ['title'],
     where: {
       source: 'codebase',
+      ...(repo && {
+        title: {
+          contains: repo
+        }
+      }),
       permissions: { some: { organization: { users: { some: { id: session?.user?.id } } } } }
-    },
-    distinct: ['title'],
-    take: 100
+    }
   });
 
-  const sources = filteredRecords.filter((s: any) => !!s?.metadata?.repo);
+  const sources: DocumentFilter[] = groupedByRecords
+    .filter(({ title }) => !!title)
+    .map(
+      ({ title }) =>
+        ({
+          label: title,
+          filter: { repo: title }
+        } as DocumentFilter)
+    );
 
-  return NextResponse.json({
-    sources
-  });
+  return NextResponse.json({ sources });
 }

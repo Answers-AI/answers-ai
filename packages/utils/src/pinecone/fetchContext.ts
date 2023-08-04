@@ -9,66 +9,56 @@ import { renderTemplate } from '../utilities/renderTemplate';
 import getUserContextFields from '../utilities/getUserContextFields';
 import getOrganizationContextFields from '../utilities/getOrganizationContextFields';
 import getMaxTokensByModel from '../utilities/getMaxTokensByModel';
-import { getUniqueUrls } from '../getUniqueUrls';
+import { getUniqueUrl } from '../getUniqueUrls';
 
-import { AnswersFilters, Message, User, Sidekick, WebUrlType, Organization } from 'types';
+import { AnswersFilters, Message, User, Sidekick, Organization, SourceFilters } from 'types';
 
+const PUBLIC_SOURCES = ['web', 'drive', 'github', 'notion', 'airtable'];
 const EMBEDDING_MODEL = 'text-embedding-ada-002';
 const DEFAULT_THRESHOLD = 0.68;
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
+type PineconeQueryObject = {
+  namespace?: string;
+  filter: {
+    [key: string]:
+      | {
+          $in: string[];
+        }
+      | string;
+  };
+  topK: number;
+};
+
+const mapFiltersToQueries = (data: AnswersFilters, organizationId?: string) => {
+  return Object.entries(data.datasources || {}).reduce((acc, [source, sourceObject]) => {
+    Object.entries(sourceObject as SourceFilters).forEach(([filterKey, { sources }]) => {
+      acc.push(
+        ...sources.map(({ filter }) => ({
+          ...(!PUBLIC_SOURCES.includes(source) && organizationId
+            ? { namespace: `org-${organizationId}` }
+            : {}),
+          filter: {
+            // TODO: in the future, we may want to also filter based on the model. not used right now
+            // model: { "$in": [data.model] }
+            source,
+            ...filter,
+            ...(filterKey === 'url' &&
+              source === 'web' &&
+              filter.url && {
+                url: getUniqueUrl(filter.url)
+              })
+          },
+          topK: 500
+        }))
+      );
+    });
+    return acc;
+  }, [] as PineconeQueryObject[]);
+};
+
 const openai = new OpenAIClient();
 export const pinecone = new PineconeClient();
-// TODO: find a more dynamic way to parse the filters into Pinecone
-const parseFilters = (filters: AnswersFilters) => {
-  let parsedFilters = { ...filters };
-
-  if (parsedFilters?.datasources?.confluence?.spaces) {
-    parsedFilters.datasources.confluence.spaceId = parsedFilters.datasources.confluence.spaces.map(
-      (space) => space.id
-    );
-    delete parsedFilters.datasources.confluence.spaces;
-  }
-
-  if (parsedFilters?.datasources?.web?.url?.length) {
-    // TODO: Define a type for the Pinecone filters which this function must return
-    (parsedFilters.datasources.web.url as any) = getUniqueUrls(
-      parsedFilters?.datasources?.web?.url.map((url) => (url as WebUrlType)?.url)
-    );
-  }
-
-  if (parsedFilters?.datasources?.file?.url?.length) {
-    (parsedFilters.datasources.file.url as any) = parsedFilters?.datasources?.file?.url.map(
-      (url) => (url as any)?.url
-    );
-  }
-
-  if (parsedFilters?.datasources?.youtube?.url?.length) {
-    (parsedFilters.datasources.youtube.url as any) = parsedFilters?.datasources?.youtube?.url.map(
-      (url) => (url as any)?.url
-    );
-  }
-
-  if (parsedFilters?.datasources?.document?.url?.length) {
-    (parsedFilters.datasources.document.url as any) = parsedFilters?.datasources?.document?.url.map(
-      (url) => (url as any)?.url
-    );
-  }
-
-  if (parsedFilters?.datasources?.zoom?.url?.length) {
-    (parsedFilters.datasources.zoom.url as any) = parsedFilters?.datasources?.zoom?.url.map(
-      (url) => (url as any)?.url
-    );
-  }
-
-  if (parsedFilters?.datasources?.codebase?.repo?.length) {
-    // TODO: Define a type for the Pinecone filters which this function must return
-    (parsedFilters.datasources.codebase.repo as any) =
-      parsedFilters?.datasources?.codebase?.repo.map(({ title }) => title);
-  }
-
-  return parsedFilters;
-};
 
 const filterPineconeDataRelevanceThreshhold = (data: any[], threshold: number) => {
   if (!data) return [];
@@ -101,95 +91,24 @@ export const fetchContext = async ({
 }) => {
   const ts = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-  const filters = parseFilters(clientFilters);
+  const queries = mapFiltersToQueries(clientFilters, organizationId);
+
+  console.log('client filters', clientFilters);
+  console.log('queries', queries);
+
   const promptEmbedding = await openai.createEmbedding({
     user,
     input: prompt?.toLowerCase(),
     model: EMBEDDING_MODEL
   });
 
-  // if (!hasDefaultFilter) {
-  //   filters = await extractFilters(prompt, filters);
-  // }
-  // TODO: Need to check Postgres for ID and organization
-  // TODO: We need to scrub the results of any items the user does not have access to
-  //
-  const filter: { [source: string]: { [field: string]: string[] } } = {};
-  const { models, datasources = {} } = filters;
-
-  if (models) {
-    filter.model = {
-      $in: Object.keys(models)
-        ?.map((model) => {
-          return models?.[model];
-        })
-        .flat()
-    };
-  }
-
-  let numberOfSources = 0;
-
-  if (datasources) {
-    Object.entries(datasources).forEach(([source, sourceFilter]) => {
-      if (sourceFilter && Object.keys(sourceFilter)?.length) {
-        filter[source] = {
-          ...(filter[source] ?? {}),
-          ...Object.keys(sourceFilter).reduce(
-            (acc, field) => ({
-              ...acc,
-              ...(sourceFilter[field]?.length
-                ? {
-                    [field]: {
-                      $in: sourceFilter[field]?.map((value: string) => {
-                        // Count the sources so we can have a fallback when filtering by threshold
-                        numberOfSources++;
-
-                        return value?.toString().toLowerCase();
-                      })
-                    }
-                  }
-                : null)
-            }),
-            {}
-          )
-        };
-      }
-    });
-  }
-
-  Object.keys(filter)?.forEach((source) => {
-    if (Object.keys(filter[source])?.length === 0) {
-      delete filter[source];
-    }
-  });
-
-  // console.log('[FetchContext]', JSON.stringify({ datasources, filters, filter }));
-
   console.time(`[${ts}] Pineconedata`);
   console.time(`[${ts}] Pineconedata get`);
-  const PUBLIC_SOURCES = ['web', 'drive', 'github', 'notion', 'airtable'];
 
-  const pineconeData = await Promise.all([
-    ...Object.entries(datasources)?.map(([source]) => {
-      if (!filter[source]) return Promise.resolve(null);
+  const pineconeData = await Promise.all(
+    queries.map(async (q) => pineconeQuery(promptEmbedding, q))
+  )?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
 
-      return pineconeQuery(promptEmbedding, {
-        ...(!PUBLIC_SOURCES.includes(source) && organizationId
-          ? { namespace: `org-${organizationId}` }
-          : {}),
-        filter: {
-          source,
-          ...filter[source]
-        },
-        topK: 500
-      });
-    })
-
-    // Query without filters
-    // pineconeQuery(promptEmbedding, {
-    //   topK: 500
-    // })
-  ])?.then((vectors) => vectors?.map((v) => v?.matches || []).flat());
   console.timeEnd(`[${ts}] Pineconedata get`);
 
   // Filter out any results that are above the relavance threshold, sort by score and return the max number based on gptModel
@@ -198,12 +117,12 @@ export const fetchContext = async ({
     : [];
 
   if (!relevantData.length && pineconeData.length) {
-    if (numberOfSources === 2) {
+    if (queries.length === 2) {
       console.log(
         "No relevent data found.   Since there are 2 sources, we're lowering the filtering threshold"
       );
       relevantData = filterPineconeDataRelevanceThreshhold(pineconeData, DEFAULT_THRESHOLD / 2);
-    } else if (numberOfSources === 1) {
+    } else if (queries.length === 1) {
       console.log(
         "No relevent data found.   Since there is 1 source, we're removing the filtering threshold"
       );
@@ -277,7 +196,7 @@ export const fetchContext = async ({
     contextDocuments,
     ...(IS_DEVELOPMENT
       ? {
-          pineconeFilters: filters,
+          pineconeFilters: queries.map((q) => q.filter),
           filteredData,
           pineconeData
         }

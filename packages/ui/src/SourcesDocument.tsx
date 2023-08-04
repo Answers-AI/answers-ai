@@ -12,23 +12,28 @@ import { useAnswers } from './AnswersContext';
 import AutocompleteSelect from './AutocompleteSelect';
 import SnackMessage from './SnackMessage';
 
-import { Document } from 'types';
+import { Document, DocumentFilter } from 'types';
 
 const SourcesDocument: React.FC<{}> = ({}) => {
   const source = 'document';
   const { filters, updateFilter } = useAnswers();
-  const { data, mutate } = useSWR<{
-    sources: Document[];
-  }>(`/api/sources/${source}`, (url) => fetch(url).then((res) => res.json()), {
-    dedupingInterval: 1000
-  });
-
-  const { sources } = data || {};
+  const { data: sources, mutate } = useSWR<DocumentFilter[]>(
+    `/api/sources/${source}`,
+    (url) =>
+      fetch(url)
+        .then((res) => res.json())
+        .then((data) => data.sources),
+    {
+      dedupingInterval: 1000
+    }
+  );
 
   const [showDocumentInput, setShowDocumentInput] = useState(true);
   const [theMessage, setTheMessage] = useState('');
 
   const [documents, setDocuments] = useState<FileList | null>();
+
+  const filterDocumentSources = filters?.datasources?.document?.url?.sources ?? [];
 
   function handleDocuments(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
     const newDocs = (e.target as HTMLInputElement).files;
@@ -52,13 +57,14 @@ const SourcesDocument: React.FC<{}> = ({}) => {
       const documentName = document.name;
 
       let signedUrl;
+      let url;
       try {
         setTheMessage(`Verifying "${documentName}"`);
         const presignedUrlResponse = await axios.post('/api/aws/presigned-url', { documentName });
         if (presignedUrlResponse.data.status === 'error') {
           throw new Error(presignedUrlResponse.data.message);
         }
-        signedUrl = presignedUrlResponse.data.signedUrl;
+        ({ signedUrl, url } = presignedUrlResponse.data);
       } catch (err: any) {
         setTheMessage(`Error presigning "${documentName}": ${err.message}`);
         console.error(err);
@@ -82,11 +88,16 @@ const SourcesDocument: React.FC<{}> = ({}) => {
 
       try {
         setTheMessage(`Indexing "${documentName}"`);
-        const syncResponse = await axios.post(`/api/sync/document`, { documentName });
-        if (syncResponse.data.status === 'error') {
+        const syncResponse = await axios.post(`/api/sync/document`, { documentName, url });
+        if (syncResponse.data?.status === 'error') {
           throw new Error(syncResponse.data.message);
         }
-        setTheMessage(`${documentName} successfully indexed.`);
+        const newDocuments = [...filterDocumentSources, syncResponse.data];
+
+        updateFilter({
+          datasources: { document: { url: { sources: newDocuments } } }
+        });
+
         setTimeout(() => {
           setTheMessage('');
         }, 3000);
@@ -94,20 +105,6 @@ const SourcesDocument: React.FC<{}> = ({}) => {
         setTheMessage(`Error indexing "${documentName}": ${err.message}`);
         console.error(err);
         break;
-      }
-
-      try {
-        const newDocuments = [
-          ...(filters?.datasources?.document?.url ?? []),
-          { title: documentName, url: slugify(documentName) } as Document
-        ];
-
-        updateFilter({
-          datasources: { document: { url: newDocuments } }
-        });
-      } catch (err: any) {
-        setTheMessage(`Error updating filteers: ${err.message}`);
-        console.error(err);
       }
     }
   }
@@ -125,9 +122,11 @@ const SourcesDocument: React.FC<{}> = ({}) => {
         <AutocompleteSelect
           label={'Choose document'}
           placeholder={`My custom document`}
-          value={filters?.datasources?.document?.url ?? []}
-          onChange={(value) => updateFilter({ datasources: { document: { url: value } } })}
-          getOptionLabel={(option) => option?.title ?? option?.url}
+          value={filterDocumentSources}
+          onChange={(value) =>
+            updateFilter({ datasources: { document: { url: { sources: value } } } })
+          }
+          getOptionLabel={(option) => option.label}
           options={sources ?? []}
           onFocus={() => mutate()}
         />

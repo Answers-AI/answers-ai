@@ -348,7 +348,7 @@ export function AnswersProvider({
 
   React.useEffect(() => {
     setJourney(initialJourney);
-    setFilters(deepmerge({}, appSettings?.filters, initialJourney?.filters, initialChat?.filters));
+    setFilters(deepmerge({}, initialJourney?.filters, initialChat?.filters));
   }, [initialChat, initialJourney, appSettings]);
 
   const contextValue = {

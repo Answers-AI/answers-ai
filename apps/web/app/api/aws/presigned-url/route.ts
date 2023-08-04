@@ -3,6 +3,7 @@ import { authOptions } from '@ui/authOptions';
 import { NextResponse, NextRequest } from 'next/server';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { getUniqueDocumentPath } from '@utils/getUniqueDocumentPath';
 
 const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
 const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
@@ -19,7 +20,7 @@ export async function POST(req: Request, res: NextResponse) {
 
   const session = await getServerSession(authOptions);
   const user = session?.user;
-  if (!user) {
+  if (!user || !user.organizationId) {
     return NextResponse.json({
       status: 'error',
       message: 'You must be logged in to perform this action.'
@@ -35,6 +36,11 @@ export async function POST(req: Request, res: NextResponse) {
     });
   }
 
+  const url = getUniqueDocumentPath({
+    organizationId: user.organizationId,
+    title: documentName
+  });
+
   const s3Client = new S3Client({
     region: AWS_S3_REGION,
     credentials: {
@@ -45,11 +51,11 @@ export async function POST(req: Request, res: NextResponse) {
 
   const signedUrlCommand = new PutObjectCommand({
     Bucket: AWS_S3_BUCKET,
-    Key: documentName,
+    Key: url,
     ContentType: 'multipart/form-data'
   });
 
   const signedUrl = await getSignedUrl(s3Client, signedUrlCommand, { expiresIn: 3600 });
 
-  return NextResponse.json({ status: 'ok', signedUrl });
+  return NextResponse.json({ status: 'ok', signedUrl, url });
 }

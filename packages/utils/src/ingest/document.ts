@@ -55,12 +55,6 @@ interface PDFMetadata {
   contentLength?: number | null;
 }
 
-const slugify = (text?: string) =>
-  text
-    ?.toLowerCase()
-    ?.replace(/ /g, '-')
-    ?.replace(/[^\w-]+/g, '');
-
 function calculateLineHeightRange(lines: (TextItem | TextMarkedContent)[]): [number, number] {
   let minHeight = Number.MAX_VALUE;
   let maxHeight = Number.MIN_VALUE;
@@ -288,6 +282,8 @@ const getDocumentRecordsVectors = async (DocumentRecords: DocumentRecord[]) => {
 
 export const processDocument: EventVersionHandler<{
   documentName: string;
+  url: string;
+  documentId: string;
   organizationId?: string;
 }> = {
   event: 'documents/aws.index',
@@ -306,12 +302,20 @@ export const processDocument: EventVersionHandler<{
     }
 
     const data = event.data;
-    const { documentName: iDocumentName } = data;
+    const { documentName, url, documentId } = data;
     let organizationId = user.organizationId ?? '';
     if (user.role === 'superadmin' && data.organizationId) {
       organizationId = data.organizationId;
     }
-    const documentName = decodeURI(iDocumentName);
+
+    const document = await prisma.document.findUnique({
+      where: { id: documentId }
+    });
+
+    if (!document) {
+      throw new Error('No document found');
+    }
+
     const documentExtension = path.extname(documentName).slice(1);
 
     const s3Client = new S3Client({
@@ -324,7 +328,7 @@ export const processDocument: EventVersionHandler<{
 
     const command = new GetObjectCommand({
       Bucket: AWS_S3_BUCKET,
-      Key: documentName
+      Key: document.url
     });
 
     const s3Response = await s3Client.send(command);
@@ -403,35 +407,25 @@ export const processDocument: EventVersionHandler<{
       return null;
     }
 
-    const slug = slugify(documentName) || '';
-
     const documentRecord: DocumentRecord = {
-      url: slug,
+      url,
       title: documentName,
       content: pageHtml
     };
 
-    await prisma.document.upsert({
+    await prisma.document.update({
       where: {
-        url: slug
+        id: documentId
       },
-      update: {
-        title: documentRecord.title,
-        url: documentRecord.url,
+      data: {
         content: documentRecord.content,
-        source: 'document'
-      },
-      create: {
-        title: documentRecord.title,
-        url: documentRecord.url,
-        content: documentRecord.content,
-        source: 'document'
+        status: 'synced'
       }
     });
 
     const vectors = await getDocumentRecordsVectors([documentRecord]);
 
-    const embeddedVectors = await embedVectors(organizationId, event, vectors);
+    await embedVectors(organizationId, event, vectors);
 
     return null;
   }

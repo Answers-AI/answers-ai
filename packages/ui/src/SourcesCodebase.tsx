@@ -7,26 +7,33 @@ import Box from '@mui/material/Box';
 import Autocomplete from './AutocompleteSelect';
 import { useAnswers } from './AnswersContext';
 
-import { Document } from 'types';
+import { Document, DocumentFilter } from 'types';
 
 const SourcesCodebase: React.FC<{}> = ({}) => {
   const { filters, updateFilter } = useAnswers();
-  const { data, mutate } = useSWR<{
-    sources: Document[];
-  }>(`/api/sources/codebase`, (doc) => fetch(doc).then((res) => res.json()), {
-    dedupingInterval: 1000
-  });
+  const { data: sources, mutate } = useSWR<DocumentFilter[]>(
+    `/api/sources/codebase`,
+    (doc) =>
+      fetch(doc)
+        .then((res) => res.json())
+        .then((data) => data?.sources ?? []),
+    {
+      dedupingInterval: 1000
+    }
+  );
 
-  const { sources } = data || {};
+  const filterSources = filters?.datasources?.codebase?.repo?.sources ?? [];
 
   return (
     <>
       <Box marginBottom={1} sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
         <Autocomplete
           label="Choose a repo"
-          value={filters?.datasources?.codebase?.repo || []}
-          onChange={(value) => updateFilter({ datasources: { codebase: { repo: value } } })}
-          getOptionLabel={(option) => (option?.metadata as any)?.repo!}
+          value={filterSources}
+          onChange={(value) =>
+            updateFilter({ datasources: { codebase: { repo: { sources: value } } } })
+          }
+          getOptionLabel={(option) => option.label}
           options={sources ?? []}
           onFocus={() => mutate()}
         />
