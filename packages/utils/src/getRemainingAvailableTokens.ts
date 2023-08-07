@@ -46,9 +46,6 @@ export const getRemainingAvailableTokens = async ({
       })
     : input;
 
-  const temperature = sidekick?.temperature || 0.1;
-  const frequency = sidekick?.frequency || 0;
-  const presence = sidekick?.presence || 0;
   const sidekickModel = model || sidekick?.aiModel || 'gpt-3.5-turbo';
   const maxCompletionTokens = sidekick?.maxCompletionTokens || 500;
 
