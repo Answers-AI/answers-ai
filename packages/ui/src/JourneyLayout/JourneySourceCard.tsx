@@ -49,8 +49,6 @@ const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
     signIn(providerId);
   };
 
-  console.log('here!!!');
-
   const Wrapper: ElementType = expanded ? Box : CardActionArea;
   return (
     <>

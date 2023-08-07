@@ -25,8 +25,6 @@ const SourcesWeb: React.FC<{ isJourney?: boolean }> = ({ isJourney }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateUrl = React.useCallback(throttle(setUrl, 600), []);
 
-  console.log('isJourney', isJourney);
-
   interface Data {
     urlSources: DocumentFilter[];
     domainSources: (DocumentFilter & { count: number })[];
