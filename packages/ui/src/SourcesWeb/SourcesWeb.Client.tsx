@@ -16,8 +16,9 @@ import DomainCard from './DomainCard';
 
 import { DocumentFilter } from 'types';
 import { getDocumentSourceKey } from '@utils/getDocumentSourceKey';
+import { Chip, Typography } from '@mui/material';
 
-const SourcesWeb: React.FC<{}> = ({}) => {
+const SourcesWeb: React.FC<{ isJourney?: boolean }> = ({ isJourney }) => {
   const { filters, updateFilter } = useAnswers();
   const [currentInput, setCurrentInput] = useState('');
   const [url, setUrl] = useState('');
@@ -86,9 +87,65 @@ const SourcesWeb: React.FC<{}> = ({}) => {
     await mutate();
   };
 
+  const handleRemoveDomain = async (domain: DocumentFilter) => {
+    const newDomain = filterDomainSources.filter((d) => {
+      return JSON.stringify(d) !== JSON.stringify(domain);
+    });
+
+    updateFilter({
+      datasources: { web: { domain: { sources: newDomain } } }
+    });
+  };
+
+  const handleRemoveUrl = async (webObj: DocumentFilter) => {
+    const newUrlObj = filterUrlSources.filter((obj) => {
+      return JSON.stringify(obj) !== JSON.stringify(webObj);
+    });
+
+    updateFilter({
+      datasources: { web: { url: { sources: newUrlObj } } }
+    });
+  };
+
   return (
     <>
       <Box marginBottom={1} sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
+        {isJourney && (
+          <>
+            {filterDomainSources.length ? (
+              <Box>
+                <Typography variant="overline">Domains</Typography>
+                <Box sx={{ gap: 1, display: 'flex', flexWrap: 'wrap' }}>
+                  {filterDomainSources.map((domain) => (
+                    <Chip
+                      key={`domain-chip-${JSON.stringify(domain)}`}
+                      size="small"
+                      label={domain.label}
+                      onDelete={() => handleRemoveDomain(domain)}
+                    />
+                  ))}
+                </Box>
+              </Box>
+            ) : null}
+
+            {filterUrlSources.length ? (
+              <Box>
+                <Typography variant="overline">Pages</Typography>
+                <Box sx={{ gap: 1, display: 'flex', flexWrap: 'wrap' }}>
+                  {filterUrlSources.map((document) => (
+                    <Chip
+                      key={`page-chip-${JSON.stringify(document)}`}
+                      size="small"
+                      label={document.label}
+                      onDelete={() => handleRemoveUrl(document)}
+                    />
+                  ))}
+                </Box>
+              </Box>
+            ) : null}
+          </>
+        )}
+
         <Autocomplete
           freeSolo
           options={currentUrlSources.map((source) => source.label) ?? []}

@@ -144,6 +144,7 @@ const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
                   filters={filters}
                   updateFilter={updateFilter}
                   appSettings={appSettings}
+                  isJourney={true}
                   {...other}
                 />
               </Box>
