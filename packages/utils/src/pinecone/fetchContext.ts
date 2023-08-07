@@ -134,6 +134,12 @@ export const fetchContext = async ({
   const contextSourceFilesUsed = new Set<string>();
   let filteredData: Array<string | null> = [];
 
+  // Get organization's custom contact fields
+  const organizationContext: Record<string, any> = getOrganizationContextFields(organization);
+
+  // Get user's custom contect fields
+  const userContext: Record<string, any> = getUserContextFields(user);
+
   if (!!relevantData?.length) {
     // Render the context string based on the sidekick and number of tokens
 
@@ -141,16 +147,10 @@ export const fetchContext = async ({
     let remainingAvailableTokens = await getRemainingAvailableTokens({
       sidekick,
       input: prompt,
-      user,
-      organization,
+      userContext,
+      organizationContext,
       model: gptModel
     });
-
-    // Get organization's custom contact fields
-    const organizationContext: Record<string, any> = getOrganizationContextFields(organization);
-
-    // Get user's custom contect fields
-    const userContext: Record<string, any> = getUserContextFields(user);
 
     const contexts = relevantData.map((item) => {
       if (remainingAvailableTokens <= 0) {

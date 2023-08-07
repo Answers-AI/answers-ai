@@ -10,8 +10,8 @@ export interface GetRemainingAvailableTokensProps {
   sidekick?: Sidekick;
   input: string;
   context?: any;
-  organization?: Organization;
-  user?: User;
+  organizationContext: Record<string, any>;
+  userContext: Record<string, any>;
   model?: string;
 }
 
@@ -19,15 +19,10 @@ export const getRemainingAvailableTokens = async ({
   sidekick,
   input,
   context = '',
-  organization,
-  user,
+  organizationContext,
+  userContext,
   model
 }: GetRemainingAvailableTokensProps) => {
-  // Get organization's custom contact fields
-  const organizationContext: Record<string, any> = getOrganizationContextFields(organization);
-
-  // Get user's custom context fields
-  const userContext: Record<string, any> = getUserContextFields(user);
   const systemPrompt = sidekick?.systemPromptTemplate
     ? renderTemplate(sidekick.systemPromptTemplate, {
         input,

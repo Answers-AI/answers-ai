@@ -58,8 +58,8 @@ export async function getCompletionRequest({
     sidekick,
     input,
     context,
-    organization,
-    user,
+    organizationContext,
+    userContext,
     model: gptModel
   });
 
