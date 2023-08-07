@@ -49,6 +49,8 @@ const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
     signIn(providerId);
   };
 
+  console.log('here!!!');
+
   const Wrapper: ElementType = expanded ? Box : CardActionArea;
   return (
     <>
@@ -144,6 +146,7 @@ const JourneySourceCard: React.FC<JourneySourceCardProps> = ({
                   filters={filters}
                   updateFilter={updateFilter}
                   appSettings={appSettings}
+                  isJourney={true}
                   {...other}
                 />
               </Box>

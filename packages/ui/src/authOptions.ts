@@ -246,7 +246,8 @@ async function refresAccessToken({ token, account }: any) {
         }
       });
     } catch (error) {
-      console.error('Error refreshing access token', error);
+      // Not using atlassian so commenting out for now.
+      // console.error('Error refreshing access token', error);
       // The error property will be used client-side to handle the refresh token error
       // session.error = 'RefreshAccessTokenError';
     }
