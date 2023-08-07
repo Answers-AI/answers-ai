@@ -5,6 +5,7 @@ import { renderTemplate } from '../utilities/renderTemplate';
 import getMaxTokensByModel from '../utilities/getMaxTokensByModel';
 import getUserContextFields from '../utilities/getUserContextFields';
 import getOrganizationContextFields from '../utilities/getOrganizationContextFields';
+import { getRemainingAvailableTokens } from '../getRemainingAvailableTokens';
 
 export async function getCompletionRequest({
   context,
@@ -26,7 +27,7 @@ export async function getCompletionRequest({
   // Get organization's custom contact fields
   const organizationContext: Record<string, any> = getOrganizationContextFields(organization);
 
-  // Get user's custom contect fields
+  // Get user's custom context fields
   const userContext: Record<string, any> = getUserContextFields(user);
 
   const systemPrompt = sidekick?.systemPromptTemplate
@@ -53,20 +54,23 @@ export async function getCompletionRequest({
   const sidekickModel = gptModel || sidekick?.aiModel || 'gpt-3.5-turbo';
   const maxCompletionTokens = sidekick?.maxCompletionTokens || 500;
 
-  const systemPromptTokens = await countTokens(systemPrompt);
-  const userPromptTokens = await countTokens(userPrompt);
-
-  const maxTokens = getMaxTokensByModel(sidekickModel) - maxCompletionTokens;
+  let remainingAvailableTokens = await getRemainingAvailableTokens({
+    sidekick,
+    input,
+    context,
+    organizationContext,
+    userContext,
+    model: gptModel
+  });
 
   let filteredMessages: Message[] = [];
-  let currentTokenCount = systemPromptTokens + userPromptTokens;
 
   if (messages) {
     for (const message of messages) {
       const contentTokens = await countTokens(message.content);
-      if (currentTokenCount + contentTokens <= maxTokens) {
+      if (remainingAvailableTokens > contentTokens) {
         filteredMessages.push(message);
-        currentTokenCount += contentTokens;
+        remainingAvailableTokens -= contentTokens;
       } else {
         break;
       }
