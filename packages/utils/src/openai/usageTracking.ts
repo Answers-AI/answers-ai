@@ -10,6 +10,7 @@ import {
 
 import { inngest } from '../ingest/client';
 import { User } from 'types';
+import { updateUserPlanTokenCount } from '../plans/updateUserPlanTokenCount';
 
 const OPENAI_TYPE = 'openai';
 
@@ -55,7 +56,8 @@ export const trackUsageFromTokens = async ({
   completionUsedTokens,
   user,
   request,
-  isCacheHit
+  isCacheHit,
+  isEmbedding
 }: {
   type?: string;
   method: string;
@@ -66,6 +68,7 @@ export const trackUsageFromTokens = async ({
   user: User;
   request?: any;
   isCacheHit?: boolean;
+  isEmbedding?: boolean;
 }) => {
   await inngest.send({
     v: '1',
@@ -83,6 +86,9 @@ export const trackUsageFromTokens = async ({
       request
     }
   });
+  if (!isEmbedding) {
+    await updateUserPlanTokenCount(user, promptUsedTokens + completionUsedTokens, model);
+  }
 };
 
 export const trackCompletionUsage = async ({
@@ -158,14 +164,15 @@ export const trackEmbeddingUsage = async ({
   isCacheHit: boolean;
 }) => {
   if (response.usage?.prompt_tokens && response.usage?.total_tokens) {
-    trackUsageFromTokens({
+    await trackUsageFromTokens({
       type,
       method,
       model,
       promptUsedTokens: response.usage.prompt_tokens,
       completionUsedTokens: response.usage.total_tokens - response.usage.prompt_tokens,
       user,
-      isCacheHit
+      isCacheHit,
+      isEmbedding: true
     });
   }
 };

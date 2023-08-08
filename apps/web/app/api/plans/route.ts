@@ -1,0 +1,33 @@
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { prisma } from '@db/client';
+import { authOptions } from '@ui/authOptions';
+import { respond401 } from '@utils/auth/respond401';
+import { Stripe } from 'stripe';
+
+export async function GET(req: Request) {
+  const user = await getServerSession(authOptions);
+  if (!user?.user?.id) return respond401();
+
+  const plans = await prisma.plan.findMany({
+    orderBy: {
+      id: 'asc'
+    }
+  });
+
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2022-11-15'
+  });
+  const prices = await stripe.prices.list();
+
+  return NextResponse.json({
+    plans: plans.map((plan) => {
+      const price = prices.data.find((price) => price.metadata.planId === plan.id.toString());
+
+      return {
+        ...plan,
+        priceObj: price
+      };
+    })
+  });
+}

@@ -11,6 +11,7 @@ import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 
 import type { Document } from 'types';
+import { getActiveUserPlan } from '@utils/plans/getActiveUserPlan';
 
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
@@ -20,6 +21,20 @@ export async function POST(req: Request) {
     const user = session?.user!;
     if (!user?.email) {
       return Response.redirect('/', 401);
+    }
+
+    const activeUserPlan = await getActiveUserPlan(user);
+
+    const { tokensLeft: remainingTokens } = activeUserPlan;
+
+    if (remainingTokens <= 0) {
+      return new Response(
+        JSON.stringify({
+          message: 'Plan limit exceeded',
+          code: 'plan-limit-exceeded'
+        }),
+        { status: 402 }
+      );
     }
 
     const {

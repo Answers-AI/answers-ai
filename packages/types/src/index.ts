@@ -228,6 +228,11 @@ export interface User extends Omit<DB.User, 'appSettings'> {
   // accounts: DB.Account[] | null;
 }
 
+export interface Plan extends DB.Plan {}
+export interface ActiveUserPlan extends DB.ActiveUserPlan {
+  plan: Plan;
+}
+
 export interface ContextField extends DB.ContextField {}
 
 export interface ChatApp extends Omit<DB.ChatApp, 'appSettings'> {

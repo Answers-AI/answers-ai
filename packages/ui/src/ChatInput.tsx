@@ -17,6 +17,8 @@ import Fieldset from './Fieldset';
 import { debounce } from '@utils/debounce';
 
 import type { Sidekick } from 'types';
+import { RemaningTokensCounter } from './RemainingTokensCounter';
+import { usePlansAndUsage } from './PlansAndUsageContext';
 
 const ChatInput = ({
   scrollRef,
@@ -30,6 +32,8 @@ const ChatInput = ({
   const defaultPlaceholderValue = 'How can you help me accomplish my goal?';
   const [inputValue, setInputValue] = useState('');
   const [placeholder, setPlaceholder] = useState(defaultPlaceholderValue);
+
+  const { activeUserPlan } = usePlansAndUsage();
 
   const {
     chat,
@@ -109,6 +113,7 @@ const ChatInput = ({
             </MenuItem>
           </Select>
         </Fieldset>
+        <RemaningTokensCounter />
       </Box>
 
       <TextField
@@ -128,6 +133,7 @@ const ChatInput = ({
         placeholder={placeholder}
         value={inputValue}
         multiline
+        disabled={!activeUserPlan || activeUserPlan.tokensLeft <= 0}
         onKeyPress={handleKeyPress}
         onChange={handleInputChange}
       />

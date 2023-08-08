@@ -27,6 +27,7 @@ import {
   User,
   MessageFeedback
 } from 'types';
+import { usePlansAndUsage } from './PlansAndUsageContext';
 
 interface AnswersContextType {
   user: User;
@@ -152,6 +153,7 @@ export function AnswersProvider({
   const [sidekick, setSidekick] = useState(defaultSidekick);
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
   const messageIdx = useRef(0);
+  const { mutateActiveUserPlan } = usePlansAndUsage();
 
   const { isStreaming, generateResponse } = useStreamedResponse({
     apiUrl,
@@ -183,6 +185,7 @@ export function AnswersProvider({
         setChatId(newChat?.id);
         history.replaceState(null, '', `/chat/${newChat?.id}`);
       }
+      mutateActiveUserPlan();
     }
   });
   const [chatId, setChatId] = useState<string | undefined>(initialChat?.id);
@@ -324,10 +327,12 @@ export function AnswersProvider({
           setJourneyId(data?.chat.journeyId);
           addMessage(data);
           setIsLoading(false);
+          mutateActiveUserPlan();
         }
       } catch (err: any) {
         setError(err);
         setIsLoading(false);
+        mutateActiveUserPlan();
       }
     },
     [
@@ -342,7 +347,8 @@ export function AnswersProvider({
       setChatId,
       setJourneyId,
       setError,
-      setIsLoading
+      setIsLoading,
+      mutateActiveUserPlan
     ]
   );
 
