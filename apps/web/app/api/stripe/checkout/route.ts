@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   const user = await getServerSession(authOptions);
   if (!user?.user?.id) return respond401();
 
-  const { priceId } = await req.json();
+  const { priceId, origin } = await req.json();
 
   const stripe = getStripeClient();
 
@@ -30,11 +30,8 @@ export async function POST(req: Request) {
         planId: price.metadata.planId
       }
     },
-    success_url:
-      // TODO: need to figure out correct URL
-      process.env.NEXT_PUBLIC_APP_URL ||
-      `http://localhost:3000/plans?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000/plans'
+    success_url: `${origin}/plans?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}/plans`
   });
 
   return NextResponse.json({ url: session.url });

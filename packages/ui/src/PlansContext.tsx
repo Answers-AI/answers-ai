@@ -50,7 +50,7 @@ const PlansProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const goToPlanCheckout = useCallback(async (plan: PlanWithPriceObject) => {
     const res = await fetch(`/api/stripe/checkout`, {
       method: 'POST',
-      body: JSON.stringify({ priceId: plan.priceObj?.id }),
+      body: JSON.stringify({ priceId: plan.priceObj?.id, origin: window.location.origin }),
       headers: {
         'Content-Type': 'application/json'
       }
