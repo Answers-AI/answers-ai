@@ -816,6 +816,9 @@ importers:
       sitemapper:
         specifier: ^3.2.6
         version: 3.2.6
+      stripe:
+        specifier: ^12.17.0
+        version: 12.17.0
       swagger2openapi:
         specifier: ^7.0.8
         version: 7.0.8

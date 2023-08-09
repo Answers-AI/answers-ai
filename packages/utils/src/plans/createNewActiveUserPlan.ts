@@ -1,7 +1,17 @@
 import { prisma } from '@db/client';
 import { User } from 'types';
 
-export const createNewActiveUserPlan = async (user: User, planId: number, renewalDate?: Date) => {
+export const createNewActiveUserPlan = async ({
+  user,
+  planId,
+  renewalDate,
+  stripeSubscriptionId
+}: {
+  user: User;
+  planId: number;
+  renewalDate?: Date;
+  stripeSubscriptionId?: string;
+}) => {
   if (!renewalDate) {
     renewalDate = new Date();
     renewalDate.setMonth(renewalDate.getMonth() + 1);
@@ -27,7 +37,8 @@ export const createNewActiveUserPlan = async (user: User, planId: number, renewa
       planId: plan.id,
       userId: user.id,
       renewalDate,
-      tokensLeft: plan.tokenLimit
+      tokensLeft: plan.tokenLimit,
+      stripeSubscriptionId
     },
     include: {
       plan: true

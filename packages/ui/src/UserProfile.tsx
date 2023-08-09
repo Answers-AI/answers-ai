@@ -1,8 +1,9 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray } from 'react-hook-form';
+import NextLink from 'next/link';
 
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
@@ -20,6 +21,8 @@ import Grid from '@mui/material/Grid';
 
 import Delete from '@mui/icons-material/Delete';
 import { User, AppSettings, ContextField } from 'types';
+import { Card, CardContent } from '@mui/material';
+import { usePlans } from './PlansContext';
 
 interface ContextFieldInput extends Partial<ContextField> {}
 interface OrgInput
@@ -39,10 +42,17 @@ interface OrgInput
   [key: string]: any;
 }
 
-const UserForm = ({ appSettings, user }: { appSettings: AppSettings; user?: User }) => {
+const UserProfile = ({ appSettings, user }: { appSettings: AppSettings; user?: User }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { activeUserPlan, plans } = usePlans();
+
+  const monthlyCost = useMemo(() => {
+    const amountInCents = (plans || []).find((plan) => plan.id === activeUserPlan?.planId)?.priceObj
+      ?.unit_amount;
+    return amountInCents ? amountInCents / 100 : 0;
+  }, [activeUserPlan?.planId, plans]);
 
   const {
     handleSubmit,
@@ -108,10 +118,54 @@ const UserForm = ({ appSettings, user }: { appSettings: AppSettings; user?: User
   return (
     <Box p={8}>
       <Typography variant="h2" component="h1">
-        Edit User
+        User
       </Typography>
 
       <Divider sx={{ my: 2 }} />
+      <Card variant="outlined">
+        <Box display="flex" justifyContent="space-between" alignItems="center" padding="16px">
+          <Typography variant="h6">Plan info</Typography>
+          {activeUserPlan?.planId !== 3 && (
+            <Button component={NextLink} href="/plans" variant="contained" color="primary">
+              Upgrade
+            </Button>
+          )}
+        </Box>
+        <CardContent>
+          <Divider />
+
+          <Typography variant="body1" style={{ marginTop: '16px' }}>
+            <strong>Current Plan:</strong> {activeUserPlan?.plan.name}
+          </Typography>
+
+          <Typography variant="body1">
+            <strong>Monthly Cost:</strong> ${monthlyCost}
+          </Typography>
+
+          <Typography variant="body1">
+            <strong>GPT-3 Requests (This Month):</strong> {activeUserPlan?.gpt3RequestCount}
+          </Typography>
+
+          <Typography variant="body1">
+            <strong>GPT-4 Requests (This Month):</strong> {activeUserPlan?.gpt4RequestCount}
+          </Typography>
+
+          <Typography variant="body1">
+            <strong>Tokens Remaining:</strong> {activeUserPlan?.tokensLeft?.toLocaleString()}
+          </Typography>
+
+          <Typography variant="body1">
+            <strong>Plan Renewal Date:</strong> {activeUserPlan?.renewalDate?.toLocaleDateString()}
+          </Typography>
+        </CardContent>
+      </Card>
+      <Divider sx={{ my: 2 }} />
+      <Box>
+        <Typography variant="h6" gutterBottom>
+          User Variables
+        </Typography>
+      </Box>
+
       <Box component="form" onSubmit={handleSubmit(onSubmit)}>
         <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
           <Grid item sm={12} sx={{ textAlign: 'right' }}>
@@ -223,4 +277,4 @@ const UserForm = ({ appSettings, user }: { appSettings: AppSettings; user?: User
   );
 };
 
-export default UserForm;
+export default UserProfile;

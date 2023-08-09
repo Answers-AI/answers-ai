@@ -2,17 +2,16 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
 import { respond401 } from '@utils/auth/respond401';
-import { Stripe } from 'stripe';
-import { upgradeUserPlan } from '@utils/plans/upgradeUserPlan';
+import { subscribeToUserPlan } from '@utils/plans/subscribeToUserPlan';
+import { getStripeClient } from '@utils/stripe/getStripeClient';
 
 export async function POST(req: Request) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2022-11-15'
-  });
   const user = await getServerSession(authOptions);
   if (!user?.user?.id) return respond401();
 
   const { sessionId } = await req.json();
+
+  const stripe = getStripeClient();
 
   const session = await stripe.checkout.sessions.retrieve(sessionId);
   if (!session) return NextResponse.json({ error: 'Session not found' });
@@ -25,7 +24,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Plan ID not found in subscription' });
 
   const renewalDate = new Date(subscription.current_period_end * 1000);
-  await upgradeUserPlan(user.user, Number(subscription.metadata.planId), renewalDate);
+  await subscribeToUserPlan({
+    user: user.user,
+    planId: Number(subscription.metadata.planId),
+    renewalDate,
+    stripeSubscriptionId: subscription.id
+  });
 
   return NextResponse.json({ success: true });
 }

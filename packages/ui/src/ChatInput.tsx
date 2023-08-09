@@ -18,7 +18,7 @@ import { debounce } from '@utils/debounce';
 
 import type { Sidekick } from 'types';
 import { RemaningTokensCounter } from './RemainingTokensCounter';
-import { usePlansAndUsage } from './PlansAndUsageContext';
+import { usePlans } from './PlansContext';
 
 const ChatInput = ({
   scrollRef,
@@ -33,7 +33,7 @@ const ChatInput = ({
   const [inputValue, setInputValue] = useState('');
   const [placeholder, setPlaceholder] = useState(defaultPlaceholderValue);
 
-  const { activeUserPlan } = usePlansAndUsage();
+  const { activeUserPlan } = usePlans();
 
   const {
     chat,

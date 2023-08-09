@@ -19,13 +19,13 @@ VALUES
     ),
     (
         2,
-        'Pro',
+        'Paid',
         3000000,
         'The Paid Plan is where the true value of AnswerAI shines. This plan is the bread and butter of our pricing structure, specifically designed to cater to the needs of individuals and small teams. For a reasonable price, you''ll get access to 3,000,000 gpt3 tokens (300,000 gpt4 tokens), unlocking an incredible AI-driven experience. With the Paid Plan, you can connect your data sources and automatically add them to your knowledge base, making your workflow more efficient and your decision-making more informed. Say goodbye to endless copy-pasting and welcome a streamlined development process that saves you time and enhances the quality of your work.'
     ),
     (
         3,
-        'Enterprise',
+        'Pro',
         6000000,
         'The Pro Plan is the ultimate choice for professionals who are ready to maximize their potential with AnswerAI. With this plan, you''ll have access to 6,000,000 gpt3 tokens (600,000 gpt4 tokens). This substantial increase in token usage allows you to supercharge your AI-driven projects and take them to the next level. Whether you''re a data scientist, project manager, or automation expert, the Pro Plan offers the tools and resources you need to unlock your full potential and achieve remarkable results. It''s time to harness the true power of generative AI and reshape the way you work.'
     );

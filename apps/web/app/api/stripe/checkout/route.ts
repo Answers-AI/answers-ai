@@ -2,16 +2,15 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@ui/authOptions';
 import { respond401 } from '@utils/auth/respond401';
-import { Stripe } from 'stripe';
+import { getStripeClient } from '@utils/stripe/getStripeClient';
 
 export async function POST(req: Request) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2022-11-15'
-  });
   const user = await getServerSession(authOptions);
   if (!user?.user?.id) return respond401();
 
   const { priceId } = await req.json();
+
+  const stripe = getStripeClient();
 
   const price = await stripe.prices.retrieve(priceId);
 

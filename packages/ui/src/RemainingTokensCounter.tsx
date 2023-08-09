@@ -3,20 +3,10 @@
 import { Box, Typography } from '@mui/material';
 import NextLink from 'next/link';
 import { useFlags } from 'flagsmith/react';
-import { usePlansAndUsage } from './PlansAndUsageContext';
-
-function formatDate(datestr?: any) {
-  if (!datestr) return '';
-  const date = new Date(datestr);
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  const year = date.getFullYear();
-
-  return `${month}/${day}/${year}`;
-}
+import { usePlans } from './PlansContext';
 
 export const RemaningTokensCounter: React.FC = () => {
-  const { activeUserPlan } = usePlansAndUsage();
+  const { activeUserPlan } = usePlans();
   const flags = useFlags(['unlimited_tier']);
 
   const remainingTokens = flags.unlimited_tier.enabled ? Infinity : activeUserPlan?.tokensLeft ?? 0;
@@ -28,7 +18,8 @@ export const RemaningTokensCounter: React.FC = () => {
         ) : remainingTokens <= 0 ? (
           <>
             You are out of tokens on the {activeUserPlan?.plan.name} plan. Your plan will renew with{' '}
-            {activeUserPlan?.plan.tokenLimit} tokens on {formatDate(activeUserPlan?.renewalDate)}.
+            {activeUserPlan?.plan.tokenLimit} tokens on{' '}
+            {activeUserPlan?.renewalDate?.toLocaleDateString()}.
             {activeUserPlan?.planId === 1 && (
               <>
                 {' '}

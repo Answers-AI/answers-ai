@@ -14,7 +14,7 @@ import GlobalStyles from '../GlobalStyles';
 import { NotInvitedPage } from './NotInvitedPage';
 
 import { AppSettings } from 'types';
-import { PlansAndUsageProvider } from '../PlansAndUsageContext';
+import { PlansAndUsageProvider } from '../PlansContext';
 
 export default function AppLayout({
   session,

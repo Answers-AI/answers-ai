@@ -6,14 +6,16 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardHeader,
   CircularProgress,
   Typography
 } from '@mui/material';
-import { usePlansAndUsage } from './PlansAndUsageContext';
+import { usePlans } from './PlansContext';
 import { useEffect, useState } from 'react';
 
 export const PricingPlans: React.FC = () => {
-  const { plans, isActivePlan, goToPlanCheckout, mutateActiveUserPlan } = usePlansAndUsage();
+  const { plans, isActivePlan, goToPlanCheckout, mutateActiveUserPlan, activeUserPlan } =
+    usePlans();
   const [loading, setLoading] = useState(false);
   // check for session_id in url
   useEffect(() => {
@@ -54,27 +56,60 @@ export const PricingPlans: React.FC = () => {
       ) : (
         <Box sx={{ display: 'flex', gap: 1, padding: 1 }}>
           {plans?.map((plan) => (
-            <Card key={plan.id} variant={isActivePlan(plan) ? 'outlined' : 'elevation'}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                <CardContent sx={{ flexGrow: 1 }}>
-                  {isActivePlan(plan) && (
-                    <Typography variant="body2" color="textSecondary" align="right">
-                      Current Plan
+            <Card
+              key={plan.id}
+              variant="outlined"
+              sx={{
+                borderColor: isActivePlan(plan) ? 'primary.main' : 'grey.300',
+                borderWidth: isActivePlan(plan) ? '2px' : '1px',
+                position: 'relative'
+              }}>
+              {isActivePlan(plan) && (
+                <Typography
+                  variant="body2"
+                  color="primary.main"
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: '0.5rem',
+                    background: 'transparent',
+                    paddingLeft: '0.5rem',
+                    paddingRight: '0.5rem'
+                  }}>
+                  Current Plan
+                </Typography>
+              )}
+              <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <CardHeader
+                  title={
+                    <Typography variant="h4" align="center">
+                      {plan.name}
                     </Typography>
-                  )}
-                  <Typography variant="h5">{plan.name}</Typography>
+                  }
+                />
+                <CardContent>
                   {plan.priceObj?.unit_amount && (
                     <Typography variant="h6">${plan.priceObj.unit_amount / 100}/month</Typography>
                   )}
                   <Typography variant="body1">{plan.description}</Typography>
-                  {plan.id !== 1 && !isActivePlan(plan) && (
-                    <CardActions sx={{ justifyContent: 'center' }}>
-                      <Button size="small" onClick={() => goToPlanCheckout(plan)}>
-                        Subscribe
-                      </Button>
-                    </CardActions>
-                  )}
                 </CardContent>
+                {plan.id > activeUserPlan?.planId! && (
+                  <Box
+                    sx={{
+                      marginTop: 'auto',
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      padding: 2
+                    }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => goToPlanCheckout(plan)}>
+                      Upgrade
+                    </Button>
+                  </Box>
+                )}
               </Box>
             </Card>
           ))}

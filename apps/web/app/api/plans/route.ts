@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { respond401 } from '@utils/auth/respond401';
-import { Stripe } from 'stripe';
+import { getStripeClient } from '@utils/stripe/getStripeClient';
 
 export async function GET(req: Request) {
   const user = await getServerSession(authOptions);
@@ -15,9 +15,8 @@ export async function GET(req: Request) {
     }
   });
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2022-11-15'
-  });
+  const stripe = getStripeClient();
+
   const prices = await stripe.prices.list();
 
   return NextResponse.json({

@@ -412,6 +412,7 @@ model UserPlanHistory {
   endDate     DateTime
   gpt3RequestCount Int
   gpt4RequestCount Int
+  stripeSubscriptionId String?
   user        User    @relation(fields: [userId], references: [id])
   plan        Plan    @relation(fields: [planId], references: [id])
 }
@@ -425,6 +426,7 @@ model ActiveUserPlan {
   startDate   DateTime @default(now())
   gpt3RequestCount Int @default(0)
   gpt4RequestCount Int @default(0)
+  stripeSubscriptionId String?
   user        User    @relation(fields: [userId], references: [id])
   plan        Plan    @relation(fields: [planId], references: [id])
 }

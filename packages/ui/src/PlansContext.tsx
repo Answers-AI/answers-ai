@@ -7,7 +7,7 @@ export interface PlanWithPriceObject extends Plan {
   priceObj?: Stripe.Price;
 }
 
-export interface PlansAndUsageContextValues {
+export interface PlansContextValues {
   plans: PlanWithPriceObject[];
   activeUserPlan?: ActiveUserPlan;
   mutateActiveUserPlan: KeyedMutator<any>;
@@ -15,18 +15,21 @@ export interface PlansAndUsageContextValues {
   goToPlanCheckout: (plan: PlanWithPriceObject) => Promise<void>;
 }
 
-const PlansAndUsageContext = createContext<PlansAndUsageContextValues>({
+const PlansContext = createContext<PlansContextValues>({
   plans: [],
   mutateActiveUserPlan: async () => {},
   isActivePlan: () => false,
   goToPlanCheckout: async () => {}
 });
 
-const PlansAndUsageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const PlansProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { data: activeUserPlan, mutate: mutateActiveUserPlan } = useSWR(`/api/user-plan`, (url) =>
     fetch(url)
       .then((res) => res.json())
-      .then((data) => data.activeUserPlan)
+      .then((data) => ({
+        ...data.activeUserPlan,
+        renewalDate: new Date(data.activeUserPlan.renewalDate)
+      }))
   );
 
   const { data: plans } = useSWR<PlanWithPriceObject[]>('/api/plans', (url) =>
@@ -55,7 +58,7 @@ const PlansAndUsageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, []);
 
   return (
-    <PlansAndUsageContext.Provider
+    <PlansContext.Provider
       value={{
         plans: plans || [],
         activeUserPlan,
@@ -64,16 +67,16 @@ const PlansAndUsageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         goToPlanCheckout
       }}>
       {children}
-    </PlansAndUsageContext.Provider>
+    </PlansContext.Provider>
   );
 };
 
-const usePlansAndUsage = () => {
-  const context = useContext(PlansAndUsageContext);
+const usePlans = () => {
+  const context = useContext(PlansContext);
 
   return {
     ...context
   };
 };
 
-export { PlansAndUsageContext, PlansAndUsageProvider, usePlansAndUsage };
+export { PlansContext as PlansAndUsageContext, PlansProvider as PlansAndUsageProvider, usePlans };
