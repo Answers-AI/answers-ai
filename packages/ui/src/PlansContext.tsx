@@ -99,4 +99,4 @@ const usePlans = () => {
   };
 };
 
-export { PlansContext as PlansAndUsageContext, PlansProvider as PlansAndUsageProvider, usePlans };
+export { PlansContext, PlansProvider, usePlans };

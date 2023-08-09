@@ -14,7 +14,7 @@ import GlobalStyles from '../GlobalStyles';
 import { NotInvitedPage } from './NotInvitedPage';
 
 import { AppSettings } from 'types';
-import { PlansAndUsageProvider } from '../PlansContext';
+import { PlansProvider } from '../PlansContext';
 
 export default function AppLayout({
   session,
@@ -32,7 +32,7 @@ export default function AppLayout({
   flagsmithState: any;
 }) {
   return (
-    <PlansAndUsageProvider>
+    <PlansProvider>
       <FlagsmithProvider
         serverState={flagsmithState}
         options={{
@@ -89,6 +89,6 @@ export default function AppLayout({
           )}
         </ThemeProvider>
       </FlagsmithProvider>
-    </PlansAndUsageProvider>
+    </PlansProvider>
   );
 }
