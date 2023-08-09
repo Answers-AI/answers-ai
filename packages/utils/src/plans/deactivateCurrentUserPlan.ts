@@ -8,7 +8,7 @@ export const deactivateCurrentUserPlan = async (activeUserPlan: ActiveUserPlan) 
       planId: activeUserPlan.planId,
       userId: activeUserPlan.userId,
       renewalDate: activeUserPlan.renewalDate,
-      tokensLeft: activeUserPlan.tokensLeft,
+      tokensLeft: 0,
       gpt3RequestCount: activeUserPlan.gpt3RequestCount,
       gpt4RequestCount: activeUserPlan.gpt4RequestCount,
       startDate: activeUserPlan.startDate,
@@ -22,4 +22,6 @@ export const deactivateCurrentUserPlan = async (activeUserPlan: ActiveUserPlan) 
       id: activeUserPlan.id
     }
   });
+
+  return { planId: activeUserPlan.planId, tokensLeft: activeUserPlan.tokensLeft };
 };

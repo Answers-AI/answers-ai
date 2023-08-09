@@ -403,7 +403,7 @@ model Plan {
 }
 
 model UserPlanHistory {
-  id          Int     @id @default(autoincrement())
+  id          String   @id @default(uuid())
   userId      String
   planId      Int
   renewalDate DateTime
@@ -418,7 +418,7 @@ model UserPlanHistory {
 }
 
 model ActiveUserPlan {
-  id          Int     @id @default(autoincrement())
+  id          String   @id @default(uuid())
   userId      String  @unique 
   planId      Int
   renewalDate DateTime
@@ -427,6 +427,7 @@ model ActiveUserPlan {
   gpt3RequestCount Int @default(0)
   gpt4RequestCount Int @default(0)
   stripeSubscriptionId String?
+  shouldRenew Boolean @default(true)
   user        User    @relation(fields: [userId], references: [id])
   plan        Plan    @relation(fields: [planId], references: [id])
 }

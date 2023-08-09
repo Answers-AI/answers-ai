@@ -5,12 +5,14 @@ export const createNewActiveUserPlan = async ({
   user,
   planId,
   renewalDate,
-  stripeSubscriptionId
+  stripeSubscriptionId,
+  additionalTokens = 0
 }: {
   user: User;
   planId: number;
   renewalDate?: Date;
   stripeSubscriptionId?: string;
+  additionalTokens?: number;
 }) => {
   if (!renewalDate) {
     renewalDate = new Date();
@@ -37,7 +39,7 @@ export const createNewActiveUserPlan = async ({
       planId: plan.id,
       userId: user.id,
       renewalDate,
-      tokensLeft: plan.tokenLimit,
+      tokensLeft: plan.tokenLimit + additionalTokens,
       stripeSubscriptionId
     },
     include: {

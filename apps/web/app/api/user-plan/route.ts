@@ -1,29 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { respond401 } from '@utils/auth/respond401';
 import { getActiveUserPlan } from '@utils/plans/getActiveUserPlan';
-import { upgradeUserPlan } from '@utils/plans/upgradeUserPlan';
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return respond401();
-
-  const activeUserPlan = await getActiveUserPlan(session.user);
-
-  return NextResponse.json({
-    activeUserPlan
-  });
-}
-
-export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) return respond401();
-
-  const { planId, renewalDate } = await req.json();
-
-  await upgradeUserPlan(session.user, planId, new Date(renewalDate));
 
   const activeUserPlan = await getActiveUserPlan(session.user);
 

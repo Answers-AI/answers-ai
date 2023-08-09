@@ -17,7 +17,7 @@ import Fieldset from './Fieldset';
 import { debounce } from '@utils/debounce';
 
 import type { Sidekick } from 'types';
-import { RemaningTokensCounter } from './RemainingTokensCounter';
+import { RemainingTokensCounter } from './RemainingTokensCounter';
 import { usePlans } from './PlansContext';
 
 const ChatInput = ({
@@ -113,7 +113,7 @@ const ChatInput = ({
             </MenuItem>
           </Select>
         </Fieldset>
-        <RemaningTokensCounter />
+        <RemainingTokensCounter />
       </Box>
 
       <TextField

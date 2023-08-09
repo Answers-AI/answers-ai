@@ -28,6 +28,7 @@ export const getActiveUserPlan = async (user: User) => {
       const stripeSubscriptionId = activeUserPlan.stripeSubscriptionId;
       if (!stripeSubscriptionId) throw new Error('Stripe subscription id not found');
       const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+
       const renewalDate = new Date(subscription.current_period_end * 1000);
       if (renewalDate > activeUserPlan.renewalDate) {
         // create a new active plan with latest renewal date

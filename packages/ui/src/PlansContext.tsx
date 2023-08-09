@@ -13,13 +13,15 @@ export interface PlansContextValues {
   mutateActiveUserPlan: KeyedMutator<any>;
   isActivePlan: (plan: Plan) => boolean;
   goToPlanCheckout: (plan: PlanWithPriceObject) => Promise<void>;
+  handleCancelPlan: (onEnd: Function) => Promise<void>;
 }
 
 const PlansContext = createContext<PlansContextValues>({
   plans: [],
   mutateActiveUserPlan: async () => {},
   isActivePlan: () => false,
-  goToPlanCheckout: async () => {}
+  goToPlanCheckout: async () => {},
+  handleCancelPlan: async () => {}
 });
 
 const PlansProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -57,6 +59,23 @@ const PlansProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     window.location.assign((await res.json()).url);
   }, []);
 
+  const handleCancelPlan = useCallback(
+    async (onEnd: Function) => {
+      const data = await fetch(`/api/user-plan/cancel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).then((res) => res.json());
+
+      if (data.success) {
+        await mutateActiveUserPlan();
+      }
+      onEnd();
+    },
+    [mutateActiveUserPlan]
+  );
+
   return (
     <PlansContext.Provider
       value={{
@@ -64,7 +83,8 @@ const PlansProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         activeUserPlan,
         mutateActiveUserPlan,
         isActivePlan,
-        goToPlanCheckout
+        goToPlanCheckout,
+        handleCancelPlan
       }}>
       {children}
     </PlansContext.Provider>

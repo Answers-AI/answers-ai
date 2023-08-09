@@ -1,9 +1,8 @@
 'use client';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray } from 'react-hook-form';
-import NextLink from 'next/link';
 
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
@@ -21,8 +20,7 @@ import Grid from '@mui/material/Grid';
 
 import Delete from '@mui/icons-material/Delete';
 import { User, AppSettings, ContextField } from 'types';
-import { Card, CardContent } from '@mui/material';
-import { usePlans } from './PlansContext';
+import { PlanCard } from './PlanCard';
 
 interface ContextFieldInput extends Partial<ContextField> {}
 interface OrgInput
@@ -46,13 +44,6 @@ const UserProfile = ({ appSettings, user }: { appSettings: AppSettings; user?: U
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { activeUserPlan, plans } = usePlans();
-
-  const monthlyCost = useMemo(() => {
-    const amountInCents = (plans || []).find((plan) => plan.id === activeUserPlan?.planId)?.priceObj
-      ?.unit_amount;
-    return amountInCents ? amountInCents / 100 : 0;
-  }, [activeUserPlan?.planId, plans]);
 
   const {
     handleSubmit,
@@ -122,43 +113,7 @@ const UserProfile = ({ appSettings, user }: { appSettings: AppSettings; user?: U
       </Typography>
 
       <Divider sx={{ my: 2 }} />
-      <Card variant="outlined">
-        <Box display="flex" justifyContent="space-between" alignItems="center" padding="16px">
-          <Typography variant="h6">Plan info</Typography>
-          {activeUserPlan?.planId !== 3 && (
-            <Button component={NextLink} href="/plans" variant="contained" color="primary">
-              Upgrade
-            </Button>
-          )}
-        </Box>
-        <CardContent>
-          <Divider />
-
-          <Typography variant="body1" style={{ marginTop: '16px' }}>
-            <strong>Current Plan:</strong> {activeUserPlan?.plan.name}
-          </Typography>
-
-          <Typography variant="body1">
-            <strong>Monthly Cost:</strong> ${monthlyCost}
-          </Typography>
-
-          <Typography variant="body1">
-            <strong>GPT-3 Requests (This Month):</strong> {activeUserPlan?.gpt3RequestCount}
-          </Typography>
-
-          <Typography variant="body1">
-            <strong>GPT-4 Requests (This Month):</strong> {activeUserPlan?.gpt4RequestCount}
-          </Typography>
-
-          <Typography variant="body1">
-            <strong>Tokens Remaining:</strong> {activeUserPlan?.tokensLeft?.toLocaleString()}
-          </Typography>
-
-          <Typography variant="body1">
-            <strong>Plan Renewal Date:</strong> {activeUserPlan?.renewalDate?.toLocaleDateString()}
-          </Typography>
-        </CardContent>
-      </Card>
+      <PlanCard />
       <Divider sx={{ my: 2 }} />
       <Box>
         <Typography variant="h6" gutterBottom>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { prisma } from '@db/client';
-import UserProfile from '@ui/UserProfile';
+import UserProfile from '@ui/UserProfile/UserProfile';
 import { authOptions } from '@ui/authOptions';
 import getCachedSession from '@ui/getCachedSession';
 

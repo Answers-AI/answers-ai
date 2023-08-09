@@ -15,12 +15,14 @@ export const subscribeToUserPlan = async ({
   stripeSubscriptionId: string;
 }) => {
   const activeUserPlan = await getActiveUserPlan(user);
-  await deactivateCurrentUserPlan(activeUserPlan);
+  const { planId: oldPlanId, tokensLeft } = await deactivateCurrentUserPlan(activeUserPlan);
+
   const newUserPlan = await createNewActiveUserPlan({
     user,
     planId,
     renewalDate,
-    stripeSubscriptionId
+    stripeSubscriptionId,
+    additionalTokens: planId > oldPlanId ? tokensLeft : 0
   });
   return newUserPlan;
 };

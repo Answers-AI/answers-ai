@@ -5,7 +5,7 @@ import NextLink from 'next/link';
 import { useFlags } from 'flagsmith/react';
 import { usePlans } from './PlansContext';
 
-export const RemaningTokensCounter: React.FC = () => {
+export const RemainingTokensCounter: React.FC = () => {
   const { activeUserPlan } = usePlans();
   const flags = useFlags(['unlimited_tier']);
 
@@ -18,12 +18,12 @@ export const RemaningTokensCounter: React.FC = () => {
         ) : remainingTokens <= 0 ? (
           <>
             You are out of tokens on the {activeUserPlan?.plan.name} plan. Your plan will renew with{' '}
-            {activeUserPlan?.plan.tokenLimit} tokens on{' '}
+            {activeUserPlan?.plan.tokenLimit?.toLocaleString()} tokens on{' '}
             {activeUserPlan?.renewalDate?.toLocaleDateString()}.
-            {activeUserPlan?.planId === 1 && (
+            {activeUserPlan?.planId < 3 && (
               <>
                 {' '}
-                Click <NextLink href="/plans">here</NextLink> to upgrade to the pro plan.
+                Click <NextLink href="/plans">here</NextLink> to upgrade.
               </>
             )}
           </>
