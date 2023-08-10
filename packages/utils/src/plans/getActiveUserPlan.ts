@@ -24,7 +24,6 @@ export const getActiveUserPlan = async (user: User) => {
     } else {
       // if user is on a paid plan, check stripe to see if the subscription has renewed
       const stripe = getStripeClient();
-      // TODO, get and store in DB
       const stripeSubscriptionId = activeUserPlan.stripeSubscriptionId;
       if (!stripeSubscriptionId) throw new Error('Stripe subscription id not found');
       const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);

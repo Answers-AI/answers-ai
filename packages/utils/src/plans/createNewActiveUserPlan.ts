@@ -33,7 +33,6 @@ export const createNewActiveUserPlan = async ({
     throw new Error(`Plan with id ${planId} not found`);
   }
 
-  // create a free plan with renewal date in 1 month
   const activeUserPlan = await prisma.activeUserPlan.create({
     data: {
       planId: plan.id,
