@@ -4,19 +4,32 @@ import {
   Box,
   Button,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
   CircularProgress,
   Typography
 } from '@mui/material';
-import { usePlans } from './PlansContext';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useUserPlans } from './hooks/useUserPlan';
+import { PlanWithPriceObject, usePlans } from './hooks/usePlans';
 
 export const PricingPlans: React.FC = () => {
-  const { plans, isActivePlan, goToPlanCheckout, mutateActiveUserPlan, activeUserPlan } =
-    usePlans();
+  const { isActivePlan, mutateActiveUserPlan, activeUserPlan } = useUserPlans();
+  const { plans } = usePlans();
   const [loading, setLoading] = useState(false);
+
+  const goToPlanCheckout = useCallback(async (plan: PlanWithPriceObject) => {
+    const res = await fetch(`/api/payments/checkout`, {
+      method: 'POST',
+      body: JSON.stringify({ priceId: plan.priceObj?.id, origin: window.location.origin }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    window.location.assign((await res.json()).url);
+  }, []);
+
   // check for session_id in url
   useEffect(() => {
     const awaitPlanCreation = async () => {

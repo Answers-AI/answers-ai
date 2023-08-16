@@ -27,7 +27,7 @@ import {
   User,
   MessageFeedback
 } from 'types';
-import { usePlans } from './PlansContext';
+import { useUserPlans } from './hooks/useUserPlan';
 
 interface AnswersContextType {
   user: User;
@@ -153,7 +153,7 @@ export function AnswersProvider({
   const [sidekick, setSidekick] = useState(defaultSidekick);
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
   const messageIdx = useRef(0);
-  const { mutateActiveUserPlan } = usePlans();
+  const { mutateActiveUserPlan } = useUserPlans();
 
   const { isStreaming, generateResponse } = useStreamedResponse({
     apiUrl,

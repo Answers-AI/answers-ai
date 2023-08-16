@@ -3,10 +3,10 @@
 import { Box, Typography } from '@mui/material';
 import NextLink from 'next/link';
 import { useFlags } from 'flagsmith/react';
-import { usePlans } from './PlansContext';
+import { useUserPlans } from './hooks/useUserPlan';
 
 export const RemainingTokensCounter: React.FC = () => {
-  const { activeUserPlan } = usePlans();
+  const { activeUserPlan } = useUserPlans();
   const flags = useFlags(['unlimited_tier']);
 
   const remainingTokens = flags.unlimited_tier.enabled ? Infinity : activeUserPlan?.tokensLeft ?? 0;

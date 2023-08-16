@@ -14,10 +14,12 @@ import {
   DialogContent,
   DialogTitle
 } from '@mui/material';
-import { usePlans } from '../PlansContext';
+import { useUserPlans } from 'src/hooks/useUserPlan';
+import { usePlans } from 'src/hooks/usePlans';
 
 export const PlanCard: React.FC = () => {
-  const { activeUserPlan, plans, handleCancelPlan } = usePlans();
+  const { handleCancelPlan, activeUserPlan } = useUserPlans();
+  const { plans } = usePlans();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
