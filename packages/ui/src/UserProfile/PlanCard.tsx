@@ -14,8 +14,8 @@ import {
   DialogContent,
   DialogTitle
 } from '@mui/material';
-import { useUserPlans } from 'src/hooks/useUserPlan';
-import { usePlans } from 'src/hooks/usePlans';
+import { useUserPlans } from '../hooks/useUserPlan';
+import { usePlans } from '../hooks/usePlans';
 
 export const PlanCard: React.FC = () => {
   const { handleCancelPlan, activeUserPlan } = useUserPlans();
