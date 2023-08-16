@@ -1,6 +1,6 @@
 import React from 'react';
 import { prisma } from '@db/client';
-import UserForm from '@ui/UserForm';
+import UserProfile from '@ui/UserProfile/UserProfile';
 import { authOptions } from '@ui/authOptions';
 import getCachedSession from '@ui/getCachedSession';
 
@@ -24,7 +24,7 @@ const UserFormPage = async ({ params }: any) => {
     })
     .then((data: any) => JSON.parse(JSON.stringify(data)));
 
-  return <UserForm {...params} user={user} />;
+  return <UserProfile {...params} user={user} />;
 };
 
 export default UserFormPage;

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -20,6 +20,7 @@ import Grid from '@mui/material/Grid';
 
 import Delete from '@mui/icons-material/Delete';
 import { User, AppSettings, ContextField } from 'types';
+import { PlanCard } from './PlanCard';
 
 interface ContextFieldInput extends Partial<ContextField> {}
 interface OrgInput
@@ -39,7 +40,7 @@ interface OrgInput
   [key: string]: any;
 }
 
-const UserForm = ({ appSettings, user }: { appSettings: AppSettings; user?: User }) => {
+const UserProfile = ({ appSettings, user }: { appSettings: AppSettings; user?: User }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -108,10 +109,18 @@ const UserForm = ({ appSettings, user }: { appSettings: AppSettings; user?: User
   return (
     <Box p={8}>
       <Typography variant="h2" component="h1">
-        Edit User
+        User
       </Typography>
 
       <Divider sx={{ my: 2 }} />
+      <PlanCard />
+      <Divider sx={{ my: 2 }} />
+      <Box>
+        <Typography variant="h6" gutterBottom>
+          User Variables
+        </Typography>
+      </Box>
+
       <Box component="form" onSubmit={handleSubmit(onSubmit)}>
         <Grid container direction="row" rowSpacing={4} columnSpacing={4}>
           <Grid item sm={12} sx={{ textAlign: 'right' }}>
@@ -223,4 +232,4 @@ const UserForm = ({ appSettings, user }: { appSettings: AppSettings; user?: User
   );
 };
 
-export default UserForm;
+export default UserProfile;

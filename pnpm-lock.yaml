@@ -205,9 +205,15 @@ importers:
       '@sentry/nextjs':
         specifier: ^7.60.0
         version: 7.60.0(encoding@0.1.13)(next@13.4.12)(react@18.2.0)(webpack@5.88.2)
+      '@sentry/node':
+        specifier: ^7.62.0
+        version: 7.62.0
       '@textea/json-viewer':
         specifier: 2.14.1
         version: 2.14.1(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
+      add:
+        specifier: ^2.0.6
+        version: 2.0.6
       aws-crt:
         specifier: ^1.15.22
         version: 1.15.22
@@ -274,6 +280,9 @@ importers:
       serpapi:
         specifier: ^1.1.1
         version: 1.1.1
+      stripe:
+        specifier: ^12.17.0
+        version: 12.17.0
       typeorm:
         specifier: ^0.3.17
         version: 0.3.17(ioredis@5.3.2)
@@ -629,6 +638,9 @@ importers:
       react-window:
         specifier: ^1.8.9
         version: 1.8.9(react-dom@18.2.0)(react@18.2.0)
+      stripe:
+        specifier: ^12.17.0
+        version: 12.17.0
       swr:
         specifier: ^2.2.0
         version: 2.2.0(react@18.2.0)
@@ -810,6 +822,9 @@ importers:
       sitemapper:
         specifier: ^3.2.6
         version: 3.2.6
+      stripe:
+        specifier: ^12.17.0
+        version: 12.17.0
       swagger2openapi:
         specifier: ^7.0.8
         version: 7.0.8
@@ -3701,6 +3716,16 @@ packages:
       tslib: 2.5.0
     dev: false
 
+  /@sentry-internal/tracing@7.62.0:
+    resolution: {integrity: sha512-LHT8i2c93JhQ1uBU1cqb5AIhmHPWlyovE4ZQjqEizk6Fk7jXc9L8kKhaIWELVPn8Xg6YtfGWhRBZk3ssj4JpfQ==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry/core': 7.62.0
+      '@sentry/types': 7.62.0
+      '@sentry/utils': 7.62.0
+      tslib: 2.5.0
+    dev: false
+
   /@sentry/browser@7.60.0:
     resolution: {integrity: sha512-WznY6zrJxCUHZns8jTvDsZw3aaHriSP+jqD+wkXZG3ceooQwFn0RkAstUuoG7YyP4Foinznn3+caeQD4ZjWaXQ==}
     engines: {node: '>=8'}
@@ -3735,6 +3760,15 @@ packages:
     dependencies:
       '@sentry/types': 7.60.0
       '@sentry/utils': 7.60.0
+      tslib: 2.5.0
+    dev: false
+
+  /@sentry/core@7.62.0:
+    resolution: {integrity: sha512-l6n+c3mSlWa+FhT/KBrAU1BtbaLYCljf5MuGlH6NKRpnBcrZCbzk8ZuFcSND+gr2SqxycQkhEWX1zxVHPDdZxw==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry/types': 7.62.0
+      '@sentry/utils': 7.62.0
       tslib: 2.5.0
     dev: false
 
@@ -3795,6 +3829,22 @@ packages:
       - supports-color
     dev: false
 
+  /@sentry/node@7.62.0:
+    resolution: {integrity: sha512-2z1JmYV97eJ8zwshJA15hppjRdUeMhbaL8LSsbdtx7vTMmjuaIGfPR4EnI4Fhuw+J1Nnf5sE/CRKpZCCa74vXw==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry-internal/tracing': 7.62.0
+      '@sentry/core': 7.62.0
+      '@sentry/types': 7.62.0
+      '@sentry/utils': 7.62.0
+      cookie: 0.4.2
+      https-proxy-agent: 5.0.1
+      lru_map: 0.3.3
+      tslib: 2.5.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /@sentry/react@7.60.0(react@18.2.0):
     resolution: {integrity: sha512-wmtRc0jwcqY+AM9dbOBLUCOy2rwh7MvDIXHq49Sg6r/ywOKBV0C55RnU3w7MAcmYe6aylNHC8DChHoj+phIvZw==}
     engines: {node: '>=8'}
@@ -3823,11 +3873,24 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
+  /@sentry/types@7.62.0:
+    resolution: {integrity: sha512-oPy/fIT3o2VQWLTq01R2W/jt13APYMqZCVa0IT3lF9lgxzgfTbeZl3nX2FgCcc8ntDZC0dVw03dL+wLvjPqQpQ==}
+    engines: {node: '>=8'}
+    dev: false
+
   /@sentry/utils@7.60.0:
     resolution: {integrity: sha512-Oc/PQqzeNDOSy4ZzVj6h9U+GEGRkg2PEVn9PC2V9/v3HDD20mndFqR/S2B5OOgDb/6pNGyz8XiZYI5rb29WFHA==}
     engines: {node: '>=8'}
     dependencies:
       '@sentry/types': 7.60.0
+      tslib: 2.5.0
+    dev: false
+
+  /@sentry/utils@7.62.0:
+    resolution: {integrity: sha512-12w+Lpvn2iaocgjf6AxhtBz7XG8iFE5aMyt9BTuQp1/7sOjtEVNHlDlGrHbtPqxNCmL2SEcmNHka1panLqWHDw==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry/types': 7.62.0
       tslib: 2.5.0
     dev: false
 
@@ -4993,6 +5056,10 @@ packages:
   /acorn@8.8.2:
     resolution: {integrity: sha512-xjIYgE8HBrkpd/sJqOGNspf8uHG+NOHGOw6a/Urj8taM2EXfdNAH2oFcPeIFfsv3+kz/mJrS5VuMqbNLjCa2vw==}
     engines: {node: '>=0.4.0'}
+
+  /add@2.0.6:
+    resolution: {integrity: sha512-j5QzrmsokwWWp6kUcJQySpbG+xfOBqqKnup3OIk1pz+kB/80SLorZ9V8zHFLO92Lcd+hbvq8bT+zOGoPkmBV0Q==}
+    dev: false
 
   /afinn-165-financialmarketnews@3.0.0:
     resolution: {integrity: sha512-0g9A1S3ZomFIGDTzZ0t6xmv4AuokBvBmpes8htiyHpH7N4xDmvSQL6UxL/Zcs2ypRb3VwgCscaD8Q3zEawKYhw==}
@@ -12725,6 +12792,14 @@ packages:
   /strip-json-comments@3.1.1:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
+
+  /stripe@12.17.0:
+    resolution: {integrity: sha512-f8GhS2LQlGCDZ1Akyu57txgSWyLUEYf0yZYS7x2aTKJXVua5lLmmgfJFFYHfTgEdS5P6rurf0Ghcf/HVLggv5g==}
+    engines: {node: '>=12.*'}
+    dependencies:
+      '@types/node': 18.16.0
+      qs: 6.11.0
+    dev: false
 
   /strnum@1.0.5:
     resolution: {integrity: sha512-J8bbNyKKXl5qYcR36TIO8W3mVGVHrmmxsd5PAItGkmyzwJvybiw2IVq5nqd0i4LSNSkB/sx9VHllbfFdr9k1JA==}
