@@ -21,7 +21,7 @@ export const PricingPlans: React.FC = () => {
   useEffect(() => {
     const awaitPlanCreation = async () => {
       try {
-        const res = await fetch(`/api/stripe/success`, {
+        const res = await fetch(`/api/payments/success`, {
           method: 'POST',
           body: JSON.stringify({ sessionId }),
           headers: {
