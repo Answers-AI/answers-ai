@@ -452,7 +452,7 @@ export const processWebPathScrape: EventVersionHandler<{ path: string; forceRecu
           console.log('[web/path.sync] No final urls were found.');
         } else {
           try {
-            await Promise.all(
+            Promise.all(
               chunkArray(finalUrls, WEB_PAGE_SYNC_BATCH_SIZE).map(async (urls) =>
                 inngest.send({
                   v: event.v,
@@ -466,7 +466,7 @@ export const processWebPathScrape: EventVersionHandler<{ path: string; forceRecu
               )
             );
           } catch (error) {
-            console.log(error);
+            console.log(`[web/path.sync] ${error}`);
           } finally {
           }
         }
