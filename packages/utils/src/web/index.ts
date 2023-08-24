@@ -37,5 +37,5 @@ export const webPageLoader = redisLoader<string, string>({
     return allResults;
   },
   cacheExpirationInSeconds: CACHE_EXPIRATION,
-  disableCache: IS_DEVELOPMENT
+  disableCache: true //IS_DEVELOPMENT
 });
