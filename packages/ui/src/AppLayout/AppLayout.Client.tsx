@@ -52,27 +52,6 @@ export default function AppLayout({
               }}>
               <div
                 style={{
-                  position: 'absolute',
-                  zIndex: 99,
-                  top: 0,
-                  left: 0,
-                  flex: 1,
-                  width: '100%',
-                  height: '24px',
-                  backgroundColor: '#eed202',
-                  textAlign: 'center',
-                  color: '#000000'
-                }}>
-                This is an Alpha product.{' '}
-                <a
-                  href="https://airtable.com/appIQM0aGhytwZPAO/shrjNDGhl0liOGL3W"
-                  target="_blank"
-                  style={{ color: '#0F0F0F', textDecoration: 'underline' }}>
-                  Report bugs and provide feedback here
-                </a>
-              </div>
-              <div
-                style={{
                   width: '100%',
                   height: '100vh',
                   paddingTop: '24px',
