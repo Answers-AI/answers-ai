@@ -1,6 +1,6 @@
 import socketIOClient from 'socket.io-client';
 import { Sidekick } from 'types';
-export const getFlowisePredictionStream = async ({ sidekick, body }: any) => {
+export const getFlowisePredictionStream = async ({ sidekick, body, onEnd }: any) => {
   let answer = '';
   // let message;
   const encoder = new TextEncoder();
@@ -30,6 +30,10 @@ export const getFlowisePredictionStream = async ({ sidekick, body }: any) => {
               'JSON_END'
           )
         );
+        onEnd &&
+          onEnd({
+            ...result
+          });
         controller.close();
       });
       socket.on('start', () => {

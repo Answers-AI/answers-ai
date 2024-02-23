@@ -230,6 +230,8 @@ model Chat {
   owner   User?   @relation("UserChatsCreated", fields: [ownerId], references: [id])
   ownerId String?
 
+  chatflowChatId String?
+
   users    User[]
   messages Message[]
 

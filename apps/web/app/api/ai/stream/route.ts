@@ -56,17 +56,6 @@ export async function POST(req: Request) {
       journeyId,
       sidekick
     });
-    if (user)
-      await inngest.send({
-        v: '1',
-        ts: new Date().valueOf(),
-        name: 'answers/prompt.upserted',
-        user,
-        data: {
-          prompt,
-          chat
-        }
-      });
 
     const stream = await getFlowisePredictionStream({
       sidekick,
@@ -76,6 +65,13 @@ export async function POST(req: Request) {
           message: content,
           type: role == 'assistant' ? 'apiMessage' : 'userMessage'
         }))
+      },
+      onEnd: async (result: any) => {
+        await prisma.chat.update({
+          where: { id: chat.id },
+          data: { chatflowChatId: result.chatId },
+          include: { journey: true }
+        });
       }
     });
     return new Response(stream, {
