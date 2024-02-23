@@ -470,6 +470,10 @@ export type JiraComment = { key: string; self: string; id: string; fields: any; 
 export interface Sidekick extends DB.Sidekick {
   sharedWith?: string;
   favoritedBy?: DB.User[];
+  chatflow: {
+    id: string;
+    name: string;
+  };
 }
 
 export interface SidekickListItem

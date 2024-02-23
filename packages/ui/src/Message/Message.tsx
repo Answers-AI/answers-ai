@@ -80,7 +80,7 @@ export const MessageCard = ({
   const services: { [key: string]: AppService } =
     appSettings?.services?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};
   const [lastInteraction, setLastInteraction] = React.useState<Rating | undefined>();
-  const hasContent = role === 'assistant' ? content && id : !!content;
+  const hasContent = role === 'assistant' ? content : !!content;
   if (error) {
     pineconeData = error?.response?.data.pineconeData;
     summary = error?.response?.data.summary;
@@ -251,7 +251,7 @@ export const MessageCard = ({
                     <Button
                       key={`references-${doc.id}`}
                       size="small"
-                      component={NextLink}
+                      component={doc.url ? NextLink : undefined}
                       variant="outlined"
                       color="inherit"
                       href={doc.url}
@@ -264,11 +264,17 @@ export const MessageCard = ({
                       startIcon={
                         <Avatar
                           variant="source"
-                          src={services[doc.source]?.imageURL}
+                          src={services[doc.source ?? doc.metadata?.source]?.imageURL}
                           sx={{ width: 20, height: 20 }}
                         />
                       }>
-                      {doc.title ?? doc.url}
+                      {doc.title ??
+                      doc.url ??
+                      doc.metadata?.title ??
+                      doc.metadata?.url ??
+                      doc.metadata?.filePath
+                        ? `${doc.metadata?.repo}/${doc.metadata?.filePath}`
+                        : null}
                     </Button>
                   ))}
                 </Box>
@@ -334,7 +340,28 @@ export const MessageCard = ({
             </AccordionDetails>
           </Accordion>
         ) : null}
-
+        {contextDocuments?.length ? (
+          <Accordion TransitionProps={{ unmountOnExit: true }}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header">
+              <Typography variant="overline">
+                Context ({countTokens(contextDocuments?.map((d) => d.pageContent)?.join('/n'))}{' '}
+                Tokens)
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography
+                sx={{ whiteSpace: 'pre-line' }}
+                variant="body1"
+                color="text.secondary"
+                component="div">
+                {contextDocuments?.map((d) => d.pageContent)?.join('/n')}
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        ) : null}
         {developer_mode?.enabled ? (
           <Box>
             {error ? (

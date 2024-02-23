@@ -48,6 +48,7 @@
     "db": "workspace:*",
     "dotenv": "^16.3.1",
     "eventsource-parser": "^1.0.0",
+    "socket.io-client": "^4.7.4",
     "gpt-3-encoder": "^1.1.4",
     "gpt-tokens": "^1.1.0",
     "gpt3-tokenizer": "^1.1.5",

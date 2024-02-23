@@ -115,6 +115,7 @@ model Sidekick {
 
   chatflow       Json?
   chatflowApiKey String?
+  chatflowDomain String?
 
   label         String
   tags          String[]
