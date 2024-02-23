@@ -29,7 +29,7 @@ const useAI = (options: { useStreaming?: boolean; filters?: any } = {}) => {
     retry: false,
     queryFn: () =>
       axios
-        .post((import.meta.env.VITE_API_URL || 'http://localhost:3000/api') + `/ai/query`, {
+        .post((import.meta.env.VITE_API_URL || 'http://localhost:4000/api') + `/ai/query`, {
           prompt,
           answers,
           filter: options.filters
@@ -63,7 +63,7 @@ const useAI = (options: { useStreaming?: boolean; filters?: any } = {}) => {
 export const syncAi = async (options: { url?: string } = {}) => {
   const { url } = options;
   const response = await axios.post(
-    (import.meta.env.VITE_API_URL || 'http://localhost:3000/api') + `/sync/web`,
+    (import.meta.env.VITE_API_URL || 'http://localhost:4000/api') + `/sync/web`,
     { url }
   );
   return response.data;

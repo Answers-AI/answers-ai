@@ -112,23 +112,30 @@ model Sidekick {
   isSystem             Boolean? @default(false)
   isSharedWithOrg      Boolean? @default(false)
   isFavoriteByDefault  Boolean? @default(false)
-  tags                 String[]
+
+  chatflow Json
+  chatflowApiKey String
+
   label                String
-  placeholder          String?
+  tags                 String[]
+  userId               String
+  favoritedBy          User[]   @relation("SidekickFavoritedBy")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @default(now()) @updatedAt
+  createdByUser        User     @relation(fields: [userId], references: [id])
+
+ // TO BE REMOVED
   temperature          Float    @default(1)
   frequency            Float    @default(0)
   presence             Float    @default(0)
   maxCompletionTokens  Int      @default(500)
-  aiModel              String
+  aiModel              String?
   systemPromptTemplate String?
   userPromptTemplate   String?
   contextStringRender  String?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @default(now()) @updatedAt
-  createdByUser        User     @relation(fields: [userId], references: [id])
-  userId               String
-  favoritedBy          User[]   @relation("SidekickFavoritedBy")
+  placeholder          String?
 }
+
 
 model WebDocument {
   id                String    @id @default(cuid())

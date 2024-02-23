@@ -111,7 +111,7 @@ export const authOptions: AuthOptions = {
         // Allows callback URLs on the same origin
         if (new URL(url).origin === baseUrl) finalUrl = url;
         if (
-          ['http://localhost:3000', 'https://theanswer.ai', 'https://ias.theanswer.ai'].includes(
+          ['http://localhost:4000', 'https://theanswer.ai', 'https://ias.theanswer.ai'].includes(
             new URL(url).origin
           )
         )

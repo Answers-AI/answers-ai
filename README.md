@@ -88,7 +88,7 @@ The dev server is ran automatically when using turbo!
 To run it manually, run the following command:
 
 ```bash
-npx inngest-cli@latest dev -u http://localhost:3000/api/inngest
+npx inngest-cli@latest dev -u http://localhost:4000/api/inngest
 ```
 
 This will start the Inngest local server and will synchronize events on the specified URL.
@@ -97,7 +97,7 @@ Open the Inngest dashboard to see the available functions and events.
 
 ### Working with events
 
-When running the web locally go to http://localhost:3000/events to see the status and send events.
+When running the web locally go to http://localhost:4000/events to see the status and send events.
 
 ## Remote Caching
 

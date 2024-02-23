@@ -1,28 +1,33 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
-import { authOptions } from '@ui/authOptions';
-import { Sidekick } from 'types';
+import { User } from 'types';
 import { respond401 } from '@utils/auth/respond401';
-import { normalizeSidekickForUpdate } from 'utilities/normalizeSidekick';
+
+import { authenticateApiKey } from '@utils/auth/authenticateApiKey';
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
+  const result = (await authenticateApiKey(req)) as { user: User };
 
-  if (!session?.user?.id) return respond401();
+  if (!result) return respond401();
 
-  const userId = session.user.id;
+  const userId = result?.user?.id;
 
-  const data: Sidekick = await req.json();
+  const data: { chatflow: { id: string; name: string } } = await req.json();
 
   try {
-    const normalizedSidekick: any = normalizeSidekickForUpdate(data);
-    const sidekick = await prisma.sidekick.create({
-      data: {
-        ...normalizedSidekick,
+    const sidekick = await prisma.sidekick.upsert({
+      where: {
+        id: data.chatflow.id
+      },
+      create: {
+        ...(data as any),
+        id: data.chatflow.id,
+        label: data?.chatflow?.name,
         favoritedBy: { connect: { id: userId } },
-        createdByUser: { connect: { id: userId } }
-      }
+        createdByUser: { connect: { id: userId } },
+        isSharedWithOrg: true
+      },
+      update: { chatflow: data.chatflow as any }
     });
     return NextResponse.json(sidekick);
   } catch (error: any) {
