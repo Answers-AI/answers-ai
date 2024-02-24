@@ -40,6 +40,7 @@ const menuConfig = [
     link: '/',
     icon: <HomeIcon />,
     subMenu: [
+      { text: 'Dashboard', link: '/' },
       { text: 'New Chat', link: '/chat' },
       { text: 'New Project', link: '/journey/new' }
     ]
@@ -62,7 +63,7 @@ const menuConfig = [
     link: '/settings',
     icon: <SettingsIcon />,
     subMenu: [
-      { text: 'Integrations', link: '/settings/integrations' },
+      { text: 'Credentials', link: '/settings/credentials' },
       { text: 'Organization', link: '/settings/organization' },
       { text: 'User', link: '/settings/user' }
     ]
@@ -74,7 +75,8 @@ const menuConfig = [
     subMenu: [
       { text: 'Ingest', link: '/developer/ingest' },
       { text: 'Prisma', link: '/developer/prisma' },
-      { text: 'Tracing', link: '/developer/tracing' }
+      { text: 'Tracing', link: '/developer/tracing' },
+      { text: 'API Keys', link: '/developer/apikey' }
     ]
   }
 ];
