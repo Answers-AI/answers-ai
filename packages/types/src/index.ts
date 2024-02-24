@@ -109,6 +109,7 @@ export interface AppSettings {
   };
   models?: Models;
   filters?: AnswersFilters;
+  flowiseHostName?: string; // This should be required
 }
 
 export interface JiraFilters {
@@ -196,6 +197,19 @@ export interface AnswersFilters {
   datasources?: FilterDatasources;
 }
 
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  sidekicks: Sidekick[];
+  filters: AnswersFilters;
+  completed: boolean;
+  dueDate: string;
+  createdAt: string;
+  updatedAt: string;
+  completedAt: string;
+}
+
 type Models = {
   jira: string[];
   slack: string[];
@@ -258,6 +272,7 @@ export interface Journey extends Omit<DB.Journey, 'filters'> {
   appSettings: AppSettings;
   filters: AnswersFilters;
   completed: boolean;
+  tasks: Task[] | null;
 }
 
 export type SlackChannel = { id: string; name: string };
