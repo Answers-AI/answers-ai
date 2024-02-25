@@ -41,11 +41,11 @@ const JourneyForm = ({ appSettings, journey }: { appSettings: AppSettings; journ
   const [theMessage, setTheMessage] = useState('');
   const [tasks, setTasks] = useState<any[]>(journey?.tasks || []);
   const { updateFilter, upsertJourney, filters } = useAnswers();
+  const { flowiseHostName } = appSettings;
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   // const taskManagerAgentUrl = appSettings?.taskManagerAgentUrl;
-  const taskManagerAgentUrl =
-    'http://localhost:4000/api/v1/prediction/be6bf6f0-51f3-415f-90c9-c550387028d5';
+  const taskManagerAgentUrl = `${flowiseHostName}/api/v1/prediction/be6bf6f0-51f3-415f-90c9-c550387028d5`;
   const handleTaskManagerAgent = async (question: string) => {
     const response = await fetch(taskManagerAgentUrl, {
       method: 'POST',
@@ -60,13 +60,10 @@ const JourneyForm = ({ appSettings, journey }: { appSettings: AppSettings; journ
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    console.log(response);
     const data = await response.json();
     // set the tasks to the value of the properties of the data object
     const tasksArray = Object.values(data.json);
-    debugger;
     setTasks(tasksArray);
-    console.log(tasks);
 
     return data;
   };
