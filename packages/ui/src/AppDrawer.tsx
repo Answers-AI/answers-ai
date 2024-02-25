@@ -87,13 +87,6 @@ export const AppDrawer = ({ session }: any) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [submenuItems, setSubmenuItems] = useState([]);
 
-  const toggleDrawer =
-    (open, items = []) =>
-    () => {
-      setDrawerOpen(open);
-      setSubmenuItems(items); // Set submenu items when toggling
-    };
-
   // Drawer style based on open state
   const drawerStyle = {
     width: drawerOpen ? drawerWidth : 0, // Adjust width based on state
@@ -103,9 +96,10 @@ export const AppDrawer = ({ session }: any) => {
     transition: 'width 0.5s ease'
   };
 
+  // Updated Drawer component to include onMouseEnter and onMouseLeave
   const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme, open }) => ({
-      width: open ? drawerWidth : theme.spacing(7), // Adjust this value to your collapsed width
+      width: open ? drawerWidth : theme.spacing(7),
       flexShrink: 0,
       whiteSpace: 'nowrap',
       transition: theme.transitions.create('width', {
@@ -115,19 +109,27 @@ export const AppDrawer = ({ session }: any) => {
       ...(open && {
         'width': drawerWidth,
         '& .MuiDrawer-paper': {
-          width: drawerWidth
+          width: drawerWidth,
+          onMouseEnter: () => setDrawerOpen(true),
+          onMouseLeave: () => setDrawerOpen(false)
         }
       }),
       ...(!open && {
         '& .MuiDrawer-paper': {
-          width: theme.spacing(7) // Adjust this value to your collapsed width
+          width: theme.spacing(7),
+          onMouseEnter: () => setDrawerOpen(true),
+          onMouseLeave: () => setDrawerOpen(false)
         }
       })
     })
   );
 
   return (
-    <Drawer open={drawerOpen} variant="permanent">
+    <Drawer
+      open={drawerOpen}
+      variant="permanent"
+      onMouseEnter={() => setDrawerOpen(true)}
+      onMouseLeave={() => setDrawerOpen(false)}>
       {/* <DrawerHeader sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <NextLink href="/">
           <Avatar sx={{ objectFit: 'contain' }}>AI</Avatar>
@@ -136,25 +138,26 @@ export const AppDrawer = ({ session }: any) => {
 
       <List sx={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
         {menuConfig.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton onClick={toggleDrawer(true, item.subMenu || [])}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              {drawerOpen && <Typography>{item.text}</Typography>}{' '}
-              {/* Show text if drawer is open */}
-            </ListItemButton>
-          </ListItem>
-        ))}
-        {/* Render submenu items if drawer is open */}
-        {drawerOpen &&
-          submenuItems.map((subItem) => (
-            <ListItem key={subItem.text} disablePadding>
-              <NextLink href={subItem.link} passHref>
-                <ListItemButton component="a">
-                  <Typography sx={{ pl: 4 }}>{subItem.text}</Typography>
-                </ListItemButton>
-              </NextLink>
+          <React.Fragment key={item.text}>
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => setDrawerOpen(!drawerOpen)}>
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                {drawerOpen && <Typography>{item.text}</Typography>}
+              </ListItemButton>
             </ListItem>
-          ))}
+            {drawerOpen &&
+              item?.subMenu?.map((subItem) => (
+                <ListItem key={subItem.text} disablePadding sx={{ pl: 4 }}>
+                  <NextLink href={subItem.link} passHref>
+                    <ListItemButton component="a">
+                      <Typography>{subItem.text}</Typography>
+                    </ListItemButton>
+                  </NextLink>
+                </ListItem>
+              ))}
+          </React.Fragment>
+        ))}
+
         <Box sx={{ flex: 1 }}> </Box>
 
         <ListItem disablePadding sx={{ display: 'block' }}>
