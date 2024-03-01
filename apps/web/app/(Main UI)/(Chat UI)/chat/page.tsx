@@ -4,6 +4,7 @@ import Chat from '@ui/Chat';
 import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 import { normalizeSidekickList } from '../../../../utilities/normalizeSidekick';
+import { Sidekick } from 'types';
 
 export const metadata = {
   title: 'Chats | Answers AI',
@@ -33,7 +34,9 @@ const ChatDetailPage = async ({ params }: any) => {
     }
   });
 
-  const sidekicks = dbSidekicks?.length ? normalizeSidekickList(dbSidekicks, user) : [];
+  const sidekicks = dbSidekicks?.length
+    ? normalizeSidekickList(dbSidekicks as Sidekick[], user)
+    : [];
 
   // @ts-expect-error Async Server Component
   return <Chat {...params} sidekicks={sidekicks} />;

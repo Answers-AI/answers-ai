@@ -251,7 +251,7 @@ export const MessageCard = ({
                     <Button
                       key={`references-${doc.id}`}
                       size="small"
-                      component={doc.url ? NextLink : undefined}
+                      component={doc.url ? NextLink : 'button'}
                       variant="outlined"
                       color="inherit"
                       href={doc.url}

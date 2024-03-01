@@ -6,6 +6,7 @@ import { upsertChat } from '@utils/upsertChat';
 
 import { authOptions } from '@ui/authOptions';
 import { inngest } from '@utils/ingest/client';
+import { Sidekick } from 'types';
 
 export async function POST(req: Request) {
   try {
@@ -39,11 +40,11 @@ export async function POST(req: Request) {
     } = await req.json();
     const sidekick = !sidekickId
       ? null
-      : await prisma.sidekick.findFirst({
+      : ((await prisma.sidekick.findFirst({
           where: {
             id: sidekickId
           }
-        });
+        })) as Sidekick);
 
     if (!sidekick) {
       return new Response('Sidekick not found', { status: 404 });

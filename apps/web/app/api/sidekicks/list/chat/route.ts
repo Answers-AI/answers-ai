@@ -4,6 +4,7 @@ import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { respond401 } from '@utils/auth/respond401';
 import { normalizeSidekickList } from '../../../../../utilities/normalizeSidekick';
+import { Sidekick } from 'types';
 
 export async function GET(req: Request) {
   try {
@@ -30,7 +31,7 @@ export async function GET(req: Request) {
       }
     });
 
-    const sidekicks = normalizeSidekickList(dbSidekicks, user);
+    const sidekicks = normalizeSidekickList(dbSidekicks as Sidekick[], user);
 
     return NextResponse.json(sidekicks);
   } catch (error) {

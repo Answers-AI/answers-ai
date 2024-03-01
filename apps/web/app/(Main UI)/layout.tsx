@@ -28,7 +28,7 @@ const MainUiLayout = async (props: {
   });
 
   const flagsmithState = flagsmith.getState();
-
+  console.log(session);
   return (
     <AppLayout
       appSettings={session?.user?.appSettings!}

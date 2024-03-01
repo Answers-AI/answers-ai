@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { normalizeSidekickList } from '../../../../../utilities/normalizeSidekick';
+import { Sidekick } from 'types';
 
 export async function GET(req: Request) {
   try {
@@ -15,16 +16,17 @@ export async function GET(req: Request) {
     const dbSidekicks = await prisma.sidekick.findMany({
       where: {
         isGlobal: true
-      },include: {
+      },
+      include: {
         favoritedBy: {
           where: {
-            id: {in: [user.id]}
+            id: { in: [user.id] }
           }
         }
       }
     });
 
-    const sidekicks = normalizeSidekickList(dbSidekicks, user);
+    const sidekicks = normalizeSidekickList(dbSidekicks as Sidekick[], user);
 
     return NextResponse.json(sidekicks);
   } catch (error) {

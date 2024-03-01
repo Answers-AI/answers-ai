@@ -24,13 +24,13 @@ export async function GET(req: Request) {
       include: {
         favoritedBy: {
           where: {
-            id: {in: [user.id]}
+            id: { in: [user.id] }
           }
         }
       }
     });
 
-    const sidekicks = normalizeSidekickList(dbSidekicks, user);
+    const sidekicks = normalizeSidekickList(dbSidekicks as Sidekick[], user);
 
     return NextResponse.json(sidekicks);
   } catch (error) {

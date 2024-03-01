@@ -23,7 +23,6 @@
     "encoding": "^0.1.13",
     "experimental-prisma-webpack-plugin": "workspace:*",
     "handlebars": "^4.7.7",
-    "hnswlib-node": "2.0.0",
     "inngest": "^1.8.0",
     "ioredis": "^5.3.2",
     "langchain": "^0.0.116",
