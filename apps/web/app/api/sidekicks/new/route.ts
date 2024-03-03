@@ -27,7 +27,10 @@ export async function POST(req: Request) {
         label: data?.chatflow?.name,
         favoritedBy: { connect: { id: userId } },
         createdByUser: { connect: { id: userId } },
-        isSharedWithOrg: true
+        isSharedWithOrg: true,
+        // For now all Sidekicks created through here are global
+        isGlobal: true,
+        isSystem: true
       },
       update: { ...data }
     });
