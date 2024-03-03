@@ -115,7 +115,7 @@ const ChatInput = ({
         placeholder={placeholder}
         value={inputValue}
         multiline
-        disabled={!activeUserPlan || activeUserPlan.tokensLeft <= 0}
+        // disabled={!activeUserPlan || activeUserPlan.tokensLeft <= 0}
         onKeyPress={handleKeyPress}
         onChange={handleInputChange}
       />
@@ -145,7 +145,8 @@ const ChatInput = ({
           variant="contained"
           color="primary"
           onClick={handleSubmit}
-          disabled={!inputValue || isLoading}>
+          // disabled={!inputValue || isLoading}
+        >
           Send
         </Button>
       </Box>
