@@ -8,8 +8,9 @@ export async function getAppSettings(req?: any, res?: any): Promise<AppSettings>
 
   let settings = SYSTEM_SETTINGS;
   if (session?.user) {
-    return session.user.appSettings as AppSettings;
+    settings = session.user.appSettings as AppSettings;
   }
 
+  settings.flowiseHostName = process.env.FLOWISE_DOMAIN;
   return settings;
 }

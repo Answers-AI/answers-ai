@@ -135,6 +135,7 @@ model Sidekick {
   userPromptTemplate   String?
   contextStringRender  String?
   placeholder          String?
+  Tasks                Tasks[]
 }
 
 model WebDocument {
@@ -439,4 +440,14 @@ model ActiveUserPlan {
   shouldRenew          Boolean  @default(true)
   user                 User     @relation(fields: [userId], references: [id])
   plan                 Plan     @relation(fields: [planId], references: [id])
+}
+
+model Tasks {
+  id          String     @id @default(uuid())
+  title       String
+  description String
+  sidekicks   Sidekick[]
+  completed   Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now()) @updatedAt
 }

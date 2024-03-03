@@ -1,6 +1,7 @@
 import { AppSettings } from 'types';
 
 export const SYSTEM_SETTINGS: AppSettings = {
+  flowiseHostName: 'http://localhost:4000',
   services: [
     { id: 'file', name: 'Plain Text', imageURL: '/static/images/icon-fast-text.svg' },
     { id: 'document', name: 'document', imageURL: '/static/images/documents.png' },
