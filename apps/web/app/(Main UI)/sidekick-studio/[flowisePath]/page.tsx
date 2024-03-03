@@ -18,13 +18,14 @@ const FlowisePage = async ({ params }: any) => {
   if (!userId) return null;
 
   const flowisePath = params?.flowisePath;
-  const { flowiseHostName } = appSettings;
+
+  const flowiseHostName = process.env.FLOWISE_DOMAIN;
 
   // Return the iframe element with the constructed URL
   // Ensure to adjust the width, height, and other attributes as per your requirements
   return (
     <iframe
-      src={`${flowiseHostName}/${flowisePath}`}
+      src={flowisePath ? `${flowiseHostName}/${flowisePath}` : `${flowiseHostName}/`}
       width="100%"
       height="100%"
       frameBorder="0"

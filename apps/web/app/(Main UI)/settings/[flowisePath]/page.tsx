@@ -17,7 +17,7 @@ const FlowisePage = async ({ params }: any) => {
 
   const flowisePath = params?.flowisePath;
 
-  const hostname = `http://localhost:8080`;
+  const hostname = process.env.FLOWISE_DOMAIN;
 
   // Return the iframe element with the constructed URL
   // Ensure to adjust the width, height, and other attributes as per your requirements

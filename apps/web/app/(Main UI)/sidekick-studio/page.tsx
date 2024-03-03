@@ -15,7 +15,7 @@ const SidekickListPage = async ({ params }: any) => {
   // const hostname = appSettings?.hostname; // Need to add this to appSettings
 
   // Construct the URL for the iframe. Adjust the path as needed.
-  const hostname = `http://localhost:8080/`;
+  const hostname = `${process.env.FLOWISE_DOMAIN}/`;
 
   // Return the iframe element with the constructed URL
   // Ensure to adjust the width, height, and other attributes as per your requirements
