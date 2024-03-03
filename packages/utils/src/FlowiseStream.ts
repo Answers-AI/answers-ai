@@ -16,12 +16,11 @@ export const getFlowisePredictionStream = async ({ sidekick, body, onEnd }: any)
           body
         });
 
-        const { sourceDocuments: contextDocuments, ...extra } = result;
         controller.enqueue(
           encoder.encode(
             'JSON_START' +
               JSON.stringify({
-                ...extra,
+                ...result,
                 // id: message.id,
                 // contextDocuments: message.contextDocuments,
                 contextDocuments: result.sourceDocuments,
