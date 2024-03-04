@@ -272,6 +272,7 @@ export const MessageCard = ({
                       doc.url ??
                       doc.metadata?.title ??
                       doc.metadata?.url ??
+                      doc.metadata?.source ??
                       doc.metadata?.filePath
                         ? `${doc.metadata?.repo}/${doc.metadata?.filePath}`
                         : null}
