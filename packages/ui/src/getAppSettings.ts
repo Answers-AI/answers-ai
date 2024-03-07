@@ -11,6 +11,6 @@ export async function getAppSettings(req?: any, res?: any): Promise<AppSettings>
     settings = session.user.appSettings as AppSettings;
   }
 
-  settings.flowiseHostName = process.env.FLOWISE_DOMAIN;
+  settings.flowiseHostName = settings.flowiseHostName ?? process.env.FLOWISE_DOMAIN;
   return settings;
 }

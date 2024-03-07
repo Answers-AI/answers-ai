@@ -29,7 +29,16 @@ let nextConfig = withBundleAnalyzer({
       transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}'
     }
   },
-
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'replicate.delivery',
+        port: '',
+        pathname: '/**'
+      }
+    ]
+  },
   webpack: (config, { isServer }) => {
     config.externals = [...config.externals, 'db', 'puppeteer', 'handlebars'];
     config.plugins = [

@@ -30,7 +30,8 @@ export async function POST(req: Request) {
         isSharedWithOrg: true,
         // For now all Sidekicks created through here are global
         isGlobal: true,
-        isSystem: true
+        isSystem: true,
+        tags: ['flowise']
       },
       update: { ...data }
     });

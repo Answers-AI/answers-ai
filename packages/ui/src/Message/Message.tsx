@@ -6,7 +6,7 @@ import { useFlags } from 'flagsmith/react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { duotoneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-
+import Image from 'next/image';
 import { JsonViewer } from '@textea/json-viewer';
 
 import Avatar from '@mui/material/Avatar';
@@ -80,6 +80,9 @@ export const MessageCard = ({
   const services: { [key: string]: AppService } =
     appSettings?.services?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};
   const [lastInteraction, setLastInteraction] = React.useState<Rating | undefined>();
+  if (!content && other.text) {
+    content = other.text;
+  }
   const hasContent = role === 'assistant' ? content : !!content;
   if (error) {
     pineconeData = error?.response?.data.pineconeData;
@@ -208,6 +211,52 @@ export const MessageCard = ({
                     }}>
                     <ReactMarkdown
                       components={{
+                        p: (paragraph: { children?: boolean; node?: any }) => {
+                          const { node } = paragraph;
+
+                          if (node.children[0].tagName === 'img') {
+                            const image = node.children[0];
+                            const metastring = image.properties.alt;
+                            const alt = metastring?.replace(/ *\{[^)]*\} */g, '');
+                            const metaWidth = metastring.match(/{([^}]+)x/);
+                            const metaHeight = metastring.match(/x([^}]+)}/);
+                            const width = metaWidth ? metaWidth[1] : undefined;
+                            const height = metaHeight ? metaHeight[1] : undefined;
+                            const isPriority = metastring?.toLowerCase().match('{priority}');
+                            const hasCaption = metastring?.toLowerCase().includes('{caption:');
+                            const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
+
+                            return (
+                              <Box
+                                as="a"
+                                href={image.properties.src}
+                                target="_blank"
+                                sx={{
+                                  display: 'block',
+                                  height: '40vh',
+                                  width: '100%',
+                                  img: { objectFit: 'contain' }
+                                }}>
+                                <Image
+                                  src={image.properties.src}
+                                  // width={width}
+                                  // height={height}
+                                  layout="fill"
+                                  className="postImg"
+                                  alt={alt}
+                                  priority={isPriority}
+                                />
+                                {hasCaption ? (
+                                  <div className="caption" aria-label={caption}>
+                                    {caption}
+                                  </div>
+                                ) : null}
+                              </Box>
+                            );
+                          }
+                          return <p>{paragraph.children}</p>;
+                        },
+
                         code({ node, inline, className, children, ...props }) {
                           const codeExample = String(children).replace(/\n$/, '');
                           return !inline ? (
