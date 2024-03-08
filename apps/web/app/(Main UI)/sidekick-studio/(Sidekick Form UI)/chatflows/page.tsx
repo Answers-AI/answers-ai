@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { authOptions } from '@ui/authOptions';
 import getCachedSession from '@ui/getCachedSession';
 
 export const metadata = {
@@ -9,7 +8,7 @@ export const metadata = {
 };
 
 const ChatFlowsPage = async ({ params }: any) => {
-  const session = await getCachedSession(authOptions);
+  const session = await getCachedSession();
   const { chatflowDomain } = session?.user ?? {};
 
   return (

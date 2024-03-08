@@ -1,5 +1,4 @@
 import React from 'react';
-import { authOptions } from '@ui/authOptions';
 import getCachedSession from '@ui/getCachedSession';
 
 export const metadata = {
@@ -8,9 +7,10 @@ export const metadata = {
 };
 
 const FlowiseDevPage = async ({ params }: any) => {
-  const session = await getCachedSession(authOptions);
+  const session = await getCachedSession();
 
   const { chatflowDomain } = session?.user ?? {};
+  const flowisePath = params?.flowisePath;
 
   // Return the iframe element with the constructed URL
   // Ensure to adjust the width, height, and other attributes as per your requirements

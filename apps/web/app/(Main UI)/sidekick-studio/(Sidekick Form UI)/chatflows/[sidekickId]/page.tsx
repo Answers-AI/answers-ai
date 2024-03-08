@@ -1,6 +1,4 @@
 import React from 'react';
-import { authOptions } from '@ui/authOptions';
-import { getAppSettings } from '@ui/getAppSettings';
 import getCachedSession from '@ui/getCachedSession';
 
 export const metadata = {
@@ -9,7 +7,7 @@ export const metadata = {
 };
 
 const SidekickDetailPage = async ({ params }: any) => {
-  const session = await getCachedSession(authOptions);
+  const session = await getCachedSession();
   const sidekickId = params?.sidekickId;
   const { chatflowDomain } = session?.user ?? {};
 

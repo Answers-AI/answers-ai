@@ -3,7 +3,6 @@ import getCachedSession from '@ui/getCachedSession';
 import { deepmerge } from '@utils/deepmerge';
 import { prisma } from '@db/client';
 
-import { authOptions } from '@ui/authOptions';
 import { getAppSettings } from '@ui/getAppSettings';
 
 export async function GET(req: Request) {

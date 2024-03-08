@@ -1,5 +1,5 @@
 'use client';
-import { Session } from 'next-auth';
+import { Session } from '@auth0/nextjs-auth0';
 import { ClientSafeProvider, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 

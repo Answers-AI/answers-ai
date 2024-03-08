@@ -3,7 +3,6 @@ import getCachedSession from '@ui/getCachedSession';
 
 import { prisma } from '@db/client';
 
-import { authOptions } from '@ui/authOptions';
 import { DocumentFilter } from 'types';
 
 export async function GET(req: Request, res: Response) {

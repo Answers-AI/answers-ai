@@ -1,9 +1,5 @@
 import React from 'react';
-import { prisma } from '@db/client';
-import { authOptions } from '@ui/authOptions';
 import getCachedSession from '@ui/getCachedSession';
-import SidekickDetail from '@ui/SidekickDetail';
-import type { Sidekick } from 'types';
 
 export const metadata = {
   title: 'Sidekick Studio | Answers AI',
@@ -11,7 +7,7 @@ export const metadata = {
 };
 
 const FlowisePage = async ({ params }: any) => {
-  const session = await getCachedSession(authOptions);
+  const session = await getCachedSession();
   const userId = session?.user?.id;
   if (!userId) return null;
 

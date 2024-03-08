@@ -537,6 +537,9 @@ importers:
       handlebars:
         specifier: ^4.7.7
         version: 4.7.7
+      jose:
+        specifier: ^5.2.3
+        version: 5.2.3
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5

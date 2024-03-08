@@ -242,6 +242,7 @@ export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
   currentOrganization?: Organization;
   contextFields?: ContextField[];
+  chatflowDomain: string;
   // accounts: DB.Account[] | null;
 }
 

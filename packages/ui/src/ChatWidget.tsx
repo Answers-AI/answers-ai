@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import ChatDetailWidget from './ChatDetailWidget';
 import { signIn } from 'next-auth/react';
-import { Session } from 'next-auth';
+import { Session } from '@auth0/nextjs-auth0';
 import { useRouter } from 'next/navigation';
 
 interface ChatWidgetProps {

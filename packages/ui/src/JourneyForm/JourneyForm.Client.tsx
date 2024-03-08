@@ -41,32 +41,31 @@ const JourneyForm = ({ appSettings, journey }: { appSettings: AppSettings; journ
   const [theMessage, setTheMessage] = useState('');
   const [tasks, setTasks] = useState<any[]>(journey?.tasks || []);
   const { updateFilter, upsertJourney, filters } = useAnswers();
-  const { flowiseHostName } = appSettings;
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   // const taskManagerAgentUrl = appSettings?.taskManagerAgentUrl;
-  const taskManagerAgentUrl = `${flowiseHostName}/api/v1/prediction/be6bf6f0-51f3-415f-90c9-c550387028d5`;
-  const handleTaskManagerAgent = async (question: string) => {
-    const response = await fetch(taskManagerAgentUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer tfSApP1ZkO6cS++K4WDMocahyskuHnr5QzEvAkCEycw=`
-      },
-      body: JSON.stringify({ question })
-    });
+  // const taskManagerAgentUrl = `${flowiseHostName}/api/v1/prediction/be6bf6f0-51f3-415f-90c9-c550387028d5`;
+  // const handleTaskManagerAgent = async (question: string) => {
+  //   const response = await fetch(taskManagerAgentUrl, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Authorization': `Bearer tfSApP1ZkO6cS++K4WDMocahyskuHnr5QzEvAkCEycw=`
+  //     },
+  //     body: JSON.stringify({ question })
+  //   });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+  //   if (!response.ok) {
+  //     throw new Error(`HTTP error! status: ${response.status}`);
+  //   }
 
-    const data = await response.json();
-    // set the tasks to the value of the properties of the data object
-    const tasksArray = Object.values(data.json);
-    setTasks(tasksArray);
+  //   const data = await response.json();
+  //   // set the tasks to the value of the properties of the data object
+  //   const tasksArray = Object.values(data.json);
+  //   setTasks(tasksArray);
 
-    return data;
-  };
+  //   return data;
+  // };
 
   const handleCreateNewJourney = async () => {
     try {
@@ -132,7 +131,7 @@ const JourneyForm = ({ appSettings, journey }: { appSettings: AppSettings; journ
           margin="normal"
         />
         <Button
-          onClick={() => handleTaskManagerAgent(query)}
+          // onClick={() => handleTaskManagerAgent(query)}
           variant="contained"
           color="primary"
           type="submit"

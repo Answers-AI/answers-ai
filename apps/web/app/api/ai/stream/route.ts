@@ -57,8 +57,7 @@ export async function POST(req: Request) {
       journeyId,
       sidekick
     });
-    const res = new NextResponse();
-    const { accessToken } = await auth0.getAccessToken(req, res);
+    const { accessToken } = await auth0.getAccessToken();
 
     const stream = await getFlowisePredictionStream({
       sidekick,

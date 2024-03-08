@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
-import { authOptions } from '@ui/authOptions';
+
 import type { Chat } from 'types';
 
 export async function GET(

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
-import { authOptions } from '@ui/authOptions';
 import { normalizeSidekickList } from '../../../../../utilities/normalizeSidekick';
 import { Sidekick } from 'types';
 

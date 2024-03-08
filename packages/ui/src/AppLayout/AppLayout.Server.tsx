@@ -1,4 +1,4 @@
-import { Session } from 'next-auth';
+import { Session } from '@auth0/nextjs-auth0';
 import AppLayoutClient from './AppLayout.Client';
 import { AppSettings } from 'types';
 

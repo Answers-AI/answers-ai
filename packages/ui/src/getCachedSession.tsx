@@ -2,8 +2,9 @@ import React, { cache } from 'react';
 import { prisma } from '@db/client';
 import auth0 from '@utils/auth/auth0';
 import * as jose from 'jose';
+import { User } from 'types';
 
-const getCachedSession = cache(async (req?: any, res?: any) => {
+const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user: User }> => {
   let session = await (req && res ? auth0.getSession(req, res) : auth0.getSession());
 
   // const checkJwt = jwt({
@@ -46,7 +47,7 @@ const getCachedSession = cache(async (req?: any, res?: any) => {
     });
     session.user.id = user.id;
   }
-  return session;
+  return session as { user: User };
 });
 
 export default getCachedSession;

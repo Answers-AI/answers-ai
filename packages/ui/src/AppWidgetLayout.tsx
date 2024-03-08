@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
-import { Session } from 'next-auth';
-import { SessionProvider } from 'next-auth/react';
+import { Session } from '@auth0/nextjs-auth0';
 import flagsmith from 'flagsmith/isomorphic';
 import { FlagsmithProvider } from 'flagsmith/react';
 
@@ -26,20 +25,18 @@ const AppWidgetLayout = ({
   };
 }) => {
   return (
-    <SessionProvider session={session}>
-      <FlagsmithProvider
-        serverState={flagsmithState}
-        options={{
-          environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!
-        }}
-        flagsmith={flagsmith}>
-        <ThemeProvider theme={darkModeTheme}>
-          <CssBaseline enableColorScheme />
-          <GlobalStyles />
-          {children}
-        </ThemeProvider>
-      </FlagsmithProvider>
-    </SessionProvider>
+    <FlagsmithProvider
+      serverState={flagsmithState}
+      options={{
+        environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!
+      }}
+      flagsmith={flagsmith}>
+      <ThemeProvider theme={darkModeTheme}>
+        <CssBaseline enableColorScheme />
+        <GlobalStyles />
+        {children}
+      </ThemeProvider>
+    </FlagsmithProvider>
   );
 };
 

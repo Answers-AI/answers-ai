@@ -2,7 +2,7 @@
 import React from 'react';
 import { FlagsmithProvider } from 'flagsmith/react';
 import flagsmith from 'flagsmith/isomorphic';
-import { Session } from 'next-auth';
+import { Session } from '@auth0/nextjs-auth0';
 
 import CssBaseline from '@mui/material/CssBaseline';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';

@@ -1,6 +1,6 @@
 import React from 'react';
 import getCachedSession from '@ui/getCachedSession';
-import { authOptions } from '../authOptions';
+
 import { prisma } from '@db/client';
 
 import HomepageClient from './Homepage.Client';
