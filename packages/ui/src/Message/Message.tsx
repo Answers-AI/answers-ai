@@ -45,6 +45,7 @@ interface MessageExtra {
   filters?: object;
   isWidget?: boolean;
   contextDocuments?: Document[];
+  text?: string;
 }
 interface MessageCardProps extends Partial<Message>, MessageExtra {
   error?: AxiosError<MessageExtra>;
@@ -211,7 +212,7 @@ export const MessageCard = ({
                     }}>
                     <ReactMarkdown
                       components={{
-                        p: (paragraph: { children?: boolean; node?: any }) => {
+                        p: (paragraph: any) => {
                           const { node } = paragraph;
 
                           if (node.children[0].tagName === 'img') {
@@ -228,7 +229,7 @@ export const MessageCard = ({
 
                             return (
                               <Box
-                                as="a"
+                                component="a"
                                 href={image.properties.src}
                                 target="_blank"
                                 sx={{

@@ -109,7 +109,7 @@ export interface AppSettings {
   };
   models?: Models;
   filters?: AnswersFilters;
-  flowiseHostName?: string; // This should be required
+  chatflowDomain?: string; // This should be required
 }
 
 export interface JiraFilters {

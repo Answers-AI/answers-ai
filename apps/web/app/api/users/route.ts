@@ -1,17 +1,17 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { randomUUID } from 'crypto';
 
 export async function PATCH(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getCachedSession();
     if (!session?.user?.email) return NextResponse.redirect('/auth');
 
     const { id, contextFields, ...data } = await req.json();
 
-    if (!session?.user?.id || session?.user?.id !== id) return NextResponse.redirect('/auth');
+    if (!session?.user?.email || session?.user?.id !== id) return NextResponse.redirect('/auth');
 
     // @ts-ignore-next-line
     const dbFields = prisma._runtimeDataModel.models.User.fields.map((field: any) => field.name);

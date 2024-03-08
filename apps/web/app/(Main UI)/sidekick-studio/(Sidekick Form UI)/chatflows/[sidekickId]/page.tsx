@@ -10,19 +10,14 @@ export const metadata = {
 
 const SidekickDetailPage = async ({ params }: any) => {
   const session = await getCachedSession(authOptions);
-
-  const userId = session?.user?.id;
-  const appSettings = await getAppSettings();
-  if (!userId) return null;
-
   const sidekickId = params?.sidekickId;
-  const { flowiseHostName } = appSettings;
+  const { chatflowDomain } = session?.user ?? {};
 
   // Return the iframe element with the constructed URL
   // Ensure to adjust the width, height, and other attributes as per your requirements
   return (
     <iframe
-      src={`${flowiseHostName}/chatflows/${sidekickId}`}
+      src={`${chatflowDomain}/chatflows/${sidekickId}`}
       width="100%"
       height="100%"
       frameBorder="0"

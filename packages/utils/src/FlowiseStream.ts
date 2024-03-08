@@ -1,6 +1,6 @@
 import socketIOClient from 'socket.io-client';
 import { Sidekick } from 'types';
-export const getFlowisePredictionStream = async ({ sidekick, body, onEnd }: any) => {
+export const getFlowisePredictionStream = async ({ sidekick, body, accessToken, onEnd }: any) => {
   let answer = '';
   // let message;
   const encoder = new TextEncoder();
@@ -12,6 +12,7 @@ export const getFlowisePredictionStream = async ({ sidekick, body, onEnd }: any)
       socket.on('connect', async () => {
         const result = await query({
           sidekick,
+          accessToken,
           socketIOClientId: socket.id!,
           body
         });
@@ -57,18 +58,20 @@ export const getFlowisePredictionStream = async ({ sidekick, body, onEnd }: any)
 async function query({
   sidekick,
   body,
+  accessToken,
   socketIOClientId
 }: {
   sidekick: Sidekick;
   body: any;
+  accessToken: string;
   socketIOClientId: string;
 }) {
-  const { chatflow, chatflowDomain, chatflowApiKey } = sidekick;
+  const { chatflow, chatflowDomain } = sidekick;
   const response = await fetch(`${chatflowDomain}/api/v1/prediction/${chatflow?.id}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${chatflowApiKey}`
+      'Authorization': `Bearer ${accessToken}`
     },
     body: JSON.stringify({ ...body, socketIOClientId })
   });

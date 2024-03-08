@@ -12,7 +12,7 @@ export const metadata = {
 const UserFormPage = async ({ params }: any) => {
   const session = await getCachedSession(authOptions);
 
-  if (!session?.user?.id) return null;
+  if (!session?.user?.email) return null;
 
   // Only returns the fields we'll be editing
   const user = await prisma.user

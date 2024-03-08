@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@ui/authOptions';
+import getCachedSession from '@ui/getCachedSession';
 import { inngest } from '@utils/ingest/client';
 import { NextResponse } from 'next/server';
 import { prisma } from '@db/client';
@@ -16,7 +15,7 @@ export async function POST(req: Request, res: NextResponse) {
     });
   }
 
-  const session = await getServerSession(authOptions);
+  const session = await getCachedSession();
   const user = session?.user;
 
   if (!user) {

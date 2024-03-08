@@ -1,10 +1,9 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@ui/authOptions';
+import getCachedSession from '@ui/getCachedSession';
 import { inngest } from '@utils/ingest/client';
 import { NextResponse } from 'next/server';
 
 export async function POST() {
-  const session = await getServerSession(authOptions);
+  const session = await getCachedSession();
   const user = session?.user;
 
   await inngest.send({

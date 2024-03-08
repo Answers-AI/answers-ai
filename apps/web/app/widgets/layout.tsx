@@ -1,8 +1,9 @@
-import { getServerSession, Session } from 'next-auth';
-import { authOptions } from '@ui/authOptions';
+import { Session } from 'next-auth';
+
 import AppWidgetLayout from '@ui/AppWidgetLayout';
 import React from 'react';
 import flagsmith from 'flagsmith/isomorphic';
+import getCachedSession from '@ui/getCachedSession';
 
 const WidgetLayout = async ({
   // Layouts must accept a children prop.
@@ -15,7 +16,7 @@ const WidgetLayout = async ({
     slug: string;
   };
 }) => {
-  const session = await getServerSession(authOptions);
+  const session = await getCachedSession();
   await flagsmith.init({
     // fetches flags on the server and passes them to the App
     environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,

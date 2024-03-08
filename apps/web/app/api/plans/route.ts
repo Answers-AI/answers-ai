@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
-import { authOptions } from '@ui/authOptions';
+
 import { respond401 } from '@utils/auth/respond401';
 import { getStripeClient } from '@utils/stripe/getStripeClient';
 
 export async function GET(req: Request) {
-  const user = await getServerSession(authOptions);
+  const user = await getCachedSession();
   if (!user?.user?.id) return respond401();
 
   const plans = await prisma.plan.findMany({

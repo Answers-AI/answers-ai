@@ -2,8 +2,6 @@
 import React, { useState, useRef } from 'react';
 import { useFlags } from 'flagsmith/react';
 
-import { signOut } from 'next-auth/react';
-import { usePathname } from 'next/navigation';
 import NextLink from 'next/link';
 
 import { styled } from '@mui/material/styles';
@@ -54,7 +52,8 @@ const menuConfig = [
       { text: 'Workflows', link: '/sidekick-studio/chatflows' },
       { text: 'Templates', link: '/sidekick-studio/marketplaces' },
       { text: 'Tools', link: '/sidekick-studio/tools' },
-      { text: 'Variables', link: '/sidekick-studio/variables' }
+      { text: 'Variables', link: '/sidekick-studio/variables' },
+      { text: 'Credentials', link: '/sidekick-studio/credentials' }
     ]
   },
   { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
@@ -63,7 +62,6 @@ const menuConfig = [
     link: '/settings',
     icon: <SettingsIcon />,
     subMenu: [
-      { text: 'Credentials', link: '/settings/credentials' },
       { text: 'Organization', link: '/settings/organization' },
       { text: 'User', link: '/settings/user' }
     ]
@@ -175,6 +173,8 @@ export const AppDrawer = ({ session }: any) => {
                   {user?.name}
                   <br />
                   {user?.email}
+                  <br />
+                  {user?.org_name}
                 </Typography>
               }>
               <div>
@@ -193,7 +193,7 @@ export const AppDrawer = ({ session }: any) => {
         <ListItem disablePadding sx={{ display: 'block' }}>
           <ListItemButton
             aria-label={'sign out'}
-            onClick={() => signOut()}
+            href="/api/auth/logout"
             sx={{ minHeight: 48, width: 48, justifyContent: 'center' }}>
             <ListItemIcon
               sx={{

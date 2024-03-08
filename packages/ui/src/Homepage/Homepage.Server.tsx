@@ -1,12 +1,12 @@
 import React from 'react';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 import { authOptions } from '../authOptions';
 import { prisma } from '@db/client';
 
 import HomepageClient from './Homepage.Client';
 
 const HomepageServer = async () => {
-  const session = await getServerSession(authOptions);
+  const session = await getCachedSession();
   if (!session?.user) {
     return null;
   }

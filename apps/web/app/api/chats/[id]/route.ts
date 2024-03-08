@@ -1,6 +1,6 @@
 // import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import type { Chat } from 'types';
@@ -9,7 +9,7 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ): Promise<NextResponse<Chat>> {
-  const user = await getServerSession(authOptions);
+  const user = await getCachedSession();
   const id = params.id;
 
   const [record] = await prisma.chat.findMany({

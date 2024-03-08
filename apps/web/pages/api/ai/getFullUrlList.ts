@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 
 import cors from '@ui/cors';
-import { authOptions } from '@ui/authOptions';
 import { getFullUrlList } from '@ui/chat/getFullUrlList';
 
 export type SourceUrl = {
@@ -16,7 +15,7 @@ type Data = SourceUrl[];
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await cors(req, res);
 
-  const session = await getServerSession(req, res, authOptions);
+  const session = await getCachedSession(req, res);
 
   const user = session?.user;
 

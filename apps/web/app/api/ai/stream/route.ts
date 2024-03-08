@@ -1,16 +1,16 @@
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 
 import { prisma } from '@db/client';
 import { getFlowisePredictionStream } from '@utils/FlowiseStream';
 import { upsertChat } from '@utils/upsertChat';
-
-import { authOptions } from '@ui/authOptions';
-import { inngest } from '@utils/ingest/client';
 import { Sidekick } from 'types';
+import { NextResponse } from 'next/server';
+
+import auth0 from '@utils/auth/auth0';
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getCachedSession();
     const user = session?.user!;
     if (!user?.email) {
       return Response.redirect('/', 401);
@@ -57,9 +57,12 @@ export async function POST(req: Request) {
       journeyId,
       sidekick
     });
+    const res = new NextResponse();
+    const { accessToken } = await auth0.getAccessToken(req, res);
 
     const stream = await getFlowisePredictionStream({
       sidekick,
+      accessToken,
       body: {
         question: prompt,
         history: messages?.map(({ content, role }: any) => ({

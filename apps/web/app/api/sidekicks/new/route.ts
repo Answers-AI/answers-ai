@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@db/client';
-import { Sidekick, User } from 'types';
+import { Sidekick } from 'types';
 import { respond401 } from '@utils/auth/respond401';
 
-import { authenticateApiKey } from '@utils/auth/authenticateApiKey';
+import getCachedSession from '@ui/getCachedSession';
 
 export async function POST(req: Request) {
-  const result = (await authenticateApiKey(req)) as { user: User };
+  const res = new Response();
 
-  if (!result) return respond401();
+  const session = await getCachedSession(req, res);
+  console.log('Session:', session);
+  if (!session?.user) return respond401();
 
-  const userId = result.user.id;
+  const userId = session.user.id;
 
   const data: Pick<Sidekick, 'chatflow' | 'chatflowDomain' | 'chatflowApiKey'> = await req.json();
 
@@ -29,11 +31,11 @@ export async function POST(req: Request) {
         createdByUser: { connect: { id: userId } },
         isSharedWithOrg: true,
         // For now all Sidekicks created through here are global
-        isGlobal: true,
-        isSystem: true,
+        // isGlobal: true,
+        // isSystem: true,
         tags: ['flowise']
       },
-      update: { ...data }
+      update: { ...data, favoritedBy: { connect: { id: userId } } }
     });
     return NextResponse.json(sidekick);
   } catch (error: any) {

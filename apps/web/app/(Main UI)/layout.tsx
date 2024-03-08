@@ -1,5 +1,5 @@
 import React from 'react';
-import { Session } from 'next-auth';
+import { Session } from '@auth0/nextjs-auth0';
 import AppLayout from '@ui/AppLayout';
 import flagsmith from 'flagsmith/isomorphic';
 
@@ -12,7 +12,6 @@ const MainUiLayout = async (props: {
   };
 }) => {
   const [session] = await Promise.all([getCachedSession()]);
-
   await flagsmith.init({
     // fetches flags on the server and passes them to the App
     environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
@@ -28,12 +27,12 @@ const MainUiLayout = async (props: {
   });
 
   const flagsmithState = flagsmith.getState();
-  console.log(session);
+
   return (
     <AppLayout
       appSettings={session?.user?.appSettings!}
       // providers={providers}
-      session={session as Session}
+      session={JSON.parse(JSON.stringify(session as Session))}
       params={props.params}
       flagsmithState={flagsmithState}>
       {props.children}

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { respond401 } from '@utils/auth/respond401';
@@ -7,8 +7,8 @@ import { DocumentFilter } from 'types';
 import { getUrlDomain } from '@utils/getUrlDomain';
 
 export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) return respond401();
+  const session = await getCachedSession();
+  if (!session?.user?.email) return respond401();
 
   const { searchParams } = new URL(req.url);
   const url = searchParams.get('url');

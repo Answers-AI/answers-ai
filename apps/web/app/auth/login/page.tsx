@@ -1,5 +1,5 @@
 import React from 'react';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 
 import Auth from '@ui/Auth';
 import { getProviders } from 'next-auth/react';

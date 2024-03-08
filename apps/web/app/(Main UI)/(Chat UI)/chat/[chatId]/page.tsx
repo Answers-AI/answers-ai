@@ -14,7 +14,7 @@ export const metadata = {
 const ChatDetailPage = async ({ params }: any) => {
   const session = await getCachedSession();
 
-  if (!session?.user?.id) {
+  if (!session?.user?.email) {
     return <ChatNotFound />;
   }
 

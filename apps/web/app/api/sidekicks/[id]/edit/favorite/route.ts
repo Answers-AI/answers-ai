@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import { respond401 } from '@utils/auth/respond401';
@@ -10,8 +10,8 @@ export async function PATCH(
   res: Response
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) return respond401();
+    const session = await getCachedSession();
+    if (!session?.user?.email) return respond401();
     if (!id) {
       throw new Error('There was an error updating your favorite');
     }

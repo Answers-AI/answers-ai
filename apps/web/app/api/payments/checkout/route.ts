@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@ui/authOptions';
+import getCachedSession from '@ui/getCachedSession';
 import { respond401 } from '@utils/auth/respond401';
 import { getStripeClient } from '@utils/stripe/getStripeClient';
 
 export async function POST(req: Request) {
-  const user = await getServerSession(authOptions);
+  const user = await getCachedSession();
   if (!user?.user?.id) return respond401();
 
   const { priceId, origin } = await req.json();

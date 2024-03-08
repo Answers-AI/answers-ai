@@ -1,10 +1,6 @@
 import React from 'react';
-import { prisma } from '@db/client';
 import { authOptions } from '@ui/authOptions';
 import getCachedSession from '@ui/getCachedSession';
-import { getAppSettings } from '@ui/getAppSettings';
-import SidekickDetail from '@ui/SidekickDetail';
-import type { Sidekick } from 'types';
 
 export const metadata = {
   title: 'Sidekick Studio | Answers AI',
@@ -13,18 +9,14 @@ export const metadata = {
 
 const FlowiseDevPage = async ({ params }: any) => {
   const session = await getCachedSession(authOptions);
-  const userId = session?.user?.id;
-  const appSettings = await getAppSettings();
-  if (!userId) return null;
 
-  const flowisePath = params?.flowisePath;
-  const { flowiseHostName } = appSettings;
+  const { chatflowDomain } = session?.user ?? {};
 
   // Return the iframe element with the constructed URL
   // Ensure to adjust the width, height, and other attributes as per your requirements
   return (
     <iframe
-      src={`${flowiseHostName}/${flowisePath}`}
+      src={`${chatflowDomain}/${flowisePath}`}
       width="100%"
       height="100%"
       frameBorder="0"
