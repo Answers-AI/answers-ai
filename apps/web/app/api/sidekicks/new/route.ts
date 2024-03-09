@@ -16,26 +16,26 @@ export async function POST(req: Request) {
 
   const data: Pick<Sidekick, 'chatflow' | 'chatflowDomain' | 'chatflowApiKey'> = await req.json();
 
-  console.log('New sidekick data', data);
+  console.log('New sidekick data', data.chatflow?.name, userId);
   try {
     if (!data.chatflow) throw new Error('No chatflow provided');
+    const sidekickData = {
+      ...data,
+      id: data.chatflow.id,
+      label: data?.chatflow?.name,
+      favoritedBy: { connect: { id: userId } },
+      isSharedWithOrg: true,
+      tags: ['flowise']
+    };
     const sidekick = await prisma.sidekick.upsert({
       where: {
         id: data.chatflow.id
       },
       create: {
-        ...data,
-        id: data.chatflow.id,
-        label: data?.chatflow?.name,
-        favoritedBy: { connect: { id: userId } },
-        createdByUser: { connect: { id: userId } },
-        isSharedWithOrg: true,
-        // For now all Sidekicks created through here are global
-        // isGlobal: true,
-        // isSystem: true,
-        tags: ['flowise']
+        ...sidekickData,
+        createdByUser: { connect: { id: userId } }
       },
-      update: { ...data, favoritedBy: { connect: { id: userId } } }
+      update: { ...sidekickData }
     });
     return NextResponse.json(sidekick);
   } catch (error: any) {
