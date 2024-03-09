@@ -40,7 +40,7 @@ let nextConfig = withBundleAnalyzer({
     ]
   },
   env: {
-    AUTH0_BASE_URL: process.env.VERCEL_BRANCH_URL
+    AUTH0_BASE_URL: `https://${process.env.VERCEL_BRANCH_URL}`
   },
   webpack: (config, { isServer }) => {
     config.externals = [...config.externals, 'db', 'puppeteer', 'handlebars'];
