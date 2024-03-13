@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     if (!data.chatflow) throw new Error('No chatflow provided');
     const sidekickData = {
       ...data,
+      chatflowDomain: session?.user?.chatflowDomain,
       id: data.chatflow.id,
       label: data?.chatflow?.name,
       isSharedWithOrg: true,
