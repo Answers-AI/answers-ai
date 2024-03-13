@@ -301,10 +301,11 @@ export const MessageCard = ({
                     <Button
                       key={`references-${doc.id}`}
                       size="small"
-                      component={doc.url ? NextLink : 'button'}
+                      // disabled={!doc.metadata.url}
+                      component={doc.metadata.url ? NextLink : 'div'}
                       variant="outlined"
                       color="inherit"
-                      href={doc.url}
+                      href={doc.metadata.url?.includes('http') ? doc.metadata.url : doc.url}
                       target="_blank"
                       sx={{
                         'textTransform': 'none',
@@ -319,13 +320,13 @@ export const MessageCard = ({
                         />
                       }>
                       {doc.title ??
-                      doc.url ??
-                      doc.metadata?.title ??
-                      doc.metadata?.url ??
-                      doc.metadata?.source ??
-                      doc.metadata?.filePath
-                        ? `${doc.metadata?.repo}/${doc.metadata?.filePath}`
-                        : null}
+                        doc.url ??
+                        doc.metadata?.title ??
+                        doc.metadata?.url ??
+                        (doc.metadata?.filePath && doc.metadata?.repo
+                          ? `${doc.metadata?.repo}/${doc.metadata?.filePath}`
+                          : null) ??
+                        doc.metadata?.source}
                     </Button>
                   ))}
                 </Box>
