@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { signOut } from 'next-auth/react';
-import { Session } from 'next-auth';
+import { Session } from '@auth0/nextjs-auth0';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';

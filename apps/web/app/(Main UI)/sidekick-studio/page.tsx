@@ -1,6 +1,6 @@
-import { getAppSettings } from '@ui/getAppSettings';
+// Import getAppSettings from your utility functions
+import getCachedSession from '@ui/getCachedSession';
 import React from 'react';
-import SidekickLists from '@ui/SidekickLists';
 
 export const metadata = {
   title: 'Sidekicks | Sidekick Studio | Answers AI',
@@ -8,8 +8,26 @@ export const metadata = {
 };
 
 const SidekickListPage = async ({ params }: any) => {
-  const appSettings = await getAppSettings();
-  return <SidekickLists {...params} appSettings={appSettings}></SidekickLists>;
+  // Fetch app settings
+
+  const session = await getCachedSession();
+  // Extract hostname from appSettings if available
+  // const hostname = appSettings?.hostname; // Need to add this to appSettings
+
+  // Construct the URL for the iframe. Adjust the path as needed.
+
+  const { chatflowDomain } = session?.user ?? {};
+
+  // Return the iframe element with the constructed URL
+  // Ensure to adjust the width, height, and other attributes as per your requirements
+  return (
+    <iframe
+      src={chatflowDomain}
+      width="100%"
+      height="100%"
+      frameBorder="0"
+      allowFullScreen></iframe>
+  );
 };
 
 export default SidekickListPage;

@@ -6,7 +6,7 @@ import { useFlags } from 'flagsmith/react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { duotoneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-
+import Image from 'next/image';
 import { JsonViewer } from '@textea/json-viewer';
 
 import Avatar from '@mui/material/Avatar';
@@ -45,6 +45,7 @@ interface MessageExtra {
   filters?: object;
   isWidget?: boolean;
   contextDocuments?: Document[];
+  text?: string;
 }
 interface MessageCardProps extends Partial<Message>, MessageExtra {
   error?: AxiosError<MessageExtra>;
@@ -80,7 +81,10 @@ export const MessageCard = ({
   const services: { [key: string]: AppService } =
     appSettings?.services?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};
   const [lastInteraction, setLastInteraction] = React.useState<Rating | undefined>();
-  const hasContent = role === 'assistant' ? content && id : !!content;
+  if (!content && other.text) {
+    content = other.text;
+  }
+  const hasContent = role === 'assistant' ? content : !!content;
   if (error) {
     pineconeData = error?.response?.data.pineconeData;
     summary = error?.response?.data.summary;
@@ -208,6 +212,52 @@ export const MessageCard = ({
                     }}>
                     <ReactMarkdown
                       components={{
+                        p: (paragraph: any) => {
+                          const { node } = paragraph;
+
+                          if (node.children[0].tagName === 'img') {
+                            const image = node.children[0];
+                            const metastring = image.properties.alt;
+                            const alt = metastring?.replace(/ *\{[^)]*\} */g, '');
+                            const metaWidth = metastring.match(/{([^}]+)x/);
+                            const metaHeight = metastring.match(/x([^}]+)}/);
+                            const width = metaWidth ? metaWidth[1] : undefined;
+                            const height = metaHeight ? metaHeight[1] : undefined;
+                            const isPriority = metastring?.toLowerCase().match('{priority}');
+                            const hasCaption = metastring?.toLowerCase().includes('{caption:');
+                            const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
+
+                            return (
+                              <Box
+                                component="a"
+                                href={image.properties.src}
+                                target="_blank"
+                                sx={{
+                                  display: 'block',
+                                  height: '40vh',
+                                  width: '100%',
+                                  img: { objectFit: 'contain' }
+                                }}>
+                                <Image
+                                  src={image.properties.src}
+                                  // width={width}
+                                  // height={height}
+                                  layout="fill"
+                                  className="postImg"
+                                  alt={alt}
+                                  priority={isPriority}
+                                />
+                                {hasCaption ? (
+                                  <div className="caption" aria-label={caption}>
+                                    {caption}
+                                  </div>
+                                ) : null}
+                              </Box>
+                            );
+                          }
+                          return <p>{paragraph.children}</p>;
+                        },
+
                         code({ node, inline, className, children, ...props }) {
                           const codeExample = String(children).replace(/\n$/, '');
                           return !inline ? (
@@ -251,10 +301,11 @@ export const MessageCard = ({
                     <Button
                       key={`references-${doc.id}`}
                       size="small"
-                      component={NextLink}
+                      // disabled={!doc.metadata.url}
+                      component={doc.metadata.url ? NextLink : 'div'}
                       variant="outlined"
                       color="inherit"
-                      href={doc.url}
+                      href={doc.metadata.url?.includes('http') ? doc.metadata.url : doc.url}
                       target="_blank"
                       sx={{
                         'textTransform': 'none',
@@ -264,11 +315,18 @@ export const MessageCard = ({
                       startIcon={
                         <Avatar
                           variant="source"
-                          src={services[doc.source]?.imageURL}
+                          src={services[doc.source ?? doc.metadata?.source]?.imageURL}
                           sx={{ width: 20, height: 20 }}
                         />
                       }>
-                      {doc.title ?? doc.url}
+                      {doc.title ??
+                        doc.url ??
+                        doc.metadata?.title ??
+                        doc.metadata?.url ??
+                        (doc.metadata?.filePath && doc.metadata?.repo
+                          ? `${doc.metadata?.repo}/${doc.metadata?.filePath}`
+                          : null) ??
+                        doc.metadata?.source}
                     </Button>
                   ))}
                 </Box>
@@ -334,7 +392,28 @@ export const MessageCard = ({
             </AccordionDetails>
           </Accordion>
         ) : null}
-
+        {contextDocuments?.length ? (
+          <Accordion TransitionProps={{ unmountOnExit: true }}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header">
+              <Typography variant="overline">
+                Context ({countTokens(contextDocuments?.map((d) => d.pageContent)?.join('/n'))}{' '}
+                Tokens)
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography
+                sx={{ whiteSpace: 'pre-line' }}
+                variant="body1"
+                color="text.secondary"
+                component="div">
+                {contextDocuments?.map((d) => d.pageContent)?.join('/n')}
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        ) : null}
         {developer_mode?.enabled ? (
           <Box>
             {error ? (

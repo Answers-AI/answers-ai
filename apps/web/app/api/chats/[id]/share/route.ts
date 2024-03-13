@@ -1,12 +1,11 @@
 // import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
-import { authOptions } from '@ui/authOptions';
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getCachedSession();
     const user = session?.user;
     if (!user?.email)
       return NextResponse.json({ error: 'You must be logged in to share a chat' }, { status: 403 });

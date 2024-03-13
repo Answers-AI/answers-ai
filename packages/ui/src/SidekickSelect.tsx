@@ -20,7 +20,7 @@ const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectPr
     const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
     const lastUsedSidekick = sidekickHistory?.lastUsed;
     const sidekick = sidekicks.find((s) => s.id === lastUsedSidekick) ?? sidekicks[0];
-
+    if (!sidekick) return;
     setSelectedSidekick(sidekick.id);
     onSidekickSelected(sidekick);
   }, [sidekicks, onSidekickSelected]);

@@ -4,6 +4,7 @@ import Chat from '@ui/Chat';
 import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 import { normalizeSidekickList } from '../../../../utilities/normalizeSidekick';
+import { Sidekick } from 'types';
 
 export const metadata = {
   title: 'Chats | Answers AI',
@@ -18,6 +19,7 @@ const ChatDetailPage = async ({ params }: any) => {
 
   const dbSidekicks = await prisma.sidekick.findMany({
     where: {
+      tags: { has: 'flowise' },
       OR: [
         {
           favoritedBy: {
@@ -27,13 +29,24 @@ const ChatDetailPage = async ({ params }: any) => {
           }
         },
         {
+          createdByUser: {
+            organizations: {
+              // User attached to the sidekick is in the same organization as the current user
+              some: { users: { some: { id: userId } } }
+            }
+          },
+          isSharedWithOrg: true
+        },
+        {
           isSystem: true
         }
       ]
     }
   });
 
-  const sidekicks = dbSidekicks?.length ? normalizeSidekickList(dbSidekicks, user) : [];
+  const sidekicks = dbSidekicks?.length
+    ? normalizeSidekickList(dbSidekicks as Sidekick[], user)
+    : [];
 
   // @ts-expect-error Async Server Component
   return <Chat {...params} sidekicks={sidekicks} />;

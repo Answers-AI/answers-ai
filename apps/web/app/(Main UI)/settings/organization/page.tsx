@@ -1,7 +1,6 @@
 import React from 'react';
 import { prisma } from '@db/client';
 import OrganizationForm from '@ui/OrganizationForm';
-import { authOptions } from '@ui/authOptions';
 import getCachedSession from '@ui/getCachedSession';
 
 export const metadata = {
@@ -10,7 +9,7 @@ export const metadata = {
 };
 
 const OrganizationFormPage = async ({ params }: any) => {
-  const session = await getCachedSession(authOptions);
+  const session = await getCachedSession();
 
   if (!session?.user?.organizationId) return null;
 

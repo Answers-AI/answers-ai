@@ -27,6 +27,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@auth0/nextjs-auth0": "^3.5.0",
     "@algolia/client-search": "^4.19.1",
     "@aws-sdk/client-s3": "^3.374.0",
     "@contentful/app-sdk": "^4.22.1",
@@ -37,8 +38,6 @@
     "airtable": "^0.11.6",
     "algoliasearch": "^4.19.1",
     "axios": "^1.4.0",
-    "bufferutil": "^4.0.4",
-    "canvas": "^2.11.2",
     "cheerio": "^1.0.0-rc.12",
     "contentful-management": "^10.39.1",
     "csv": "^6.3.1",
@@ -48,6 +47,7 @@
     "db": "workspace:*",
     "dotenv": "^16.3.1",
     "eventsource-parser": "^1.0.0",
+    "socket.io-client": "^4.7.4",
     "gpt-3-encoder": "^1.1.4",
     "gpt-tokens": "^1.1.0",
     "gpt3-tokenizer": "^1.1.5",
@@ -75,7 +75,6 @@
     "sitemapper": "^3.2.6",
     "stripe": "^12.17.0",
     "swagger2openapi": "^7.0.8",
-    "utf-8-validate": "6.0.3",
     "uuid": "^9.0.0",
     "yaml": "^2.2.1"
   },

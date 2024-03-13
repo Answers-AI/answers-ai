@@ -1,5 +1,5 @@
 import React from 'react';
-import { authOptions } from '../authOptions';
+
 import { prisma } from '@db/client';
 import SidekickFormLayout from './SidekickFormLayout.Client';
 import getCachedSession from '../getCachedSession';
@@ -12,7 +12,7 @@ export default async function ChatUILayout({
   children: React.ReactNode;
   sidekickId: string;
 }) {
-  const session = await getCachedSession(authOptions);
+  const session = await getCachedSession();
 
   if (!session?.user?.email) return null;
 

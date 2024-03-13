@@ -1,17 +1,16 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
-import { authOptions } from '@ui/authOptions';
 import { randomUUID } from 'crypto';
 
 export async function PATCH(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getCachedSession();
     if (!session?.user?.email) return NextResponse.redirect('/auth');
 
     const { id, contextFields, ...data } = await req.json();
 
-    if (!session?.user?.id || session?.user?.organizationId !== id)
+    if (!session?.user?.email || session?.user?.organizationId !== id)
       return NextResponse.redirect('/auth');
 
     // Pulls all of the columns for the Organization model so they

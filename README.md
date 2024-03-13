@@ -145,3 +145,13 @@ Add your service to the AppSettings object
 
 Go to packages/utils/src/ingest
 Create a new file for your service (e.g. jira.ts)
+
+## Flowise Notes
+- When doing a database migration you need to create a new API key in the .env file at /Flowise/packages/src/server.ts
+
+ANSWERAI_DOMAIN=http://localhost:3000 ## Endpoint AnserAI is running on
+ANSWERAI_API_KEY=this-is-my-test-key # Generic API key, is automatically assigned to a user on login or registration
+DOMAIN=http://localhost:4000 # This is the host name that Flowise is being ran on
+
+You will need to udpate the database to ensure that this AnswerAI API key is associated to the user
+

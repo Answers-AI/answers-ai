@@ -49,16 +49,16 @@ model User {
 
   feedbacks MessageFeedback[]
 
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @default(now()) @updatedAt
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @default(now()) @updatedAt
   ChatApp            ChatApp[]
   organizationId     String?
   apiKeys            ApiKey[]
   aiRequests         AiRequest[]
-  favoritedSidekicks Sidekick[]     @relation("SidekickFavoritedBy")
+  favoritedSidekicks Sidekick[]        @relation("SidekickFavoritedBy")
   Sidekick           Sidekick[]
   contextFields      ContextField[]
-  activeUserPlan     ActiveUserPlan?  
+  activeUserPlan     ActiveUserPlan?
   userPlanHistories  UserPlanHistory[]
 }
 
@@ -107,27 +107,35 @@ model ContextField {
 }
 
 model Sidekick {
-  id                   String   @id @default(cuid())
-  isGlobal             Boolean? @default(false)
-  isSystem             Boolean? @default(false)
-  isSharedWithOrg      Boolean? @default(false)
-  isFavoriteByDefault  Boolean? @default(false)
-  tags                 String[]
-  label                String
-  placeholder          String?
-  temperature          Float    @default(1)
-  frequency            Float    @default(0)
-  presence             Float    @default(0)
-  maxCompletionTokens  Int      @default(500)
-  aiModel              String
+  id                  String   @id @default(cuid())
+  isGlobal            Boolean? @default(false)
+  isSystem            Boolean? @default(false)
+  isSharedWithOrg     Boolean? @default(false)
+  isFavoriteByDefault Boolean? @default(false)
+
+  chatflow       Json?
+  chatflowApiKey String?
+  chatflowDomain String?
+
+  label         String
+  tags          String[]
+  userId        String
+  favoritedBy   User[]   @relation("SidekickFavoritedBy")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+  createdByUser User     @relation(fields: [userId], references: [id])
+
+  // TO BE REMOVED
+  temperature          Float   @default(1)
+  frequency            Float   @default(0)
+  presence             Float   @default(0)
+  maxCompletionTokens  Int     @default(500)
+  aiModel              String?
   systemPromptTemplate String?
   userPromptTemplate   String?
   contextStringRender  String?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @default(now()) @updatedAt
-  createdByUser        User     @relation(fields: [userId], references: [id])
-  userId               String
-  favoritedBy          User[]   @relation("SidekickFavoritedBy")
+  placeholder          String?
+  Tasks                Tasks[]
 }
 
 model WebDocument {
@@ -222,6 +230,8 @@ model Chat {
 
   owner   User?   @relation("UserChatsCreated", fields: [ownerId], references: [id])
   ownerId String?
+
+  chatflowChatId String?
 
   users    User[]
   messages Message[]
@@ -394,40 +404,50 @@ model AiRequest {
 }
 
 model Plan {
-  id               Int               @id @default(autoincrement())
-  name             String
+  id                Int               @id @default(autoincrement())
+  name              String
   description       String
-  tokenLimit       Int
+  tokenLimit        Int
   userPlanHistories UserPlanHistory[]
-  activeUserPlans  ActiveUserPlan[]
+  activeUserPlans   ActiveUserPlan[]
 }
 
 model UserPlanHistory {
-  id          String   @id @default(uuid())
-  userId      String
-  planId      Int
-  renewalDate DateTime
-  tokensLeft  Int
-  startDate   DateTime
-  endDate     DateTime
-  gpt3RequestCount Int
-  gpt4RequestCount Int
+  id                   String   @id @default(uuid())
+  userId               String
+  planId               Int
+  renewalDate          DateTime
+  tokensLeft           Int
+  startDate            DateTime
+  endDate              DateTime
+  gpt3RequestCount     Int
+  gpt4RequestCount     Int
   stripeSubscriptionId String?
-  user        User    @relation(fields: [userId], references: [id])
-  plan        Plan    @relation(fields: [planId], references: [id])
+  user                 User     @relation(fields: [userId], references: [id])
+  plan                 Plan     @relation(fields: [planId], references: [id])
 }
 
 model ActiveUserPlan {
-  id          String   @id @default(uuid())
-  userId      String  @unique 
-  planId      Int
-  renewalDate DateTime
-  tokensLeft  Int
-  startDate   DateTime @default(now())
-  gpt3RequestCount Int @default(0)
-  gpt4RequestCount Int @default(0)
+  id                   String   @id @default(uuid())
+  userId               String   @unique
+  planId               Int
+  renewalDate          DateTime
+  tokensLeft           Int
+  startDate            DateTime @default(now())
+  gpt3RequestCount     Int      @default(0)
+  gpt4RequestCount     Int      @default(0)
   stripeSubscriptionId String?
-  shouldRenew Boolean @default(true)
-  user        User    @relation(fields: [userId], references: [id])
-  plan        Plan    @relation(fields: [planId], references: [id])
+  shouldRenew          Boolean  @default(true)
+  user                 User     @relation(fields: [userId], references: [id])
+  plan                 Plan     @relation(fields: [planId], references: [id])
+}
+
+model Tasks {
+  id          String     @id @default(uuid())
+  title       String
+  description String
+  sidekicks   Sidekick[]
+  completed   Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now()) @updatedAt
 }

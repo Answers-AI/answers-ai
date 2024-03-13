@@ -2,7 +2,10 @@ import * as DB from 'db/generated/prisma-client';
 import { Hit } from '@algolia/client-search';
 
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
-export interface Document extends DB.Document {}
+export interface Document extends DB.Document {
+  pageContent: string;
+  metadata: any;
+}
 export type PineconeObject = {
   vectors: PineconeVector[];
 };
@@ -106,6 +109,7 @@ export interface AppSettings {
   };
   models?: Models;
   filters?: AnswersFilters;
+  chatflowDomain?: string; // This should be required
 }
 
 export interface JiraFilters {
@@ -193,6 +197,19 @@ export interface AnswersFilters {
   datasources?: FilterDatasources;
 }
 
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  sidekicks: Sidekick[];
+  filters: AnswersFilters;
+  completed: boolean;
+  dueDate: string;
+  createdAt: string;
+  updatedAt: string;
+  completedAt: string;
+}
+
 type Models = {
   jira: string[];
   slack: string[];
@@ -225,6 +242,7 @@ export interface User extends Omit<DB.User, 'appSettings'> {
   appSettings: AppSettings;
   currentOrganization?: Organization;
   contextFields?: ContextField[];
+  chatflowDomain: string;
   // accounts: DB.Account[] | null;
 }
 
@@ -255,6 +273,7 @@ export interface Journey extends Omit<DB.Journey, 'filters'> {
   appSettings: AppSettings;
   filters: AnswersFilters;
   completed: boolean;
+  tasks: Task[] | null;
 }
 
 export type SlackChannel = { id: string; name: string };
@@ -470,6 +489,10 @@ export type JiraComment = { key: string; self: string; id: string; fields: any; 
 export interface Sidekick extends DB.Sidekick {
   sharedWith?: string;
   favoritedBy?: DB.User[];
+  chatflow: {
+    id: string;
+    name: string;
+  };
 }
 
 export interface SidekickListItem

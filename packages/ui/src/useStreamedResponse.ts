@@ -85,22 +85,23 @@ export const useStreamedResponse = ({
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
       const chunkValue = decoder.decode(value);
-
       answer = (answer || '') + chunkValue;
+      // console.log('Chunk', { value, chunkValue, answer });
       if (!extra) {
-        const [jsonData, ...rest] = answer.split('JSON_END');
-        if (jsonData && rest?.length) {
+        let [currentAnswer, jsonData] = answer.split('JSON_START');
+        if (jsonData) {
+          jsonData = jsonData?.replace('JSON_END', '');
           try {
             extra = JSON.parse(jsonData);
             // if (extra.chat) setChat(extra.chat);
           } catch (e) {
             console.log('ParseError', e);
           }
-          answer = rest.join('');
+          answer = currentAnswer;
         }
-        onChunk({ role: 'assistant', content: answer, ...extra });
+        onChunk({ role: 'assistant', ...extra, content: answer });
       } else {
-        onChunk({ role: 'assistant', content: answer, ...extra });
+        onChunk({ role: 'assistant', ...extra, content: answer });
       }
     }
     setGeneratedResponse({});

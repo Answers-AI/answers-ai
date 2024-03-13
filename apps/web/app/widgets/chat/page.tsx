@@ -1,10 +1,10 @@
 import React from 'react';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 
 import ChatWidget from '@ui/ChatWidget';
 
 const WidgetChatPage = async ({ params }: any) => {
-  const session = await getServerSession();
+  const session = await getCachedSession();
   return <ChatWidget {...params} session={session} />;
 };
 

@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@ui/authOptions';
+import getCachedSession from '@ui/getCachedSession';
 import { NextResponse, NextRequest } from 'next/server';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
@@ -18,7 +17,7 @@ export async function POST(req: Request, res: NextResponse) {
     });
   }
 
-  const session = await getServerSession(authOptions);
+  const session = await getCachedSession();
   const user = session?.user;
   if (!user || !user.organizationId) {
     return NextResponse.json({

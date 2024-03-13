@@ -1,15 +1,14 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
-import { authOptions } from '@ui/authOptions';
 import { respond401 } from '@utils/auth/respond401';
 import { normalizeSidekickList } from '../../../../../utilities/normalizeSidekick';
 import { Sidekick } from 'types';
 
 export async function GET(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) return respond401();
+    const session = await getCachedSession();
+    if (!session?.user?.email) return respond401();
 
     const user = session.user;
 
@@ -24,13 +23,13 @@ export async function GET(req: Request) {
       include: {
         favoritedBy: {
           where: {
-            id: {in: [user.id]}
+            id: { in: [user.id] }
           }
         }
       }
     });
 
-    const sidekicks = normalizeSidekickList(dbSidekicks, user);
+    const sidekicks = normalizeSidekickList(dbSidekicks as Sidekick[], user);
 
     return NextResponse.json(sidekicks);
   } catch (error) {

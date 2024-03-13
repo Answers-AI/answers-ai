@@ -164,9 +164,11 @@ export function AnswersProvider({
     // setChat,
     onChunk: (chunk: Message) => {
       // const idx = messages?.length;
+      console.log('OnChunk', chunk);
       setMessages((currentMessages) => {
         const newMessages = [...currentMessages];
         newMessages[messageIdx.current] = chunk;
+        console.log('newMessages', newMessages);
         if (chunk?.chat) {
           if (chunk.chat?.id !== chatId) {
             setChatId(chunk.chat.id);

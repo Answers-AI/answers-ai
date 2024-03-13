@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 import { deepmerge } from '@utils/deepmerge';
 import { prisma } from '@db/client';
 
-import { authOptions } from '@ui/authOptions';
 import { getAppSettings } from '@ui/getAppSettings';
 
 export async function GET(req: Request) {
@@ -12,7 +11,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions);
+  const session = await getCachedSession();
   if (!session?.user?.email) return NextResponse.redirect('/auth');
   const user = await prisma.user.findUnique({
     where: {

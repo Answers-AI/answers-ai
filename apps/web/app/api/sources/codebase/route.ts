@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 
 import { prisma } from '@db/client';
 
-import { authOptions } from '@ui/authOptions';
 import { DocumentFilter } from 'types';
 
 export async function GET(req: Request, res: Response) {
-  const session = await getServerSession(authOptions);
+  const session = await getCachedSession();
   if (!session?.user?.email) return NextResponse.redirect('/auth');
 
   const { searchParams } = new URL(req.url);

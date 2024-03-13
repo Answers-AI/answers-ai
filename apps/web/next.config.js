@@ -7,7 +7,6 @@ const { withSentryConfig } = require('@sentry/nextjs');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 });
-
 /**
  * @type {import('next').NextConfig}
  */
@@ -30,7 +29,19 @@ let nextConfig = withBundleAnalyzer({
       transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}'
     }
   },
-
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'replicate.delivery',
+        port: '',
+        pathname: '/**'
+      }
+    ]
+  },
+  env: {
+    AUTH0_BASE_URL: process.env.AUTH0_BASE_URL ?? `https://${process.env.VERCEL_BRANCH_URL}`
+  },
   webpack: (config, { isServer }) => {
     config.externals = [...config.externals, 'db', 'puppeteer', 'handlebars'];
     config.plugins = [

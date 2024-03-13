@@ -94,25 +94,7 @@ const ChatInput = ({
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
       <Box sx={{ display: 'flex', gap: 2 }}>
         <SidekickSelect onSidekickSelected={handleSidekickSelected} sidekicks={sidekicks} />
-        <Fieldset legend="Model">
-          <Select
-            labelId="model-select-label"
-            id="model-select"
-            size="small"
-            sx={{ 'boxShadow': 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
-            value={gptModel}
-            onChange={handleGptModelSelected}>
-            <MenuItem key="gpt3" value="gpt-3.5-turbo">
-              GPT 3.5
-            </MenuItem>
-            <MenuItem key="gpt316k" value="gpt-3.5-turbo-16k">
-              GPT 3.5 16k
-            </MenuItem>
-            <MenuItem key="gpt4" value="gpt-4">
-              GPT 4
-            </MenuItem>
-          </Select>
-        </Fieldset>
+
         <RemainingTokensCounter />
       </Box>
 
@@ -133,7 +115,7 @@ const ChatInput = ({
         placeholder={placeholder}
         value={inputValue}
         multiline
-        disabled={!activeUserPlan || activeUserPlan.tokensLeft <= 0}
+        // disabled={!activeUserPlan || activeUserPlan.tokensLeft <= 0}
         onKeyPress={handleKeyPress}
         onChange={handleInputChange}
       />
@@ -163,7 +145,8 @@ const ChatInput = ({
           variant="contained"
           color="primary"
           onClick={handleSubmit}
-          disabled={!inputValue || isLoading}>
+          // disabled={!inputValue || isLoading}
+        >
           Send
         </Button>
       </Box>

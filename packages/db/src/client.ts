@@ -10,7 +10,7 @@ let prismaDebug = ['warn', 'error'];
 if (DEBUG_LEVEL === 'debug') prismaDebug = [...prismaDebug, ...['query', 'info']];
 
 // @ts-ignore
-export const prisma = global.prisma || new PrismaClient({ log: prismaDebug });
+export const prisma = global.prisma || new PrismaClient({ log: [] });
 
 if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
 

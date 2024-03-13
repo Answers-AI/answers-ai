@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
-import { authOptions } from '@ui/authOptions';
 import { respond401 } from '@utils/auth/respond401';
 import { DocumentFilter, StandardDocumentUrlFilters } from 'types';
 
 export async function GET(req: Request, { params: { source } }: { params: { source: string } }) {
-  const session = await getServerSession(authOptions);
+  const session = await getCachedSession();
   const userId = session?.user?.id;
   if (!userId) return respond401();
 

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@ui/authOptions';
+import getCachedSession from '@ui/getCachedSession';
 import OpenAIClient from '@utils/openai/openai';
 import { parse } from 'url';
 import { pineconeQuery } from '@utils/pinecone/pineconeQuery';
@@ -14,7 +13,7 @@ const openai = new OpenAIClient();
 const SCORE_THRESHOLD = 0.8;
 
 export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
+  const session = await getCachedSession();
   const userId = session?.user?.id;
   if (!userId || !session.user?.organizationId) return respond401();
 

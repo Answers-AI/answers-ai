@@ -1,28 +1,41 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import { prisma } from '@db/client';
-import { authOptions } from '@ui/authOptions';
 import { Sidekick } from 'types';
 import { respond401 } from '@utils/auth/respond401';
-import { normalizeSidekickForUpdate } from 'utilities/normalizeSidekick';
+
+import getCachedSession from '@ui/getCachedSession';
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
+  const res = new Response();
 
-  if (!session?.user?.id) return respond401();
+  const session = await getCachedSession(req, res);
+  console.log('Session:', session);
+  if (!session?.user) return respond401();
 
   const userId = session.user.id;
 
-  const data: Sidekick = await req.json();
+  const data: Pick<Sidekick, 'chatflow' | 'chatflowDomain' | 'chatflowApiKey'> = await req.json();
 
+  console.log('New sidekick data', data.chatflow?.name, userId);
   try {
-    const normalizedSidekick: any = normalizeSidekickForUpdate(data);
-    const sidekick = await prisma.sidekick.create({
-      data: {
-        ...normalizedSidekick,
-        favoritedBy: { connect: { id: userId } },
+    if (!data.chatflow) throw new Error('No chatflow provided');
+    const sidekickData = {
+      ...data,
+      chatflowDomain: session?.user?.chatflowDomain,
+      id: data.chatflow.id,
+      label: data?.chatflow?.name,
+      isSharedWithOrg: true,
+      tags: ['flowise']
+    };
+    const sidekick = await prisma.sidekick.upsert({
+      where: {
+        id: data.chatflow.id
+      },
+      create: {
+        ...sidekickData,
         createdByUser: { connect: { id: userId } }
-      }
+      },
+      update: { ...sidekickData }
     });
     return NextResponse.json(sidekick);
   } catch (error: any) {

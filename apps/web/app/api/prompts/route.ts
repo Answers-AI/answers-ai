@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
-import { authOptions } from '@ui/authOptions';
 
 export async function GET(req: Request) {
-  const user = await getServerSession(authOptions);
+  const user = await getCachedSession();
   if (!user?.user?.email) return NextResponse.redirect('/auth');
 
   const records = await prisma.prompt.findMany({
@@ -21,7 +20,7 @@ export async function GET(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const user = await getServerSession(authOptions);
+  const user = await getCachedSession();
   if (!user?.user?.email) return NextResponse.redirect('/auth');
 
   const { searchParams } = new URL(req.url);
@@ -47,7 +46,7 @@ export async function DELETE(req: Request) {
 export async function PATCH(req: Request) {
   try {
     // TODO: Validate which fields are allowed to be updated
-    const user = await getServerSession(authOptions);
+    const user = await getCachedSession();
     if (!user?.user?.email) return NextResponse.redirect('/auth');
     const { id, likes, dislikes } = await req.json();
 

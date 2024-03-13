@@ -32,15 +32,15 @@ export async function upsertChat({
       }
     },
     filters: filters,
-    ...(journey ? { journeyId: journey.id } : null),
-    messages: {
-      create: {
-        role: 'user',
-        content: prompt,
-        sidekickJson: sidekick as any,
-        user: { connect: { email: user.email! } }
-      }
-    }
+    ...(journey ? { journeyId: journey.id } : null)
+    // messages: {
+    //   create: {
+    //     role: 'user',
+    //     content: prompt,
+    //     sidekickJson: sidekick as any,
+    //     user: { connect: { email: user.email! } }
+    //   }
+    // }
   };
 
   let chat;
