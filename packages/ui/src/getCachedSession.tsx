@@ -33,7 +33,20 @@ const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user: Use
     const result = await jose.jwtVerify(token.replace('Bearer ', ''), jwks);
     session = { user: result.payload };
   }
-
+  const orgData = {
+    organizations: {
+      connectOrCreate: {
+        where: { id: session.user.org_id },
+        create: { id: session.user.org_id, name: session.user.org_name }
+      }
+    },
+    currentOrganization: {
+      connectOrCreate: {
+        where: { id: session.user.org_id },
+        create: { id: session.user.org_id, name: session.user.org_name }
+      }
+    }
+  };
   if (session?.user) {
     const user = await prisma.user.upsert({
       where: {
@@ -41,9 +54,12 @@ const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user: Use
       },
       create: {
         email: session.user.email,
-        name: session.user.name
+        name: session.user.name,
+        ...orgData
       },
-      update: {}
+      update: {
+        ...orgData
+      }
     });
     session.user.id = user.id;
   }

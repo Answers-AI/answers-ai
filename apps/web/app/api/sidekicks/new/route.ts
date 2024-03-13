@@ -23,7 +23,6 @@ export async function POST(req: Request) {
       ...data,
       id: data.chatflow.id,
       label: data?.chatflow?.name,
-      favoritedBy: { connect: { id: userId } },
       isSharedWithOrg: true,
       tags: ['flowise']
     };
