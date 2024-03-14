@@ -25,6 +25,7 @@ export async function POST(req: Request) {
       id: data.chatflow.id,
       label: data?.chatflow?.name,
       isSharedWithOrg: true,
+      aiModel: 'flowise',
       tags: ['flowise']
     };
     const sidekick = await prisma.sidekick.upsert({
