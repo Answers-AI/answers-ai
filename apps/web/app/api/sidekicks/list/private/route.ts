@@ -16,6 +16,9 @@ export async function GET(req: Request) {
 
     const dbSidekicks = await prisma.sidekick.findMany({
       where: {
+        NOT: {
+          tags: { has: 'chatflow' }
+        },
         createdByUser: { id: userId }
       },
       include: {

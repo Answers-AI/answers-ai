@@ -14,11 +14,15 @@ export async function GET(req: Request) {
 
     const dbSidekicks = await prisma.sidekick.findMany({
       where: {
+        NOT: {
+          tags: { has: 'chatflow' }
+        },
         isGlobal: true
-      },include: {
+      },
+      include: {
         favoritedBy: {
           where: {
-            id: {in: [user.id]}
+            id: { in: [user.id] }
           }
         }
       }
