@@ -25,6 +25,7 @@ import StorageIcon from '@mui/icons-material/Storage';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import SmartToy from '@mui/icons-material/SmartToy';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import AIIcon from '@mui/icons-material/SmartButton';
 
 import closedMixin from './theme/closedMixin';
@@ -50,6 +51,7 @@ export const AppDrawer = ({ session }: any) => {
         {[
           { text: 'Message', link: '/', icon: <HomeIcon /> },
           { text: 'Sidekick Studio', link: '/sidekick-studio', icon: <SmartToy /> },
+          { text: 'Flowise', link: '/flowise', icon: <AccountTreeIcon /> },
           ...(flags?.settings?.enabled
             ? [{ text: 'Settings', link: '/settings', icon: <SettingsIcon /> }]
             : []),
