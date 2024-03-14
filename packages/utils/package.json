@@ -37,8 +37,6 @@
     "airtable": "^0.11.6",
     "algoliasearch": "^4.19.1",
     "axios": "^1.4.0",
-    "bufferutil": "^4.0.4",
-    "canvas": "^2.11.2",
     "cheerio": "^1.0.0-rc.12",
     "contentful-management": "^10.39.1",
     "csv": "^6.3.1",
@@ -75,7 +73,6 @@
     "sitemapper": "^3.2.6",
     "stripe": "^12.17.0",
     "swagger2openapi": "^7.0.8",
-    "utf-8-validate": "6.0.3",
     "uuid": "^9.0.0",
     "yaml": "^2.2.1"
   },
