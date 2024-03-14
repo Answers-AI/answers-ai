@@ -22,6 +22,9 @@ const JourneyDetailPage = async ({ params }: any) => {
 
   const sidekicksPromise = prisma.sidekick.findMany({
     where: {
+      NOT: {
+        tags: { has: 'chatflow' }
+      },
       OR: [
         {
           favoritedBy: {
