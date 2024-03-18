@@ -180,12 +180,12 @@ export function AnswersProvider({
         return newMessages;
       });
     },
-    onEnd: ({ chat: newChat }) => {
+    onEnd: ({ chatId }) => {
       // Check if the current route is the chat
       setIsLoading(false);
-      if (newChat) {
-        setChatId(newChat?.id);
-        history.replaceState(null, '', `/chat/${newChat?.id}`);
+      if (chatId) {
+        setChatId(chatId);
+        history.replaceState(null, '', `/chat/${chatId}`);
       }
       mutateActiveUserPlan();
     }

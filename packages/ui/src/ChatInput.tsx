@@ -95,7 +95,7 @@ const ChatInput = ({
       <Box sx={{ display: 'flex', gap: 2 }}>
         <SidekickSelect onSidekickSelected={handleSidekickSelected} sidekicks={sidekicks} />
 
-        <RemainingTokensCounter />
+        {/* <RemainingTokensCounter /> */}
       </Box>
 
       <TextField

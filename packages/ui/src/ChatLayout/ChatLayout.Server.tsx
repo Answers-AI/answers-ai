@@ -24,6 +24,7 @@ export default async function ChatUILayout({
         users: {
           some: { email: session.user.email }
         },
+        chatflowChatId: { not: null },
         journeyId: null
       },
       orderBy: {

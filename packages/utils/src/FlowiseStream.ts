@@ -5,55 +5,58 @@ export const getFlowisePredictionStream = async ({ sidekick, body, accessToken, 
   // let message;
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
+  try {
+    const stream = new ReadableStream({
+      async start(controller) {
+        const socket = socketIOClient(sidekick.chatflowDomain!); //flowise url
+        socket.on('connect', async () => {
+          const result = await query({
+            sidekick,
+            accessToken,
+            socketIOClientId: socket.id!,
+            body
+          });
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      const socket = socketIOClient(sidekick.chatflowDomain!); //flowise url
-      socket.on('connect', async () => {
-        const result = await query({
-          sidekick,
-          accessToken,
-          socketIOClientId: socket.id!,
-          body
+          controller.enqueue(
+            encoder.encode(
+              'JSON_START' +
+                JSON.stringify({
+                  ...result,
+                  // id: message.id,
+                  // contextDocuments: message.contextDocuments,
+                  contextDocuments: result.sourceDocuments,
+                  role: 'assistant'
+                }) +
+                'JSON_END'
+            )
+          );
+          onEnd &&
+            onEnd({
+              ...result
+            });
+          controller.close();
+        });
+        socket.on('start', () => {
+          console.log('start');
         });
 
-        controller.enqueue(
-          encoder.encode(
-            'JSON_START' +
-              JSON.stringify({
-                ...result,
-                // id: message.id,
-                // contextDocuments: message.contextDocuments,
-                contextDocuments: result.sourceDocuments,
-                role: 'assistant'
-              }) +
-              'JSON_END'
-          )
-        );
-        onEnd &&
-          onEnd({
-            ...result
-          });
-        controller.close();
-      });
-      socket.on('start', () => {
-        console.log('start');
-      });
+        socket.on('token', (token) => {
+          controller.enqueue(encoder.encode(token));
+        });
 
-      socket.on('token', (token) => {
-        controller.enqueue(encoder.encode(token));
-      });
+        socket.on('sourceDocuments', (sourceDocuments) => {
+          console.log('sourceDocuments:', sourceDocuments?.length);
+        });
 
-      socket.on('sourceDocuments', (sourceDocuments) => {
-        console.log('sourceDocuments:', sourceDocuments?.length);
-      });
-
-      socket.on('end', () => {
-        console.log('end');
-      });
-    }
-  });
-  return stream;
+        socket.on('end', () => {
+          console.log('end');
+        });
+      }
+    });
+    return stream;
+  } catch (err) {
+    throw err;
+  }
 };
 async function query({
   sidekick,
@@ -75,6 +78,11 @@ async function query({
     },
     body: JSON.stringify({ ...body, socketIOClientId })
   });
-  const result = await response.json();
-  return result;
+  if (response.ok) {
+    const result = await response.json();
+    return result;
+  } else {
+    const result = await response.text();
+    throw new Error(result);
+  }
 }
