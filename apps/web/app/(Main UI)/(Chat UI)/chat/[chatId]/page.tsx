@@ -7,7 +7,7 @@ import { normalizeSidekickList } from '../../../../../utilities/normalizeSidekic
 import type { Sidekick, User } from 'types';
 import auth0 from '@utils/auth/auth0';
 
-const getMessages = async ({ chat, user }: { chat: Chat; user: User }) => {
+const getMessages = async ({ chat, user }: { chat: Partial<Chat>; user: User }) => {
   try {
     const { id, chatflowChatId } = chat;
     const { accessToken } = await auth0.getAccessToken();
@@ -97,6 +97,7 @@ const ChatDetailPage = async ({ params }: any) => {
   if (!chat) {
     return <ChatNotFound />;
   }
+  // @ts-ignore
   chat.messages = await getMessages({ user, chat });
 
   const sidekicks = (dbSidekicks as Sidekick[])?.length
