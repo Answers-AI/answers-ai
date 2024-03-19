@@ -265,7 +265,7 @@ export interface Chat extends Omit<DB.Chat, 'filters'> {
   filters?: AnswersFilters;
   prompt?: Prompt | null;
   messages?: Message[] | null;
-  users: User[] | null;
+  users?: User[] | null;
 }
 
 export interface Journey extends Omit<DB.Journey, 'filters'> {

@@ -1,5 +1,5 @@
 import { prisma } from '@db/client';
-import { Sidekick, User } from 'types';
+import { Chat, Sidekick, User } from 'types';
 
 export async function upsertChat({
   id,
@@ -60,5 +60,5 @@ export async function upsertChat({
       // include: { journey: true }
     });
   }
-  return chat;
+  return chat as Chat;
 }
