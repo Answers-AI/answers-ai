@@ -60,6 +60,7 @@ export async function POST(req: Request) {
     const { accessToken } = await auth0.getAccessToken();
     console.log('POST /api/ai/stream');
     const stream = await getFlowisePredictionStream({
+      chat,
       sidekick,
       accessToken,
       body: {

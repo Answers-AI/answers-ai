@@ -1,6 +1,18 @@
 import socketIOClient from 'socket.io-client';
-import { Sidekick } from 'types';
-export const getFlowisePredictionStream = async ({ sidekick, body, accessToken, onEnd }: any) => {
+import { Chat, Sidekick } from 'types';
+export const getFlowisePredictionStream = async ({
+  chat,
+  sidekick,
+  body,
+  accessToken,
+  onEnd
+}: {
+  chat?: Chat;
+  sidekick: Sidekick;
+  body: any;
+  accessToken: string;
+  onEnd: (extra: any) => void;
+}) => {
   let answer = '';
   // let message;
   const encoder = new TextEncoder();
@@ -10,7 +22,7 @@ export const getFlowisePredictionStream = async ({ sidekick, body, accessToken, 
       async start(controller) {
         const socket = socketIOClient(sidekick.chatflowDomain!); //flowise url
         socket.on('connect', async () => {
-          const result = await query({
+          const chatflowChat = await query({
             sidekick,
             accessToken,
             socketIOClientId: socket.id!,
@@ -21,10 +33,11 @@ export const getFlowisePredictionStream = async ({ sidekick, body, accessToken, 
             encoder.encode(
               'JSON_START' +
                 JSON.stringify({
-                  ...result,
+                  ...chatflowChat,
+                  chat,
                   // id: message.id,
                   // contextDocuments: message.contextDocuments,
-                  contextDocuments: result.sourceDocuments,
+                  contextDocuments: chatflowChat?.sourceDocuments,
                   role: 'assistant'
                 }) +
                 'JSON_END'
@@ -32,7 +45,7 @@ export const getFlowisePredictionStream = async ({ sidekick, body, accessToken, 
           );
           onEnd &&
             onEnd({
-              ...result
+              ...chatflowChat
             });
           controller.close();
         });

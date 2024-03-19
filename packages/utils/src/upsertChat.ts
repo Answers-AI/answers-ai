@@ -56,8 +56,8 @@ export async function upsertChat({
   } else {
     chat = await prisma.chat.update({
       where: { id },
-      data: chatProperties,
-      include: { journey: true }
+      data: chatProperties
+      // include: { journey: true }
     });
   }
   return chat;

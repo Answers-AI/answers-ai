@@ -180,12 +180,13 @@ export function AnswersProvider({
         return newMessages;
       });
     },
-    onEnd: ({ chatId }) => {
+    onEnd: ({ chat }) => {
       // Check if the current route is the chat
+      const { id } = chat as Chat;
       setIsLoading(false);
-      if (chatId) {
-        setChatId(chatId);
-        history.replaceState(null, '', `/chat/${chatId}`);
+      if (id) {
+        setChatId(id);
+        history.replaceState(null, '', `/chat/${id}`);
       }
       mutateActiveUserPlan();
     }
@@ -193,7 +194,7 @@ export function AnswersProvider({
   const [chatId, setChatId] = useState<string | undefined>(initialChat?.id);
 
   const { data: chat } = useSWR<Chat>(
-    !isStreaming && chatId ? `${apiUrl}/chats/${chatId}` : null,
+    !isStreaming && chatId && false ? `${apiUrl}/chats/${chatId}` : null,
     fetcher,
     {
       revalidateOnFocus: false,
