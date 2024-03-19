@@ -13,7 +13,7 @@ export default async function ChatUILayout({
 }) {
   return (
     <main style={{ display: 'flex', width: '100%', height: '100%' }}>
-      <Suspense fallback="Loading...">
+      <Suspense fallback="">
         {/* @ts-expect-error Server Component */}
         <ChatDrawer />
       </Suspense>
