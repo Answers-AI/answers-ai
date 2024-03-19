@@ -25,7 +25,9 @@ const Chat = async ({ chat, journey, sidekicks }: Params) => {
       <Suspense fallback={<div>Loading...</div>}>
         <Modal />
       </Suspense>
-      <ChatDetail appSettings={appSettings} sidekicks={sidekicks} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <ChatDetail appSettings={appSettings} sidekicks={sidekicks} />
+      </Suspense>
     </AnswersProvider>
   );
 };

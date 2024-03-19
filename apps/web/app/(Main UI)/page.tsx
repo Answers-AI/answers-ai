@@ -8,10 +8,8 @@ export const metadata = {
   description: 'Welcome to Answers AI, the last stop for all your questions.'
 };
 
-const HomepagePage = async ({ params }: any) => {
-  // @ts-expect-error Async Server Component
+const HomepagePage = async () => {
   return redirect('/chat');
-  // return <Homepage />;
 };
 
 export default HomepagePage;

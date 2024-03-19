@@ -12,7 +12,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
  */
 let nextConfig = withBundleAnalyzer({
   experimental: {
-    appDir: true,
     serverComponentsExternalPackages: [
       '@aws-sdk/client-s3',
       '@aws-sdk/signature-v4-crt',

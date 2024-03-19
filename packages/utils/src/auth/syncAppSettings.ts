@@ -65,7 +65,7 @@ export async function syncAppSettings({
   //     });
   //   }
 
-  return updateUserSettings(user as User);
+  return updateUserSettings(user as any);
   // }
   return SYSTEM_SETTINGS;
 }
