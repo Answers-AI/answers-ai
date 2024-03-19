@@ -4,8 +4,6 @@ import { prisma } from '@db/client';
 import { getFlowisePredictionStream } from '@utils/FlowiseStream';
 import { upsertChat } from '@utils/upsertChat';
 import { Sidekick } from 'types';
-import { NextResponse } from 'next/server';
-
 import auth0 from '@utils/auth/auth0';
 
 export async function POST(req: Request) {
@@ -58,6 +56,7 @@ export async function POST(req: Request) {
       sidekick
     });
     const { accessToken } = await auth0.getAccessToken();
+    if (!accessToken) throw new Error('No access token found');
     console.log('POST /api/ai/stream');
     const stream = await getFlowisePredictionStream({
       chat,
