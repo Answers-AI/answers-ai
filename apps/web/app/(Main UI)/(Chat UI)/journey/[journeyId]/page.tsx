@@ -23,13 +23,13 @@ const JourneyDetailPage = async ({ params }: any) => {
   const sidekicksPromise = prisma.sidekick.findMany({
     where: {
       OR: [
-        {
-          favoritedBy: {
-            some: {
-              id: session?.user?.id!
-            }
-          }
-        },
+        // {
+        //   favoritedBy: {
+        //     some: {
+        //       id: session?.user?.id!
+        //     }
+        //   }
+        // },
         {
           isSystem: true
         }
