@@ -14,7 +14,7 @@ import useSWR from 'swr';
 import { deepmerge } from '@utils/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
 import { clearEmptyValues } from './clearEmptyValues';
-import defaultSidekick from '@utils/sidekicks/defaultPrompt';
+
 
 import {
   AnswersFilters,
@@ -150,7 +150,7 @@ export function AnswersProvider({
   const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
 
   const [journeyId, setJourneyId] = useState<string | undefined>(journey?.id);
-  const [sidekick, setSidekick] = useState(defaultSidekick);
+  const [sidekick, setSidekick] = useState();
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
   const messageIdx = useRef(0);
   const { mutateActiveUserPlan } = useUserPlans();

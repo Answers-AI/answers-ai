@@ -14,28 +14,30 @@ interface SidekickSelectProps {
 }
 
 const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectProps) => {
-  const [selectedSidekick, setSelectedSidekick] = useState<string>('');
+  const [selectedSidekick, setSelectedSidekick] = useState<number>(0);
 
   useEffect(() => {
     const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
     const lastUsedSidekick = sidekickHistory?.lastUsed;
-    const sidekick = sidekicks.find((s) => s.id === lastUsedSidekick) ?? sidekicks[0];
-    if (!sidekick) return;
-    setSelectedSidekick(sidekick.id);
-    onSidekickSelected(sidekick);
+    const sidekickIdx = sidekicks.findIndex((s) => s.id === lastUsedSidekick.id) ?? sidekicks[0];
+
+    if (sidekickIdx == -1) return;
+    setSelectedSidekick(sidekickIdx);
+    onSidekickSelected(sidekicks[sidekickIdx]);
   }, [sidekicks, onSidekickSelected]);
 
   const handleSidekickChange = (event: SelectChangeEvent<string>) => {
-    const sidekickValue = event.target.value;
-    setSelectedSidekick(sidekickValue);
+    const sidekickIdx = parseInt(event.target.value);
 
-    const curSidekick = sidekicks.find((s: Sidekick) => s?.id === sidekickValue);
+    setSelectedSidekick(sidekickIdx);
+
+    const curSidekick = sidekicks[sidekickIdx];
     if (curSidekick) {
       onSidekickSelected(curSidekick);
     }
 
     const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
-    sidekickHistory.lastUsed = sidekickValue;
+    sidekickHistory.lastUsed = curSidekick;
     Cookies.set('sidekickHistory', JSON.stringify(sidekickHistory));
   };
 
@@ -49,10 +51,10 @@ const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectPr
           id="sidekick-select"
           size="small"
           sx={{ 'boxShadow': 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
-          value={selectedSidekick ?? ''}
+          value={selectedSidekick?.toString()}
           onChange={handleSidekickChange}>
-          {sortedSidekicks.map((sidekick: Sidekick) => (
-            <MenuItem key={sidekick.id} value={sidekick.id}>
+          {sortedSidekicks.map((sidekick: Sidekick, idx: number) => (
+            <MenuItem key={sidekick.id} value={idx}>
               {sidekick.label}
             </MenuItem>
           ))}
