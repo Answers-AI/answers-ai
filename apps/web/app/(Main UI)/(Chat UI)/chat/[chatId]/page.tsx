@@ -20,7 +20,6 @@ const getMessages = async ({ chat, user }: { chat: Partial<Chat>; user: User }) 
       }
     });
     const messages = await result.json();
-    console.log({ chatflowDomain, id, messages });
     return messages;
   } catch (err) {
     console.log({ err });
@@ -53,7 +52,7 @@ const ChatDetailPage = async ({ params }: any) => {
     },
     include: {
       // prompt: true,
-      journey: true,
+      // journey: true,
       // messages: {
       //   include: {
       //     user: { select: { id: true, email: true, image: true, name: true } },

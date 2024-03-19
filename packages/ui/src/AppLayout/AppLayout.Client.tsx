@@ -54,7 +54,6 @@ export default function AppLayout({
                 style={{
                   width: '100%',
                   height: '100vh',
-                  paddingTop: '24px',
                   position: 'relative'
                 }}>
                 {children}

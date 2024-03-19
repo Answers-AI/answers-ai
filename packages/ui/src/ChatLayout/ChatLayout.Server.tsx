@@ -1,8 +1,5 @@
-import React from 'react';
-import { prisma } from '@db/client';
-
-import ChatLayout from './ChatLayout.Client';
-import getCachedSession from '../getCachedSession';
+import React, { Suspense } from 'react';
+import ChatDrawer from '../ChatDrawer.Server';
 
 export default async function ChatUILayout({
   // This will be populated with nested layouts or pages
@@ -14,62 +11,13 @@ export default async function ChatUILayout({
   chatId: string;
   journeyId: string;
 }) {
-  const session = await getCachedSession();
-
-  if (!session?.user?.email) return null;
-
-  const chatsPromise = prisma.chat
-    .findMany({
-      where: {
-        users: {
-          some: { email: session.user.email }
-        },
-        chatflowChatId: { not: null },
-        journeyId: null
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      include: {
-        prompt: true,
-        messages: { orderBy: { createdAt: 'desc' }, take: 1 }
-      }
-    })
-    .then((data: any) => JSON.parse(JSON.stringify(data)));
-
-  const journeysPromise = prisma.journey
-    .findMany({
-      where: {
-        users: {
-          some: { email: session.user.email }
-        }
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      include: {
-        chats: {
-          orderBy: {
-            createdAt: 'desc'
-          },
-          include: {
-            prompt: true,
-            messages: {
-              orderBy: {
-                createdAt: 'desc'
-              },
-              take: 1
-            }
-          }
-        }
-      }
-    })
-    .then((data: any) => JSON.parse(JSON.stringify(data)));
-
-  const [chats, journeys] = await Promise.all([chatsPromise, journeysPromise]);
   return (
-    <ChatLayout chats={chats} journeys={journeys} appSettings={session.user.appSettings}>
+    <main style={{ display: 'flex', width: '100%', height: '100%' }}>
+      <Suspense fallback="Loading...">
+        <ChatDrawer />
+      </Suspense>
+
       {children}
-    </ChatLayout>
+    </main>
   );
 }

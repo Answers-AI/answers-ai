@@ -1,6 +1,7 @@
+import { redirect } from 'next/navigation';
 import React from 'react';
 
-import Homepage from '@ui/Homepage';
+// import Homepage from '@ui/Homepage';
 
 export const metadata = {
   title: 'Answers AI',
@@ -9,7 +10,8 @@ export const metadata = {
 
 const HomepagePage = async ({ params }: any) => {
   // @ts-expect-error Async Server Component
-  return <Homepage />;
+  return redirect('/chat');
+  // return <Homepage />;
 };
 
 export default HomepagePage;
