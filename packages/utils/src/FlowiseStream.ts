@@ -70,6 +70,7 @@ async function query({
   socketIOClientId: string;
 }) {
   const { chatflow, chatflowDomain } = sidekick;
+  console.log('FlowiseQuery', `${chatflowDomain}/api/v1/prediction/${chatflow?.id}`);
   const response = await fetch(`${chatflowDomain}/api/v1/prediction/${chatflow?.id}`, {
     method: 'POST',
     headers: {

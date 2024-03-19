@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "private": true,
   "scripts": {
-    "dev": "dotenv -- turbo run dev dev-inngest dev-docker db:studio",
+    "dev": "dotenv -- turbo run dev-inngest dev-docker db:studio dev",
     "dev-docker": "docker-compose  -f \"./docker-compose.dev.yml\" up -d",
     "build": "dotenv -- turbo run build",
     "db": "dotenv -- pnpm --filter db prisma",

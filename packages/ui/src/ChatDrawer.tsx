@@ -156,7 +156,11 @@ export default function ChatDrawer({ journeys, chats, defaultOpen = true }: Chat
         <List disablePadding sx={{ flex: 1 }}>
           <ListItem disablePadding sx={{ flexDirection: 'row' }}>
             <ListItemText color="primary" primary={`Chats`} />
-            <IconButton href={`/chat`} component={NextLink} color="primary">
+            <IconButton
+              href={`/chat`}
+              component={NextLink}
+              color="primary"
+              onClick={handleDrawerClose}>
               <Add />
             </IconButton>
             <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
