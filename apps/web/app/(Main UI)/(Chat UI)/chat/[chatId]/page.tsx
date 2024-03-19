@@ -20,7 +20,7 @@ const getMessages = async ({ chat, user }: { chat: Partial<Chat>; user: User }) 
       }
     });
     const messages = await result.json();
-    return messages?.map((m) => ({
+    return messages?.map((m: any) => ({
       ...m,
       contextDocuments: m.sourceDocuments ? JSON.parse(m.sourceDocuments) : []
     }));
