@@ -146,11 +146,9 @@ export const AppDrawer = ({ session }: any) => {
             {drawerOpen &&
               item?.subMenu?.map((subItem) => (
                 <ListItem key={subItem.text} disablePadding sx={{ pl: 4 }}>
-                  <NextLink href={subItem.link} passHref>
-                    <ListItemButton component="a">
-                      <Typography>{subItem.text}</Typography>
-                    </ListItemButton>
-                  </NextLink>
+                  <ListItemButton component={NextLink} href={subItem.link}>
+                    <Typography>{subItem.text}</Typography>
+                  </ListItemButton>
                 </ListItem>
               ))}
           </React.Fragment>

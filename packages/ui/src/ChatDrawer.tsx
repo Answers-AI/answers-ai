@@ -153,8 +153,8 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
           </Button>
         </ListItem> */}
 
-        <List disablePadding sx={{ flex: 1 }}>
-          <ListItem disablePadding sx={{ flexDirection: 'row' }}>
+        <List disablePadding>
+          <ListItem disablePadding sx={{ flexDirection: 'row', px: 1 }}>
             <ListItemText color="primary" primary={`Chats`} />
             <IconButton
               href={`/chat`}
@@ -167,8 +167,6 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
               {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
             </IconButton>
           </ListItem>
-        </List>
-        <List disablePadding>
           {chats?.map((chat) => (
             <ListItem key={chat.id} disablePadding>
               <ListItemButton
