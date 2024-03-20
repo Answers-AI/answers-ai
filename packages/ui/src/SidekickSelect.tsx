@@ -19,7 +19,7 @@ const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectPr
   useEffect(() => {
     const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
     const lastUsedSidekick = sidekickHistory?.lastUsed;
-    const sidekickIdx = sidekicks.findIndex((s) => s.id === lastUsedSidekick.id) ?? sidekicks[0];
+    const sidekickIdx = sidekicks.findIndex((s) => s.id === lastUsedSidekick?.id) ?? 0;
 
     if (sidekickIdx == -1) return;
     setSelectedSidekick(sidekickIdx);

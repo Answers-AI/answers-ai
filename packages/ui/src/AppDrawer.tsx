@@ -138,17 +138,16 @@ export const AppDrawer = ({ session, chatList }: any) => {
                 <Typography>{item.text}</Typography>
               </ListItemButton>
             </ListItem>
-            {drawerOpen ? (
-              <Collapse in={submenuOpen === item?.text} timeout="auto">
-                {item?.subMenu?.map((subItem) => (
-                  <ListItem key={subItem.text} disablePadding sx={{ pl: 4 }}>
-                    <ListItemButton component={NextLink} href={subItem.link}>
-                      <Typography>{subItem.text}</Typography>
-                    </ListItemButton>
-                  </ListItem>
-                ))}
-              </Collapse>
-            ) : null}
+
+            <Collapse in={submenuOpen === item?.text} timeout="auto">
+              {item?.subMenu?.map((subItem) => (
+                <ListItem key={subItem.text} disablePadding sx={{ pl: 4 }}>
+                  <ListItemButton component={NextLink} href={subItem.link}>
+                    <Typography>{subItem.text}</Typography>
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </Collapse>
           </React.Fragment>
         ))}
 
