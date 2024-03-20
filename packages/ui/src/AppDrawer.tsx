@@ -190,8 +190,15 @@ export const AppDrawer = ({ session, chatList }: any) => {
         ))}
 
         <ListItem disablePadding sx={{ display: 'block' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', pl: 0.5 }}>
-            <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              pl: 0.5
+            }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Avatar
                 src={user?.image}
                 sx={{
