@@ -208,7 +208,15 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
           </IconButton> */}
         </ListItem>
         {chats?.map((chat) => (
-          <ListItem key={chat.id} disablePadding>
+          <ListItem
+            key={chat.id}
+            disablePadding
+            sx={{
+              'transition': '.2s',
+              '.MuiDrawer-closed &': {
+                opacity: 0
+              }
+            }}>
             <ListItemButton
               selected={pathname === `/chat/${chat.id}`}
               href={`/chat/${chat.id}`}
