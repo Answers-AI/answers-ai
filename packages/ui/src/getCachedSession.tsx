@@ -58,8 +58,7 @@ const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user: Use
         ...orgData
       },
       update: {
-        ...orgData,
-        organizationId: session.user.org_id
+        ...orgData
       }
     });
     session.user.id = user.id;
