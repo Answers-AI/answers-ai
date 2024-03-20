@@ -1,6 +1,8 @@
 import { Session } from '@auth0/nextjs-auth0';
 import AppLayoutClient from './AppLayout.Client';
 import { AppSettings } from 'types';
+import { Suspense } from 'react';
+import ChatDrawerServer from '@ui/ChatDrawer.Server';
 
 const AppLayoutServer = (props: {
   session?: Session;
@@ -12,7 +14,17 @@ const AppLayoutServer = (props: {
   };
   flagsmithState: any;
 }) => {
-  return <AppLayoutClient {...props} />;
+  return (
+    <AppLayoutClient
+      {...props}
+      chatList={
+        <Suspense fallback="">
+          {/* @ts-expect-error Server Component */}
+          <ChatDrawerServer />
+        </Suspense>
+      }
+    />
+  );
 };
 
 export default AppLayoutServer;

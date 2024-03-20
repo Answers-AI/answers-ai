@@ -92,7 +92,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
 
   return (
     <>
-      <DrawerHeader
+      {/* <DrawerHeader
         sx={{
           position: 'absolute',
           zIndex: 10,
@@ -102,9 +102,9 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
         <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
           {!open ? <Add /> : <ChevronLeftIcon />}
         </IconButton>
-      </DrawerHeader>
+      </DrawerHeader> */}
 
-      <Drawer
+      {/* <Drawer
         sx={{
           'flexShrink': 0,
           'zIndex': 1000,
@@ -120,8 +120,8 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
         }}
         variant="permanent"
         anchor="left"
-        open={open}>
-        {/* <DrawerHeader
+        open={open}> */}
+      {/* <DrawerHeader
           sx={{
             overflow: 'hidden',
             width: '100%',
@@ -142,7 +142,7 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
           </IconButton>
         </DrawerHeader> */}
 
-        {/* <ListItem sx={{ flexDirection: 'column' }} disablePadding>
+      {/* <ListItem sx={{ flexDirection: 'column' }} disablePadding>
           <Button
             href={`/chat`}
             component={NextLink}
@@ -153,32 +153,45 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
           </Button>
         </ListItem> */}
 
-        <List disablePadding>
-          <ListItem disablePadding sx={{ flexDirection: 'row', px: 1 }}>
-            <ListItemText color="primary" primary={`Chats`} />
-            <IconButton
-              href={`/chat`}
-              component={NextLink}
-              color="primary"
-              onClick={handleDrawerClose}>
-              <Add />
-            </IconButton>
-            <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
-              {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-            </IconButton>
+      <List disablePadding sx={{ py: 0 }}>
+        <ListItem
+          // disablePadding
+          sx={(theme) => ({
+            flexDirection: 'row',
+            px: 1,
+            position: 'sticky',
+            top: 0,
+            zIndex: 2,
+            bgcolor: 'background.paper'
+          })}>
+          <ListItemText color="primary" primary={`Chats`} />
+          <IconButton
+            href={`/chat`}
+            component={NextLink}
+            color="primary"
+            onClick={handleDrawerClose}>
+            <Add />
+          </IconButton>
+        </ListItem>
+        {chats?.map((chat) => (
+          <ListItem key={chat.id} disablePadding>
+            <ListItemButton
+              selected={pathname === `/chat/${chat.id}`}
+              href={`/chat/${chat.id}`}
+              component={NextLink}>
+              <ListItemText
+                secondary={chat.title}
+                sx={
+                  pathname === `/chat/${chat.id}`
+                    ? { '.MuiListItemText-secondary': { color: 'white' } }
+                    : {}
+                }
+              />
+            </ListItemButton>
           </ListItem>
-          {chats?.map((chat) => (
-            <ListItem key={chat.id} disablePadding>
-              <ListItemButton
-                selected={pathname === `/chat/${chat.id}`}
-                href={`/chat/${chat.id}`}
-                component={NextLink}>
-                <ListItemText primary={chat.title} secondary={chat?.messages?.[0]?.content} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
+        ))}
+      </List>
+      {/* </Drawer> */}
     </>
   );
 }

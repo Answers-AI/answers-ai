@@ -17,6 +17,7 @@ import { AppSettings } from 'types';
 
 export default function AppLayout({
   session,
+  chatList,
   params,
   children,
   flagsmithState
@@ -25,6 +26,7 @@ export default function AppLayout({
   appSettings: AppSettings;
   // providers: Record<string, ClientSafeProvider> | null;
   children: any;
+  chatList: any;
   params: {
     slug: string;
   };
@@ -42,7 +44,7 @@ export default function AppLayout({
         <GlobalStyles />
         {flagsmithState?.flags?.access_enabled?.enabled ? (
           <>
-            <AppDrawer params={params} session={session} />
+            <AppDrawer params={params} session={session} chatList={chatList} />
             <div
               style={{
                 flex: 1,
