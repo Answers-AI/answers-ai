@@ -45,7 +45,13 @@ export async function POST(req: Request) {
         })) as Sidekick);
 
     if (!sidekick) {
-      return new Response('Sidekick not found', { status: 404 });
+      return new Response(
+        JSON.stringify({
+          message: 'There was an error replying to your message. Please try again.',
+          code: 'Sidekick not found'
+        }),
+        { status: 404 }
+      );
     }
     const chat = await upsertChat({
       id: chatId,

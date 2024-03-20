@@ -19,7 +19,7 @@ const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectPr
   useEffect(() => {
     const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
     const lastUsedSidekick = sidekickHistory?.lastUsed;
-    const sidekickIdx = sidekicks.findIndex((s) => s.id === lastUsedSidekick?.id) ?? 0;
+    const sidekickIdx = sidekicks.findIndex((s) => s.id === lastUsedSidekick?.id);
 
     if (sidekickIdx == -1 || sidekicks?.length === 0) return;
     setSelectedSidekick(sidekickIdx);
@@ -28,9 +28,9 @@ const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectPr
 
   const handleSidekickChange = (event: SelectChangeEvent<string>) => {
     const sidekickIdx = parseInt(event.target.value);
+    const curSidekick = sidekicks[sidekickIdx];
 
     setSelectedSidekick(sidekickIdx);
-    const curSidekick = sidekicks[sidekickIdx];
     if (curSidekick) {
       onSidekickSelected(curSidekick);
     }
