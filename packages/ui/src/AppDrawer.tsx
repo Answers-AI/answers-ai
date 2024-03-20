@@ -20,6 +20,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import SmartToy from '@mui/icons-material/SmartToy';
 import AIIcon from '@mui/icons-material/SmartButton';
+import { usePathname } from 'next/navigation';
 
 const drawerWidth = 240;
 
@@ -117,6 +118,7 @@ export const AppDrawer = ({ session, chatList }: any) => {
   const user = session?.user;
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [submenuOpen, setSubmenuOpen] = useState('');
+  const pathname = usePathname();
   // Drawer style based on open state
   const drawerStyle = {
     width: drawerOpen ? drawerWidth : 0, // Adjust width based on state
@@ -166,10 +168,19 @@ export const AppDrawer = ({ session, chatList }: any) => {
               </ListItemButton>
             </ListItem>
 
-            <Collapse in={submenuOpen === item?.text} timeout="auto">
+            <Collapse
+              in={drawerOpen && submenuOpen === item?.text}
+              timeout="auto"
+              sx={{ transition: '.2s', opacity: drawerOpen ? 1 : 0 }}>
               {item?.subMenu?.map((subItem) => (
-                <ListItem key={subItem.text} disablePadding sx={{ pl: 4 }}>
-                  <ListItemButton component={NextLink} href={subItem.link}>
+                <ListItem
+                  key={subItem.text}
+                  disablePadding
+                  sx={{ pl: 4, transition: '.2s', opacity: drawerOpen ? 1 : 0 }}>
+                  <ListItemButton
+                    component={NextLink}
+                    href={subItem.link}
+                    selected={pathname === subItem.link}>
                     <Typography>{subItem.text}</Typography>
                   </ListItemButton>
                 </ListItem>
