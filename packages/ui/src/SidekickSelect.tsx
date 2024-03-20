@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Cookies from 'js-cookie';
 
 import Select from '@mui/material/Select';
@@ -13,24 +13,30 @@ interface SidekickSelectProps {
   sidekicks?: Sidekick[];
 }
 
-const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectProps) => {
+const SidekickSelect = ({
+  onSidekickSelected,
+  sidekicks: allSidekicks = []
+}: SidekickSelectProps) => {
   const [selectedSidekick, setSelectedSidekick] = useState<number>(0);
+  const sidekicks = useMemo(
+    () => [...allSidekicks].sort((a, b) => a.label.localeCompare(b.label)),
+    [allSidekicks]
+  );
 
   useEffect(() => {
     const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
     const lastUsedSidekick = sidekickHistory?.lastUsed;
     const sidekickIdx = sidekicks.findIndex((s) => s.id === lastUsedSidekick?.id);
     const curSidekick = sidekicks[sidekickIdx];
-    console.log('Effect', { sidekickIdx, curSidekick });
+
     if (sidekickIdx == -1 || sidekicks?.length === 0) return;
     setSelectedSidekick(sidekickIdx);
-    onSidekickSelected(sidekicks[sidekickIdx]);
+    onSidekickSelected(curSidekick);
   }, [sidekicks, onSidekickSelected]);
 
   const handleSidekickChange = (event: SelectChangeEvent<string>) => {
     const sidekickIdx = parseInt(event.target.value);
     const curSidekick = sidekicks[sidekickIdx];
-    console.log('handleSidekickChange', { sidekickIdx, curSidekick, value: event.target.value });
 
     setSelectedSidekick(sidekickIdx);
     if (curSidekick) {
@@ -42,8 +48,6 @@ const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectPr
     Cookies.set('sidekickHistory', JSON.stringify(sidekickHistory));
   };
 
-  const sortedSidekicks = [...sidekicks].sort((a, b) => a.label.localeCompare(b.label));
-
   return (
     <>
       <Fieldset legend="Sidekick">
@@ -54,7 +58,7 @@ const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectPr
           sx={{ 'boxShadow': 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
           value={selectedSidekick?.toString()}
           onChange={handleSidekickChange}>
-          {sortedSidekicks.map((sidekick: Sidekick, idx: number) => (
+          {sidekicks.map((sidekick: Sidekick, idx: number) => (
             <MenuItem key={sidekick.id} value={idx}>
               {sidekick.label}
             </MenuItem>
