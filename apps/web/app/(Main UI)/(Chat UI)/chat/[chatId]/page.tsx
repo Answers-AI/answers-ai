@@ -78,15 +78,7 @@ const ChatDetailPage = async ({ params }: any) => {
         //     }
         //   }
         // },
-        {
-          createdByUser: {
-            organizations: {
-              // User attached to the sidekick is in the same organization as the current user
-              some: { users: { some: { id: userId } } }
-            }
-          },
-          isSharedWithOrg: true
-        },
+        { organization: { id: user.org_id } },
         {
           isSystem: true
         }
