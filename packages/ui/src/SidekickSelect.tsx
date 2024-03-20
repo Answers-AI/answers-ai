@@ -21,7 +21,7 @@ const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectPr
     const lastUsedSidekick = sidekickHistory?.lastUsed;
     const sidekickIdx = sidekicks.findIndex((s) => s.id === lastUsedSidekick?.id) ?? 0;
 
-    if (sidekickIdx == -1) return;
+    if (sidekickIdx == -1 || sidekicks?.length === 0) return;
     setSelectedSidekick(sidekickIdx);
     onSidekickSelected(sidekicks[sidekickIdx]);
   }, [sidekicks, onSidekickSelected]);
@@ -30,7 +30,6 @@ const SidekickSelect = ({ onSidekickSelected, sidekicks = [] }: SidekickSelectPr
     const sidekickIdx = parseInt(event.target.value);
 
     setSelectedSidekick(sidekickIdx);
-
     const curSidekick = sidekicks[sidekickIdx];
     if (curSidekick) {
       onSidekickSelected(curSidekick);
