@@ -21,13 +21,13 @@ const ChatDetailPage = async ({ params }: any) => {
     where: {
       tags: { has: 'flowise' },
       OR: [
-        {
-          favoritedBy: {
-            some: {
-              id: userId
-            }
-          }
-        },
+        // {
+        //   favoritedBy: {
+        //     some: {
+        //       id: userId
+        //     }
+        //   }
+        // },
         {
           createdByUser: {
             organizations: {
