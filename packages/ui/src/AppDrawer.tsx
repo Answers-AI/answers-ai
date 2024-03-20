@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import NextLink from 'next/link';
 import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
@@ -12,7 +12,6 @@ import MuiDrawer from '@mui/material/Drawer';
 import ListItemIcon from '@mui/material/ListItemIcon';
 
 import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Collapse from '@mui/material/Collapse';
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
@@ -48,7 +47,7 @@ const menuConfig = [
       { text: 'Credentials', link: '/sidekick-studio/credentials' }
     ]
   },
-  { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
+  // { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
   {
     text: 'Settings',
     // link: '/settings',
@@ -70,10 +69,53 @@ const menuConfig = [
   //   ]
   // }
 ];
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    'width': drawerWidth,
+    'maxWidth': open ? drawerWidth : theme.spacing(7),
+    'flexShrink': 0,
+    'whiteSpace': 'nowrap',
+    'overflowX': 'hidden',
+    'transition': '.3s',
+    // 'transition': theme.transitions.create('width', {
+    //   easing: theme.transitions.easing.sharp,
+    //   duration: theme.transitions.duration.enteringScreen
+    // }),
+    ' .MuiDrawer-paper': {
+      transition: '.3s',
+      overflowY: 'hidden',
+      overflowX: 'hidden',
+      padding: 0,
+      width: drawerWidth
+    },
+    'p': {
+      transition: '.2s'
+    },
+    ...(open && {
+      '& .MuiDrawer-paper': {
+        transition: '.3s',
+        maxWidth: drawerWidth
+        // onMouseEnter: () => setDrawerOpen(true),
+        // onMouseLeave: () => setDrawerOpen(false)
+      }
+    }),
+    ...(!open && {
+      '& .MuiDrawer-paper': {
+        transition: '.3s',
+        maxWidth: theme.spacing(7),
+        p: {
+          opacity: 0
+        }
+        // onMouseEnter: () => setDrawerOpen(true),
+        // onMouseLeave: () => setDrawerOpen(false)
+      }
+    })
+  })
+);
 
 export const AppDrawer = ({ session, chatList }: any) => {
   const user = session?.user;
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(true);
   const [submenuOpen, setSubmenuOpen] = useState('');
   // Drawer style based on open state
   const drawerStyle = {
@@ -85,57 +127,42 @@ export const AppDrawer = ({ session, chatList }: any) => {
   };
 
   // Updated Drawer component to include onMouseEnter and onMouseLeave
-  const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-    ({ theme, open }) => ({
-      'width': open ? drawerWidth : theme.spacing(7),
-      'flexShrink': 0,
-      'whiteSpace': 'nowrap',
-      'transition': theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen
-      }),
-      '& .MuiDrawer-paper': {
-        overflowY: 'hidden'
-      },
-      ...(open && {
-        'width': drawerWidth,
-        '& .MuiDrawer-paper': {
-          width: drawerWidth
-          // onMouseEnter: () => setDrawerOpen(true),
-          // onMouseLeave: () => setDrawerOpen(false)
-        }
-      }),
-      ...(!open && {
-        '& .MuiDrawer-paper': {
-          width: theme.spacing(7)
-          // onMouseEnter: () => setDrawerOpen(true),
-          // onMouseLeave: () => setDrawerOpen(false)
-        }
-      })
-    })
-  );
 
   return (
     <Drawer
       open={drawerOpen}
       variant="permanent"
       onMouseEnter={() => setDrawerOpen(true)}
-      onMouseLeave={() => setDrawerOpen(false)}>
+      onMouseLeave={() => setDrawerOpen(false)}
+      className={drawerOpen ? 'MuiDrawer-open' : 'MuiDrawer-closed'}
+      sx={{}}>
       {/* <DrawerHeader sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <NextLink href="/">
           <Avatar sx={{ objectFit: 'contain' }}>AI</Avatar>
         </NextLink>
       </DrawerHeader> */}
-      <Box sx={{ flex: 1, overflowY: 'auto' }}>{chatList}</Box>
+      <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>{chatList}</Box>
 
       <List sx={{ display: 'flex', flexDirection: 'column' }} disablePadding>
         {menuConfig.map((item) => (
           <React.Fragment key={item.text}>
             <ListItem disablePadding>
               <ListItemButton
+                sx={{ flex: 1, display: 'flex', width: '100%' }}
                 onClick={() => setSubmenuOpen(item.text == submenuOpen ? '' : item.text)}>
                 <ListItemIcon>{item.icon}</ListItemIcon>
-                <Typography>{item.text}</Typography>
+                <Typography
+                  sx={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    textTransform: 'capitalize',
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: '1',
+                    flex: '1'
+                  }}>
+                  {item.text}
+                </Typography>
               </ListItemButton>
             </ListItem>
 
@@ -152,41 +179,30 @@ export const AppDrawer = ({ session, chatList }: any) => {
         ))}
 
         <ListItem disablePadding sx={{ display: 'block' }}>
-          <Tooltip
-            title={
-              <Typography variant="body2">
-                {user?.name}
-                <br />
-                {user?.email}
-                <br />
-                {user?.org_name}
-              </Typography>
-            }>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', pl: 1 }}>
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Avatar
-                  src={user?.image}
-                  sx={{
-                    bgcolor: 'secondary.main',
-                    height: '32px',
-                    width: '32px'
-                  }}
-                />
-                <Box>
-                  <Typography variant="body2">{user?.name}</Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    {user?.org_name}
-                  </Typography>
-                </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', pl: 0.5 }}>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Avatar
+                src={user?.image}
+                sx={{
+                  bgcolor: 'secondary.main',
+                  height: '32px',
+                  width: '32px'
+                }}
+              />
+              <Box>
+                <Typography variant="body2">{user?.name}</Typography>
+                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  {user?.org_name}
+                </Typography>
               </Box>
-              <IconButton
-                aria-label={'sign out'}
-                href="/api/auth/logout"
-                sx={{ minHeight: 48, width: 48, justifyContent: 'center' }}>
-                <ExitToAppIcon />
-              </IconButton>
             </Box>
-          </Tooltip>
+            <IconButton
+              aria-label={'sign out'}
+              href="/api/auth/logout"
+              sx={{ minHeight: 48, width: 48, justifyContent: 'center' }}>
+              <ExitToAppIcon />
+            </IconButton>
+          </Box>
         </ListItem>
       </List>
     </Drawer>

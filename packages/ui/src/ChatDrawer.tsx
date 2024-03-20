@@ -18,6 +18,7 @@ import closedMixin from './theme/closedMixin';
 import openedMixin from './theme/openedMixin';
 
 import { Chat, Journey } from 'types';
+import { Box, Button } from '@mui/material';
 
 const drawerWidth = 400;
 
@@ -153,25 +154,58 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
           </Button>
         </ListItem> */}
 
-      <List disablePadding sx={{ py: 0 }}>
+      <List disablePadding>
         <ListItem
-          // disablePadding
+          disablePadding
           sx={(theme) => ({
             flexDirection: 'row',
-            px: 1,
+            px: 0,
+            py: 1,
             position: 'sticky',
             top: 0,
             zIndex: 2,
             bgcolor: 'background.paper'
           })}>
-          <ListItemText color="primary" primary={`Chats`} />
+          <Button
+            href={`/chat`}
+            variant="outlined"
+            onClick={handleDrawerClose}
+            component={NextLink}
+            endIcon={<Add />}
+            fullWidth
+            sx={{
+              'minWidth': 0,
+              'textTransform': 'capitalize',
+              'justifyContent': 'space-between',
+              '.MuiDrawer-closed & .MuiButton-endIcon': {
+                margin: 0
+              }
+            }}>
+            <Box
+              component="span"
+              sx={{
+                'overflow': 'hidden',
+                'transition': '.2s',
+                'maxWidth': '240px',
+
+                '.MuiDrawer-closed &': {
+                  maxWidth: '0',
+                  opacity: 0
+                  // display: 'none'
+                }
+              }}>
+              New chat
+            </Box>
+          </Button>
+
+          {/* <ListItemText color="primary" primary={`Chats`} />
           <IconButton
             href={`/chat`}
             component={NextLink}
             color="primary"
             onClick={handleDrawerClose}>
             <Add />
-          </IconButton>
+          </IconButton> */}
         </ListItem>
         {chats?.map((chat) => (
           <ListItem key={chat.id} disablePadding>

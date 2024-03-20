@@ -72,12 +72,12 @@ export const ChatDetail = ({
             width: '100%',
             height: '100%',
             flex: 1,
-            justifyContent: 'space-between',
-            borderLeft: '1px solid rgba(255, 255, 255, 0.12)'
+            justifyContent: 'space-between'
+            // borderLeft: '1px solid rgba(255, 255, 255, 0.12)'
           }}>
           <AppBar
             position="static"
-            sx={{ paddingLeft: 4, borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}
+            sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}
             color={'transparent'}
             elevation={0}>
             <Toolbar>
