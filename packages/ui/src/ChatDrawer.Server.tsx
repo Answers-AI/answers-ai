@@ -16,6 +16,7 @@ const ChatDrawerServer = async () => {
         users: {
           some: { email: session.user.email }
         },
+        organization: { id: session.user.organizationId! },
         chatflowChatId: { not: null },
         journeyId: null
       },
