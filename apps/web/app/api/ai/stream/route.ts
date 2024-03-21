@@ -53,6 +53,12 @@ export async function POST(req: Request) {
         { status: 404 }
       );
     }
+
+    console.log('POST /api/ai/stream', {
+      user: user.email,
+      organzation: user.organizationId,
+      sidekickId
+    });
     const chat = await upsertChat({
       id: chatId,
       user,
@@ -63,7 +69,7 @@ export async function POST(req: Request) {
     });
     const { accessToken } = await auth0.getAccessToken();
     if (!accessToken) throw new Error('No access token found');
-    console.log('POST /api/ai/stream');
+
     const stream = await getFlowisePredictionStream({
       chat,
       sidekick,

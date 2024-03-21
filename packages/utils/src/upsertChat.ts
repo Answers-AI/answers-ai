@@ -15,7 +15,7 @@ export async function upsertChat({
   filters?: object;
   prompt: string;
   journeyId?: string;
-  sidekick?: Sidekick | null;
+  sidekick: Sidekick;
 }) {
   const journey = await (!journeyId
     ? null
@@ -23,7 +23,13 @@ export async function upsertChat({
         where: { id: journeyId },
         data: { filters, users: { connect: { email: user.email! } } }
       }));
-
+  console.log('UpsertChat', {
+    id,
+    user,
+    sidekick: sidekick.id,
+    organization: user.organizationId,
+    prompt
+  });
   const chatProperties = {
     title: prompt,
     users: {
@@ -32,7 +38,8 @@ export async function upsertChat({
       }
     },
     filters: filters,
-    ...(journey ? { journeyId: journey.id } : null)
+    ...(journey ? { journeyId: journey.id } : null),
+    organzation: { connect: { id: user.organizationId } }
     // messages: {
     //   create: {
     //     role: 'user',
@@ -48,10 +55,9 @@ export async function upsertChat({
     chat = await prisma.chat.create({
       data: {
         ...chatProperties,
-        organizationId: user.organizationId,
         ownerId: user.id
-      },
-      include: { journey: true }
+      }
+      // include: { journey: true }
     });
   } else {
     chat = await prisma.chat.update({

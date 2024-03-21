@@ -20,8 +20,15 @@ export const getFlowisePredictionStream = async ({
   try {
     const stream = new ReadableStream({
       async start(controller) {
+        // TODO: Figure out a better way to do this
+        if (process.env.NODE_ENV === 'development')
+          // @ts-ignore
+          sidekick.chatflowDomain = sidekick.chatflowDomain?.replace('8080', '4000');
+
         const socket = socketIOClient(sidekick.chatflowDomain!); //flowise url
+        console.log('SocketIO->start', sidekick.chatflowDomain);
         socket.on('connect', async () => {
+          console.log('SocketIO->connect', sidekick.chatflowDomain);
           const chatflowChat = await query({
             sidekick,
             accessToken,
@@ -44,9 +51,9 @@ export const getFlowisePredictionStream = async ({
             )
           );
           onEnd &&
-            onEnd({
+            (await onEnd({
               ...chatflowChat
-            });
+            }));
           controller.close();
         });
         socket.on('start', () => {
@@ -92,6 +99,12 @@ async function query({
     },
     body: JSON.stringify({ ...body, socketIOClientId })
   });
+  console.log(
+    'FlowiseQuery->ended',
+    response.ok,
+    `${chatflowDomain}/api/v1/prediction/${chatflow?.id}`
+  );
+
   if (response.ok) {
     const result = await response.json();
     return result;

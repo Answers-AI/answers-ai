@@ -9,14 +9,12 @@ export async function POST(req: Request) {
   const res = new Response();
 
   const session = await getCachedSession(req, res);
-  console.log('Session:', session);
   if (!session?.user) return respond401();
 
   const userId = session.user.id;
 
   const data: Pick<Sidekick, 'chatflow' | 'chatflowDomain' | 'chatflowApiKey'> = await req.json();
-
-  console.log('New sidekick data', data.chatflow?.name, userId);
+  console.log('New sidekick data', data.chatflow.name, userId, session.user.organizationId);
   try {
     if (!data.chatflow) throw new Error('No chatflow provided');
     const sidekickData = {
@@ -26,7 +24,10 @@ export async function POST(req: Request) {
       label: data?.chatflow?.name,
       isSharedWithOrg: true,
       aiModel: 'flowise',
-      tags: ['flowise']
+      tags: ['flowise'],
+      organization: {
+        connect: { id: session.user?.organizationId! }
+      }
     };
     const sidekick = await prisma.sidekick.upsert({
       where: {

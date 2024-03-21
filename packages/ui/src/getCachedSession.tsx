@@ -64,6 +64,12 @@ const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user: Use
     session.user.id = user.id;
     session.user.organizationId = user.organizationId;
   }
+  console.log(
+    'Session:',
+    session.user.email,
+    session.user.organizationId,
+    session.user.chatflowDomain
+  );
   return session as { user: User };
 });
 
