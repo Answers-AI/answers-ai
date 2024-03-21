@@ -3,22 +3,20 @@ import React, { useState, useEffect, useRef, ChangeEvent, useCallback } from 're
 
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Select from '@mui/material/Select';
 import type { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import Tooltip from '@mui/material/Tooltip';
 
 import { useAnswers } from './AnswersContext';
 import SidekickSelect from './SidekickSelect';
-import Fieldset from './Fieldset';
+// import Fieldset from './Fieldset';
 
 import { debounce } from '@utils/debounce';
 
 import type { Sidekick } from 'types';
-import { RemainingTokensCounter } from './RemainingTokensCounter';
-import { useUserPlans } from './hooks/useUserPlan';
+// import { RemainingTokensCounter } from './RemainingTokensCounter';
+// import { useUserPlans } from './hooks/useUserPlan';
 
 const ChatInput = ({
   scrollRef,
@@ -33,7 +31,7 @@ const ChatInput = ({
   const [inputValue, setInputValue] = useState('');
   const [placeholder, setPlaceholder] = useState(defaultPlaceholderValue);
 
-  const { activeUserPlan } = useUserPlans();
+  // const { activeUserPlan } = useUserPlans();
 
   const {
     chat,
@@ -70,6 +68,7 @@ const ChatInput = ({
   };
 
   const handleSidekickSelected = useCallback((value: Sidekick) => {
+    console.log('SetSidekick', value);
     setPlaceholder(value?.placeholder ?? defaultPlaceholderValue);
     setSidekick(value);
     if (value.aiModel) {

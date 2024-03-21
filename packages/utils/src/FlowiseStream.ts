@@ -30,21 +30,22 @@ export const getFlowisePredictionStream = async ({
 
         const socket = socketIOClient(sidekick.chatflowDomain!); //flowise url
 
-        // socket.on('start', () => {
-        //   console.log('SocketIO->start');
-        // });
+        socket.on('start', () => {
+          console.log('SocketIO->start');
+        });
 
         socket.on('token', (token) => {
           controller.enqueue(encoder.encode(token));
         });
 
-        // socket.on('sourceDocuments', (sourceDocuments) => {
-        //   console.log('SocketIO->sourceDocuments:', sourceDocuments?.length);
-        // });
+        socket.on('sourceDocuments', (sourceDocuments) => {
+          console.log('SocketIO->sourceDocuments:', sourceDocuments?.length);
+        });
 
-        // socket.on('end', () => {
-        //   console.log('SocketIO->end');
-        // });
+        socket.on('end', () => {
+          console.log('SocketIO->end');
+        });
+
         socket.on('connect', async () => {
           console.log('SocketIO->connect', sidekick.chatflowDomain);
           const chatflowChat = await query({
@@ -53,6 +54,7 @@ export const getFlowisePredictionStream = async ({
             socketIOClientId: socket.id!,
             body
           });
+          console.log('SocketIO->finished');
           extra = { ...extra, ...chatflowChat, contextDocuments: chatflowChat?.sourceDocuments };
           if (onEnd) {
             const endResult = await onEnd(extra);
