@@ -15,7 +15,6 @@ import { deepmerge } from '@utils/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
 import { clearEmptyValues } from './clearEmptyValues';
 
-
 import {
   AnswersFilters,
   AppSettings,
@@ -180,15 +179,19 @@ export function AnswersProvider({
         return newMessages;
       });
     },
-    onEnd: ({ chat }) => {
+    onEnd: ({ chat, ...rest }) => {
       // Check if the current route is the chat
-      const { id } = chat as Chat;
-      setIsLoading(false);
-      if (id) {
-        setChatId(id);
-        history.replaceState(null, '', `/chat/${id}`);
+      if (chat) {
+        const { id } = chat as Chat;
+        setIsLoading(false);
+        if (id) {
+          setChatId(id);
+          history.replaceState(null, '', `/chat/${id}`);
+        }
+        mutateActiveUserPlan();
+      } else {
+        console.log('NoChatOnEnd', { chat, ...rest });
       }
-      mutateActiveUserPlan();
     }
   });
   const [chatId, setChatId] = useState<string | undefined>(initialChat?.id);
