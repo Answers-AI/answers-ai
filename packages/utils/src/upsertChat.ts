@@ -38,8 +38,8 @@ export async function upsertChat({
       }
     },
     filters: filters,
-    ...(journey ? { journeyId: journey.id } : null),
-    organization: { connect: { id: user.organizationId! } }
+    ...(journey ? { journeyId: journey.id } : null)
+    // organization: { connect: { id: user.organizationId! } }
     // messages: {
     //   create: {
     //     role: 'user',
@@ -57,7 +57,8 @@ export async function upsertChat({
       // @ts-ignore
       data: {
         ...chatProperties,
-        ownerId: user.id
+        owner: { connect: { id: user.id } },
+        organization: { connect: { id: user.organizationId } }
       }
       // include: { journey: true }
     });
