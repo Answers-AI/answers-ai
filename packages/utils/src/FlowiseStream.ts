@@ -11,13 +11,16 @@ export const getFlowisePredictionStream = async ({
   sidekick: Sidekick;
   body: any;
   accessToken: string;
-  onEnd: (extra: any) => void;
+  onEnd: (extra: any) => any;
 }) => {
   let answer = '';
   // let message;
   const encoder = new TextEncoder();
-  const decoder = new TextDecoder();
   try {
+    let extra = {
+      chat,
+      role: 'assistant'
+    };
     const stream = new ReadableStream({
       async start(controller) {
         // TODO: Figure out a better way to do this
@@ -26,7 +29,22 @@ export const getFlowisePredictionStream = async ({
           sidekick.chatflowDomain = sidekick.chatflowDomain?.replace('8080', '4000');
 
         const socket = socketIOClient(sidekick.chatflowDomain!); //flowise url
-        console.log('SocketIO->start', sidekick.chatflowDomain);
+
+        // socket.on('start', () => {
+        //   console.log('SocketIO->start');
+        // });
+
+        socket.on('token', (token) => {
+          controller.enqueue(encoder.encode(token));
+        });
+
+        // socket.on('sourceDocuments', (sourceDocuments) => {
+        //   console.log('SocketIO->sourceDocuments:', sourceDocuments?.length);
+        // });
+
+        // socket.on('end', () => {
+        //   console.log('SocketIO->end');
+        // });
         socket.on('connect', async () => {
           console.log('SocketIO->connect', sidekick.chatflowDomain);
           const chatflowChat = await query({
@@ -35,41 +53,14 @@ export const getFlowisePredictionStream = async ({
             socketIOClientId: socket.id!,
             body
           });
-
-          controller.enqueue(
-            encoder.encode(
-              'JSON_START' +
-                JSON.stringify({
-                  ...chatflowChat,
-                  chat,
-                  // id: message.id,
-                  // contextDocuments: message.contextDocuments,
-                  contextDocuments: chatflowChat?.sourceDocuments,
-                  role: 'assistant'
-                }) +
-                'JSON_END'
-            )
-          );
-          onEnd &&
-            (await onEnd({
-              ...chatflowChat
-            }));
+          extra = { ...extra, ...chatflowChat, contextDocuments: chatflowChat?.sourceDocuments };
+          if (onEnd) {
+            const endResult = await onEnd(extra);
+            extra = { ...extra, ...endResult };
+          }
+          controller.enqueue(encoder.encode('JSON_START' + JSON.stringify(extra) + 'JSON_END'));
           controller.close();
-        });
-        socket.on('start', () => {
-          console.log('start');
-        });
-
-        socket.on('token', (token) => {
-          controller.enqueue(encoder.encode(token));
-        });
-
-        socket.on('sourceDocuments', (sourceDocuments) => {
-          console.log('sourceDocuments:', sourceDocuments?.length);
-        });
-
-        socket.on('end', () => {
-          console.log('end');
+          socket.disconnect();
         });
       }
     });
