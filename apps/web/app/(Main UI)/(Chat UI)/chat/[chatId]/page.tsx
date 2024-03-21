@@ -12,13 +12,17 @@ const getMessages = async ({ chat, user }: { chat: Partial<Chat>; user: User }) 
     const { id, chatflowChatId } = chat;
     const { accessToken } = await auth0.getAccessToken();
     const { chatflowDomain } = user;
+    if (!chatflowChatId) return [];
 
-    const result = await fetch(chatflowDomain + `/api/v1/chatmessage?chatId=${chatflowChatId}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
+    const result = await fetch(
+      chatflowDomain?.replace('8080', '4000') + `/api/v1/chatmessage?chatId=${chatflowChatId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        }
       }
-    });
+    );
     const messages = await result.json();
     return messages?.map((m: any) => ({
       ...m,
