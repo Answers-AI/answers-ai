@@ -83,11 +83,16 @@ export async function POST(req: Request) {
         }))
       },
       onEnd: async (result: any) => {
-        await prisma.chat.update({
-          where: { id: chat.id },
-          data: { chatflowChatId: result.chatId },
-          include: { journey: true }
-        });
+        console.log('End', result);
+        try {
+          await prisma.chat.update({
+            where: { id: chat.id },
+            data: { chatflowChatId: result.chatId },
+            include: { journey: true }
+          });
+        } catch (err) {
+          console.log('ErrorOnEnd', err);
+        }
       }
     });
     return new Response(stream, {
