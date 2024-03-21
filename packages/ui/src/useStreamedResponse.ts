@@ -40,73 +40,78 @@ export const useStreamedResponse = ({
     sidekick,
     gptModel
   }: GenerateResponseArgs) => {
-    setGeneratedResponse('');
-    setIsStreaming(true);
+    try {
+      setGeneratedResponse('');
+      setIsStreaming(true);
 
-    const response = await fetch(`${apiUrl || '/api'}/ai/stream`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        journeyId,
-        chatId,
-        prompt: content,
-        filters,
-        messages: parseMessages(messages),
-        sidekick: sidekick, // Add sidekick parameter
-        gptModel // Add gptModel parameter
-      })
-    });
+      const response = await fetch(`${apiUrl || '/api'}/ai/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          journeyId,
+          chatId,
+          prompt: content,
+          filters,
+          messages: parseMessages(messages),
+          sidekick: sidekick, // Add sidekick parameter
+          gptModel // Add gptModel parameter
+        })
+      });
 
-    if (!response.ok) {
-      const body = await response.json();
+      if (!response.ok) {
+        const body = await response.json();
+        setGeneratedResponse({});
+        setIsStreaming(false);
+
+        if (body.code) {
+          return onError(body);
+        } else {
+          return onError({ code: response.statusText });
+        }
+      }
+
+      const data = response.body;
+      if (!data) {
+        return;
+      }
+      const reader = data.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+      let extra: any;
+      let answer = '';
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        const chunkValue = decoder.decode(value);
+        answer = (answer || '') + chunkValue;
+        // console.log('Chunk', { value, chunkValue, answer });
+        if (!extra) {
+          let [currentAnswer, jsonData] = answer.split('JSON_START');
+          if (jsonData) {
+            jsonData = jsonData?.replace('JSON_END', '');
+            try {
+              extra = JSON.parse(jsonData);
+              // if (extra.chat) setChat(extra.chat);
+            } catch (e) {
+              console.log('ParseError', e);
+            }
+            answer = currentAnswer;
+          }
+          onChunk({ role: 'assistant', ...extra, content: answer });
+        } else {
+          onChunk({ role: 'assistant', ...extra, content: answer });
+        }
+      }
       setGeneratedResponse({});
       setIsStreaming(false);
-
-      if (body.code) {
-        return onError(body);
-      } else {
-        return onError({ code: response.statusText });
-      }
+      onEnd({ role: 'assistant', content, ...extra });
+    } catch (error) {
+      setIsStreaming(false);
+      onError(error);
     }
-
-    const data = response.body;
-    if (!data) {
-      return;
-    }
-    const reader = data.getReader();
-    const decoder = new TextDecoder();
-    let done = false;
-    let extra: any;
-    let answer = '';
-
-    while (!done) {
-      const { value, done: doneReading } = await reader.read();
-      done = doneReading;
-      const chunkValue = decoder.decode(value);
-      answer = (answer || '') + chunkValue;
-      // console.log('Chunk', { value, chunkValue, answer });
-      if (!extra) {
-        let [currentAnswer, jsonData] = answer.split('JSON_START');
-        if (jsonData) {
-          jsonData = jsonData?.replace('JSON_END', '');
-          try {
-            extra = JSON.parse(jsonData);
-            // if (extra.chat) setChat(extra.chat);
-          } catch (e) {
-            console.log('ParseError', e);
-          }
-          answer = currentAnswer;
-        }
-        onChunk({ role: 'assistant', ...extra, content: answer });
-      } else {
-        onChunk({ role: 'assistant', ...extra, content: answer });
-      }
-    }
-    setGeneratedResponse({});
-    setIsStreaming(false);
-    onEnd({ role: 'assistant', content, ...extra });
   };
 
   return { isStreaming, generatedResponse, generateResponse };
