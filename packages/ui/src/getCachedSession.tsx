@@ -36,7 +36,7 @@ const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user: Use
     }
   }
   // Redirect to auth0 login
-  if (!session) return null;
+  if (!session) return {};
 
   const orgData = {
     organizations: {
