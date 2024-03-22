@@ -36,7 +36,6 @@ export const getFlowisePredictionStream = async ({
           // });
 
           socket.on('token', (token) => {
-            console.log('Token', token);
             try {
               controller.enqueue(encoder.encode(token));
             } catch (err) {
@@ -53,14 +52,13 @@ export const getFlowisePredictionStream = async ({
           // });
 
           socket.on('connect', async () => {
-            console.log('SocketIO->connect', sidekick.chatflowDomain);
             const chatflowChat = await query({
               sidekick,
               accessToken,
               socketIOClientId: socket.id!,
               body
             });
-            console.log('SocketIO->finished');
+
             extra = { ...extra, ...chatflowChat, contextDocuments: chatflowChat?.sourceDocuments };
             try {
               if (onEnd) {
@@ -106,11 +104,6 @@ async function query({
     },
     body: JSON.stringify({ ...body, socketIOClientId })
   });
-  console.log(
-    'FlowiseQuery->ended',
-    response.ok,
-    `${chatflowDomain}/api/v1/prediction/${chatflow?.id}`
-  );
 
   if (response.ok) {
     const result = await response.json();
