@@ -147,7 +147,10 @@ export const AppDrawer = ({ session, chatList }: any) => {
 
       <List sx={{ display: 'flex', flexDirection: 'column' }} disablePadding>
         {menuConfig.map((item) => (
-          <React.Fragment key={item.text}>
+          <Box
+            key={item.text}
+            onMouseEnter={() => setSubmenuOpen(item.text)}
+            onMouseLeave={() => setSubmenuOpen('')}>
             <ListItem disablePadding>
               <ListItemButton
                 sx={{ flex: 1, display: 'flex', width: '100%' }}
@@ -169,7 +172,11 @@ export const AppDrawer = ({ session, chatList }: any) => {
             </ListItem>
 
             <Collapse
-              in={drawerOpen && submenuOpen === item?.text}
+              in={
+                drawerOpen &&
+                (submenuOpen === item?.text ||
+                  item?.subMenu?.some((subItem) => pathname === subItem.link))
+              }
               timeout="auto"
               sx={{ transition: '.2s', opacity: drawerOpen ? 1 : 0 }}>
               {item?.subMenu?.map((subItem) => (
@@ -186,7 +193,7 @@ export const AppDrawer = ({ session, chatList }: any) => {
                 </ListItem>
               ))}
             </Collapse>
-          </React.Fragment>
+          </Box>
         ))}
 
         <ListItem disablePadding sx={{ display: 'block' }}>

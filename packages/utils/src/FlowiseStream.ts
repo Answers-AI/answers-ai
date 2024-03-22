@@ -23,51 +23,65 @@ export const getFlowisePredictionStream = async ({
     };
     const stream = new ReadableStream({
       async start(controller) {
-        // TODO: Figure out a better way to do this
-        if (process.env.NODE_ENV === 'development')
-          // @ts-ignore
-          sidekick.chatflowDomain = sidekick.chatflowDomain?.replace('8080', '4000');
+        try {
+          // TODO: Figure out a better way to do this
+          if (process.env.NODE_ENV === 'development')
+            // @ts-ignore
+            sidekick.chatflowDomain = sidekick.chatflowDomain?.replace('8080', '4000');
 
-        const socket = socketIOClient(sidekick.chatflowDomain!); //flowise url
+          const socket = socketIOClient(sidekick.chatflowDomain!); //flowise url
 
-        socket.on('start', () => {
-          console.log('SocketIO->start');
-        });
+          // socket.on('start', () => {
+          //   console.log('SocketIO->start');
+          // });
 
-        socket.on('token', (token) => {
-          controller.enqueue(encoder.encode(token));
-        });
-
-        socket.on('sourceDocuments', (sourceDocuments) => {
-          console.log('SocketIO->sourceDocuments:', sourceDocuments?.length);
-        });
-
-        socket.on('end', () => {
-          console.log('SocketIO->end');
-        });
-
-        socket.on('connect', async () => {
-          console.log('SocketIO->connect', sidekick.chatflowDomain);
-          const chatflowChat = await query({
-            sidekick,
-            accessToken,
-            socketIOClientId: socket.id!,
-            body
+          socket.on('token', (token) => {
+            console.log('Token', token);
+            try {
+              controller.enqueue(encoder.encode(token));
+            } catch (err) {
+              console.log('ErrorSendingToken', err);
+            }
           });
-          console.log('SocketIO->finished');
-          extra = { ...extra, ...chatflowChat, contextDocuments: chatflowChat?.sourceDocuments };
-          if (onEnd) {
-            const endResult = await onEnd(extra);
-            extra = { ...extra, ...endResult };
-          }
-          controller.enqueue(encoder.encode('JSON_START' + JSON.stringify(extra) + 'JSON_END'));
-          controller.close();
-          socket.disconnect();
-        });
+
+          // socket.on('sourceDocuments', (sourceDocuments) => {
+          //   console.log('SocketIO->sourceDocuments:', sourceDocuments?.length);
+          // });
+
+          // socket.on('end', () => {
+          //   console.log('SocketIO->end');
+          // });
+
+          socket.on('connect', async () => {
+            console.log('SocketIO->connect', sidekick.chatflowDomain);
+            const chatflowChat = await query({
+              sidekick,
+              accessToken,
+              socketIOClientId: socket.id!,
+              body
+            });
+            console.log('SocketIO->finished');
+            extra = { ...extra, ...chatflowChat, contextDocuments: chatflowChat?.sourceDocuments };
+            try {
+              if (onEnd) {
+                const endResult = await onEnd(extra);
+                extra = { ...extra, ...endResult };
+              }
+            } catch (err) {
+              console.log('FlowisePredictionError->OnEnd', err);
+            }
+            controller.enqueue(encoder.encode('JSON_START' + JSON.stringify(extra) + 'JSON_END'));
+            controller.close();
+            socket.disconnect();
+          });
+        } catch (err) {
+          console.log('StreamStartError', err);
+        }
       }
     });
     return stream;
   } catch (err) {
+    console.log('FlowisePredictionError', err);
     throw err;
   }
 };

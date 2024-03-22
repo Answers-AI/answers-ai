@@ -26,7 +26,7 @@ import {
   User,
   MessageFeedback
 } from 'types';
-import { useUserPlans } from './hooks/useUserPlan';
+// import { useUserPlans } from './hooks/useUserPlan';
 
 interface AnswersContextType {
   user: User;
@@ -152,7 +152,7 @@ export function AnswersProvider({
   const [sidekick, setSidekick] = useState();
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
   const messageIdx = useRef(0);
-  const { mutateActiveUserPlan } = useUserPlans();
+  // const { mutateActiveUserPlan } = useUserPlans();
 
   const { isStreaming, generateResponse } = useStreamedResponse({
     apiUrl,
@@ -183,15 +183,15 @@ export function AnswersProvider({
       // Check if the current route is the chat
       if (chat) {
         const { id } = chat as Chat;
-        setIsLoading(false);
         if (id) {
           setChatId(id);
           history.replaceState(null, '', `/chat/${id}`);
         }
-        mutateActiveUserPlan();
+        // mutateActiveUserPlan();
       } else {
         console.log('NoChatOnEnd', { chat, ...rest });
       }
+      setIsLoading(false);
     }
   });
   const [chatId, setChatId] = useState<string | undefined>(initialChat?.id);
@@ -333,12 +333,12 @@ export function AnswersProvider({
           setJourneyId(data?.chat.journeyId);
           addMessage(data);
           setIsLoading(false);
-          mutateActiveUserPlan();
+          // mutateActiveUserPlan();
         }
       } catch (err: any) {
         setError(err);
         setIsLoading(false);
-        mutateActiveUserPlan();
+        // mutateActiveUserPlan();
       }
     },
     [
@@ -353,8 +353,8 @@ export function AnswersProvider({
       setChatId,
       setJourneyId,
       setError,
-      setIsLoading,
-      mutateActiveUserPlan
+      setIsLoading
+      // mutateActiveUserPlan
     ]
   );
 
