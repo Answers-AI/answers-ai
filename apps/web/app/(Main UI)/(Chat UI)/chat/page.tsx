@@ -15,7 +15,7 @@ export const metadata = {
 const ChatDetailPage: any = auth0.withPageAuthRequired(async ({ params }: any) => {
   const session = await getCachedSession();
   const user = session?.user;
-
+  if (!user) return null;
   const dbSidekicks = await prisma.sidekick.findMany({
     where: {
       tags: { has: 'flowise' },
