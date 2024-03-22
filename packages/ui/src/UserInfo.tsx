@@ -19,7 +19,7 @@ const UserInfo = async () => {
       }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Avatar
-          src={user.image!}
+          src={user?.image!}
           sx={{
             bgcolor: 'secondary.main',
             height: '32px',

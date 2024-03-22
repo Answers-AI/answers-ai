@@ -5,7 +5,7 @@ import * as jose from 'jose';
 import { User } from 'types';
 
 import { redirect } from 'next/navigation';
-const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user: User } | any> => {
+const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user?: User }> => {
   let session = await (req && res ? auth0.getSession(req, res) : auth0.getSession());
 
   // const checkJwt = jwt({
