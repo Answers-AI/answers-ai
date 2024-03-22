@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "experimentalUI": true,
+  "experimentalUI": false,
   "globalEnv": [
     "ANALYZE",
     "DB_STUDIO_SERVER_URL",

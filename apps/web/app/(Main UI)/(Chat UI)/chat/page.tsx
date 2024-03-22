@@ -13,9 +13,7 @@ export const metadata = {
 
 const ChatDetailPage = async ({ params }: any) => {
   const session = await getCachedSession();
-
   const user = session?.user;
-  const userId = user?.id;
 
   const dbSidekicks = await prisma.sidekick.findMany({
     where: {
