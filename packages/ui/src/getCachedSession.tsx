@@ -28,8 +28,9 @@ const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user: Use
     const { headers } = require('next/headers');
     if (!req && headers.get) {
       token = headers.get('authorization')?.split(' ')[1] ?? token;
+    }
+    if (token) {
       const jwks = jose.createRemoteJWKSet(new URL(process.env.AUTH0_JWKS_URI!));
-
       const result = await jose.jwtVerify(token.replace('Bearer ', ''), jwks);
       session = { user: result.payload };
     }
