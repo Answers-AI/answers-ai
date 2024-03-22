@@ -5,7 +5,7 @@ import * as jose from 'jose';
 import { User } from 'types';
 
 import { redirect } from 'next/navigation';
-const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user: User }> => {
+const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user: User } | any> => {
   let session = await (req && res ? auth0.getSession(req, res) : auth0.getSession());
 
   // const checkJwt = jwt({
@@ -36,7 +36,8 @@ const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user: Use
     }
   }
   // Redirect to auth0 login
-  if (!session) return redirect('/api/auth/login');
+  if (!session) return null;
+
   const orgData = {
     organizations: {
       connectOrCreate: {
