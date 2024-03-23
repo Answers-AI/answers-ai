@@ -3,10 +3,11 @@ import AppLayoutClient from './AppLayout.Client';
 import { AppSettings } from 'types';
 import { Suspense } from 'react';
 import ChatDrawerServer from '@ui/ChatDrawer.Server';
+import UserInfo from '@ui/UserInfo';
 
 const AppLayoutServer = (props: {
   session?: Session;
-  appSettings: AppSettings;
+  appSettings?: AppSettings;
   // providers: Record<string, ClientSafeProvider> | null;
   children: any;
   params: {
@@ -21,6 +22,12 @@ const AppLayoutServer = (props: {
         <Suspense fallback="">
           {/* @ts-expect-error Server Component */}
           <ChatDrawerServer />
+        </Suspense>
+      }
+      userInfo={
+        <Suspense fallback="">
+          {/* @ts-expect-error Server Component */}
+          <UserInfo />
         </Suspense>
       }
     />

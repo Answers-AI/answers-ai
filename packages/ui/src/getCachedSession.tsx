@@ -4,7 +4,8 @@ import auth0 from '@utils/auth/auth0';
 import * as jose from 'jose';
 import { User } from 'types';
 
-const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user: User }> => {
+import { redirect } from 'next/navigation';
+const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user?: User }> => {
   let session = await (req && res ? auth0.getSession(req, res) : auth0.getSession());
 
   // const checkJwt = jwt({
@@ -24,15 +25,19 @@ const getCachedSession = cache(async (req?: any, res?: any): Promise<{ user: Use
 
   if (!session) {
     let token = req ? req.headers.get('authorization')?.split(' ')[1] : '';
-    if (!req) {
-      const { headers } = require('next/headers');
-      token = headers?.get('authorization')?.split(' ')[1] ?? token;
+    const { headers } = require('next/headers');
+    if (!req && headers.get) {
+      token = headers.get('authorization')?.split(' ')[1] ?? token;
     }
-    const jwks = jose.createRemoteJWKSet(new URL(process.env.AUTH0_JWKS_URI!));
-
-    const result = await jose.jwtVerify(token.replace('Bearer ', ''), jwks);
-    session = { user: result.payload };
+    if (token) {
+      const jwks = jose.createRemoteJWKSet(new URL(process.env.AUTH0_JWKS_URI!));
+      const result = await jose.jwtVerify(token.replace('Bearer ', ''), jwks);
+      session = { user: result.payload };
+    }
   }
+  // Redirect to auth0 login
+  if (!session) return {};
+
   const orgData = {
     organizations: {
       connectOrCreate: {

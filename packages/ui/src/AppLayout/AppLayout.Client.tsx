@@ -10,23 +10,22 @@ import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { AppDrawer } from '../AppDrawer';
 import { darkModeTheme } from '../theme';
 import GlobalStyles from '../GlobalStyles';
-
-import { NotInvitedPage } from './NotInvitedPage';
-
 import { AppSettings } from 'types';
 
 export default function AppLayout({
   session,
   chatList,
+  userInfo,
   params,
   children,
   flagsmithState
 }: {
   session?: Session;
-  appSettings: AppSettings;
+  appSettings?: AppSettings;
   // providers: Record<string, ClientSafeProvider> | null;
   children: any;
   chatList: any;
+  userInfo?: any;
   params: {
     slug: string;
   };
@@ -42,29 +41,24 @@ export default function AppLayout({
       <ThemeProvider theme={darkModeTheme}>
         <CssBaseline enableColorScheme />
         <GlobalStyles />
-        {flagsmithState?.flags?.access_enabled?.enabled ? (
-          <>
-            <AppDrawer params={params} session={session} chatList={chatList} />
-            <div
-              style={{
-                flex: 1,
-                width: 'calc(100% - 65px)',
-                height: '100vh',
-                position: 'relative'
-              }}>
-              <div
-                style={{
-                  width: '100%',
-                  height: '100vh',
-                  position: 'relative'
-                }}>
-                {children}
-              </div>
-            </div>
-          </>
-        ) : (
-          <NotInvitedPage session={session} />
-        )}
+
+        <AppDrawer params={params} chatList={chatList} userInfo={userInfo} />
+        <div
+          style={{
+            flex: 1,
+            width: 'calc(100% - 65px)',
+            height: '100vh',
+            position: 'relative'
+          }}>
+          <div
+            style={{
+              width: '100%',
+              height: '100vh',
+              position: 'relative'
+            }}>
+            {children}
+          </div>
+        </div>
       </ThemeProvider>
     </FlagsmithProvider>
   );

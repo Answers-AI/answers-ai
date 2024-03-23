@@ -1,3 +1,6 @@
+import Chat from '@ui/Chat';
+
 export default function Loading() {
-  return <div></div>;
+  // @ts-expect-error Async Server Component
+  return <Chat />;
 }

@@ -5,18 +5,17 @@ import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 import { normalizeSidekickList } from '../../../../utilities/normalizeSidekick';
 import { Sidekick } from 'types';
+import auth0 from '@utils/auth/auth0';
 
 export const metadata = {
   title: 'Chats | Answers AI',
   description: 'Your current Answers AI chat'
 };
-
-const ChatDetailPage = async ({ params }: any) => {
+// @ts-ignore
+const ChatDetailPage: any = auth0.withPageAuthRequired(async ({ params }: any) => {
   const session = await getCachedSession();
-
   const user = session?.user;
-  const userId = user?.id;
-
+  if (!user) return null;
   const dbSidekicks = await prisma.sidekick.findMany({
     where: {
       tags: { has: 'flowise' },
@@ -42,6 +41,6 @@ const ChatDetailPage = async ({ params }: any) => {
 
   // @ts-expect-error Async Server Component
   return <Chat {...params} sidekicks={sidekicks} />;
-};
+});
 
 export default ChatDetailPage;

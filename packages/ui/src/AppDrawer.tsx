@@ -114,8 +114,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   })
 );
 
-export const AppDrawer = ({ session, chatList }: any) => {
-  const user = session?.user;
+export const AppDrawer = ({ chatList, userInfo }: any) => {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [submenuOpen, setSubmenuOpen] = useState('');
   const pathname = usePathname();
@@ -197,37 +196,7 @@ export const AppDrawer = ({ session, chatList }: any) => {
         ))}
 
         <ListItem disablePadding sx={{ display: 'block' }}>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              width: '100%',
-              pl: 0.5
-            }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar
-                src={user?.image}
-                sx={{
-                  bgcolor: 'secondary.main',
-                  height: '32px',
-                  width: '32px'
-                }}
-              />
-              <Box>
-                <Typography variant="body2">{user?.name}</Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  {user?.org_name}
-                </Typography>
-              </Box>
-            </Box>
-            <IconButton
-              aria-label={'sign out'}
-              href="/api/auth/logout"
-              sx={{ minHeight: 48, width: 48, justifyContent: 'center' }}>
-              <ExitToAppIcon />
-            </IconButton>
-          </Box>
+          {userInfo}
         </ListItem>
       </List>
     </Drawer>
