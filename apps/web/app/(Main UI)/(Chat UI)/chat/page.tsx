@@ -11,7 +11,7 @@ export const metadata = {
   title: 'Chats | Answers AI',
   description: 'Your current Answers AI chat'
 };
-
+// @ts-ignore
 const ChatDetailPage: any = auth0.withPageAuthRequired(async ({ params }: any) => {
   const session = await getCachedSession();
   const user = session?.user;
