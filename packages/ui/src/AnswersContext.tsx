@@ -185,7 +185,7 @@ export function AnswersProvider({
         const { id } = chat as Chat;
         if (id) {
           setChatId(id);
-          history.replaceState(null, '', `/chat/${id}`);
+          // history.replaceState(null, '', `/chat/${id}`);
         }
         // mutateActiveUserPlan();
       } else {

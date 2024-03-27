@@ -81,15 +81,16 @@ export const useStreamedResponse = ({
       let done = false;
       let extra: any;
       let answer = '';
-
+      let streamedResponse = '';
       while (!done) {
         const { value, done: doneReading } = await reader.read();
         done = doneReading;
         const chunkValue = decoder.decode(value);
-        answer = (answer || '') + chunkValue;
-        // console.log('Chunk', { value, chunkValue, answer });
+        streamedResponse = (streamedResponse || '') + chunkValue;
+        let [currentAnswer, jsonData] = streamedResponse.split('JSON_START');
+        answer = currentAnswer;
+
         if (!extra) {
-          let [currentAnswer, jsonData] = answer.split('JSON_START');
           if (jsonData) {
             jsonData = jsonData?.replace('JSON_END', '');
             try {
@@ -98,7 +99,6 @@ export const useStreamedResponse = ({
             } catch (e) {
               console.log('ParseError', e);
             }
-            answer = currentAnswer;
           }
           onChunk({ role: 'assistant', ...extra, content: answer });
         } else {
