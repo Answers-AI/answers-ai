@@ -47,17 +47,17 @@ const menuConfig = [
       { text: 'Variables', link: '/sidekick-studio/variables' },
       { text: 'Credentials', link: '/sidekick-studio/credentials' }
     ]
-  },
-  // { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
-  {
-    text: 'Settings',
-    // link: '/settings',
-    icon: <SettingsIcon />,
-    subMenu: [
-      { text: 'Organization', link: '/settings/organization' },
-      { text: 'User', link: '/settings/user' }
-    ]
   }
+  // { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
+  // {
+  //   text: 'Settings',
+  //   // link: '/settings',
+  //   icon: <SettingsIcon />,
+  //   subMenu: [
+  //     { text: 'Organization', link: '/settings/organization' },
+  //     { text: 'User', link: '/settings/user' }
+  //   ]
+  // }
   // {
   //   text: 'Developer',
   //   // link: '#',

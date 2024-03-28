@@ -187,6 +187,7 @@ export function AnswersProvider({
           setChatId(id);
           // history.replaceState(null, '', `/chat/${id}`);
         }
+        router.refresh();
         // mutateActiveUserPlan();
       } else {
         console.log('NoChatOnEnd', { chat, ...rest });
@@ -243,9 +244,7 @@ export function AnswersProvider({
 
   const regenerateAnswer = (retry?: boolean) => {
     const [message] = messages?.filter((m) => m.role === 'user').slice(-1) ?? [];
-    // if (messages[messages.length - 1].role === ChatCompletionRequestMessageRoleEnum.Assistant) {
-    //   setMessages(messages.slice(0, -1));
-    // }
+    setMessages(messages.slice(0, -1));
     sendMessage({ content: message.content, retry, sidekick, gptModel });
   };
 
