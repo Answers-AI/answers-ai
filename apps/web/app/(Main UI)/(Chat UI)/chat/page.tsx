@@ -19,7 +19,7 @@ const ChatDetailPage = async ({ params }: any) => {
 
   const dbSidekicks = await prisma.sidekick.findMany({
     where: {
-      tags: { has: 'flowise' },
+      AND: [{ tags: { has: 'flowise' } }, { NOT: { tags: { has: 'internal' } } }],
       OR: [
         // {
         //   favoritedBy: {
