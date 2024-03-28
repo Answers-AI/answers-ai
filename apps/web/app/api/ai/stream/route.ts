@@ -29,9 +29,9 @@ export async function POST(req: Request) {
     // }
 
     const {
-      journeyId,
+      // journeyId,
       chatId,
-      filters,
+      // filters,
       prompt,
       messages,
       sidekick: { id: sidekickId = null } = {}
@@ -59,19 +59,11 @@ export async function POST(req: Request) {
       organzation: user.organizationId,
       sidekickId
     });
-    const chat = await upsertChat({
-      id: chatId,
-      user,
-      filters: filters,
-      prompt,
-      journeyId,
-      sidekick
-    });
+
     const { accessToken } = await auth0.getAccessToken();
     if (!accessToken) throw new Error('No access token found');
 
     const stream = await getFlowisePredictionStream({
-      chat,
       sidekick,
       accessToken,
       body: {
@@ -84,12 +76,17 @@ export async function POST(req: Request) {
       },
       onEnd: async (result: any) => {
         try {
-          const updatedChat = await prisma.chat.update({
-            where: { id: chat.id },
-            data: { chatflowChatId: result.chatId },
-            include: { journey: true }
+          const chat = await upsertChat({
+            id: chatId,
+            user,
+            // filters: filters,
+            prompt,
+            // journeyId,
+            sidekick,
+            chatflowChatId: result.chatId
           });
-          return { chat: updatedChat };
+
+          return { chat };
         } catch (err) {
           console.log('ErrorOnEnd', err);
         }

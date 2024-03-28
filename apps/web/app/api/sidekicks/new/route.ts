@@ -6,9 +6,7 @@ import { respond401 } from '@utils/auth/respond401';
 import getCachedSession from '@ui/getCachedSession';
 
 export async function POST(req: Request) {
-  const res = new Response();
-
-  const session = await getCachedSession(req, res);
+  const session = await getCachedSession(req);
   if (!session?.user) return respond401();
 
   const userId = session.user.id;

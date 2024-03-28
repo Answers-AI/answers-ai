@@ -26,12 +26,12 @@ const SidekickSelect = ({
   useEffect(() => {
     const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
     const lastUsedSidekick = sidekickHistory?.lastUsed;
-    const sidekickIdx = sidekicks.findIndex((s) => s.id === lastUsedSidekick?.id);
+    let sidekickIdx = sidekicks.findIndex((s) => s.id === lastUsedSidekick?.id);
+    if (sidekickIdx == -1) sidekickIdx = 0;
     const curSidekick = sidekicks[sidekickIdx];
 
-    if (sidekickIdx == -1 || sidekicks?.length === 0) return;
     setSelectedSidekick(sidekickIdx);
-    onSidekickSelected(curSidekick);
+    if (curSidekick) onSidekickSelected(curSidekick);
   }, [sidekicks, onSidekickSelected]);
 
   const handleSidekickChange = (event: SelectChangeEvent<string>) => {

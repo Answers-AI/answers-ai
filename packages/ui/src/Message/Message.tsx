@@ -83,6 +83,8 @@ export const MessageCard = ({
   const [lastInteraction, setLastInteraction] = React.useState<Rating | undefined>();
   if (!content && other.text) {
     content = other.text;
+  } else if (!content && error) {
+    content = 'There was an error replying: ' + error?.message;
   }
   const hasContent = role === 'assistant' ? content : !!content;
   if (error) {
@@ -416,7 +418,7 @@ export const MessageCard = ({
         ) : null}
         {developer_mode?.enabled ? (
           <Box>
-            {error ? (
+            {/* {error ? (
               <>
                 <Accordion TransitionProps={{ unmountOnExit: true }}>
                   <AccordionSummary
@@ -435,7 +437,7 @@ export const MessageCard = ({
                   </AccordionDetails>
                 </Accordion>
               </>
-            ) : null}
+            ) : null} */}
 
             {summary ? (
               <Accordion TransitionProps={{ unmountOnExit: true }}>

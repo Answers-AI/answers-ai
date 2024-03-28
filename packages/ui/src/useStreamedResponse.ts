@@ -89,7 +89,6 @@ export const useStreamedResponse = ({
         streamedResponse = (streamedResponse || '') + chunkValue;
         let [currentAnswer, jsonData] = streamedResponse.split('JSON_START');
         answer = currentAnswer;
-
         if (!extra) {
           if (jsonData) {
             jsonData = jsonData?.replace('JSON_END', '');

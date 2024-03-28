@@ -1,6 +1,6 @@
 export const config = {
   matcher: [
-    '/((?!api/codebase|api/ai/chat-completion|api/inngest|api/sidekicks/new|_next/static|_next/image|favicon.ico).*)'
+    '/((?!api/codebase|api/ai/chat-completion|api/inngest|api/sidekicks/new|api/sidekicks/*|_next/static|_next/image|favicon.ico).*)'
   ]
 };
 // middleware.js

@@ -101,7 +101,7 @@ export const ChatDetail = ({
                   <Typography variant="body2">{journey?.goal ?? journey?.title}</Typography>
                 ) : null}
               </Box>
-
+              {/*
               <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                 {chat ? (
                   <IconButton
@@ -151,6 +151,7 @@ export const ChatDetail = ({
                   </IconButton>
                 )}
               </Box>
+*/}
             </Toolbar>
           </AppBar>
 
