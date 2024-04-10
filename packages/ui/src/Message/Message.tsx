@@ -81,12 +81,16 @@ export const MessageCard = ({
     () =>
       Object.values(
         allContextDocuments?.reduce(
-          (uniqueDocuments, current) => ({ ...uniqueDocuments, [current.url]: current }),
+          (uniqueDocuments, current) => ({
+            ...uniqueDocuments,
+            [current.metadata.url ?? current.metadata.source]: current
+          }),
           {}
         ) ?? {}
       ),
     [allContextDocuments]
   );
+  console.log({ allContextDocuments, contextDocuments });
   const [showFeedback, setShowFeedback] = useState(false);
   const services: { [key: string]: AppService } =
     appSettings?.services?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};

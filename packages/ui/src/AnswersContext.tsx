@@ -244,7 +244,7 @@ export function AnswersProvider({
 
   const regenerateAnswer = (retry?: boolean) => {
     const [message] = messages?.filter((m) => m.role === 'user').slice(-1) ?? [];
-    setMessages(messages.slice(0, -1));
+    // setMessages(messages.slice(0, -1));
     sendMessage({ content: message.content, retry, sidekick, gptModel });
   };
 
