@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@db/client';
-import { Sidekick } from 'types';
+
 import { respond401 } from '@utils/auth/respond401';
 
 import getCachedSession from '@ui/getCachedSession';
+import { Sidekick } from 'db/generated/prisma-client';
 
 export async function POST(req: Request) {
   const session = await getCachedSession(req);
@@ -11,7 +12,11 @@ export async function POST(req: Request) {
 
   const userId = session.user.id;
 
-  const data: Pick<Sidekick, 'chatflow' | 'chatflowDomain' | 'chatflowApiKey'> = await req.json();
+  const data: {
+    chatflow: Pick<Sidekick, 'chatflow'>;
+    chatflowDomain: string;
+    chatflowApiKey: string;
+  } = await req.json();
   console.log('New sidekick data', data.chatflow.name, userId, session.user.organizationId);
   try {
     if (!data.chatflow) throw new Error('No chatflow provided');
@@ -32,10 +37,10 @@ export async function POST(req: Request) {
         id: data.chatflow.id
       },
       create: {
-        ...sidekickData,
+        ...(sidekickData as any),
         createdByUser: { connect: { id: userId } }
       },
-      update: { ...sidekickData }
+      update: { ...(sidekickData as any) }
     });
     return NextResponse.json(sidekick);
   } catch (error: any) {

@@ -16,13 +16,5 @@ export const SidekickListPage = async ({ params }: any) => {
 
   // Return the iframe element with the constructed URL
   // Ensure to adjust the width, height, and other attributes as per your requirements
-  return (
-    <IframeNavigator
-      src={`${chatflowDomain}/${path}`}
-      width="100%"
-      height="100%"
-      frameBorder="0"
-      allowFullScreen
-    />
-  );
+  return <IframeNavigator src={`${chatflowDomain}/${path}`} />;
 };

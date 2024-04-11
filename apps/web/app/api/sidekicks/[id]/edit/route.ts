@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 import { respond401 } from '@utils/auth/respond401';
-import { Sidekick } from 'types';
+
 import { normalizeSidekickForUpdate } from 'utilities/normalizeSidekick';
+import { Sidekick } from 'db/generated/prisma-client';
 
 export async function PATCH(req: Request) {
   try {

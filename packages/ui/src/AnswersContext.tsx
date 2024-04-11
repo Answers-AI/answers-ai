@@ -307,7 +307,7 @@ export function AnswersProvider({
       retry
     }: {
       content: string;
-      sidekick?: Sidekick;
+      sidekick?: SidekickListItem;
       gptModel?: string;
       retry?: boolean;
     }) => {

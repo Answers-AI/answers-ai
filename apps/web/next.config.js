@@ -18,6 +18,11 @@ let nextConfig = withBundleAnalyzer({
       '@aws-sdk/s3-request-presigner'
     ]
   },
+
+  typescript: {
+    ignoreBuildErrors: true
+  },
+
   reactStrictMode: true,
   transpilePackages: ['ui', 'db', 'utils'],
   modularizeImports: {

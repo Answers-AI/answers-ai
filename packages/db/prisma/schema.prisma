@@ -6,7 +6,12 @@ generator client {
   output               = "../generated/prisma-client"
   referentialIntegrity = "prisma"
 }
-
+generator json {
+  provider = "prisma-json-types-generator"
+  // namespace = "PrismaJson"
+  // clientOutput = "<finds it automatically>"
+  // (./ -> relative to schema, or an importable path to require() it)
+}
 datasource db {
   provider = "postgres"
   url      = env("DATABASE_URL")
@@ -113,7 +118,7 @@ model Sidekick {
   isSystem            Boolean? @default(false)
   isSharedWithOrg     Boolean? @default(false)
   isFavoriteByDefault Boolean? @default(false)
-
+  /// [Chatflow]
   chatflow       Json?
   chatflowApiKey String?
   chatflowDomain String?

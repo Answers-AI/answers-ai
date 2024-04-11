@@ -43,8 +43,8 @@ const IframeNavigator: React.FC<IframeNavigatorProps> = ({
       try {
         const newUrl = new URL(event.data);
         // The current iframepath is the pathname minus the first segment
-        const currentIframePath = '/' + pathname.split('/').slice(1).join('/');
-        const newPathname = '/' + pathname.split('/')[1] + newUrl.pathname;
+        const currentIframePath = '/' + pathname?.split('/').slice(1).join('/');
+        const newPathname = '/' + pathname?.split('/')[1] + newUrl.pathname;
 
         // Update component state and browser's URL if the pathname has changed
         if (currentIframePath !== newPathname) {

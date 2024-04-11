@@ -4,8 +4,9 @@ import Chat from '@ui/Chat';
 import ChatNotFound from '@ui/ChatNotFound';
 import getCachedSession from '@ui/getCachedSession';
 import { normalizeSidekickList } from '../../../../../utilities/normalizeSidekick';
-import type { Sidekick, User } from 'types';
+
 import auth0 from '@utils/auth/auth0';
+import { User } from 'types';
 
 const getMessages = async ({ chat, user }: { chat: Partial<Chat>; user: User }) => {
   try {
@@ -98,9 +99,7 @@ const ChatDetailPage = async ({ params }: any) => {
   // @ts-ignore
   chat.messages = await getMessages({ user, chat });
 
-  const sidekicks = (dbSidekicks as Sidekick[])?.length
-    ? normalizeSidekickList(dbSidekicks as Sidekick[], user)
-    : [];
+  const sidekicks = dbSidekicks?.length ? normalizeSidekickList(dbSidekicks, user) : [];
 
   // @ts-expect-error Async Server Component
   return <Chat {...params} chat={chat} journey={(chat as any)?.journey} sidekicks={sidekicks} />;
