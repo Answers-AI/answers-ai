@@ -23,6 +23,7 @@ import DrawerFilters from './DrawerFilters/DrawerFilters';
 import { Filters } from './Filters';
 
 import type { AppService, AppSettings, Sidekick } from 'types';
+import SidekickSelect from './SidekickSelect';
 
 export const ChatDetail = ({
   appSettings,
@@ -42,7 +43,9 @@ export const ChatDetail = ({
     regenerateAnswer,
     showFilters,
     filters,
-    setShowFilters
+    setShowFilters,
+    setSidekick,
+    chatbotConfig
   } = useAnswers();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -53,6 +56,13 @@ export const ChatDetail = ({
     appSettings?.services
       ?.filter((service) => filteredServices.includes(service.id))
       ?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};
+
+  const handleSidekickSelected = React.useCallback(
+    (value: Sidekick) => {
+      setSidekick(value);
+    },
+    [setSidekick]
+  );
 
   return (
     <>
@@ -80,7 +90,7 @@ export const ChatDetail = ({
             sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}
             color={'transparent'}
             elevation={0}>
-            <Toolbar>
+            <Toolbar sx={{ px: '16px!important' }}>
               <Box
                 sx={{
                   flexGrow: 1,
@@ -96,12 +106,13 @@ export const ChatDetail = ({
                   }
                 }}>
                 {chat ? <Typography variant="body1">{chat?.title ?? chat.id}</Typography> : null}
+                <SidekickSelect sidekicks={sidekicks} onSidekickSelected={handleSidekickSelected} />
 
                 {journey ? (
                   <Typography variant="body2">{journey?.goal ?? journey?.title}</Typography>
                 ) : null}
               </Box>
-              {/*
+
               <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                 {chat ? (
                   <IconButton
@@ -115,7 +126,7 @@ export const ChatDetail = ({
                   </IconButton>
                 ) : null}
 
-                {!showFilters ? (
+                {/* {!showFilters ? (
                   <Tooltip
                     PopperProps={{ placement: 'top-end' }}
                     title={!Object.keys(services)?.length ? null : <Filters />}>
@@ -149,9 +160,8 @@ export const ChatDetail = ({
                     sx={{}}>
                     <ArrowBackIcon />
                   </IconButton>
-                )}
+                )} */}
               </Box>
-*/}
             </Toolbar>
           </AppBar>
 
@@ -194,9 +204,7 @@ export const ChatDetail = ({
                   <MessageCard
                     id="placeholder"
                     role="assistant"
-                    content={
-                      'Welcome! Try asking me something below, or select your data sources on the top right!'
-                    }
+                    content={chatbotConfig?.welcomeMessage ?? 'Welcome! Try asking me something!'}
                   />
                 ) : null}
 

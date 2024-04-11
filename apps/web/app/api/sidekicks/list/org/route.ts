@@ -3,7 +3,6 @@ import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 
 import { normalizeSidekickList } from '../../../../../utilities/normalizeSidekick';
-import { Sidekick } from 'types';
 
 export async function GET(req: Request) {
   try {
@@ -36,7 +35,7 @@ export async function GET(req: Request) {
       }
     });
 
-    const sidekicks = normalizeSidekickList(dbSidekicks as Sidekick[], user);
+    const sidekicks = normalizeSidekickList(dbSidekicks, user);
 
     return NextResponse.json(sidekicks);
   } catch (error) {
