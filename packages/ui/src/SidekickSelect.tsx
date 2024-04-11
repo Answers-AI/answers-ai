@@ -37,6 +37,7 @@ const SidekickSelect = ({
   const handleSidekickChange = (event: SelectChangeEvent<string>) => {
     const sidekickIdx = parseInt(event.target.value);
     const curSidekick = sidekicks[sidekickIdx];
+    console.log('SidekickSelect', { event, sidekickIdx, curSidekick });
 
     setSelectedSidekick(sidekickIdx);
     if (curSidekick) {
@@ -50,21 +51,21 @@ const SidekickSelect = ({
 
   return (
     <>
-      <Fieldset legend="Sidekick">
-        <Select
-          labelId="sidekick-select-label"
-          id="sidekick-select"
-          size="small"
-          sx={{ 'boxShadow': 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
-          value={selectedSidekick?.toString()}
-          onChange={handleSidekickChange}>
-          {sidekicks.map((sidekick: Sidekick, idx: number) => (
-            <MenuItem key={sidekick.id} value={idx}>
-              {sidekick.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </Fieldset>
+      <Select
+        color="secondary"
+        variant="outlined"
+        labelId="sidekick-select-label"
+        id="sidekick-select"
+        size="small"
+        sx={{ boxShadow: 'none' }}
+        value={selectedSidekick?.toString()}
+        onChange={handleSidekickChange}>
+        {sidekicks.map((sidekick: Sidekick, idx: number) => (
+          <MenuItem key={sidekick.id} value={idx}>
+            {sidekick.label}
+          </MenuItem>
+        ))}
+      </Select>
     </>
   );
 };

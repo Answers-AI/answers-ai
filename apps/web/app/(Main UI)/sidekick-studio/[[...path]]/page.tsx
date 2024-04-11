@@ -28,12 +28,7 @@ const SidekickListPage = async ({ params }: any) => {
   return (
     <IframeNavigator
       src={`${chatflowDomain}/${path}`}
-      width="100%"
-      height="100%"
-      frameBorder="0"
-      backgroundColor="transparent"
-      allowFullScreen
-      allowTransparency
+    
     />
   );
 };

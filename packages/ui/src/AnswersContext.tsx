@@ -24,7 +24,10 @@ import {
   Prompt,
   Sidekick,
   User,
-  MessageFeedback
+  MessageFeedback,
+  SidekickListItem,
+  ChatbotConfig,
+  FlowData
 } from 'types';
 // import { useUserPlans } from './hooks/useUserPlan';
 
@@ -76,6 +79,8 @@ interface AnswersContextType {
   setJourneyId: any;
   setSidekick: (arg: SetStateAction<Sidekick>) => void;
   sidekick?: Sidekick;
+  chatbotConfig?: ChatbotConfig;
+  flowData?: FlowData;
   gptModel: string;
   setGptModel: (arg: SetStateAction<string>) => void;
   sendMessageFeedback: (args: Partial<MessageFeedback>) => void;
@@ -124,6 +129,7 @@ interface AnswersProviderProps {
   chat?: Chat;
   journey?: Journey;
   prompts?: Prompt[];
+  sidekicks?: SidekickListItem[];
   // chats?: Chat[];
 }
 
@@ -135,6 +141,7 @@ export function AnswersProvider({
   appSettings,
   children,
   prompts,
+  sidekicks,
   useStreaming: initialUseStreaming = true,
   apiUrl = '/api'
 }: AnswersProviderProps) {
@@ -149,11 +156,13 @@ export function AnswersProvider({
   const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
 
   const [journeyId, setJourneyId] = useState<string | undefined>(journey?.id);
-  const [sidekick, setSidekick] = useState();
+  const [sidekick, setSidekick] = useState<SidekickListItem>();
+
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
   const messageIdx = useRef(0);
   // const { mutateActiveUserPlan } = useUserPlans();
-
+  const chatbotConfig = React.useMemo(() => sidekick?.chatbotConfig, [sidekick]);
+  const flowData = React.useMemo(() => sidekick?.flowData, [sidekick]);
   const { isStreaming, generateResponse } = useStreamedResponse({
     apiUrl,
     onError: (err) => {
@@ -390,6 +399,8 @@ export function AnswersProvider({
     messageIdx,
     sidekick,
     setSidekick,
+    chatbotConfig,
+    flowData,
     gptModel,
     setGptModel,
     sendMessage,

@@ -83,7 +83,7 @@ export const MessageCard = ({
         allContextDocuments?.reduce(
           (uniqueDocuments, current) => ({
             ...uniqueDocuments,
-            [current.metadata.url ?? current.metadata.source]: current
+            [current.metadata.source]: current
           }),
           {}
         ) ?? {}

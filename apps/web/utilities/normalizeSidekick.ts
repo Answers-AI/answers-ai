@@ -1,6 +1,6 @@
 import toSentenceCase from '@utils/utilities/toSentenceCase';
 import { renderTemplate } from '@utils/utilities/renderTemplate';
-import { Sidekick, SidekickListItem, User } from 'types';
+import { ChatbotConfig, FlowData, Sidekick, SidekickListItem, User } from 'types';
 
 export const normalizeSidekickListItem = (sidekick: Sidekick, user?: User): SidekickListItem => {
   switch (true) {
@@ -31,11 +31,48 @@ export const normalizeSidekickListItem = (sidekick: Sidekick, user?: User): Side
     aiModel: sidekick.aiModel || '',
     label: sidekick.label || '',
     sharedWith: sidekick.sharedWith,
-    isFavorite: hasFavorited
+    isFavorite: hasFavorited,
+    chatbotConfig: parseChatbotConfig(sidekick.chatflow.chatbotConfig),
+    flowData: parseFlowData(sidekick.chatflow.flowData)
   };
 
   return sidekickListItem;
 };
+
+function parseObjectRecursively(obj: any): any {
+  if (Array.isArray(obj)) {
+    // If it's an array, parse each element
+    return obj.map(parseObjectRecursively);
+  } else if (typeof obj === 'object' && obj !== null) {
+    // Check if the object has only numeric keys and therefore should be treated as an array
+    const keys = Object.keys(obj);
+    const isNumericKeys = keys.every((key) => !isNaN(Number(key)));
+    if (isNumericKeys && keys.length > 0) {
+      // Convert object to array if all keys are numeric
+      return keys.map((key) => parseObjectRecursively(obj[key]));
+    } else {
+      // Otherwise, parse each property of the object
+      const newObj: any = {};
+      for (const key of keys) {
+        newObj[key] = parseObjectRecursively(obj[key]);
+      }
+      return newObj;
+    }
+  }
+
+  // Return the value unchanged if it's not an array or object
+  return obj;
+}
+
+// Function to parse the 'chatbotConfig' JSON string using the generic parsing approach
+
+const parseFlowData = (flowDataJson: string): FlowData =>
+  parseObjectRecursively(JSON.parse(flowDataJson)) as FlowData;
+
+function parseChatbotConfig(chatbotConfigJson: string): ChatbotConfig {
+  const parsedObj = JSON.parse(chatbotConfigJson);
+  return parseObjectRecursively(parsedObj) as ChatbotConfig;
+}
 
 export const normalizeSidekickList = (sidekicks: Sidekick[], user?: User): SidekickListItem[] => {
   const normalizedSidekicks: SidekickListItem[] = sidekicks.map((sidekick) =>

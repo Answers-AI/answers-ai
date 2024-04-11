@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 interface IframeNavigatorProps {
   src: string; // Initial URL for the iframe
-  allowedOrigins: string[]; // List of allowed origin patterns (wildcards supported)
+  allowedOrigins?: string[]; // List of allowed origin patterns (wildcards supported)
   debug?: boolean; // Enable debug logging
 }
 
@@ -72,9 +72,17 @@ const IframeNavigator: React.FC<IframeNavigatorProps> = ({
   return (
     <iframe
       src={iframeUrl}
-      style={{ width: '100%', height: '100%', opacity: loaded ? 1 : 0, transition: '.1s' }}
+      style={{
+        width: '100%',
+        height: '100%',
+        border: 0,
+        opacity: loaded ? 1 : 0,
+        transition: '.1s'
+      }}
       title="Iframe Navigator"
       onLoad={() => setLoaded(true)}
+      allowFullScreen
+      allowTransparency
       {...other}
     />
   );
