@@ -72,11 +72,25 @@ export const MessageCard = ({
   likes,
   dislikes,
   isWidget,
-  contextDocuments,
+  contextDocuments: allContextDocuments,
   ...other
 }: MessageCardProps) => {
   const { developer_mode } = useFlags(['developer_mode']); // only causes re-render if specified flag values / traits change
   const { user: currentUser, sendMessageFeedback, appSettings } = useAnswers();
+  const contextDocuments = React.useMemo(
+    () =>
+      Object.values(
+        allContextDocuments?.reduce(
+          (uniqueDocuments, current) => ({
+            ...uniqueDocuments,
+            [current.metadata.source]: current
+          }),
+          {}
+        ) ?? {}
+      ),
+    [allContextDocuments]
+  );
+  console.log({ allContextDocuments, contextDocuments });
   const [showFeedback, setShowFeedback] = useState(false);
   const services: { [key: string]: AppService } =
     appSettings?.services?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};

@@ -14,7 +14,8 @@ import SidekickSelect from './SidekickSelect';
 
 import { debounce } from '@utils/debounce';
 
-import type { Sidekick } from 'types';
+import type { Sidekick, StarterPrompt } from 'types';
+import { DefaultPrompts } from './DefaultPrompts';
 // import { RemainingTokensCounter } from './RemainingTokensCounter';
 // import { useUserPlans } from './hooks/useUserPlan';
 
@@ -43,9 +44,10 @@ const ChatInput = ({
     setSidekick,
     gptModel,
     setGptModel,
-    startNewChat
+    startNewChat,
+    chatbotConfig
   } = useAnswers();
-
+  console.log('CHATBOT', { chatbotConfig, sidekick });
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -66,15 +68,10 @@ const ChatInput = ({
     sendMessage({ content: inputValue, sidekick, gptModel });
     setInputValue('');
   };
-
-  const handleSidekickSelected = useCallback((value: Sidekick) => {
-    console.log('SetSidekick', value);
-    setPlaceholder(value?.placeholder ?? defaultPlaceholderValue);
-    setSidekick(value);
-    if (value.aiModel) {
-      setGptModel(value.aiModel);
-    }
-  }, []);
+  const handlePromptSelected = (prompt: StarterPrompt) => {
+    sendMessage({ content: prompt.prompt, sidekick, gptModel });
+    setInputValue('');
+  };
 
   const handleGptModelSelected = (event: SelectChangeEvent<string>) => {
     setGptModel(event.target.value as string);
@@ -88,12 +85,19 @@ const ChatInput = ({
       return false;
     }
   };
-
+  console.log('ChatInput', chatbotConfig?.textInput);
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
       <Box sx={{ display: 'flex', gap: 2 }}>
-        <SidekickSelect onSidekickSelected={handleSidekickSelected} sidekicks={sidekicks} />
-
+        <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', alignItems: 'flex-end' }}>
+          {/* <SidekickSelect onSidekickSelected={handleSidekickSelected} sidekicks={sidekicks} /> */}
+          {!messages?.length ? (
+            <DefaultPrompts
+              prompts={chatbotConfig?.starterPrompts}
+              onPromptSelected={handlePromptSelected}
+            />
+          ) : null}
+        </Box>
         {/* <RemainingTokensCounter /> */}
       </Box>
 
@@ -111,7 +115,7 @@ const ChatInput = ({
         })}
         variant="filled"
         fullWidth
-        placeholder={placeholder}
+        placeholder={chatbotConfig?.textInput?.placeholder ?? 'Send a question or task'}
         value={inputValue}
         multiline
         // disabled={!activeUserPlan || activeUserPlan.tokensLeft <= 0}

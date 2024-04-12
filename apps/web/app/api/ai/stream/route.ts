@@ -3,7 +3,7 @@ import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 import { getFlowisePredictionStream } from '@utils/FlowiseStream';
 import { upsertChat } from '@utils/upsertChat';
-import { Sidekick } from 'types';
+
 import auth0 from '@utils/auth/auth0';
 
 export async function POST(req: Request) {
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
           where: {
             id: sidekickId
           }
-        })) as Sidekick);
+        })) as any);
 
     if (!sidekick) {
       return new Response(

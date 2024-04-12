@@ -2,6 +2,7 @@ import * as DB from 'db/generated/prisma-client';
 import { Hit } from '@algolia/client-search';
 
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
+
 export interface Document extends DB.Document {
   pageContent: string;
   metadata: any;
@@ -201,7 +202,7 @@ export interface Task {
   id: string;
   title: string;
   description: string;
-  sidekicks: Sidekick[];
+  sidekicks: DB.Sidekick[];
   filters: AnswersFilters;
   completed: boolean;
   dueDate: string;
@@ -488,21 +489,15 @@ export type JiraIssue = { key: string; self: string; id: string; fields: any; ar
 export type JiraComment = { key: string; self: string; id: string; fields: any; archived: any };
 
 // Replace the Sidekick interface with the following type
-export interface Sidekick extends DB.Sidekick {
-  sharedWith?: string;
-  favoritedBy?: DB.User[];
-  chatflow: {
-    id: string;
-    name: string;
-  };
-}
 
 export interface SidekickListItem
-  extends Pick<Sidekick, 'id' | 'placeholder' | 'tags' | 'aiModel' | 'label'> {
+  extends Pick<DB.Sidekick, 'id' | 'placeholder' | 'tags' | 'aiModel' | 'label'> {
   isFavorite: boolean;
   sharedWith: string;
   tagString: string;
+  chatbotConfig: DB.Sidekick['chatflow']['chatbotConfig'];
+  flowData: DB.Sidekick['chatflow']['flowData'];
 }
 
 // Add the Sidekicks type
-export type Sidekicks = Sidekick[];
+export type Sidekicks = SidekickListItem[];

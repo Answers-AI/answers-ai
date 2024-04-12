@@ -116,7 +116,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export const AppDrawer = ({ session, chatList }: any) => {
   const user = session?.user;
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [submenuOpen, setSubmenuOpen] = useState('');
   const pathname = usePathname();
   // Drawer style based on open state
@@ -143,7 +143,27 @@ export const AppDrawer = ({ session, chatList }: any) => {
           <Avatar sx={{ objectFit: 'contain' }}>AI</Avatar>
         </NextLink>
       </DrawerHeader> */}
-      <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>{chatList}</Box>
+      <Box
+        sx={{
+          'flex': 1,
+          // 'overflowY': drawerOpen ? 'auto' : 'hidden',
+          'overflowY': 'auto',
+          'overflowX': 'hidden',
+
+          //Make the scrollbar animate to hidden when drawerOpen is false
+          '&::-webkit-scrollbar': {
+            transition: 'opacity 0.5s ease',
+            opacity: drawerOpen ? 1 : 0
+          },
+          '&::-webkit-scrollbar ': {
+            transition: '.2s',
+            ...(!drawerOpen && {
+              width: '0px'
+            })
+          }
+        }}>
+        {chatList}
+      </Box>
 
       <List sx={{ display: 'flex', flexDirection: 'column' }} disablePadding>
         {menuConfig.map((item) => (

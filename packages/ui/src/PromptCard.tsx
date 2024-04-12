@@ -19,44 +19,44 @@ import Delete from '@mui/icons-material/Delete';
 
 import { useAnswers } from './AnswersContext';
 
-import { Prompt } from 'types';
-interface PromptCardProps extends Prompt {
+import { Prompt, StarterPrompt } from 'types';
+interface PromptCardProps extends StarterPrompt {
   onClick: () => void;
 }
 
 const PromptCard: React.FC<PromptCardProps> = ({
-  id,
-  title,
-  content,
-  likes,
-  dislikes,
-  usages,
+  // id,
+  prompt,
+  // content,
+  // likes,
+  // dislikes,
+  // usages,
   onClick
 }) => {
   const flags = useFlags(['delete_prompt']);
   const { deletePrompt, updatePrompt } = useAnswers();
   const [lastInteraction, setLastInteraction] = React.useState<string>('');
 
-  const handleLike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
-    evt.stopPropagation();
-    evt.preventDefault();
-    setLastInteraction('like');
-    if (id)
-      await updatePrompt({
-        id: id,
-        likes: (likes ?? 0) + 1
-      });
-  };
-  const handleDislike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
-    evt.stopPropagation();
-    evt.preventDefault();
-    setLastInteraction('dislike');
-    if (id)
-      await updatePrompt({
-        id,
-        dislikes: (dislikes ?? 0) + 1
-      });
-  };
+  // const handleLike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
+  //   evt.stopPropagation();
+  //   evt.preventDefault();
+  //   setLastInteraction('like');
+  //   if (id)
+  //     await updatePrompt({
+  //       id: id,
+  //       likes: (likes ?? 0) + 1
+  //     });
+  // };
+  // const handleDislike = async (evt: React.MouseEvent<HTMLButtonElement>) => {
+  //   evt.stopPropagation();
+  //   evt.preventDefault();
+  //   setLastInteraction('dislike');
+  //   if (id)
+  //     await updatePrompt({
+  //       id,
+  //       dislikes: (dislikes ?? 0) + 1
+  //     });
+  // };
   return (
     <Card
       sx={{
@@ -67,7 +67,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
         justifyContent: 'space-between',
         flexDirection: 'column'
       }}>
-      {flags?.delete_prompt?.enabled ? (
+      {/* {flags?.delete_prompt?.enabled ? (
         <CardHeader
           sx={{ position: 'absolute', top: 0, right: 0, zIndex: 1 }}
           action={
@@ -82,7 +82,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
             </MenuButton>
           }
         />
-      ) : null}
+      ) : null} */}
       <Box
         sx={{
           width: '100%',
@@ -90,24 +90,26 @@ const PromptCard: React.FC<PromptCardProps> = ({
           display: 'flex'
         }}>
         <CardActionArea
-          sx={{
-            minHeight: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            ...(flags?.delete_prompt?.enabled && {
-              paddingRight: 4
-            }),
-            paddingBottom: 4
-          }}
+          sx={
+            {
+              // minHeight: '100%',
+              // display: 'flex',
+              // flexDirection: 'column',
+              // justifyContent: 'space-between'
+              // ...(flags?.delete_prompt?.enabled && {
+              //   paddingRight: 4
+              // })
+              // paddingBottom: 4
+            }
+          }
           onClick={onClick}>
           <CardContent
             sx={{
-              width: '100%',
-              display: 'flex',
-              gap: 1
+              width: '100%'
+              // display: 'flex',
+              // gap: 1
             }}>
-            {title || content ? (
+            {prompt ? (
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -119,13 +121,13 @@ const PromptCard: React.FC<PromptCardProps> = ({
                   WebkitLineClamp: '3',
                   WebkitBoxOrient: 'vertical'
                 }}>
-                {title || content}
+                {prompt}
               </Typography>
             ) : null}
           </CardContent>
         </CardActionArea>
       </Box>
-      <CardActions
+      {/* <CardActions
         sx={{
           display: 'flex',
           width: '100%',
@@ -160,7 +162,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
             <ThumbDownIcon sx={{ fontSize: 16 }} />
           </IconButton>
         </Box>
-      </CardActions>
+      </CardActions> */}
     </Card>
   );
 };
