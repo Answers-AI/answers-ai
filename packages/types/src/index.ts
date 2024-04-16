@@ -1,7 +1,6 @@
 import * as DB from 'db/generated/prisma-client';
 import { Hit } from '@algolia/client-search';
-
-import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai';
+import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 
 export interface Document extends DB.Document {
   pageContent: string;

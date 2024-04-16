@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import Cookies from 'js-cookie';
 
 import Select from '@mui/material/Select';
 import type { SelectChangeEvent } from '@mui/material/Select';
@@ -24,10 +23,10 @@ const SidekickSelect = ({
   );
 
   useEffect(() => {
-    const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
+    const sidekickHistory = JSON.parse(localStorage.getItem('sidekickHistory') || '{}');
     const lastUsedSidekick = sidekickHistory?.lastUsed;
     let sidekickIdx = sidekicks.findIndex((s) => s.id === lastUsedSidekick?.id);
-    if (sidekickIdx == -1) sidekickIdx = 0;
+    if (sidekickIdx == -1) return;
     const curSidekick = sidekicks[sidekickIdx];
 
     setSelectedSidekick(sidekickIdx);
@@ -44,9 +43,9 @@ const SidekickSelect = ({
       onSidekickSelected(curSidekick);
     }
 
-    const sidekickHistory = JSON.parse(Cookies.get('sidekickHistory') || '{}');
+    const sidekickHistory = JSON.parse(localStorage.getItem('sidekickHistory') || '{}');
     sidekickHistory.lastUsed = curSidekick;
-    Cookies.set('sidekickHistory', JSON.stringify(sidekickHistory));
+    localStorage.setItem('sidekickHistory', JSON.stringify(sidekickHistory));
   };
 
   return (

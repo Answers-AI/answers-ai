@@ -315,7 +315,7 @@ export const MessageCard = ({
                   <Typography variant="body2">References:</Typography>
                   {contextDocuments?.map((doc) => (
                     <Button
-                      key={`references-${doc.id}`}
+                      key={`references-${doc.metadata.url ?? doc.metadata.source}`}
                       size="small"
                       // disabled={!doc.metadata.url}
                       component={doc.metadata.url ? NextLink : 'div'}

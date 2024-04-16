@@ -47,7 +47,7 @@ const ChatInput = ({
     startNewChat,
     chatbotConfig
   } = useAnswers();
-  console.log('CHATBOT', { chatbotConfig, sidekick });
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ const ChatInput = ({
       return false;
     }
   };
-  console.log('ChatInput', chatbotConfig?.textInput);
+
   return (
     <Box display="flex" position="relative" sx={{ gap: 1, flexDirection: 'column', pb: 2, px: 2 }}>
       <Box sx={{ display: 'flex', gap: 2 }}>
