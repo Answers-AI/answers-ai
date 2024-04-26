@@ -9,23 +9,20 @@
   },
   "configurations": [
     {
-      "name": "AnswerAI: debug server-side",
-      "type": "node-terminal",
+      "name": "AnswerAI: dev",
+      "type": "node",
       "request": "launch",
-      "command": "pnpm run dev"
-    },
-    {
-      "name": "AnswerAI: debug client-side",
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:3000"
-    },
-    {
-      "name": "AnswerAI: debug full stack",
-      "type": "node-terminal",
-      "request": "launch",
-      "command": "pnpm run dev",
-      "preLaunchTask": "Clear .next folder",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "runtimeVersion": "21",
+      "timeout": 30000,
+      "stopOnEntry": false,
+      "sourceMaps": true,
+      "restart": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"],
+      "smartStep": true,
       "serverReadyAction": {
         "pattern": "started server on .+, url: (https?://.+)",
         "uriFormat": "%s",

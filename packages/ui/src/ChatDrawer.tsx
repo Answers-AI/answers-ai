@@ -18,7 +18,7 @@ import closedMixin from './theme/closedMixin';
 import openedMixin from './theme/openedMixin';
 
 import { Chat, Journey } from 'types';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 
 const drawerWidth = 400;
 
@@ -52,11 +52,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 export interface ChatDrawerProps {
   journeys?: Journey[];
-  chats?: Chat[];
+  chatsByDate?: { [key: string]: Chat[] };
   defaultOpen?: boolean;
 }
 
-export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerProps) {
+export default function ChatDrawer({ journeys, chatsByDate = {}, defaultOpen }: ChatDrawerProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen);
@@ -154,10 +154,18 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
           </Button>
         </ListItem> */}
 
-      <List disablePadding>
+      <List
+        disablePadding
+        sx={{
+          'transition': '.2s',
+          '.MuiDrawer-closed & > *': {
+            opacity: 0
+          }
+        }}>
         <ListItem
           disablePadding
           sx={(theme) => ({
+            opacity: '1!important',
             flexDirection: 'row',
             px: 0,
             py: 1,
@@ -207,31 +215,32 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
             <Add />
           </IconButton> */}
         </ListItem>
-        {chats?.map((chat) => (
-          <ListItem
-            key={chat.id}
-            disablePadding
-            sx={{
-              'transition': '.2s',
-              '.MuiDrawer-closed &': {
-                opacity: 0
-              }
-            }}>
-            <ListItemButton
-              selected={pathname === `/chat/${chat.id}`}
-              href={`/chat/${chat.id}`}
-              component={NextLink}>
-              <ListItemText
-                secondary={chat.title}
-                sx={
-                  pathname === `/chat/${chat.id}`
-                    ? { '.MuiListItemText-secondary': { color: 'white' } }
-                    : {}
-                }
-              />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {Object.keys(chatsByDate ?? {})?.map((date, idx) =>
+          !chatsByDate[date]?.length ? null : (
+            <React.Fragment>
+              <ListItem disablePadding sx={{ color: '#9e9e9e', mt: idx === 0 ? 0 : 1 }}>
+                <Typography variant="caption">{date}</Typography>
+              </ListItem>
+              {chatsByDate[date]?.map((chat) => (
+                <ListItem key={chat.id} disablePadding>
+                  <ListItemButton
+                    selected={pathname === `/chat/${chat.id}`}
+                    href={`/chat/${chat.id}`}
+                    component={NextLink}>
+                    <ListItemText
+                      secondary={chat.title}
+                      sx={
+                        pathname === `/chat/${chat.id}`
+                          ? { '.MuiListItemText-secondary': { color: 'white' } }
+                          : {}
+                      }
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </React.Fragment>
+          )
+        )}
       </List>
       {/* </Drawer> */}
     </>

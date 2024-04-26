@@ -156,7 +156,7 @@ export function AnswersProvider({
   const [useStreaming, setUseStreaming] = useState(initialUseStreaming);
 
   const [journeyId, setJourneyId] = useState<string | undefined>(journey?.id);
-  const [sidekick, setSidekick] = useState<SidekickListItem>();
+  const [sidekick, setSidekick] = useState<SidekickListItem | undefined>(sidekicks?.[0]);
 
   const [gptModel, setGptModel] = useState('gpt-3.5-turbo');
   const messageIdx = useRef(0);

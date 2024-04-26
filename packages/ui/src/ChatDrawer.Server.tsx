@@ -1,6 +1,6 @@
 import React from 'react';
 import getCachedSession from '@ui/getCachedSession';
-
+import { categorizeDates } from '@utils/categorizeDates';
 import { prisma } from '@db/client';
 
 import ChatDrawerClient from './ChatDrawer';
@@ -31,7 +31,8 @@ const ChatDrawerServer = async () => {
     .then((data: any) => JSON.parse(JSON.stringify(data)));
 
   const [chats] = await Promise.all([chatsPromise]);
-  return <ChatDrawerClient chats={chats} />;
+  const chatsByDate = categorizeDates(chats);
+  return <ChatDrawerClient chatsByDate={chatsByDate} />;
 };
 
 export default ChatDrawerServer;

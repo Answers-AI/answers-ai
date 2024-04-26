@@ -30,14 +30,14 @@ export const getFlowisePredictionStream = async ({
       const socket = socketIOClient(sidekick.chatflowDomain!); //flowise url
 
       socket.on('error', (err) => {
-        console.log('SocketIO->error', err);
+        console.log(`[sidekick:${sidekick.id}]SocketIO->error`, err);
       });
 
       socket.on('token', (token) => {
         try {
           controller.enqueue(encoder.encode(token));
         } catch (err) {
-          console.log('ErrorSendingToken', err);
+          console.log(`[sidekick:${sidekick.id}][ErrorSendingToken]`, err);
         }
       });
 
@@ -68,15 +68,13 @@ export const getFlowisePredictionStream = async ({
             extra = { ...extra, ...endResult };
           }
         } catch (error: any) {
-          // Report error when hitting Flowise
           extra = {
             ...extra,
             error: { code: 'FlowiseError', message: error.message?.replace('Error: ', '') }
           };
-          console.log('FlowisePredictionError->OnEnd', error);
         }
         if (extra.error) {
-          console.error('[Error][Flowise]', extra.error.message);
+          console.error(`[sidekick:${sidekick.id}][FlowiseError]`, extra.error.message);
         }
         controller.enqueue(encoder.encode('JSON_START' + JSON.stringify(extra) + 'JSON_END'));
         controller.close();

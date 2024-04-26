@@ -21,7 +21,12 @@ const Chat = async ({ chat, journey, sidekicks }: Params) => {
   const [session, appSettings] = await Promise.all([sessionPromise, appSettingsPromise]);
 
   return (
-    <AnswersProvider user={session?.user!} appSettings={appSettings} chat={chat} journey={journey}>
+    <AnswersProvider
+      user={session?.user!}
+      appSettings={appSettings}
+      chat={chat}
+      journey={journey}
+      sidekicks={sidekicks}>
       <Suspense fallback={<div>Loading...</div>}>
         <Modal />
       </Suspense>
