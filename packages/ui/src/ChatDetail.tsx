@@ -90,12 +90,13 @@ export const ChatDetail = ({
             sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}
             color={'transparent'}
             elevation={0}>
-            <Toolbar sx={{ px: '16px!important' }}>
+            <Toolbar sx={{ px: '16px!important', gap: 1 }}>
+              <SidekickSelect sidekicks={sidekicks} onSidekickSelected={handleSidekickSelected} />
               <Box
                 sx={{
                   flexGrow: 1,
                   display: 'flex',
-                  flexDirection: 'column',
+                  gap: 2,
                   p: {
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -106,7 +107,6 @@ export const ChatDetail = ({
                   }
                 }}>
                 {chat ? <Typography variant="body1">{chat?.title ?? chat.id}</Typography> : null}
-                <SidekickSelect sidekicks={sidekicks} onSidekickSelected={handleSidekickSelected} />
 
                 {journey ? (
                   <Typography variant="body2">{journey?.goal ?? journey?.title}</Typography>
