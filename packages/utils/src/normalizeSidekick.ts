@@ -1,7 +1,6 @@
 import toSentenceCase from '@utils/utilities/toSentenceCase';
 import { renderTemplate } from '@utils/utilities/renderTemplate';
-import { SidekickListItem, User } from 'types';
-import { Sidekick } from 'db/generated/prisma-client';
+import { Sidekick, SidekickListItem, User } from 'types';
 
 export const normalizeSidekickListItem = (sidekick: Sidekick, user?: User): SidekickListItem => {
   let sharedWith = 'private';
@@ -30,6 +29,7 @@ export const normalizeSidekickListItem = (sidekick: Sidekick, user?: User): Side
     label: sidekick.label || '',
     sharedWith: sharedWith,
     isFavorite: hasFavorited,
+    answersConfig: sidekick.chatflow?.answersConfig,
     chatbotConfig: parseChatbotConfig(sidekick.chatflow?.chatbotConfig),
     flowData: parseFlowData(sidekick.chatflow?.flowData)
   };
@@ -37,7 +37,7 @@ export const normalizeSidekickListItem = (sidekick: Sidekick, user?: User): Side
   return sidekickListItem;
 };
 
-function parseObjectRecursively(obj: any): any {
+export function parseObjectRecursively(obj: any): any {
   if (Array.isArray(obj)) {
     // If it's an array, parse each element
     return obj.map(parseObjectRecursively);
@@ -71,6 +71,12 @@ function parseChatbotConfig(chatbotConfigJson?: string): ChatbotConfig | null {
   if (!chatbotConfigJson) return null;
   const parsedObj = JSON.parse(chatbotConfigJson);
   return parseObjectRecursively(parsedObj) as ChatbotConfig;
+}
+
+function parseAnswersConfig(answersConfigJson?: string): AnswersConfig | null {
+  if (!answersConfigJson) return null;
+  const parsedObj = JSON.parse(answersConfigJson);
+  return parseObjectRecursively(parsedObj) as AnswersConfig;
 }
 
 export const normalizeSidekickList = (

@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 import { respond401 } from '@utils/auth/respond401';
-import { normalizeSidekickList } from '../../../../../utilities/normalizeSidekick';
-import { Sidekick } from 'db/generated/prisma-client';
+import { normalizeSidekickList } from '@utils/normalizeSidekick';
 
 export async function GET(req: Request) {
   try {

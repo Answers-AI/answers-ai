@@ -1,11 +1,11 @@
-import { Message, Sidekick, User, Organization } from 'types';
+import { Message, User, Organization } from 'types';
 import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { countTokens } from '../utilities/countTokens';
 import { renderTemplate } from '../utilities/renderTemplate';
-import getMaxTokensByModel from '../utilities/getMaxTokensByModel';
 import getUserContextFields from '../utilities/getUserContextFields';
 import getOrganizationContextFields from '../utilities/getOrganizationContextFields';
 import { getRemainingAvailableTokens } from '../getRemainingAvailableTokens';
+import { Sidekick } from 'db/generated/prisma-client';
 
 export async function getCompletionRequest({
   context,
