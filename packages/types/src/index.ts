@@ -6,6 +6,9 @@ export interface Document extends DB.Document {
   pageContent: string;
   metadata: any;
 }
+export interface Sidekick extends DB.Sidekick {
+  favoritedBy?: Array<User>;
+}
 export type PineconeObject = {
   vectors: PineconeVector[];
 };
@@ -490,12 +493,16 @@ export type JiraComment = { key: string; self: string; id: string; fields: any; 
 // Replace the Sidekick interface with the following type
 
 export interface SidekickListItem
-  extends Pick<DB.Sidekick, 'id' | 'placeholder' | 'tags' | 'aiModel' | 'label'> {
+  extends Pick<
+    DB.Sidekick,
+    'id' | 'placeholder' | 'tags' | 'aiModel' | 'label' | 'chatflowDomain'
+  > {
   isFavorite: boolean;
   sharedWith: string;
   tagString: string;
   chatbotConfig: DB.Sidekick['chatflow']['chatbotConfig'];
   flowData: DB.Sidekick['chatflow']['flowData'];
+  answersConfig: DB.Sidekick['chatflow']['answersConfig'];
 }
 
 // Add the Sidekicks type

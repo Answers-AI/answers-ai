@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
-import { normalizeSidekickList } from '../../../../../utilities/normalizeSidekick';
+import { normalizeSidekickList } from '@utils/normalizeSidekick';
 
 export async function GET(req: Request) {
   try {

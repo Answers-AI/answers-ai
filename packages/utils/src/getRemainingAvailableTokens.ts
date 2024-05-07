@@ -1,9 +1,7 @@
-import { Organization, Sidekick, User } from 'types';
 import { renderTemplate } from './utilities/renderTemplate';
-import getOrganizationContextFields from './utilities/getOrganizationContextFields';
-import getUserContextFields from './utilities/getUserContextFields';
 import { countTokens } from './utilities/countTokens';
 import getMaxTokensByModel from './utilities/getMaxTokensByModel';
+import { Sidekick } from 'db/generated/prisma-client';
 
 //Calculates the remaining available tokens for a given input and optional context.
 export interface GetRemainingAvailableTokensProps {

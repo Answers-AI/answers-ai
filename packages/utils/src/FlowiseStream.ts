@@ -1,5 +1,6 @@
+import { Sidekick } from 'db/generated/prisma-client';
 import socketIOClient from 'socket.io-client';
-import { Chat, Sidekick } from 'types';
+import { Chat } from 'types';
 export const getFlowisePredictionStream = async ({
   // chat,
   sidekick,
