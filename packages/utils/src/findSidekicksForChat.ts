@@ -11,13 +11,14 @@ export async function findSidekicksForChat(user: User) {
         path: ['answersConfig', 'workflowVisibility'],
         array_contains: ['AnswerAI']
       },
+      organization: { id: user.org_id },
       OR: [
         { createdByUser: { id: user.id } },
         {
           organization: { id: user.org_id },
           chatflow: {
             path: ['answersConfig', 'workflowVisibility'],
-            array_contains: ['Organzation']
+            array_contains: ['Organization']
           }
         },
       ]
