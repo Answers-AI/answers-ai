@@ -6,19 +6,28 @@ import { User } from 'types';
 
 const getCachedSession = cache(
   async (req?: any, res: any = new Response()): Promise<{ user: User }> => {
-    let session = await (req && res ? auth0.getSession(req, res) : auth0.getSession());
-
-    if (!session) {
-      let token = req ? req.headers.get('authorization')?.split(' ')[1] : '';
-      if (!req) {
-        const { headers } = require('next/headers');
-        token = headers?.get('authorization')?.split(' ')[1] ?? token;
-      }
-      const jwks = jose.createRemoteJWKSet(new URL(process.env.AUTH0_JWKS_URI!));
-
-      const result = await jose.jwtVerify(token.replace('Bearer ', ''), jwks);
-      session = { user: result.payload };
+    let session;
+    try {
+      session = await (req && res ? auth0.getSession(req, res) : auth0.getSession());
+    } catch (err) {
+      console.log(`Auth0Error: ${err}`);
     }
+    if (!session) {
+      try {
+        let token = req ? req.headers.get('authorization')?.split(' ')[1] : '';
+        if (!req) {
+          const { headers } = require('next/headers');
+          token = headers?.get('authorization')?.split(' ')[1] ?? token;
+        }
+        const jwks = jose.createRemoteJWKSet(new URL(process.env.AUTH0_JWKS_URI!));
+
+        const result = await jose.jwtVerify(token.replace('Bearer ', ''), jwks);
+        session = { user: result.payload };
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
     const orgData = {
       organizations: {
         connectOrCreate: {

@@ -9,7 +9,7 @@ export const metadata = {
   description: 'Sidekick Studio'
 };
 
-const SidekickListPage = async ({ params }: any) => {
+const FlowisePage = async ({ params }: any) => {
   // Fetch app settings
 
   const session = await getCachedSession();
