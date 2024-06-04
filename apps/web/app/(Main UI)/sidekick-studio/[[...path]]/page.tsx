@@ -5,7 +5,7 @@ import IframeNavigator from '@ui/IframeNavigator';
 import { redirect } from 'next/navigation';
 
 export const metadata = {
-  title: 'Sidekicks | Sidekick Studio | Answers AI',
+  title: 'Sidekick Studio | Answers AI',
   description: 'Sidekick Studio'
 };
 
@@ -28,4 +28,4 @@ const SidekickListPage = async ({ params }: any) => {
   return <IframeNavigator src={`${chatflowDomain}/${path}`} />;
 };
 
-export default SidekickListPage;
+export default FlowisePage;

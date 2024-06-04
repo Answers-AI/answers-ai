@@ -37,17 +37,28 @@ const menuConfig = [
   // },
   {
     text: 'Sidekick Studio',
-    // link: '/sidekick-studio',
+    link: '/sidekick-studio/chatflows',
     icon: <SmartToy />,
     subMenu: [
-      { text: 'Sidekicks', link: '/sidekick-studio/assistants' },
-      { text: 'Workflows', link: '/sidekick-studio/chatflows' },
-      { text: 'Templates', link: '/sidekick-studio/marketplaces' },
-      { text: 'Tools', link: '/sidekick-studio/tools' },
-      { text: 'Variables', link: '/sidekick-studio/variables' },
-      { text: 'Credentials', link: '/sidekick-studio/credentials' }
+      // { text: 'Sidekicks', link: '/sidekick-studio/assistants' },
+      // { text: 'Workflows', link: '/sidekick-studio/chatflows' },
+      // { text: 'Agents', link: '/sidekick-studio/agentflows' },
+      // { text: 'Templates', link: '/sidekick-studio/marketplaces' },
+      // { text: 'Tools', link: '/sidekick-studio/tools' },
+      // { text: 'Variables', link: '/sidekick-studio/variables' },
+      // { text: 'Credentials', link: '/sidekick-studio/credentials' }
     ]
   }
+  // { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
+  // {
+  //   text: 'Settings',
+  //   // link: '/settings',
+  //   icon: <SettingsIcon />,
+  //   subMenu: [
+  //     { text: 'Organization', link: '/settings/organization' },
+  //     { text: 'User', link: '/settings/user' }
+  //   ]
+  // }
   // { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
   // {
   //   text: 'Settings',
@@ -173,6 +184,9 @@ export const AppDrawer = ({ session, chatList }: any) => {
             onMouseLeave={() => setSubmenuOpen('')}>
             <ListItem disablePadding>
               <ListItemButton
+                selected={!!item.link && pathname.startsWith(item.link)}
+                href={item.link}
+                component={item.link ? NextLink : 'button'}
                 sx={{ flex: 1, display: 'flex', width: '100%' }}
                 onClick={() => setSubmenuOpen(item.text == submenuOpen ? '' : item.text)}>
                 <ListItemIcon>{item.icon}</ListItemIcon>
@@ -191,7 +205,7 @@ export const AppDrawer = ({ session, chatList }: any) => {
               </ListItemButton>
             </ListItem>
 
-            <Collapse
+            {/* <Collapse
               in={
                 drawerOpen &&
                 (submenuOpen === item?.text ||
@@ -212,7 +226,7 @@ export const AppDrawer = ({ session, chatList }: any) => {
                   </ListItemButton>
                 </ListItem>
               ))}
-            </Collapse>
+            </Collapse> */}
           </Box>
         ))}
 
