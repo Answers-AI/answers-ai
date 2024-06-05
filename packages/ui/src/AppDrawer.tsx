@@ -249,8 +249,26 @@ export const AppDrawer = ({ session, chatList }: any) => {
                 }}
               />
               <Box>
-                <Typography variant="body2">{user?.name}</Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    maxWidth: '123px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
+                  {user?.name}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    opacity: 0.9,
+                    maxWidth: '123px',
+                    width: '100%',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
                   {user?.org_name}
                 </Typography>
               </Box>
