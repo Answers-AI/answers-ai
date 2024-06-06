@@ -29,7 +29,10 @@ export const normalizeSidekickListItem = (sidekick: Sidekick, user?: User): Side
     label: sidekick.label || '',
     sharedWith: sharedWith,
     isFavorite: hasFavorited,
+    chatflow: sidekick.chatflow,
     answersConfig: sidekick.chatflow?.answersConfig,
+    chatflowId: sidekick.chatflow?.id || '',
+    chatflowDomain: sidekick.chatflowDomain,
     chatbotConfig: parseChatbotConfig(sidekick.chatflow?.chatbotConfig),
     flowData: parseFlowData(sidekick.chatflow?.flowData)
   };

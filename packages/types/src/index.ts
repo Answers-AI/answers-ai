@@ -500,6 +500,7 @@ export interface SidekickListItem
   isFavorite: boolean;
   sharedWith: string;
   tagString: string;
+  chatflowId: string;
   chatbotConfig: DB.Sidekick['chatflow']['chatbotConfig'];
   flowData: DB.Sidekick['chatflow']['flowData'];
   answersConfig: DB.Sidekick['chatflow']['answersConfig'];

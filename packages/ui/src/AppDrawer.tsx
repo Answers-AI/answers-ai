@@ -19,8 +19,10 @@ import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import SmartToy from '@mui/icons-material/SmartToy';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AIIcon from '@mui/icons-material/SmartButton';
 import { usePathname } from 'next/navigation';
+import { Menu, MenuItem } from '@mui/material';
 
 const drawerWidth = 240;
 
@@ -37,16 +39,18 @@ const menuConfig = [
   // },
   {
     text: 'Sidekick Studio',
-    link: '/sidekick-studio/chatflows',
+    link: '/sidekick-studio',
     icon: <SmartToy />,
     subMenu: [
-      // { text: 'Sidekicks', link: '/sidekick-studio/assistants' },
-      // { text: 'Workflows', link: '/sidekick-studio/chatflows' },
-      // { text: 'Agents', link: '/sidekick-studio/agentflows' },
-      // { text: 'Templates', link: '/sidekick-studio/marketplaces' },
-      // { text: 'Tools', link: '/sidekick-studio/tools' },
-      // { text: 'Variables', link: '/sidekick-studio/variables' },
-      // { text: 'Credentials', link: '/sidekick-studio/credentials' }
+      { text: 'Workflows', link: '/sidekick-studio/chatflows' },
+      { text: 'Agentflows', link: '/sidekick-studio/agentflows' },
+      { text: 'Marketplaces', link: '/sidekick-studio/marketplaces' },
+      { text: 'Tools', link: '/sidekick-studio/tools' },
+      { text: 'Assistants', link: '/sidekick-studio/assistants' },
+      { text: 'Credentials', link: '/sidekick-studio/credentials' },
+      { text: 'Variables', link: '/sidekick-studio/variables' },
+      { text: 'API Keys', link: '/sidekick-studio/apikey' },
+      { text: 'Document Stores', link: '/sidekick-studio/document-stores' },
     ]
   }
   // { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
@@ -130,6 +134,15 @@ export const AppDrawer = ({ session, chatList }: any) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [submenuOpen, setSubmenuOpen] = useState('');
   const pathname = usePathname();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   // Drawer style based on open state
   const drawerStyle = {
     width: drawerOpen ? drawerWidth : 0, // Adjust width based on state
@@ -205,9 +218,10 @@ export const AppDrawer = ({ session, chatList }: any) => {
               </ListItemButton>
             </ListItem>
 
-            {/* <Collapse
+            <Collapse
               in={
                 drawerOpen &&
+                !pathname?.includes(item?.link) &&
                 (submenuOpen === item?.text ||
                   item?.subMenu?.some((subItem) => pathname === subItem.link))
               }
@@ -226,7 +240,7 @@ export const AppDrawer = ({ session, chatList }: any) => {
                   </ListItemButton>
                 </ListItem>
               ))}
-            </Collapse> */}
+            </Collapse>
           </Box>
         ))}
 
@@ -237,22 +251,31 @@ export const AppDrawer = ({ session, chatList }: any) => {
               alignItems: 'center',
               justifyContent: 'space-between',
               width: '100%',
+              gap: 1,
               pl: 0.5
             }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar
-                src={user?.image}
-                sx={{
-                  bgcolor: 'secondary.main',
-                  height: '32px',
-                  width: '32px'
-                }}
-              />
-              <Box>
+            <Avatar
+              src={user?.image}
+              sx={{
+                bgcolor: 'secondary.main',
+                height: '32px',
+                width: '32px'
+              }}
+            />
+            <Box
+              sx={{
+                display: 'flex',
+                overflow: 'hidden',
+                alignItems: 'center',
+                width: '100%',
+                // gap: 2,
+                maxWidth: 124
+              }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 <Typography
-                  variant="body2"
+                  variant="caption"
                   sx={{
-                    maxWidth: '123px',
+                    width: '100%',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap'
@@ -260,25 +283,61 @@ export const AppDrawer = ({ session, chatList }: any) => {
                   {user?.name}
                 </Typography>
                 <Typography
-                  variant="body2"
+                  variant="caption"
                   sx={{
-                    opacity: 0.9,
-                    maxWidth: '123px',
                     width: '100%',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap'
                   }}>
-                  {user?.org_name}
+                  {user?.email}
                 </Typography>
               </Box>
             </Box>
             <IconButton
-              aria-label={'sign out'}
-              href="/api/auth/logout"
-              sx={{ minHeight: 48, width: 48, justifyContent: 'center' }}>
-              <ExitToAppIcon />
+              aria-label="more options"
+              sx={{ minHeight: 48, width: 48, justifyContent: 'center' }}
+              aria-controls="simple-menu"
+              aria-haspopup="true"
+              onClick={handleClick}>
+              <MoreVertIcon />
             </IconButton>
+            <Menu
+              id="simple-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleClose}>
+              <MenuItem
+                variant="caption"
+disabled
+>
+<Typography
+                sx={{
+                  opacity: 0.9,
+                  width: '100%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}>
+                {user?.org_name}
+              </Typography>
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  window.location.href = '/api/auth/login';
+                }}>
+                Switch Organization
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  window.location.href = '/api/auth/logout';
+                }}>
+                Sign Out
+              </MenuItem>
+            </Menu>
           </Box>
         </ListItem>
       </List>

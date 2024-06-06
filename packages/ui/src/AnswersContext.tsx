@@ -78,7 +78,7 @@ interface AnswersContextType {
   setChatId: any;
   setJourneyId: any;
   setSidekick: (arg: SetStateAction<Sidekick>) => void;
-  sidekick?: Sidekick;
+  sidekick?: Sidekick | SidekickListItem;
   chatbotConfig?: ChatbotConfig;
   flowData?: FlowData;
   gptModel: string;
