@@ -58,13 +58,13 @@ const getCachedSession = cache(
       });
       session.user.id = user.id;
       session.user.organizationId = user.organizationId;
+      console.log(
+        'Session:',
+        session.user.email,
+        session.user.organizationId,
+        session.user.chatflowDomain
+      );
     }
-    console.log(
-      'Session:',
-      session.user.email,
-      session.user.organizationId,
-      session.user.chatflowDomain
-    );
     return session as { user: User };
   }
 );
