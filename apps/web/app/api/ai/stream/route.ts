@@ -10,7 +10,6 @@ export async function POST(req: Request) {
   try {
     const session = await getCachedSession();
     const user = session?.user!;
-    console.log('POST /api/ai/stream', { user });
     if (!user?.email) {
       return Response.redirect('/', 401);
     }
@@ -45,7 +44,9 @@ export async function POST(req: Request) {
       sidekickId
     });
 
-    const { accessToken } = await auth0.getAccessToken();
+    const { accessToken } = await auth0.getAccessToken({
+      authorizationParams: { organization: user.organizationId }
+    });
     if (!accessToken) throw new Error('No access token found');
 
     const stream = await getFlowisePredictionStream({

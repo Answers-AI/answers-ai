@@ -22,7 +22,9 @@ const SidekickSelect = ({
     const res = await fetch(url);
     return res.json();
   };
-  const { data: allSidekicks } = useSWR('/api/sidekicks', fetcher);
+  const { data: allSidekicks = [] } = useSWR('/api/sidekicks', fetcher, {
+    fallback: defaultSidekicks
+  });
 
   const [selectedSidekick, setSelectedSidekick] = useState<number>(0);
   const sidekicks = useMemo(

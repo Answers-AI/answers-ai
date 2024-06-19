@@ -6,7 +6,9 @@ import auth0 from '@utils/auth/auth0';
 export async function findSidekicksForChat(user: User) {
   let token;
   try {
-    const { accessToken } = await auth0.getAccessToken({});
+    const { accessToken } = await auth0.getAccessToken({
+      authorizationParams: { organization: user.org_name }
+    });
     if (!accessToken) throw new Error('No access token found');
     token = accessToken;
   } catch (err) {
@@ -16,16 +18,11 @@ export async function findSidekicksForChat(user: User) {
   // CAll the chatflow flowise endpoint with the token
   // Use the chatflowDomain field on the user
   const { chatflowDomain } = user;
-  console.log('FindSidekicskFor', { user, token });
-
-  // TODO: Filter by workflowVisibility
-  console.log('chatflowDomain', chatflowDomain);
   try {
     const response = await fetch(
       `${chatflowDomain}/api/v1/chatflows?filter=${encodeURIComponent(
         JSON.stringify({
-          visibility: 'AnswerAI,Organization',
-          auth0_org_id: 'org_1QkS192v6ruV0c1b'
+          visibility: 'AnswerAI,Organization'
         })
       )}`,
       {
