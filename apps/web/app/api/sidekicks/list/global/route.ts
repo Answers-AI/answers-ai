@@ -2,11 +2,12 @@ import { NextResponse } from 'next/server';
 import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 import { normalizeSidekickList } from '@utils/normalizeSidekick';
+import { redirect } from 'next/navigation';
 
 export async function GET(req: Request) {
   try {
     const session = await getCachedSession();
-    if (!session?.user?.email) return NextResponse.redirect('/auth');
+    if (!session?.user?.email) return redirect('/auth');
 
     const user = session.user;
     const userId = user.id;

@@ -50,7 +50,7 @@ const menuConfig = [
       { text: 'Credentials', link: '/sidekick-studio/credentials' },
       { text: 'Variables', link: '/sidekick-studio/variables' },
       { text: 'API Keys', link: '/sidekick-studio/apikey' },
-      { text: 'Document Stores', link: '/sidekick-studio/document-stores' },
+      { text: 'Document Stores', link: '/sidekick-studio/document-stores' }
     ]
   }
   // { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
@@ -280,17 +280,18 @@ export const AppDrawer = ({ session, chatList }: any) => {
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap'
                   }}>
-                  {user?.name}
+                  {user?.email}
                 </Typography>
                 <Typography
                   variant="caption"
                   sx={{
+                    // opacity: 0.9,
                     width: '100%',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap'
                   }}>
-                  {user?.email}
+                  {user?.org_name}
                 </Typography>
               </Box>
             </Box>
@@ -308,20 +309,17 @@ export const AppDrawer = ({ session, chatList }: any) => {
               keepMounted
               open={Boolean(anchorEl)}
               onClose={handleClose}>
-              <MenuItem
-                variant="caption"
-disabled
->
-<Typography
-                sx={{
-                  opacity: 0.9,
-                  width: '100%',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}>
-                {user?.org_name}
-              </Typography>
+              <MenuItem variant="caption" disabled>
+                <Typography
+                  sx={{
+                    opacity: 0.9,
+                    width: '100%',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
+                  {user?.org_name}
+                </Typography>
               </MenuItem>
               <MenuItem
                 onClick={() => {

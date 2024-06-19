@@ -6,7 +6,7 @@ import { User } from 'types';
 
 const getCachedSession = cache(
   async (req?: any, res: any = new Response()): Promise<{ user: User }> => {
-    let session;
+    let session = null;
     try {
       session = await (req && res ? auth0.getSession(req, res) : auth0.getSession());
     } catch (err) {
@@ -23,26 +23,26 @@ const getCachedSession = cache(
 
         const result = await jose.jwtVerify(token.replace('Bearer ', ''), jwks);
         session = { user: result.payload };
-      } catch (err) {
-        console.log(err);
+      } catch (err: any) {
+        console.log('next/headers->Error', err.message);
       }
     }
 
-    const orgData = {
-      organizations: {
-        connectOrCreate: {
-          where: { id: session.user.org_id },
-          create: { id: session.user.org_id, name: session.user.org_name }
-        }
-      },
-      currentOrganization: {
-        connectOrCreate: {
-          where: { id: session.user.org_id },
-          create: { id: session.user.org_id, name: session.user.org_name }
-        }
-      }
-    };
     if (session?.user) {
+      const orgData = {
+        organizations: {
+          connectOrCreate: {
+            where: { id: session.user.org_id },
+            create: { id: session.user.org_id, name: session.user.org_name }
+          }
+        },
+        currentOrganization: {
+          connectOrCreate: {
+            where: { id: session.user.org_id },
+            create: { id: session.user.org_id, name: session.user.org_name }
+          }
+        }
+      };
       const user = await prisma.user.upsert({
         where: {
           email: session.user.email

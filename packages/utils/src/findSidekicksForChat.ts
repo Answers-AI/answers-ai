@@ -3,6 +3,7 @@ import { normalizeSidekickList } from './normalizeSidekick';
 import { User } from 'types';
 
 export async function findSidekicksForChat(user: User) {
+  if (!user) return [];
   const dbSidekicks = await prisma.sidekick.findMany({
     where: {
       tags: { has: 'flowise' },
@@ -20,7 +21,7 @@ export async function findSidekicksForChat(user: User) {
             path: ['answersConfig', 'workflowVisibility'],
             array_contains: ['Organization']
           }
-        },
+        }
       ]
     }
   });

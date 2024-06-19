@@ -26,7 +26,7 @@ const Chat = async ({ chat, journey, sidekicks }: Params) => {
         <Modal />
       </Suspense>
       <Suspense fallback={<div>Loading...</div>}>
-        <ChatDetail appSettings={appSettings} sidekicks={sidekicks} />
+        <ChatDetail appSettings={appSettings} sidekicks={sidekicks} session={JSON.parse(JSON.stringify(session))}/>
       </Suspense>
     </AnswersProvider>
   );

@@ -67,16 +67,16 @@ export function parseObjectRecursively(obj: any): any {
 
 // Function to parse the 'chatbotConfig' JSON string using the generic parsing approach
 
-const parseFlowData = (flowDataJson: string): FlowData =>
+export const parseFlowData = (flowDataJson: string): FlowData =>
   parseObjectRecursively(JSON.parse(flowDataJson)) as FlowData;
 
-function parseChatbotConfig(chatbotConfigJson?: string): ChatbotConfig | null {
+export function parseChatbotConfig(chatbotConfigJson?: string): ChatbotConfig | null {
   if (!chatbotConfigJson) return null;
   const parsedObj = JSON.parse(chatbotConfigJson);
   return parseObjectRecursively(parsedObj) as ChatbotConfig;
 }
 
-function parseAnswersConfig(answersConfigJson?: string): AnswersConfig | null {
+export function parseAnswersConfig(answersConfigJson?: string): AnswersConfig | null {
   if (!answersConfigJson) return null;
   const parsedObj = JSON.parse(answersConfigJson);
   return parseObjectRecursively(parsedObj) as AnswersConfig;
