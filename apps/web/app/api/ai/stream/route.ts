@@ -10,6 +10,7 @@ export async function POST(req: Request) {
   try {
     const session = await getCachedSession();
     const user = session?.user!;
+    console.log('POST /api/ai/stream', { user });
     if (!user?.email) {
       return Response.redirect('/', 401);
     }
@@ -34,26 +35,10 @@ export async function POST(req: Request) {
       // filters,
       prompt,
       messages,
-      sidekick: { id: sidekickId = null } = {}
+      sidekick
     } = await req.json();
-    const sidekick = !sidekickId
-      ? null
-      : ((await prisma.sidekick.findFirst({
-          where: {
-            id: sidekickId
-          }
-        })) as any);
 
-    if (!sidekick) {
-      return new Response(
-        JSON.stringify({
-          message: 'There was an error replying to your message. Please try again.',
-          code: 'Sidekick not found'
-        }),
-        { status: 404 }
-      );
-    }
-
+    const sidekickId = sidekick?.id;
     console.log('POST /api/ai/stream', {
       user: user.email,
       organzation: user.organizationId,
