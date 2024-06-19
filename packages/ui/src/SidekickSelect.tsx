@@ -6,6 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 
 import Fieldset from './Fieldset';
 import type { Sidekick } from 'types';
+import useSWR from 'swr';
 
 interface SidekickSelectProps {
   onSidekickSelected: (sidekick: Sidekick) => void;
@@ -14,8 +15,15 @@ interface SidekickSelectProps {
 
 const SidekickSelect = ({
   onSidekickSelected,
-  sidekicks: allSidekicks = []
+  sidekicks: defaultSidekicks = []
 }: SidekickSelectProps) => {
+  // Implement the sidekicsk state using useSWR with the /api/sidekicks endpoint, use the sidekicks in the props as initial state
+  const fetcher = async (url: string) => {
+    const res = await fetch(url);
+    return res.json();
+  };
+  const { data: allSidekicks } = useSWR('/api/sidekicks', fetcher);
+
   const [selectedSidekick, setSelectedSidekick] = useState<number>(0);
   const sidekicks = useMemo(
     () => [...allSidekicks].sort((a, b) => a.label.localeCompare(b.label)),
