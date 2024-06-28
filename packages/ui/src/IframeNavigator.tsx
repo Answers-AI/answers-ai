@@ -52,7 +52,6 @@ const IframeNavigator: React.FC<IframeNavigatorProps> = ({
           // Push the new pathname to the history
           window.history.pushState({}, '', newPathname);
 
-          console.log({ pathname, currentIframePath, newUrl, newPathname });
           debug && console.log(`Updated pathname to ${newPathname}`);
         }
       } catch (error) {

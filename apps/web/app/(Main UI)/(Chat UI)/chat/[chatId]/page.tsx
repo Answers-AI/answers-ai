@@ -30,7 +30,6 @@ const getMessages = async ({ chat, user }: { chat: Partial<Chat>; user: User }) 
       contextDocuments: m.sourceDocuments ? JSON.parse(m.sourceDocuments) : []
     }));
   } catch (err) {
-    console.log({ err });
     return [];
   }
 };

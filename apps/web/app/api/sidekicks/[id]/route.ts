@@ -6,7 +6,6 @@ import { respond401 } from '@utils/auth/respond401';
 export async function GET(req: Request, { params: { id } }: { params: { id: string } }) {
   try {
     const session = await getCachedSession(req);
-    // console.log({ session });
     const userId = session?.user?.id;
     if (!userId) return respond401();
     // const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);
@@ -46,7 +45,6 @@ export async function GET(req: Request, { params: { id } }: { params: { id: stri
 export async function DELETE(req: Request, { params: { id } }: { params: { id: string } }) {
   console.log('DELETE Sidekick', { id });
   const session = await getCachedSession(req);
-  // console.log({ session });
   const userId = session?.user?.id;
   if (!userId) return respond401();
   // const flags = useFlags(['settings_stream', 'recommended_prompts_expand']);

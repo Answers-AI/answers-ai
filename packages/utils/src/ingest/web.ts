@@ -353,7 +353,6 @@ export const processWebScrape: EventVersionHandler<{
                   user: event.user
                 };
               });
-              // console.log({ recursiveEvents });
 
               if (recursiveEvents?.length) {
                 await inngest.send(recursiveEvents);

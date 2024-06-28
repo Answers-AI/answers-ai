@@ -104,6 +104,7 @@ export const darkModeTheme = createTheme({
         }
       }
     },
+
     MuiContainer: {
       defaultProps: { maxWidth: 'xxl' }
     },
