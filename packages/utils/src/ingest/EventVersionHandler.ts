@@ -50,8 +50,6 @@ export const createInngestFunctions = (eventHandlers: EventVersionHandler<unknow
           return result;
         } catch (error) {
           console.error(`EventID: ${ts} Error processing ${eventName}`);
-          // console.log({ eventHandlerMap, handler, error });
-          console.log({ error });
           throw error;
         } finally {
           console.timeEnd(`EventID: ${ts} EventName: ${eventName} Status: Processed Duration:`);

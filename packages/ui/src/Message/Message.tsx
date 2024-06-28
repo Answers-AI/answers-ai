@@ -90,7 +90,6 @@ export const MessageCard = ({
       ),
     [allContextDocuments]
   );
-  console.log({ allContextDocuments, contextDocuments });
   const [showFeedback, setShowFeedback] = useState(false);
   const services: { [key: string]: AppService } =
     appSettings?.services?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};

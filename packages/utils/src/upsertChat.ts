@@ -25,13 +25,7 @@ export async function upsertChat({
   //       where: { id: journeyId },
   //       data: { filters, users: { connect: { email: user.email! } } }
   //     }));
-  console.log('UpsertChat', {
-    id,
-    user,
-    sidekick: sidekick.id,
-    organization: user.organizationId,
-    prompt
-  });
+
   const chatProperties = {
     title: prompt,
     chatflowChatId,
