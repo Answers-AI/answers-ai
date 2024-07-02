@@ -13,6 +13,9 @@ const ChatDetailPage = async ({ params }: any) => {
   const session = await getCachedSession();
   const user = session?.user;
 
+  if (!user) {
+    return <Chat {...params} />;
+  }
   const sidekicks = await findSidekicksForChat(user);
 
   // @ts-expect-error Async Server Component
