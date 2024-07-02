@@ -45,7 +45,6 @@
     "REDIS_URL",
     "SLACK_CLIENT_ID",
     "SLACK_CLIENT_SECRET",
-    "VERCEL_URL",
     "VITE_API_URL",
     "VITE_APP_URL"
   ],
