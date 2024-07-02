@@ -1,7 +1,7 @@
-import { parseChatbotConfig, parseFlowData } from './normalizeSidekick';
+import { parseChatbotConfig, parseFlowData } from '@utils/normalizeSidekick';
 import { User } from 'types';
-import { redirect } from 'next/navigation';
 import auth0 from '@utils/auth/auth0';
+import { respond401 } from '@utils/auth/respond401';
 
 export async function findSidekicksForChat(user: User) {
   let token;
@@ -13,7 +13,8 @@ export async function findSidekicksForChat(user: User) {
     token = accessToken;
   } catch (err) {
     // On error redirect to auth0 sign in
-    redirect('/api/auth/login');
+    console.log('Error', err);
+    return respond401();
   }
   // CAll the chatflow flowise endpoint with the token
   // Use the chatflowDomain field on the user
