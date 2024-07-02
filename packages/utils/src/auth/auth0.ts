@@ -12,10 +12,10 @@ export default initAuth0({
   baseURL: process.env.AUTH0_BASE_URL,
   clientID: process.env.AUTH0_CLIENT_ID,
   clientSecret: process.env.AUTH0_CLIENT_SECRET,
-  idTokenSigningAlg: process.env.AUTH0_TOKEN_SIGN_ALG,
-  session: {
-    cookie: {
-      domain: process.env.AUTH0_COOKIE_DOMAIN ?? 'https://theanswer.ai'
-    }
-  }
+  idTokenSigningAlg: process.env.AUTH0_TOKEN_SIGN_ALG
+  // session: {
+  //   cookie: {
+  //     domain: process.env.AUTH0_COOKIE_DOMAIN ?? 'https://theanswer.ai'
+  //   }
+  // }
 });
