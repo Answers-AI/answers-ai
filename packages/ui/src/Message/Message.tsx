@@ -100,7 +100,9 @@ export const MessageCard = ({
   } else if (!content && error) {
     content = 'There was an error replying: ' + error?.message;
   }
-  const hasContent = role === 'apiMessage' ? content : !!content;
+  const isUserMessage = role === 'userMessage' || role === 'user';
+
+  const hasContent = !isUserMessage ? content : !!content;
   if (error) {
     pineconeData = error?.response?.data.pineconeData;
     summary = error?.response?.data.summary;
@@ -187,12 +189,12 @@ export const MessageCard = ({
             <Box sx={{ gap: 2, display: 'flex' }}>
               <Avatar
                 src={
-                  role == 'userMessage'
-                    ? user?.image || currentUser?.image!
+                  isUserMessage
+                    ? currentUser?.image || currentUser?.image!
                     : '/static/images/logos/answerai-logo.png'
                 }
                 sx={{
-                  bgcolor: role == 'userMessage' ? 'secondary.main' : 'primary.main',
+                  bgcolor: isUserMessage ? 'secondary.main' : 'primary.main',
                   height: isWidget ? '24px' : '32px',
                   width: isWidget ? '24px' : '32px',
                   ...(role !== 'userMessage' && {
@@ -200,7 +202,7 @@ export const MessageCard = ({
                     background: 'white'
                   })
                 }}
-                title={role == 'apiMessage' ? 'AI' : user?.name?.charAt(0)}
+                title={!isUserMessage ? 'AI' : user?.name?.charAt(0)}
               />
               {hasContent && content ? (
                 <>
@@ -350,7 +352,7 @@ export const MessageCard = ({
             ) : null}
           </CardContent>
 
-          {role === 'apiMessage' ? (
+          {!isUserMessage ? (
             <CardActions
               sx={{
                 zIndex: 1000,
