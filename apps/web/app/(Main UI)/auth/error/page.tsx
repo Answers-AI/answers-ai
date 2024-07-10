@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import Auth from '@ui/Auth';
 
 export const metadata = {
@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 const AuthenticationErrorPage = async ({ params }: any) => {
-  return <Auth {...params} />;
+  return <Suspense><Auth {...params} /></Suspense>;
 };
 
 export default AuthenticationErrorPage;
