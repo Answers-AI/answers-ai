@@ -11,26 +11,33 @@ import { User } from 'types';
 const getMessages = async ({ chat, user }: { chat: Partial<Chat>; user: User }) => {
   try {
     const { id, chatflowChatId } = chat;
-    const { accessToken } = await auth0.getAccessToken();
+    const { accessToken } = await auth0.getAccessToken({
+      authorizationParams: { organization: user.org_name }
+    });
+    if (!accessToken) throw new Error('No access token found');
     const { chatflowDomain } = user;
     if (!chatflowChatId) return [];
-
-    const result = await fetch(
-      chatflowDomain?.replace('8080', '4000') + `/api/v1/chatmessage?chatId=${chatflowChatId}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        }
+    console.log('FetchFlowise', chatflowDomain + `/api/v1/chatmessage?chatId=${chatflowChatId}`);
+    const result = await fetch(chatflowDomain + `/api/v1/chatmessage?chatId=${chatflowChatId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
       }
-    );
+    });
     const messages = await result.json();
+    if (!result.ok) {
+      const error = new Error(messages.message);
+      error.status = messages.status;
+      throw error;
+    }
+    console.log('messages', messages);
     return messages?.map((m: any) => ({
       ...m,
       contextDocuments: m.sourceDocuments ? JSON.parse(m.sourceDocuments) : []
     }));
   } catch (err) {
-    return [];
+    console.error('Error fetching messages', err);
+    throw err;
   }
 };
 export const metadata = {

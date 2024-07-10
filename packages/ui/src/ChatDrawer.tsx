@@ -61,7 +61,56 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
   const pathname = usePathname();
   const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen);
   const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({ chats: true });
-
+  // Chats grouped in an object by today, yesterday, last 7 days, last month, and monthly
+  const getDateKey = (chat: Chat) => {
+    const date = new Date(chat.createdAt);
+    const now = new Date();
+    if (
+      date.getDate() === now.getDate() &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+    ) {
+      return 'Today';
+    }
+    if (
+      date.getDate() === now.getDate() - 1 &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+    ) {
+      return 'Yesterday';
+    }
+    if (
+      date.getDate() >= now.getDate() - 7 &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+    ) {
+      return 'Last 7 days';
+    }
+    if (
+      date.getDate() >= now.getDate() - 30 &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+    ) {
+      return 'Last 30 days';
+    }
+    // Return the month if it's this year
+    if (date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()) {
+      return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+    }
+    // Return month and year
+    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+  };
+  const chatsByDate = React.useMemo(
+    () =>
+      chats?.reduce(
+        (accum: { [key: string]: Chat[] }, chat) => ({
+          ...accum,
+          [getDateKey(chat)]: [...(accum[getDateKey(chat)] || []), chat]
+        }),
+        {}
+      ),
+    [chats]
+  );
   const handleDrawerOpen = () => {
     window.localStorage.setItem('drawerOpen', 'true');
     setOpen(true);
@@ -207,30 +256,45 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
             <Add />
           </IconButton> */}
         </ListItem>
-        {chats?.map((chat) => (
-          <ListItem
-            key={chat.id}
-            disablePadding
-            sx={{
-              'transition': '.2s',
-              '.MuiDrawer-closed &': {
-                opacity: 0
-              }
-            }}>
-            <ListItemButton
-              selected={pathname === `/chat/${chat.id}`}
-              href={`/chat/${chat.id}`}
-              component={NextLink}>
-              <ListItemText
-                secondary={chat.title}
-                sx={
-                  pathname === `/chat/${chat.id}`
-                    ? { '.MuiListItemText-secondary': { color: 'white' } }
-                    : {}
+        {Object.entries(chatsByDate || {}).map(([date, chats]) => (
+          <Box key={date} sx={{ mb: 1 }}>
+            <ListItem
+              sx={{
+                'px': 1,
+                'transition': '.2s',
+                '.MuiDrawer-closed &': {
+                  opacity: 0
                 }
-              />
-            </ListItemButton>
-          </ListItem>
+              }}
+              disablePadding>
+              <ListItemText primary={date} primaryTypographyProps={{ variant: 'caption' }} />
+            </ListItem>
+            {chats.map((chat) => (
+              <ListItem
+                key={chat.id}
+                disablePadding
+                sx={{
+                  'transition': '.2s',
+                  '.MuiDrawer-closed &': {
+                    opacity: 0
+                  }
+                }}>
+                <ListItemButton
+                  selected={pathname === `/chat/${chat.id}`}
+                  href={`/chat/${chat.id}`}
+                  component={NextLink}>
+                  <ListItemText
+                    secondary={chat.title}
+                    sx={
+                      pathname === `/chat/${chat.id}`
+                        ? { '.MuiListItemText-secondary': { color: 'white' } }
+                        : {}
+                    }
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </Box>
         ))}
       </List>
       {/* </Drawer> */}

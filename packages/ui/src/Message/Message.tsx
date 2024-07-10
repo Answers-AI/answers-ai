@@ -75,6 +75,7 @@ export const MessageCard = ({
   contextDocuments: allContextDocuments,
   ...other
 }: MessageCardProps) => {
+  other = { ...other, role, user } as any;
   const { developer_mode } = useFlags(['developer_mode']); // only causes re-render if specified flag values / traits change
   const { user: currentUser, sendMessageFeedback, appSettings } = useAnswers();
   const contextDocuments = React.useMemo(
@@ -99,7 +100,7 @@ export const MessageCard = ({
   } else if (!content && error) {
     content = 'There was an error replying: ' + error?.message;
   }
-  const hasContent = role === 'assistant' ? content : !!content;
+  const hasContent = role === 'apiMessage' ? content : !!content;
   if (error) {
     pineconeData = error?.response?.data.pineconeData;
     summary = error?.response?.data.summary;
@@ -186,20 +187,20 @@ export const MessageCard = ({
             <Box sx={{ gap: 2, display: 'flex' }}>
               <Avatar
                 src={
-                  role == 'user'
+                  role == 'userMessage'
                     ? user?.image || currentUser?.image!
                     : '/static/images/logos/answerai-logo.png'
                 }
                 sx={{
-                  bgcolor: role == 'user' ? 'secondary.main' : 'primary.main',
+                  bgcolor: role == 'userMessage' ? 'secondary.main' : 'primary.main',
                   height: isWidget ? '24px' : '32px',
                   width: isWidget ? '24px' : '32px',
-                  ...(role !== 'user' && {
+                  ...(role !== 'userMessage' && {
                     padding: 1,
                     background: 'white'
                   })
                 }}
-                title={role == 'assistant' ? 'AI' : user?.name?.charAt(0)}
+                title={role == 'apiMessage' ? 'AI' : user?.name?.charAt(0)}
               />
               {hasContent && content ? (
                 <>
@@ -349,7 +350,7 @@ export const MessageCard = ({
             ) : null}
           </CardContent>
 
-          {role === 'assistant' ? (
+          {role === 'apiMessage' ? (
             <CardActions
               sx={{
                 zIndex: 1000,
