@@ -16,7 +16,7 @@ export const getAppSettings = React.cache(async function getAppSettings(
   if (session?.user) {
     settings = session.user.appSettings as AppSettings;
     orgSettings = session.user.currentOrganization?.appSettings;
-    settings = deepmerge({}, orgSettings, settings);
+    settings = deepmerge({}, SYSTEM_SETTINGS,orgSettings ?? {}, session.user.appSettings);
     settings.chatflowDomain =
       session.user?.chatflowDomain ??
       orgSettings?.chatflowDomain ??

@@ -331,11 +331,19 @@ export const MessageCard = ({
                         '&:hover': { textDecoration: 'none' }
                       }}
                       startIcon={
-                        <Avatar
-                          variant="source"
-                          src={services[doc.source ?? doc.metadata?.source]?.imageURL}
-                          sx={{ width: 20, height: 20 }}
-                        />
+                        services[doc.source ?? doc.metadata?.source]?.imageURL ? (
+                          <Avatar
+                            variant="source"
+                            src={services[doc.source ?? doc.metadata?.source]?.imageURL}
+                            sx={{ width: 20, height: 20 }}
+                          />
+                        ) : (
+                         <Avatar
+                            variant="source"
+                            src={services['document']?.imageURL}
+                            sx={{ width: 20, height: 20 }}
+                          />
+                        )
                       }>
                       {doc.title ??
                         doc.url ??

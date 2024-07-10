@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation';
 export async function GET(req: Request) {
   try {
     const session = await getCachedSession();
-    if (!session?.user?.email) return redirect('/auth');
+    if (!session?.user?.email) return respond401();
 
     const user = session.user;
     const userId = user.id;
