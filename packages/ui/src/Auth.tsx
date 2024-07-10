@@ -1,29 +1,25 @@
 'use client';
 import { Session } from '@auth0/nextjs-auth0';
 import { ClientSafeProvider, signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
+import { Stack, Card } from '@mui/material';
+
 type AuthFormInputs = {
   email: string;
   password: string;
 };
 interface AuthProps {
-  session?: Session;
-  // appSettings: AppSettings;
   providers: Record<string, ClientSafeProvider> | null;
 }
-const Auth = ({ session, providers }: AuthProps) => {
-  const router = useRouter();
-
-  if (session) {
-    router.push('/');
-    return null;
-  }
+const Auth = ({}: AuthProps) => {
+  // Extract error message from query params
+  const error = useSearchParams().get('error');
 
   return (
     <Container
@@ -33,67 +29,34 @@ const Auth = ({ session, providers }: AuthProps) => {
         alignItems: 'center',
         height: '100vh',
         overflow: 'auto',
-        width: 'auto'
+        width: 'auto',
+        textAlign: 'center'
       }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
-        {/* <form onSubmit={handleSubmit(onSubmit)}>
-          <TextField
-            label="Email"
-            type="email"
-            variant="outlined"
-            {...register('email', { required: true })}
-          />
-          <TextField
-            label="Password"
-            type="password"
-            variant="outlined"
-            {...register('password', { required: true })}
-          />
-          {error && <p>{error}</p>}
-          <Button variant="contained" type="submit">
-            Login
-          </Button>
-        </form> */}
-        <Typography variant="h1">Answers AI</Typography>
-
-        <Box
-          sx={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            gap: 2
-          }}>
-          {Object.values(providers ?? {}).map((provider) => (
-            <Button
-              key={provider.id}
-              variant="contained"
-              onClick={() => signIn(provider.id)}
-              fullWidth>
-              Sign in with {provider.name}
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', maxWidth: 800 }}>
+        {error ? (
+          <Stack flexDirection="column" sx={{ alignItems: 'center', gap: 3 }}>
+            <Stack flexDirection="column" sx={{ alignItems: 'center', gap: 1 }}>
+              <Typography variant="h2">Oh snap!</Typography>
+              <Typography variant="h5">
+                The following error occured when loading this page.
+              </Typography>
+            </Stack>
+            <Card variant="outlined" sx={{ width: '100%' }}>
+              <Box sx={{ position: 'relative', px: 2, py: 3, width: '100%' }}>
+                <code>{error}</code>
+              </Box>
+            </Card>
+            <Typography
+              variant="body1"
+              sx={{ fontSize: '1.1rem', textAlign: 'center', lineHeight: '1.5' }}>
+              Please retry after some time. If the issue persists, reach out to us at
+              max@theanswer.ai
+            </Typography>
+            <Button variant="contained" type="submit" href="/api/auth/login">
+              Try again
             </Button>
-          ))}
-        </Box>
-        {/* <Box
-          sx={{
-            width: '100%',
-            gap: 2,
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gridAutoFlow: 'dense',
-            transition: '.3s'
-            // ...Object.keys(expanded).reduce(
-            //   (accum, key) => ({
-            //     ...accum,
-            //     [`> *:nth-child(${parseInt(key) + 1})`]: expanded[key]
-            //       ? { transition: '.3s', gridColumn: 'span 2' }
-            //       : {}
-            //   }),
-            //   {}
-            // )
-          }}>
-          <IntegrationsSettings appSettings={appSettings} />
-        </Box> */}
+          </Stack>
+        ) : null}
       </Box>
     </Container>
   );

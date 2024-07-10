@@ -7,6 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Fieldset from './Fieldset';
 import type { Sidekick } from 'types';
 import useSWR from 'swr';
+import { useRouter } from 'next/navigation';
 
 interface SidekickSelectProps {
   onSidekickSelected: (sidekick: Sidekick) => void;
@@ -17,10 +18,21 @@ const SidekickSelect = ({
   onSidekickSelected,
   sidekicks: defaultSidekicks = []
 }: SidekickSelectProps) => {
+  const router = useRouter();
   // Implement the sidekicsk state using useSWR with the /api/sidekicks endpoint, use the sidekicks in the props as initial state
   const fetcher = async (url: string) => {
-    const res = await fetch(url);
-    return res.json();
+    try {
+      const res = await fetch(url);
+      if (res.status === 401) {
+        router.push('/api/auth/login');
+      }
+      return res.json();
+    } catch (error) {
+      // Handle unauthorized response
+      console.log(error);
+
+      return [];
+    }
   };
   const { data: allSidekicks = [] } = useSWR('/api/sidekicks', fetcher, {
     fallback: defaultSidekicks

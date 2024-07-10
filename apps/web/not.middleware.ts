@@ -1,6 +1,6 @@
 export const config = {
   matcher: [
-    '/((?!api/codebase|api/ai/chat-completion|api/inngest|api/sidekicks/new|api/sidekicks/*|_next/static|_next/image|favicon.ico).*)'
+    '/((?!api/codebase|api/ai/chat-completion|api/inngest|api/sidekicks/new|api/sidekicks/*|_next/static|_next/image|favicon.ico|!api/auth/*).*)'
   ]
 };
 // middleware.js
@@ -18,9 +18,9 @@ const auth0 = initAuth0({
   idTokenSigningAlg: process.env.AUTH0_TOKEN_SIGN_ALG
 });
 
-export default auth0.withMiddlewareAuthRequired(async function middleware(req) {
+export default async function middleware(req) {
   const res = NextResponse.next();
   // const user = await auth0.getSession(req, res);
   // res.cookies.set('hl', user?.language);
   return res;
-});
+}
