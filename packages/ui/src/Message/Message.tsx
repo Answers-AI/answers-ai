@@ -23,6 +23,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ContentCopy from '@mui/icons-material/ContentCopy';
+import DocumentIcon from '@mui/icons-material/FirstPage';
 
 import { countTokens } from '@utils/utilities/countTokens';
 

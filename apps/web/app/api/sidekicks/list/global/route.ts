@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 import { normalizeSidekickList } from '@utils/normalizeSidekick';
-import { redirect } from 'next/navigation';
+
+import { respond401 } from '@utils/auth/respond401';
 
 export async function GET(req: Request) {
   try {
