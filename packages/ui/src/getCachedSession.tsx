@@ -29,11 +29,14 @@ const getCachedSession = cache(
     }
 
     if (session?.user) {
-      const dbOrg = await prisma.organization.findFirst({
+      let dbOrg = await prisma.organization.findFirst({
         where: {
           name: session.user.org_name
         }
       });
+      if (!dbOrg) {
+        dbOrg = { id: session.user.org_id, name: session.user.org_name } as any;
+      }
       const orgData = {
         organizations: {
           connectOrCreate: {

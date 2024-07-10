@@ -158,7 +158,7 @@ export const AppDrawer = ({ session, chatList }: any) => {
     <Drawer
       open={drawerOpen}
       variant="permanent"
-      onMouseEnter={() => setDrawerOpen(true)}
+      onMouseEnter={() => setDrawerOpen(!!session && true)}
       onMouseLeave={() => setDrawerOpen(false)}
       className={drawerOpen ? 'MuiDrawer-open' : 'MuiDrawer-closed'}
       sx={{}}>

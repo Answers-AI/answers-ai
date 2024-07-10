@@ -20,6 +20,14 @@ export async function findSidekicksForChat(user: User) {
   // Use the chatflowDomain field on the user
   const { chatflowDomain } = user;
   try {
+    console.log(
+      'FetchFlowise',
+      `${chatflowDomain}/api/v1/chatflows?filter=${encodeURIComponent(
+        JSON.stringify({
+          visibility: 'AnswerAI,Organization'
+        })
+      )}`
+    );
     const response = await fetch(
       `${chatflowDomain}/api/v1/chatflows?filter=${encodeURIComponent(
         JSON.stringify({
