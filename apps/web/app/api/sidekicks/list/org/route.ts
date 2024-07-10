@@ -3,12 +3,12 @@ import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 
 import { normalizeSidekickList } from '@utils/normalizeSidekick';
-import { redirect } from 'next/navigation';
+import { respond401 } from '@utils/auth/respond401';
 
 export async function GET(req: Request) {
   try {
     const session = await getCachedSession();
-    if (!session?.user?.email) return redirect('/auth');
+    if (!session?.user?.email) return respond401();
 
     const user = session.user;
     const userId = user.id;

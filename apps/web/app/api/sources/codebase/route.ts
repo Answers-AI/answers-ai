@@ -4,11 +4,11 @@ import getCachedSession from '@ui/getCachedSession';
 import { prisma } from '@db/client';
 
 import { DocumentFilter } from 'types';
-import { redirect } from 'next/navigation';
+import { respond401 } from '@utils/auth/respond401';
 
 export async function GET(req: Request, res: Response) {
   const session = await getCachedSession();
-  if (!session?.user?.email) return redirect('/auth');
+  if (!session?.user?.email) return respond401();
 
   const { searchParams } = new URL(req.url);
   const repo = searchParams.get('repo');
