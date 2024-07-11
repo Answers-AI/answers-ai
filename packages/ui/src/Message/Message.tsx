@@ -96,6 +96,7 @@ export const MessageCard = ({
   const [showFeedback, setShowFeedback] = useState(false);
   const services: { [key: string]: AppService } =
     appSettings?.services?.reduce((acc, service) => ({ ...acc, [service.id]: service }), {}) ?? {};
+
   const [lastInteraction, setLastInteraction] = React.useState<Rating | undefined>();
   if (!content && other.text) {
     content = other.text;
@@ -342,16 +343,15 @@ export const MessageCard = ({
                   {Object.entries(contextDocumentsBySource)?.map(([source, documents]) => {
                     const doc = documents?.[0];
                     return (
-                      <Tooltip title={'Click to view details'}>
+                      <Tooltip
+                        key={`references-${doc.metadata.url ?? doc.metadata.source}`}
+                        title={'Click to view details'}>
                         <Button
                           onClick={() => setSelectedDocuments(documents)}
-                          key={`references-${doc.metadata.url ?? doc.metadata.source}`}
                           size="small"
                           // disabled={!doc.metadata.url}
                           variant="outlined"
                           color="inherit"
-                          href={doc.metadata.url?.includes('http') ? doc.metadata.url : doc.url}
-                          target="_blank"
                           sx={{
                             'textTransform': 'none',
                             'borderRadius': 20,

@@ -19,6 +19,7 @@ import { useAnswers } from './AnswersContext';
 
 import { MessageFeedback, User, Document } from 'types';
 import { FormControlLabel, Checkbox } from '@mui/material';
+import ReactMarkdown from 'react-markdown';
 
 interface IFormInput extends Partial<MessageFeedback> {}
 
@@ -36,6 +37,21 @@ const SourceDocumentModal: React.FC<ModalProps> = ({ documents, onClose }) => {
   const handleClose = () => {
     if (onClose) onClose();
     setOpen(false);
+  };
+  const getDocumentLabel = (doc: Document) => {
+    if (doc.metadata?.source == 'blob' && doc.metadata?.pdf) {
+      return `${doc.metadata?.pdf?.info?.Title}`;
+    }
+    return (
+      doc.title ??
+      doc.url ??
+      doc.metadata?.title ??
+      doc.metadata?.url ??
+      (doc.metadata?.filePath && doc.metadata?.repo
+        ? `${doc.metadata?.repo}/${doc.metadata?.filePath}`
+        : null) ??
+      doc.metadata?.source
+    );
   };
 
   return (
@@ -69,7 +85,7 @@ const SourceDocumentModal: React.FC<ModalProps> = ({ documents, onClose }) => {
               padding: 2
             }}>
             <Typography variant="h5" component="h3">
-              Document Details
+              {getDocumentLabel(documents[0])}
             </Typography>
             <IconButton onClick={handleClose}>
               <CloseIcon />
@@ -81,39 +97,35 @@ const SourceDocumentModal: React.FC<ModalProps> = ({ documents, onClose }) => {
               <Box
                 key={index}
                 sx={{ border: '1px solid', borderColor: 'grey.300', p: 2, borderRadius: 1 }}>
-                <Typography variant="body2" component="p">
-                  <strong>Source:</strong> {doc.metadata.source}
-                </Typography>
-                <Typography variant="body2" component="p">
-                  <strong>Link:</strong> <a href={doc.metadata.url}>{doc.metadata.url}</a>
-                </Typography>
-                <Typography variant="body2" component="p">
-                  <strong>PDF Version:</strong> {doc.metadata.pdf?.version}
-                </Typography>
-                <Typography variant="body2" component="p">
-                  <strong>Title:</strong> {doc.metadata.pdf?.info?.Title}
-                </Typography>
-                <Typography variant="body2" component="p">
-                  <strong>Creator:</strong> {doc.metadata.pdf?.info?.Creator}
-                </Typography>
-                <Typography variant="body2" component="p">
-                  <strong>Producer:</strong> {doc.metadata.pdf?.info?.Producer}
-                </Typography>
-                <Typography variant="body2" component="p">
-                  <strong>Creation Date:</strong> {doc.metadata.pdf?.info?.CreationDate}
-                </Typography>
-                <Typography variant="body2" component="p">
-                  <strong>Modification Date:</strong> {doc.metadata.pdf?.info?.ModDate}
-                </Typography>
-                <Typography variant="body2" component="p">
-                  <strong>Total Pages:</strong> {doc.metadata.pdf?.totalPages}
-                </Typography>
-                <Typography variant="body2" component="p">
-                  <strong>Page Number:</strong> {doc.metadata.loc?.pageNumber}
-                </Typography>
-                <Typography variant="body1" component="p" sx={{ mt: 2 }}>
-                  <strong>Page Content:</strong> {doc.pageContent}
-                </Typography>
+                {doc.metadata.source && (
+                  <Typography variant="body2" component="p">
+                    <strong>Source:</strong> {doc.metadata.source}
+                  </Typography>
+                )}
+                {doc.metadata.url && (
+                  <Typography variant="body2" component="p">
+                    <strong>Link:</strong>{' '}
+                    <a href={doc.metadata.url} target="_blank">
+                      {doc.metadata.url}
+                    </a>
+                  </Typography>
+                )}
+                {doc.metadata.pdf?.totalPages && (
+                  <Typography variant="body2" component="p">
+                    <strong>Total Pages:</strong> {doc.metadata.pdf?.totalPages}
+                  </Typography>
+                )}
+                {doc.metadata.loc?.pageNumber && (
+                  <Typography variant="body2" component="p">
+                    <strong>Page Number:</strong> {doc.metadata.loc?.pageNumber}
+                  </Typography>
+                )}
+                {doc.pageContent && (
+                  <Typography variant="body2" component="div" sx={{ mt: 2, overflow: 'hidden' }}>
+                    <strong>Page Content:</strong>
+                    <ReactMarkdown>{doc.pageContent}</ReactMarkdown>
+                  </Typography>
+                )}
               </Box>
             ))}
           </Box>
