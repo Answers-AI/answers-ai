@@ -72,21 +72,23 @@ const SidekickSelect = ({
 
   return (
     <>
-      <Select
-        color="secondary"
-        variant="outlined"
-        labelId="sidekick-select-label"
-        id="sidekick-select"
-        size="small"
-        sx={{ boxShadow: 'none' }}
-        value={selectedSidekick?.toString()}
-        onChange={handleSidekickChange}>
-        {sidekicks.map((sidekick: Sidekick, idx: number) => (
-          <MenuItem key={sidekick.id} value={idx}>
-            {sidekick.label}
-          </MenuItem>
-        ))}
-      </Select>
+      {sidekicks.length > 0 && (
+        <Select
+          color="secondary"
+          variant="outlined"
+          labelId="sidekick-select-label"
+          id="sidekick-select"
+          size="small"
+          sx={{ boxShadow: 'none' }}
+          value={selectedSidekick?.toString()}
+          onChange={handleSidekickChange}>
+          {sidekicks.map((sidekick: Sidekick, idx: number) => (
+            <MenuItem key={sidekick.id} value={idx}>
+              {sidekick.label}
+            </MenuItem>
+          ))}
+        </Select>
+      )}
     </>
   );
 };

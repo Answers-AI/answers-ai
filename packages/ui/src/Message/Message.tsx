@@ -30,8 +30,10 @@ import { countTokens } from '@utils/utilities/countTokens';
 import { useAnswers } from '../AnswersContext';
 import { Accordion, AccordionSummary, AccordionDetails } from '../Accordion';
 import FeedbackModal from '@ui/FeedbackModal';
+import SourceDocumentModal from '@ui/SourceDocumentModal';
 import { AppService, Document, Message } from 'types';
 import { Rating } from 'db/generated/prisma-client';
+import { Tooltip } from '@mui/material';
 
 interface MessageExtra {
   prompt?: string;
@@ -73,24 +75,23 @@ export const MessageCard = ({
   likes,
   dislikes,
   isWidget,
-  contextDocuments: allContextDocuments,
+  contextDocuments,
   ...other
 }: MessageCardProps) => {
   other = { ...other, role, user } as any;
   const { developer_mode } = useFlags(['developer_mode']); // only causes re-render if specified flag values / traits change
   const { user: currentUser, sendMessageFeedback, appSettings } = useAnswers();
-  const contextDocuments = React.useMemo(
+  const [selectedDocuments, setSelectedDocuments] = React.useState<Document[] | undefined>();
+  const contextDocumentsBySource: Record<string, Document[]> = React.useMemo(
     () =>
-      Object.values(
-        allContextDocuments?.reduce(
-          (uniqueDocuments, current) => ({
-            ...uniqueDocuments,
-            [current.metadata.url ?? current.metadata.source]: current
-          }),
-          {}
-        ) ?? {}
-      ),
-    [allContextDocuments]
+      contextDocuments?.reduce((uniqueDocuments: Record<string, Document[]>, current) => {
+        const key = current.metadata.url ?? current.metadata.source;
+        return {
+          ...uniqueDocuments,
+          [key]: [...(uniqueDocuments[key] || []), current]
+        };
+      }, {}) ?? {},
+    [contextDocuments]
   );
   const [showFeedback, setShowFeedback] = useState(false);
   const services: { [key: string]: AppService } =
@@ -150,6 +151,22 @@ export const MessageCard = ({
         setLastInteraction(undefined);
       }
     }
+  };
+
+  const getDocumentLabel = (doc: Document) => {
+    if (doc.metadata?.source == 'blob' && doc.metadata?.pdf) {
+      return `${doc.metadata?.pdf?.info?.Title}`;
+    }
+    return (
+      doc.title ??
+      doc.url ??
+      doc.metadata?.title ??
+      doc.metadata?.url ??
+      (doc.metadata?.filePath && doc.metadata?.repo
+        ? `${doc.metadata?.repo}/${doc.metadata?.filePath}`
+        : null) ??
+      doc.metadata?.source
+    );
   };
 
   return (
@@ -304,8 +321,14 @@ export const MessageCard = ({
               ) : null}
             </Box>
 
-            {contextDocuments?.length ? (
+            {Object.keys(contextDocumentsBySource)?.length ? (
               <>
+                {selectedDocuments ? (
+                  <SourceDocumentModal
+                    documents={selectedDocuments}
+                    onClose={() => setSelectedDocuments(undefined)}
+                  />
+                ) : null}
                 <Divider />
                 <Box
                   sx={{
@@ -316,46 +339,47 @@ export const MessageCard = ({
                     gap: 1
                   }}>
                   <Typography variant="body2">References:</Typography>
-                  {contextDocuments?.map((doc) => (
-                    <Button
-                      key={`references-${doc.metadata.url ?? doc.metadata.source}`}
-                      size="small"
-                      // disabled={!doc.metadata.url}
-                      component={doc.metadata.url ? NextLink : 'div'}
-                      variant="outlined"
-                      color="inherit"
-                      href={doc.metadata.url?.includes('http') ? doc.metadata.url : doc.url}
-                      target="_blank"
-                      sx={{
-                        'textTransform': 'none',
-                        'borderRadius': 20,
-                        '&:hover': { textDecoration: 'none' }
-                      }}
-                      startIcon={
-                        services[doc.source ?? doc.metadata?.source]?.imageURL ? (
-                          <Avatar
-                            variant="source"
-                            src={services[doc.source ?? doc.metadata?.source]?.imageURL}
-                            sx={{ width: 20, height: 20 }}
-                          />
-                        ) : (
-                         <Avatar
-                            variant="source"
-                            src={services['document']?.imageURL}
-                            sx={{ width: 20, height: 20 }}
-                          />
-                        )
-                      }>
-                      {doc.title ??
-                        doc.url ??
-                        doc.metadata?.title ??
-                        doc.metadata?.url ??
-                        (doc.metadata?.filePath && doc.metadata?.repo
-                          ? `${doc.metadata?.repo}/${doc.metadata?.filePath}`
-                          : null) ??
-                        doc.metadata?.source}
-                    </Button>
-                  ))}
+                  {Object.entries(contextDocumentsBySource)?.map(([source, documents]) => {
+                    const doc = documents?.[0];
+                    return (
+                      <Tooltip title={'Click to view sources'}>
+                        <Button
+                          onClick={() => !doc.metadata.url && setSelectedDocuments(documents)}
+                          key={`references-${doc.metadata.url ?? doc.metadata.source}`}
+                          size="small"
+                          // disabled={!doc.metadata.url}
+                          component={doc.metadata.url ? NextLink : 'div'}
+                          variant="outlined"
+                          color="inherit"
+                          href={doc.metadata.url?.includes('http') ? doc.metadata.url : doc.url}
+                          target="_blank"
+                          sx={{
+                            'textTransform': 'none',
+                            'borderRadius': 20,
+                            'color': 'text.secondary',
+                            'borderColor': 'text.secondary',
+                            '&:hover': { textDecoration: 'none' }
+                          }}
+                          startIcon={
+                            services[doc.source ?? doc.metadata?.source]?.imageURL ? (
+                              <Avatar
+                                variant="source"
+                                src={services[doc.source ?? doc.metadata?.source]?.imageURL}
+                                sx={{ width: 20, height: 20 }}
+                              />
+                            ) : (
+                              <Avatar
+                                variant="source"
+                                src={services['document']?.imageURL}
+                                sx={{ width: 20, height: 20 }}
+                              />
+                            )
+                          }>
+                          {getDocumentLabel(doc)}
+                        </Button>
+                      </Tooltip>
+                    );
+                  })}
                 </Box>
               </>
             ) : null}
