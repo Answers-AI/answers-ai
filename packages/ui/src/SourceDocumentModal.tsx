@@ -14,12 +14,16 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { duotoneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import ContentCopy from '@mui/icons-material/ContentCopy';
 
 import { useAnswers } from './AnswersContext';
 
 import { MessageFeedback, User, Document } from 'types';
 import { FormControlLabel, Checkbox } from '@mui/material';
 import ReactMarkdown from 'react-markdown';
+import Image from 'next/image';
 
 interface IFormInput extends Partial<MessageFeedback> {}
 
@@ -55,14 +59,19 @@ const SourceDocumentModal: React.FC<ModalProps> = ({ documents, onClose }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        height: '100%'
+      }}>
       <Paper
         sx={{
           width: '100%',
 
           background: 'none',
           backgroundColor: 'background.paper',
-          margin: 'auto',
           outline: 'none',
 
           display: 'flex',
@@ -79,10 +88,10 @@ const SourceDocumentModal: React.FC<ModalProps> = ({ documents, onClose }) => {
             zIndex: 1,
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: 2
+            p: 2,
+            height: 64
           }}>
-          <Typography variant="h5" component="h3">
+          <Typography variant="h6" component="h3">
             {getDocumentLabel(documents[0])}
           </Typography>
           <IconButton onClick={handleClose}>
@@ -90,19 +99,24 @@ const SourceDocumentModal: React.FC<ModalProps> = ({ documents, onClose }) => {
           </IconButton>
         </Box>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0, p: 2 }}>
           {documents.map((doc, index) => (
             <Box
               key={index}
-              sx={{ border: '1px solid', borderColor: 'grey.300', p: 2, borderRadius: 1 }}>
+              sx={{
+                borderBottom: index === documents.length - 1 ? 'none' : '1px solid',
+                borderColor: 'grey.500',
+                color: 'grey.500',
+                py: 2
+              }}>
               {doc.metadata.source && (
                 <Typography variant="body2" component="p">
-                  <strong>Source:</strong> {doc.metadata.source}
+                  Source: {doc.metadata.source}
                 </Typography>
               )}
               {doc.metadata.url && (
                 <Typography variant="body2" component="p">
-                  <strong>Link:</strong>{' '}
+                  Link:
                   <a href={doc.metadata.url} target="_blank">
                     {doc.metadata.url}
                   </a>
@@ -110,19 +124,93 @@ const SourceDocumentModal: React.FC<ModalProps> = ({ documents, onClose }) => {
               )}
               {doc.metadata.pdf?.totalPages && (
                 <Typography variant="body2" component="p">
-                  <strong>Total Pages:</strong> {doc.metadata.pdf?.totalPages}
+                  Total Pages: {doc.metadata.pdf?.totalPages}
                 </Typography>
               )}
               {doc.metadata.loc?.pageNumber && (
                 <Typography variant="body2" component="p">
-                  <strong>Page Number:</strong> {doc.metadata.loc?.pageNumber}
+                  Page Number: {doc.metadata.loc?.pageNumber}
                 </Typography>
               )}
               {doc.pageContent && (
-                <Typography variant="body2" component="div" sx={{ mt: 2, overflow: 'hidden' }}>
-                  <strong>Page Content:</strong>
-                  <ReactMarkdown>{doc.pageContent}</ReactMarkdown>
-                </Typography>
+                <>
+                  <Typography
+                    variant="body2"
+                    component="div"
+                    sx={{ mt: 1, width: '100%', whiteSpace: 'pre-line' }}>
+                    Page Content:
+                    <ReactMarkdown
+                      components={{
+                        p: (paragraph: any) => {
+                          const { node } = paragraph;
+
+                          if (node.children[0].tagName === 'img') {
+                            const image = node.children[0];
+                            const metastring = image.properties.alt;
+                            const alt = metastring?.replace(/ *\{[^)]*\} */g, '');
+                            const metaWidth = metastring.match(/{([^}]+)x/);
+                            const metaHeight = metastring.match(/x([^}]+)}/);
+                            const width = metaWidth ? metaWidth[1] : undefined;
+                            const height = metaHeight ? metaHeight[1] : undefined;
+                            const isPriority = metastring?.toLowerCase().match('{priority}');
+                            const hasCaption = metastring?.toLowerCase().includes('{caption:');
+                            const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
+
+                            return (
+                              <Box
+                                component="a"
+                                href={image.properties.src}
+                                target="_blank"
+                                sx={{
+                                  display: 'block',
+                                  height: '40vh',
+                                  width: '100%',
+                                  img: { objectFit: 'contain', width:'100%' }
+                                }}>
+                                <Image
+                                  src={image.properties.src}
+                                  // width={width}
+                                  // height={height}
+                                  layout="fill"
+                                  className="postImg"
+                                  alt={alt}
+                                  priority={isPriority}
+                                />
+                                {hasCaption ? (
+                                  <div className="caption" aria-label={caption}>
+                                    {caption}
+                                  </div>
+                                ) : null}
+                              </Box>
+                            );
+                          }
+                          return <p>{paragraph.children}</p>;
+                        },
+
+                        code({ node, inline, className, children, ...props }) {
+                          const codeExample = String(children).replace(/\n$/, '');
+                          return !inline ? (
+                            <Box sx={{ position: 'relative' }}>
+                              <SyntaxHighlighter style={duotoneDark as any} PreTag="div" {...props}>
+                                {codeExample}
+                              </SyntaxHighlighter>
+                              {/* <IconButton
+                                sx={{ position: 'absolute', bottom: 16, right: 16 }}
+                                onClick={() => handleCopyCodeClick(codeExample)}>
+                                <ContentCopy />
+                              </IconButton> */}
+                            </Box>
+                          ) : (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          );
+                        }
+                      }}>
+                      {doc.pageContent}
+                    </ReactMarkdown>{' '}
+                  </Typography>
+                </>
               )}
             </Box>
           ))}

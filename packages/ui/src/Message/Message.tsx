@@ -457,30 +457,30 @@ export const MessageCard = ({
             </AccordionDetails>
           </Accordion>
         ) : null} */}
-        {contextDocuments?.length ? (
-          <Accordion slotProps={{ transition: { unmountOnExit: true } }}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header">
-              <Typography variant="overline">
-                Context ({countTokens(contextDocuments?.map((d) => d.pageContent)?.join('/n'))}{' '}
-                Tokens)
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography
-                sx={{ whiteSpace: 'pre-line' }}
-                variant="body1"
-                color="text.secondary"
-                component="div">
-                {contextDocuments?.map((d) => d.pageContent)?.join('/n')}
-              </Typography>
-            </AccordionDetails>
-          </Accordion>
-        ) : null}
         {developer_mode?.enabled ? (
           <Box>
+            {contextDocuments?.length ? (
+              <Accordion slotProps={{ transition: { unmountOnExit: true } }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header">
+                  <Typography variant="overline">
+                    Context ({countTokens(contextDocuments?.map((d) => d.pageContent)?.join('/n'))}{' '}
+                    Tokens)
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography
+                    sx={{ whiteSpace: 'pre-line' }}
+                    variant="body1"
+                    color="text.secondary"
+                    component="div">
+                    {contextDocuments?.map((d) => d.pageContent)?.join('/n')}
+                  </Typography>
+                </AccordionDetails>
+              </Accordion>
+            ) : null}
             {/* {error ? (
               <>
                 <Accordion TransitionProps={{ unmountOnExit: true }}>

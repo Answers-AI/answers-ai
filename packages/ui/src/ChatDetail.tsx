@@ -68,56 +68,68 @@ export const ChatDetail = ({
 
   return (
     <>
-      <Box
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          height: '100%',
-          overflow: 'hidden'
-        }}>
-        <AppBar
-          position="static"
-          sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}
-          color={'transparent'}
-          elevation={0}>
-          <Toolbar sx={{ px: '16px!important', gap: 1 }}>
-            <SidekickSelect sidekicks={sidekicks} onSidekickSelected={handleSidekickSelected} />
-            <Box
-              sx={{
-                flexGrow: 1,
-                display: 'flex',
-                gap: 2,
-                p: {
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  textTransform: 'capitalize',
-                  display: '-webkit-box',
-                  WebkitBoxOrient: 'vertical',
-                  WebkitLineClamp: '1'
-                }
-              }}>
-              {chat ? <Typography variant="body1">{chat?.title ?? chat.id}</Typography> : null}
+      <Box sx={{ display: 'flex', width: '100%' }}>
+        <Box
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden'
+          }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+              width: '100%',
+              height: '100%',
+              flex: 1,
+              justifyContent: 'space-between'
+              // borderLeft: '1px solid rgba(255, 255, 255, 0.12)'
+            }}>
+            <AppBar
+              position="static"
+              sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}
+              color={'transparent'}
+              elevation={0}>
+              <Toolbar sx={{ px: '16px!important', gap: 1 }}>
+                <SidekickSelect sidekicks={sidekicks} onSidekickSelected={handleSidekickSelected} />
+                <Box
+                  sx={{
+                    flexGrow: 1,
+                    display: 'flex',
+                    gap: 2,
+                    p: {
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      textTransform: 'capitalize',
+                      display: '-webkit-box',
+                      WebkitBoxOrient: 'vertical',
+                      WebkitLineClamp: '1'
+                    }
+                  }}>
+                  {chat ? <Typography variant="body1">{chat?.title ?? chat.id}</Typography> : null}
 
-              {journey ? (
-                <Typography variant="body2">{journey?.goal ?? journey?.title}</Typography>
-              ) : null}
-            </Box>
+                  {journey ? (
+                    <Typography variant="body2">{journey?.goal ?? journey?.title}</Typography>
+                  ) : null}
+                </Box>
 
-            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-              {chat ? (
-                <IconButton
-                  size="large"
-                  edge="start"
-                  color="inherit"
-                  aria-label="share"
-                  component={NextLink}
-                  href={`?modal=share`}>
-                  <ShareIcon />
-                </IconButton>
-              ) : null}
+                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                  {chat ? (
+                    <IconButton
+                      size="large"
+                      edge="start"
+                      color="inherit"
+                      aria-label="share"
+                      component={NextLink}
+                      href={`?modal=share`}>
+                      <ShareIcon />
+                    </IconButton>
+                  ) : null}
 
-              {/* {!showFilters ? (
+                  {/* {!showFilters ? (
                   <Tooltip
                     PopperProps={{ placement: 'top-end' }}
                     title={!Object.keys(services)?.length ? null : <Filters />}>
@@ -152,28 +164,10 @@ export const ChatDetail = ({
                     <ArrowBackIcon />
                   </IconButton>
                 )} */}
-            </Box>
-          </Toolbar>
-        </AppBar>
+                </Box>
+              </Toolbar>
+            </AppBar>
 
-        <Box
-          style={{
-            display: 'flex',
-            // flexDirection: 'column',
-            height: '100%'
-            // overflow: 'hidden'
-          }}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-              width: '100%',
-              height: '100%',
-              flex: 1,
-              justifyContent: 'space-between'
-              // borderLeft: '1px solid rgba(255, 255, 255, 0.12)'
-            }}>
             <Box ref={scrollRef} sx={{ height: '100%', overflow: 'auto', px: 2, py: 3 }}>
               <Suspense fallback={<div>Loading...</div>}>
                 <Box
@@ -233,39 +227,38 @@ export const ChatDetail = ({
                 </Box>
               </Suspense>
             </Box>
-            <ChatInput sidekicks={sidekicks} scrollRef={scrollRef} />
           </Box>
 
-          <Drawer
-            sx={{
-              'flexShrink': 0,
-              'zIndex': 1000,
-              'position': { md: 'relative', xs: 'absolute' },
-
-              '& .MuiDrawer-paper': {
-                position: 'absolute',
-                boxSizing: 'border-box'
-              },
-              'display': 'flex',
-              'flexDirection': 'column',
-              'height': '100%'
-            }}
-            variant="permanent"
-            anchor="left"
-            open={!!showFilters || !!selectedDocuments}>
-            {selectedDocuments ? (
-              <SourceDocumentModal
-                documents={selectedDocuments}
-                onClose={() => setSelectedDocuments(undefined)}
-              />
-            ) : null}
-            {!!showFilters ? (
-              <Suspense fallback={<div>Loading...</div>}>
-                <DrawerFilters appSettings={appSettings} />
-              </Suspense>
-            ) : null}
-          </Drawer>
+          <ChatInput sidekicks={sidekicks} scrollRef={scrollRef} />
         </Box>
+        <Drawer
+          sx={{
+            'flexShrink': 0,
+            'zIndex': 1000,
+            'position': { md: 'relative', xs: 'absolute' },
+            '& .MuiDrawer-paper': {
+              position: 'absolute',
+              boxSizing: 'border-box'
+            },
+            'display': 'flex',
+            'flexDirection': 'column',
+            'height': '100%'
+          }}
+          variant="permanent"
+          anchor="left"
+          open={!!showFilters || !!selectedDocuments}>
+          {selectedDocuments ? (
+            <SourceDocumentModal
+              documents={selectedDocuments}
+              onClose={() => setSelectedDocuments(undefined)}
+            />
+          ) : null}
+          {!!showFilters ? (
+            <Suspense fallback={<div>Loading...</div>}>
+              <DrawerFilters appSettings={appSettings} />
+            </Suspense>
+          ) : null}
+        </Drawer>
       </Box>
     </>
   );
