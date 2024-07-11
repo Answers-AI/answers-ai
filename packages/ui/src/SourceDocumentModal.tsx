@@ -55,90 +55,87 @@ const SourceDocumentModal: React.FC<ModalProps> = ({ documents, onClose }) => {
   };
 
   return (
-    <Modal open={open} onClose={handleClose}>
-      <Box
-        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-        <Paper
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+      <Paper
+        sx={{
+          width: '100%',
+
+          background: 'none',
+          backgroundColor: 'background.paper',
+          margin: 'auto',
+          outline: 'none',
+
+          display: 'flex',
+          flexDirection: 'column',
+          maxHeight: '100%',
+          overflowY: 'auto'
+        }}>
+        <Box
           sx={{
-            width: '100%',
-            maxWidth: 800,
+            position: 'sticky',
             background: 'none',
             backgroundColor: 'background.paper',
-            margin: 'auto',
-            outline: 'none',
-
+            top: 0,
+            zIndex: 1,
             display: 'flex',
-            flexDirection: 'column',
-            maxHeight: '90vh',
-            overflowY: 'auto'
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: 2
           }}>
-          <Box
-            sx={{
-              position: 'sticky',
-              background: 'none',
-              backgroundColor: 'background.paper',
-              top: 0,
-              zIndex: 1,
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: 2
-            }}>
-            <Typography variant="h5" component="h3">
-              {getDocumentLabel(documents[0])}
-            </Typography>
-            <IconButton onClick={handleClose}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
+          <Typography variant="h5" component="h3">
+            {getDocumentLabel(documents[0])}
+          </Typography>
+          <IconButton onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 2 }}>
-            {documents.map((doc, index) => (
-              <Box
-                key={index}
-                sx={{ border: '1px solid', borderColor: 'grey.300', p: 2, borderRadius: 1 }}>
-                {doc.metadata.source && (
-                  <Typography variant="body2" component="p">
-                    <strong>Source:</strong> {doc.metadata.source}
-                  </Typography>
-                )}
-                {doc.metadata.url && (
-                  <Typography variant="body2" component="p">
-                    <strong>Link:</strong>{' '}
-                    <a href={doc.metadata.url} target="_blank">
-                      {doc.metadata.url}
-                    </a>
-                  </Typography>
-                )}
-                {doc.metadata.pdf?.totalPages && (
-                  <Typography variant="body2" component="p">
-                    <strong>Total Pages:</strong> {doc.metadata.pdf?.totalPages}
-                  </Typography>
-                )}
-                {doc.metadata.loc?.pageNumber && (
-                  <Typography variant="body2" component="p">
-                    <strong>Page Number:</strong> {doc.metadata.loc?.pageNumber}
-                  </Typography>
-                )}
-                {doc.pageContent && (
-                  <Typography variant="body2" component="div" sx={{ mt: 2, overflow: 'hidden' }}>
-                    <strong>Page Content:</strong>
-                    <ReactMarkdown>{doc.pageContent}</ReactMarkdown>
-                  </Typography>
-                )}
-              </Box>
-            ))}
-          </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 2 }}>
+          {documents.map((doc, index) => (
+            <Box
+              key={index}
+              sx={{ border: '1px solid', borderColor: 'grey.300', p: 2, borderRadius: 1 }}>
+              {doc.metadata.source && (
+                <Typography variant="body2" component="p">
+                  <strong>Source:</strong> {doc.metadata.source}
+                </Typography>
+              )}
+              {doc.metadata.url && (
+                <Typography variant="body2" component="p">
+                  <strong>Link:</strong>{' '}
+                  <a href={doc.metadata.url} target="_blank">
+                    {doc.metadata.url}
+                  </a>
+                </Typography>
+              )}
+              {doc.metadata.pdf?.totalPages && (
+                <Typography variant="body2" component="p">
+                  <strong>Total Pages:</strong> {doc.metadata.pdf?.totalPages}
+                </Typography>
+              )}
+              {doc.metadata.loc?.pageNumber && (
+                <Typography variant="body2" component="p">
+                  <strong>Page Number:</strong> {doc.metadata.loc?.pageNumber}
+                </Typography>
+              )}
+              {doc.pageContent && (
+                <Typography variant="body2" component="div" sx={{ mt: 2, overflow: 'hidden' }}>
+                  <strong>Page Content:</strong>
+                  <ReactMarkdown>{doc.pageContent}</ReactMarkdown>
+                </Typography>
+              )}
+            </Box>
+          ))}
+        </Box>
 
-          {loading && (
-            <LinearProgress
-              variant="query"
-              sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%' }}
-            />
-          )}
-        </Paper>
-      </Box>
-    </Modal>
+        {loading && (
+          <LinearProgress
+            variant="query"
+            sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%' }}
+          />
+        )}
+      </Paper>
+    </Box>
   );
 };
 

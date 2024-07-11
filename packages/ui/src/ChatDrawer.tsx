@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import useSWR from 'swr';
 import NextLink from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
@@ -56,61 +57,33 @@ export interface ChatDrawerProps {
   defaultOpen?: boolean;
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = React.useState<boolean | undefined>(defaultOpen);
   const [opened, setOpened] = React.useState<{ [key: string | number]: boolean }>({ chats: true });
-  // Chats grouped in an object by today, yesterday, last 7 days, last month, and monthly
+
+  const { data: fetchedChats } = useSWR<Chat[]>('/api/chats', fetcher, { fallback: chats });
   const getDateKey = (chat: Chat) => {
     const date = new Date(chat.createdAt);
     const now = new Date();
-    if (
-      date.getDate() === now.getDate() &&
-      date.getMonth() === now.getMonth() &&
-      date.getFullYear() === now.getFullYear()
-    ) {
-      return 'Today';
-    }
-    if (
-      date.getDate() === now.getDate() - 1 &&
-      date.getMonth() === now.getMonth() &&
-      date.getFullYear() === now.getFullYear()
-    ) {
-      return 'Yesterday';
-    }
-    if (
-      date.getDate() >= now.getDate() - 7 &&
-      date.getMonth() === now.getMonth() &&
-      date.getFullYear() === now.getFullYear()
-    ) {
-      return 'Last 7 days';
-    }
-    if (
-      date.getDate() >= now.getDate() - 30 &&
-      date.getMonth() === now.getMonth() &&
-      date.getFullYear() === now.getFullYear()
-    ) {
-      return 'Last 30 days';
-    }
-    // Return the month if it's this year
-    if (date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()) {
-      return date.toLocaleString('default', { month: 'long', year: 'numeric' });
-    }
-    // Return month and year
+    if (date.toDateString() === now.toDateString()) return 'Today';
+    if (date.toDateString() === new Date(now.setDate(now.getDate() - 1)).toDateString()) return 'Yesterday';
+    if (date >= new Date(now.setDate(now.getDate() - 6))) return 'Last 7 days';
+    if (date >= new Date(now.setDate(now.getDate() - 23))) return 'Last 30 days';
     return date.toLocaleString('default', { month: 'long', year: 'numeric' });
   };
-  const chatsByDate = React.useMemo(
-    () =>
-      chats?.reduce(
-        (accum: { [key: string]: Chat[] }, chat) => ({
-          ...accum,
-          [getDateKey(chat)]: [...(accum[getDateKey(chat)] || []), chat]
-        }),
-        {}
-      ),
-    [chats]
-  );
+
+  const chatsByDate = React.useMemo(() => {
+    const sortedChats = fetchedChats?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return sortedChats?.reduce((accum: { [key: string]: Chat[] }, chat: Chat) => {
+      const dateKey = getDateKey(chat);
+      return { ...accum, [dateKey]: [...(accum[dateKey] || []), chat] };
+    }, {});
+  }, [fetchedChats]);
+
   const handleDrawerOpen = () => {
     window.localStorage.setItem('drawerOpen', 'true');
     setOpen(true);
@@ -136,73 +109,8 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
     router.push('/chat');
   };
 
-  // React.useEffect(() => {
-  //   setOpen(window.localStorage.getItem('drawerOpen') === 'true');
-  // }, [setOpen]);
-
   return (
     <>
-      {/* <DrawerHeader
-        sx={{
-          position: 'absolute',
-          zIndex: 10,
-          transition: '.2s',
-          ...(open ? { opacity: 0 } : { opacity: 1, transitionDelay: '.25s' })
-        }}>
-        <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
-          {!open ? <Add /> : <ChevronLeftIcon />}
-        </IconButton>
-      </DrawerHeader> */}
-
-      {/* <Drawer
-        sx={{
-          'flexShrink': 0,
-          'zIndex': 1000,
-          'position': { md: 'relative', xs: 'absolute' },
-
-          '& .MuiDrawer-paper': {
-            position: 'absolute',
-            boxSizing: 'border-box'
-          },
-          'display': 'flex',
-          'flexDirection': 'column',
-          'height': '100%'
-        }}
-        variant="permanent"
-        anchor="left"
-        open={open}> */}
-      {/* <DrawerHeader
-          sx={{
-            overflow: 'hidden',
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'space-between',
-            transition: '.2s',
-            paddingLeft: 2,
-            position: 'sticky',
-            top: '0',
-            background: '#161616',
-            zIndex: '10',
-            ...(open ? {} : { opacity: 0 })
-          }}>
-          <Typography variant="h5">Chats</Typography>
-
-          <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
-            {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </IconButton>
-        </DrawerHeader> */}
-
-      {/* <ListItem sx={{ flexDirection: 'column' }} disablePadding>
-          <Button
-            href={`/chat`}
-            component={NextLink}
-            sx={{ px: 2, width: '100%', textTransform: 'capitalize' }}
-            color="primary">
-            <ListItemText primary={'Start New Chat'} />
-            <Add />
-          </Button>
-        </ListItem> */}
-
       <List disablePadding>
         <ListItem
           disablePadding
@@ -246,15 +154,6 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
               New chat
             </Box>
           </Button>
-
-          {/* <ListItemText color="primary" primary={`Chats`} />
-          <IconButton
-            href={`/chat`}
-            component={NextLink}
-            color="primary"
-            onClick={handleDrawerClose}>
-            <Add />
-          </IconButton> */}
         </ListItem>
         {Object.entries(chatsByDate || {}).map(([date, chats]) => (
           <Box key={date} sx={{ mb: 1 }}>
@@ -297,7 +196,6 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
           </Box>
         ))}
       </List>
-      {/* </Drawer> */}
     </>
   );
 }

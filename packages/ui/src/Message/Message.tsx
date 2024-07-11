@@ -30,10 +30,9 @@ import { countTokens } from '@utils/utilities/countTokens';
 import { useAnswers } from '../AnswersContext';
 import { Accordion, AccordionSummary, AccordionDetails } from '../Accordion';
 import FeedbackModal from '@ui/FeedbackModal';
-import SourceDocumentModal from '@ui/SourceDocumentModal';
 import { AppService, Document, Message } from 'types';
 import { Rating } from 'db/generated/prisma-client';
-import { Tooltip } from '@mui/material';
+import { CircularProgress, Tooltip } from '@mui/material';
 
 interface MessageExtra {
   prompt?: string;
@@ -49,6 +48,9 @@ interface MessageExtra {
   isWidget?: boolean;
   contextDocuments?: Document[];
   text?: string;
+  selectedDocuments?: Document[];
+  setSelectedDocuments?: (documents: Document[]) => void;
+  isLoading?: boolean;
 }
 interface MessageCardProps extends Partial<Message>, MessageExtra {
   error?: AxiosError<MessageExtra>;
@@ -76,12 +78,14 @@ export const MessageCard = ({
   dislikes,
   isWidget,
   contextDocuments,
+  selectedDocuments,
+  setSelectedDocuments,
+  isLoading,
   ...other
 }: MessageCardProps) => {
   other = { ...other, role, user } as any;
   const { developer_mode } = useFlags(['developer_mode']); // only causes re-render if specified flag values / traits change
   const { user: currentUser, sendMessageFeedback, appSettings } = useAnswers();
-  const [selectedDocuments, setSelectedDocuments] = React.useState<Document[] | undefined>();
   const contextDocumentsBySource: Record<string, Document[]> = React.useMemo(
     () =>
       contextDocuments?.reduce((uniqueDocuments: Record<string, Document[]>, current) => {
@@ -184,7 +188,10 @@ export const MessageCard = ({
         data-role={role}
         sx={{
           borderRadius: 0,
-          position: 'relative'
+          position: 'relative',
+          ...(isLoading && {
+            mb: 10
+          })
         }}>
         <Box
           sx={{
@@ -206,23 +213,37 @@ export const MessageCard = ({
               // p: 0
             }}>
             <Box sx={{ gap: 2, display: 'flex' }}>
-              <Avatar
-                src={
-                  isUserMessage
-                    ? currentUser?.image || currentUser?.image!
-                    : '/static/images/logos/answerai-logo.png'
-                }
-                sx={{
-                  bgcolor: isUserMessage ? 'secondary.main' : 'primary.main',
-                  height: isWidget ? '24px' : '32px',
-                  width: isWidget ? '24px' : '32px',
-                  ...(role !== 'userMessage' && {
-                    padding: 1,
-                    background: 'white'
-                  })
-                }}
-                title={!isUserMessage ? 'AI' : user?.name?.charAt(0)}
-              />
+              <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                <Avatar
+                  src={
+                    isUserMessage
+                      ? currentUser?.image || currentUser?.image!
+                      : '/static/images/logos/answerai-logo.png'
+                  }
+                  sx={{
+                    bgcolor: isUserMessage ? 'secondary.main' : 'primary.main',
+                    height: isWidget ? '24px' : '32px',
+                    width: isWidget ? '24px' : '32px',
+                    ...(role !== 'userMessage' && {
+                      padding: 1,
+                      background: 'white'
+                    })
+                  }}
+                  title={!isUserMessage ? 'AI' : user?.name?.charAt(0)}
+                />
+                {isLoading && (
+                  <CircularProgress
+                    size={isWidget ? 26 : 36}
+                    sx={{
+                      color: 'primary.main',
+                      position: 'absolute',
+                      top: -2,
+                      left: -2,
+                      zIndex: 1
+                    }}
+                  />
+                )}
+              </Box>
               {hasContent && content ? (
                 <>
                   <Typography
@@ -324,12 +345,6 @@ export const MessageCard = ({
 
             {Object.keys(contextDocumentsBySource)?.length ? (
               <>
-                {selectedDocuments ? (
-                  <SourceDocumentModal
-                    documents={selectedDocuments}
-                    onClose={() => setSelectedDocuments(undefined)}
-                  />
-                ) : null}
                 <Divider />
                 <Box
                   sx={{
@@ -422,7 +437,7 @@ export const MessageCard = ({
           ) : null}
         </Box>
 
-        {context ? (
+        {/* {context ? (
           // Use the @mui accordion component to wrap the context and response
           <Accordion TransitionProps={{ unmountOnExit: true }}>
             <AccordionSummary
@@ -441,9 +456,9 @@ export const MessageCard = ({
               </Typography>
             </AccordionDetails>
           </Accordion>
-        ) : null}
+        ) : null} */}
         {contextDocuments?.length ? (
-          <Accordion TransitionProps={{ unmountOnExit: true }}>
+          <Accordion slotProps={{ transition: { unmountOnExit: true } }}>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1a-content"
@@ -572,7 +587,7 @@ export const MessageCard = ({
 
             {Object.keys(other)?.length ? (
               // Use the @mui accordion component to wrap the extra and response
-              <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <Accordion slotProps={{ transition: { unmountOnExit: true } }}>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   aria-controls="panel1a-content"

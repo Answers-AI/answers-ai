@@ -16,7 +16,7 @@ const getMessages = async ({ chat, user }: { chat: Partial<Chat>; user: User }) 
     });
     if (!accessToken) throw new Error('No access token found');
     const { chatflowDomain } = user;
-    if (!chatflowChatId) return [];
+    if (!chatflowChatId) throw new Error('No chatflow chat id found');
     console.log('FetchFlowise', chatflowDomain + `/api/v1/chatmessage?chatId=${chatflowChatId}`);
     const result = await fetch(chatflowDomain + `/api/v1/chatmessage?chatId=${chatflowChatId}`, {
       headers: {

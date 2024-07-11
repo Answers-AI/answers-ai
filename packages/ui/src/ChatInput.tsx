@@ -12,7 +12,7 @@ import { useAnswers } from './AnswersContext';
 import SidekickSelect from './SidekickSelect';
 // import Fieldset from './Fieldset';
 
-import { debounce } from '@utils/debounce';
+import { throttle } from '@utils/throttle';
 
 import type { Sidekick, StarterPrompt } from 'types';
 import { DefaultPrompts } from './DefaultPrompts';
@@ -50,13 +50,15 @@ const ChatInput = ({
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const throttledScroll = React.useCallback(
+    throttle(() => {
+      console.log('ScrollREf', scrollRef, new Date());
+      scrollRef?.current?.scrollTo({ top: scrollRef.current.scrollHeight });
+    }, 300),
+    [scrollRef]
+  );
   useEffect(() => {
-    const debouncedScroll = debounce(() => {
-      if (messages?.length)
-        scrollRef?.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-      inputRef?.current?.focus();
-    }, 300);
-    debouncedScroll();
+    if (messages?.length && isLoading) throttledScroll();
   }, [chat, journey, messages, scrollRef]);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {

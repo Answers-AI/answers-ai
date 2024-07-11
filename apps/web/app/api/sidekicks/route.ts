@@ -8,7 +8,10 @@ export async function GET(req: Request) {
 
   const user = session?.user;
   if (!session?.user?.email) return respond401();
+try{
   const sidekicks = await findSidekicksForChat(user);
 
-  return NextResponse.json(sidekicks);
+    return NextResponse.json(sidekicks);
+  } catch (error) {
+   return respond401() }
 }

@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 
 import { deepmerge } from '@utils/deepmerge';
 import { useStreamedResponse } from './useStreamedResponse';
@@ -175,7 +175,7 @@ export function AnswersProvider({
 
       setMessages((currentMessages) => {
         const newMessages = [...currentMessages];
-        newMessages[messageIdx.current] = chunk;
+        newMessages[messageIdx.current] = { ...chunk, isLoading: true };
 
         if (chunk?.chat) {
           if (chunk.chat?.id !== chatId) {
@@ -193,10 +193,16 @@ export function AnswersProvider({
       if (chat) {
         const { id } = chat as Chat;
         if (id) {
+        setMessages((currentMessages) => {
+        const newMessages = [...currentMessages];
+        newMessages[messageIdx.current] = { ...newMessages[messageIdx.current], isLoading: false };
+        return newMessages;
+      });
           setChatId(id);
           // history.replaceState(null, '', `/chat/${id}`);
         }
-        router.refresh();
+        // router.refresh();
+        mutate('/api/chats');
         // mutateActiveUserPlan();
       } else {
         console.log('NoChatOnEnd', { chat, ...rest });
@@ -312,9 +318,9 @@ export function AnswersProvider({
       retry?: boolean;
     }) => {
       const sidekickValue = sidekick?.id || 'defaultPrompt';
-      setIsLoading(true);
-      setError(null);
       if (!retry) addMessage({ role: 'user', content: content } as Message);
+      setError(null);
+      setIsLoading(true);
       try {
         if (useStreaming) {
           await generateResponse({
@@ -336,9 +342,11 @@ export function AnswersProvider({
             sidekickValue,
             gptModel
           });
-
-          setChatId(data?.chat.id);
-          setJourneyId(data?.chat.journeyId);
+          if (chatId !== data?.chat.id) {
+            setChatId(data?.chat.id);
+            setJourneyId(data?.chat.journeyId);
+            mutate('/api/chats');
+          }
           addMessage(data);
           setIsLoading(false);
           // mutateActiveUserPlan();

@@ -12,6 +12,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import SourceDocumentModal from '@ui/SourceDocumentModal';
 
 import ArrowBackIcon from '@mui/icons-material/ArrowForward';
 import ShareIcon from '@mui/icons-material/IosShare';
@@ -20,10 +21,10 @@ import { MessageCard } from './Message';
 import { useAnswers } from './AnswersContext';
 import ChatInput from './ChatInput';
 import DrawerFilters from './DrawerFilters/DrawerFilters';
-import { Filters } from './Filters';
 
-import type { AppService, AppSettings, Sidekick } from 'types';
+import type { AppService, AppSettings, Document, Sidekick } from 'types';
 import SidekickSelect from './SidekickSelect';
+import Drawer from './Drawer';
 
 export const ChatDetail = ({
   appSettings,
@@ -48,6 +49,7 @@ export const ChatDetail = ({
     chatbotConfig
   } = useAnswers();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [selectedDocuments, setSelectedDocuments] = React.useState<Document[] | undefined>();
 
   const messages = clientMessages || chat?.messages;
 
@@ -74,59 +76,48 @@ export const ChatDetail = ({
           height: '100%',
           overflow: 'hidden'
         }}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            width: '100%',
-            height: '100%',
-            flex: 1,
-            justifyContent: 'space-between'
-            // borderLeft: '1px solid rgba(255, 255, 255, 0.12)'
-          }}>
-          <AppBar
-            position="static"
-            sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}
-            color={'transparent'}
-            elevation={0}>
-            <Toolbar sx={{ px: '16px!important', gap: 1 }}>
-              <SidekickSelect sidekicks={sidekicks} onSidekickSelected={handleSidekickSelected} />
-              <Box
-                sx={{
-                  flexGrow: 1,
-                  display: 'flex',
-                  gap: 2,
-                  p: {
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    textTransform: 'capitalize',
-                    display: '-webkit-box',
-                    WebkitBoxOrient: 'vertical',
-                    WebkitLineClamp: '1'
-                  }
-                }}>
-                {chat ? <Typography variant="body1">{chat?.title ?? chat.id}</Typography> : null}
+        <AppBar
+          position="static"
+          sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}
+          color={'transparent'}
+          elevation={0}>
+          <Toolbar sx={{ px: '16px!important', gap: 1 }}>
+            <SidekickSelect sidekicks={sidekicks} onSidekickSelected={handleSidekickSelected} />
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
+                gap: 2,
+                p: {
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  textTransform: 'capitalize',
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: '1'
+                }
+              }}>
+              {chat ? <Typography variant="body1">{chat?.title ?? chat.id}</Typography> : null}
 
-                {journey ? (
-                  <Typography variant="body2">{journey?.goal ?? journey?.title}</Typography>
-                ) : null}
-              </Box>
+              {journey ? (
+                <Typography variant="body2">{journey?.goal ?? journey?.title}</Typography>
+              ) : null}
+            </Box>
 
-              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                {chat ? (
-                  <IconButton
-                    size="large"
-                    edge="start"
-                    color="inherit"
-                    aria-label="share"
-                    component={NextLink}
-                    href={`?modal=share`}>
-                    <ShareIcon />
-                  </IconButton>
-                ) : null}
+            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+              {chat ? (
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="inherit"
+                  aria-label="share"
+                  component={NextLink}
+                  href={`?modal=share`}>
+                  <ShareIcon />
+                </IconButton>
+              ) : null}
 
-                {/* {!showFilters ? (
+              {/* {!showFilters ? (
                   <Tooltip
                     PopperProps={{ placement: 'top-end' }}
                     title={!Object.keys(services)?.length ? null : <Filters />}>
@@ -161,71 +152,121 @@ export const ChatDetail = ({
                     <ArrowBackIcon />
                   </IconButton>
                 )} */}
-              </Box>
-            </Toolbar>
-          </AppBar>
+            </Box>
+          </Toolbar>
+        </AppBar>
 
-          <Box ref={scrollRef} sx={{ height: '100%', overflow: 'auto', px: 2, py: 3 }}>
-            <Suspense fallback={<div>Loading...</div>}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 2
-                }}>
-                {messages?.map((message, index) => (
-                  <MessageCard {...message} key={`message_${index}`} />
-                ))}
-
-                {error ? (
-                  <>
+        <Box
+          style={{
+            display: 'flex',
+            // flexDirection: 'column',
+            height: '100%'
+            // overflow: 'hidden'
+          }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+              width: '100%',
+              height: '100%',
+              flex: 1,
+              justifyContent: 'space-between'
+              // borderLeft: '1px solid rgba(255, 255, 255, 0.12)'
+            }}>
+            <Box ref={scrollRef} sx={{ height: '100%', overflow: 'auto', px: 2, py: 3 }}>
+              <Suspense fallback={<div>Loading...</div>}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2
+                  }}>
+                  {messages?.map((message, index) => (
                     <MessageCard
-                      id="error"
-                      role="assistant"
-                      content={`${error.message} `}
-                      error={error}
+                      {...message}
+                      key={`message_${index}`}
+                      setSelectedDocuments={setSelectedDocuments}
                     />
+                  ))}
 
-                    <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                      <Button
-                        onClick={() => regenerateAnswer()}
-                        variant="contained"
-                        color="primary"
-                        sx={{ margin: 'auto' }}>
-                        Retry
+                  {error ? (
+                    <>
+                      <MessageCard
+                        id="error"
+                        role="assistant"
+                        content={`${error.message} `}
+                        error={error}
+                      />
+
+                      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                        <Button
+                          onClick={() => regenerateAnswer()}
+                          variant="contained"
+                          color="primary"
+                          sx={{ margin: 'auto' }}>
+                          Retry
+                        </Button>
+                      </Box>
+                    </>
+                  ) : null}
+
+                  {isLoading && messages?.[messages?.length - 1]?.role === 'user' ? (
+                    <MessageCard role="loading" isLoading content={'...'} />
+                  ) : null}
+
+                  {!messages?.length ? (
+                    <MessageCard
+                      id="placeholder"
+                      role="assistant"
+                      content={chatbotConfig?.welcomeMessage ?? 'Welcome! Try asking me something!'}
+                    />
+                  ) : null}
+
+                  {!isLoading && !error && messages?.length ? (
+                    <Box sx={{ py: 2, width: '100%', display: 'flex', justifyContent: 'center' }}>
+                      <Button onClick={() => regenerateAnswer()} variant="outlined" color="primary">
+                        Regenerate answer
                       </Button>
                     </Box>
-                  </>
-                ) : null}
-
-                {isLoading ? <MessageCard role="loading" content={'...'} /> : null}
-
-                {!messages?.length ? (
-                  <MessageCard
-                    id="placeholder"
-                    role="assistant"
-                    content={chatbotConfig?.welcomeMessage ?? 'Welcome! Try asking me something!'}
-                  />
-                ) : null}
-
-                {!isLoading && !error && messages?.length ? (
-                  <Box sx={{ py: 2, width: '100%', display: 'flex', justifyContent: 'center' }}>
-                    <Button onClick={() => regenerateAnswer()} variant="outlined" color="primary">
-                      Regenerate answer
-                    </Button>
-                  </Box>
-                ) : null}
-              </Box>
-            </Suspense>
+                  ) : null}
+                </Box>
+              </Suspense>
+            </Box>
+            <ChatInput sidekicks={sidekicks} scrollRef={scrollRef} />
           </Box>
+
+          <Drawer
+            sx={{
+              'flexShrink': 0,
+              'zIndex': 1000,
+              'position': { md: 'relative', xs: 'absolute' },
+
+              '& .MuiDrawer-paper': {
+                position: 'absolute',
+                boxSizing: 'border-box'
+              },
+              'display': 'flex',
+              'flexDirection': 'column',
+              'height': '100%'
+            }}
+            variant="permanent"
+            anchor="left"
+            open={!!showFilters || !!selectedDocuments}>
+            {selectedDocuments ? (
+              <SourceDocumentModal
+                documents={selectedDocuments}
+                onClose={() => setSelectedDocuments(undefined)}
+              />
+            ) : null}
+            {!!showFilters ? (
+              <Suspense fallback={<div>Loading...</div>}>
+                <DrawerFilters appSettings={appSettings} />
+              </Suspense>
+            ) : null}
+          </Drawer>
         </Box>
-
-        <ChatInput sidekicks={sidekicks} />
       </Box>
-
-      <Suspense fallback={<div>Loading...</div>}>
-        <DrawerFilters appSettings={appSettings} />
-      </Suspense>
     </>
   );
 };
