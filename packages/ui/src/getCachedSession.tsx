@@ -10,7 +10,7 @@ const getCachedSession = cache(
     try {
       session = await (req && res ? auth0.getSession(req, res) : auth0.getSession());
     } catch (err) {
-      console.log(`Auth0Error: ${err}`);
+      console.debug(`Auth0Error: ${err}`);
     }
     if (!session) {
       try {
@@ -24,7 +24,7 @@ const getCachedSession = cache(
         const result = await jose.jwtVerify(token.replace('Bearer ', ''), jwks);
         session = { user: result.payload };
       } catch (err: any) {
-        console.log('next/headers->Error', err.message);
+        console.debug('next/headers->Error', err.message);
       }
     }
 

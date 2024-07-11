@@ -68,17 +68,21 @@ const ChatDetailPage = async ({ params }: any) => {
       users: { select: { id: true, email: true, image: true, name: true } }
     }
   });
+  try {
+    const [chat, sidekicks] = await Promise.all([getChatPromise, findSidekicksForChat(user)]);
 
-  const [chat, sidekicks] = await Promise.all([getChatPromise, findSidekicksForChat(user)]);
+    if (!chat) {
+      return <ChatNotFound />;
+    }
+    // @ts-ignore
+    chat.messages = await getMessages({ user, chat });
 
-  if (!chat) {
-    return <ChatNotFound />;
+    // @ts-expect-error Async Server Component
+    return <Chat {...params} chat={chat} journey={(chat as any)?.journey} sidekicks={sidekicks} />;
+  } catch (error) {
+    console.error(error);
+    return <Chat {...params} />;
   }
-  // @ts-ignore
-  chat.messages = await getMessages({ user, chat });
-
-  // @ts-expect-error Async Server Component
-  return <Chat {...params} chat={chat} journey={(chat as any)?.journey} sidekicks={sidekicks} />;
 };
 
 export default ChatDetailPage;

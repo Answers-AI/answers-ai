@@ -16,10 +16,14 @@ const ChatDetailPage = async ({ params }: any) => {
   if (!user) {
     return <Chat {...params} />;
   }
-  const sidekicks = await findSidekicksForChat(user);
-
-  // @ts-expect-error Async Server Component
-  return <Chat {...params} sidekicks={sidekicks} />;
+  try {
+    const sidekicks = await findSidekicksForChat(user);
+    // @ts-expect-error Async Server Component
+    return <Chat {...params} sidekicks={sidekicks} />;
+  } catch (error) {
+    console.error(error);
+    return <Chat {...params} />;
+  }
 };
 
 export default ChatDetailPage;

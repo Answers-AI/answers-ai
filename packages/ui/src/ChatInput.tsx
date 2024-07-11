@@ -106,7 +106,7 @@ const ChatInput = ({
         inputRef={inputRef}
         sx={(theme) => ({
           textarea: {
-            minHeight: 23,
+            height: 23,
             paddingRight: 4,
             paddingBottom: 5,
             maxHeight: theme.spacing(8),
