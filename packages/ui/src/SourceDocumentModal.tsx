@@ -85,6 +85,9 @@ const SourceDocumentModal: React.FC<ModalProps> = ({ documents, onClose }) => {
                   <strong>Source:</strong> {doc.metadata.source}
                 </Typography>
                 <Typography variant="body2" component="p">
+                  <strong>Link:</strong> <a href={doc.metadata.url}>{doc.metadata.url}</a>
+                </Typography>
+                <Typography variant="body2" component="p">
                   <strong>PDF Version:</strong> {doc.metadata.pdf?.version}
                 </Typography>
                 <Typography variant="body2" component="p">

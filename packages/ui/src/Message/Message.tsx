@@ -342,13 +342,12 @@ export const MessageCard = ({
                   {Object.entries(contextDocumentsBySource)?.map(([source, documents]) => {
                     const doc = documents?.[0];
                     return (
-                      <Tooltip title={'Click to view sources'}>
+                      <Tooltip title={'Click to view details'}>
                         <Button
-                          onClick={() => !doc.metadata.url && setSelectedDocuments(documents)}
+                          onClick={() => setSelectedDocuments(documents)}
                           key={`references-${doc.metadata.url ?? doc.metadata.source}`}
                           size="small"
                           // disabled={!doc.metadata.url}
-                          component={doc.metadata.url ? NextLink : 'div'}
                           variant="outlined"
                           color="inherit"
                           href={doc.metadata.url?.includes('http') ? doc.metadata.url : doc.url}
