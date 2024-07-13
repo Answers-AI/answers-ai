@@ -224,7 +224,7 @@ export const MessageCard = ({
                     bgcolor: isUserMessage ? 'secondary.main' : 'primary.main',
                     height: isWidget ? '24px' : '32px',
                     width: isWidget ? '24px' : '32px',
-                    ...(role !== 'userMessage' && {
+                    ...(!isUserMessage && {
                       padding: 1,
                       background: 'white'
                     })
