@@ -16,22 +16,12 @@ const WidgetLayout = async ({
   };
 }) => {
   const session = await getCachedSession();
-  await flagsmith.init({
-    // fetches flags on the server and passes them to the App
-    environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
-    preventFetch: true
-  });
-
-  if (session?.user?.email)
-    await flagsmith.identify(`user_${session.user.id}`, {
-      env: process.env.NODE_ENV,
-      domain: session.user.email.split('@')[1]
-    });
-
-  const flagsmithState = flagsmith.getState();
 
   return (
-    <AppWidgetLayout session={session as Session} params={params} flagsmithState={flagsmithState}>
+    <AppWidgetLayout
+      session={session as Session}
+      params={params}
+      flagsmithState={session.flagsmithState}>
       {children}
     </AppWidgetLayout>
   );

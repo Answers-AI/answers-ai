@@ -81,7 +81,6 @@ const IframeNavigator: React.FC<IframeNavigatorProps> = ({
       title="Iframe Navigator"
       onLoad={() => setLoaded(true)}
       allowFullScreen
-      allowTransparency
       {...other}
     />
   );

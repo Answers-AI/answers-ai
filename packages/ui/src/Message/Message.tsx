@@ -217,7 +217,7 @@ export const MessageCard = ({
                 <Avatar
                   src={
                     isUserMessage
-                      ? currentUser?.image || currentUser?.image!
+                      ? currentUser?.picture ?? currentUser?.image!
                       : '/static/images/logos/answerai-logo.png'
                   }
                   sx={{

@@ -16,10 +16,17 @@ const MainUiLayout = async (props: {
     // fetches flags on the server and passes them to the App
     environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
     ...(session?.user?.id && {
-      identity: `user_${session?.user?.id}`,
+      identity: `user_${
+        session?.user?.email
+          ? session.user.email.split('').reduce((a, b) => {
+              a = (a << 5) - a + b.charCodeAt(0);
+              return a & a;
+            }, 0)
+          : ''
+      }`,
       traits: {
         env: process.env.NODE_ENV,
-        role: session?.user?.role!,
+        roles: session?.user?.roles?.join(',') ?? '',
         invited: !!session?.user?.invited,
         domain: session?.user?.email?.split('@')[1]!
       }

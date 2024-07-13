@@ -44,7 +44,7 @@ export default function AppLayout({
         <GlobalStyles />
         {flagsmithState?.flags?.access_enabled?.enabled ? (
           <>
-            <AppDrawer params={params} session={session} chatList={chatList} />
+            <AppDrawer params={params} session={session} chatList={chatList}  flagsmithState={flagsmithState}/>
             <div
               style={{
                 flex: 1,

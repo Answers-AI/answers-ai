@@ -23,68 +23,10 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AIIcon from '@mui/icons-material/SmartButton';
 import { usePathname } from 'next/navigation';
 import { Menu, MenuItem } from '@mui/material';
+import { useFlags } from 'flagsmith/react';
 
 const drawerWidth = 240;
 
-const menuConfig = [
-  // {
-  //   text: 'New Chat',
-  //   link: '/chat',
-  //   icon: <MessageIcon />
-  //   // subMenu: [
-  //   //   { text: 'Dashboard', link: '/' },
-  //   //   { text: 'New Chat', link: '/chat' },
-  //   //   { text: 'New Project', link: '/journey/new' }
-  //   // ]
-  // },
-  {
-    text: 'Sidekick Studio',
-    link: '/sidekick-studio',
-    icon: <SmartToy />,
-    subMenu: [
-      { text: 'Workflows', link: '/sidekick-studio/chatflows' },
-      { text: 'Agentflows', link: '/sidekick-studio/agentflows' },
-      { text: 'Marketplaces', link: '/sidekick-studio/marketplaces' },
-      { text: 'Tools', link: '/sidekick-studio/tools' },
-      { text: 'Assistants', link: '/sidekick-studio/assistants' },
-      { text: 'Credentials', link: '/sidekick-studio/credentials' },
-      { text: 'Variables', link: '/sidekick-studio/variables' },
-      { text: 'API Keys', link: '/sidekick-studio/apikey' },
-      { text: 'Document Stores', link: '/sidekick-studio/document-stores' }
-    ]
-  }
-  // { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
-  // {
-  //   text: 'Settings',
-  //   // link: '/settings',
-  //   icon: <SettingsIcon />,
-  //   subMenu: [
-  //     { text: 'Organization', link: '/settings/organization' },
-  //     { text: 'User', link: '/settings/user' }
-  //   ]
-  // }
-  // { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
-  // {
-  //   text: 'Settings',
-  //   // link: '/settings',
-  //   icon: <SettingsIcon />,
-  //   subMenu: [
-  //     { text: 'Organization', link: '/settings/organization' },
-  //     { text: 'User', link: '/settings/user' }
-  //   ]
-  // }
-  // {
-  //   text: 'Developer',
-  //   // link: '#',
-  //   icon: <StorageIcon />,
-  //   subMenu: [
-  //     { text: 'Ingest', link: '/developer/ingest' },
-  //     { text: 'Prisma', link: '/developer/prisma' },
-  //     { text: 'Tracing', link: '/developer/tracing' },
-  //     { text: 'API Keys', link: '/developer/apikey' }
-  //   ]
-  // }
-];
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     'width': drawerWidth,
@@ -129,13 +71,85 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   })
 );
 
-export const AppDrawer = ({ session, chatList }: any) => {
+export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
   const user = session?.user;
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [submenuOpen, setSubmenuOpen] = useState('');
   const pathname = usePathname();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
+  const flags = useFlags(['chatflow:manage', 'org:admin']);
+  const ADMIN_ACTIONS = ['agentflows', 'tools', 'assistants', 'credentials', 'variables', 'apikey'];
+  const menuConfig = [
+    // {
+    //   text: 'New Chat',
+    //   link: '/chat',
+    //   icon: <MessageIcon />
+    //   // subMenu: [
+    //   //   { text: 'Dashboard', link: '/' },
+    //   //   { text: 'New Chat', link: '/chat' },
+    //   //   { text: 'New Project', link: '/journey/new' }
+    //   // ]
+    // },
+    {
+      ...(flags['chatflow:manage'].enabled
+        ? {
+            text: 'Sidekick Studio',
+            link: '/sidekick-studio',
+            icon: <SmartToy />,
+            subMenu: [
+              { id: 'chatflows', text: 'Workflows', link: '/sidekick-studio/chatflows' },
+              { id: 'agentflows', text: 'Agentflows', link: '/sidekick-studio/agentflows' },
+              { id: 'marketplaces', text: 'Marketplaces', link: '/sidekick-studio/marketplaces' },
+              { id: 'tools', text: 'Tools', link: '/sidekick-studio/tools' },
+              { id: 'assistants', text: 'Assistants', link: '/sidekick-studio/assistants' },
+              { id: 'credentials', text: 'Credentials', link: '/sidekick-studio/credentials' },
+              { id: 'variables', text: 'Variables', link: '/sidekick-studio/variables' },
+              { id: 'apikey', text: 'API Keys', link: '/sidekick-studio/apikey' },
+              {
+                id: 'documentstores',
+                text: 'Document Stores',
+                link: '/sidekick-studio/document-stores'
+              }
+            ]?.filter(
+              (item) =>
+                // menu list collapse & items
+                !ADMIN_ACTIONS?.includes(item.id) && !flags?.org_admin.enabled
+            )
+          }
+        : {})
+    }
+    // { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
+    // {
+    //   text: 'Settings',
+    //   // link: '/settings',
+    //   icon: <SettingsIcon />,
+    //   subMenu: [
+    //     { text: 'Organization', link: '/settings/organization' },
+    //     { text: 'User', link: '/settings/user' }
+    //   ]
+    // }
+    // { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
+    // {
+    //   text: 'Settings',
+    //   // link: '/settings',
+    //   icon: <SettingsIcon />,
+    //   subMenu: [
+    //     { text: 'Organization', link: '/settings/organization' },
+    //     { text: 'User', link: '/settings/user' }
+    //   ]
+    // }
+    // {
+    //   text: 'Developer',
+    //   // link: '#',
+    //   icon: <StorageIcon />,
+    //   subMenu: [
+    //     { text: 'Ingest', link: '/developer/ingest' },
+    //     { text: 'Prisma', link: '/developer/prisma' },
+    //     { text: 'Tracing', link: '/developer/tracing' },
+    //     { text: 'API Keys', link: '/developer/apikey' }
+    //   ]
+    // }
+  ];
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -255,7 +269,7 @@ export const AppDrawer = ({ session, chatList }: any) => {
               pl: 0.5
             }}>
             <Avatar
-              src={user?.image}
+              src={user?.picture}
               sx={{
                 bgcolor: 'secondary.main',
                 height: '32px',

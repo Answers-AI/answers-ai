@@ -248,6 +248,7 @@ export interface User extends Omit<DB.User, 'appSettings'> {
   chatflowDomain: string;
   org_id: string;
   org_name: string;
+  roles?: string[];
   // accounts: DB.Account[] | null;
 }
 

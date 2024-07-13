@@ -3,9 +3,10 @@ import { prisma } from '@db/client';
 import auth0 from '@utils/auth/auth0';
 import * as jose from 'jose';
 import { User } from 'types';
+import flagsmith from 'flagsmith/isomorphic';
 
 const getCachedSession = cache(
-  async (req?: any, res: any = new Response()): Promise<{ user: User }> => {
+  async (req?: any, res: any = new Response()): Promise<{ user: User; flagsmithState: any }> => {
     let session = null;
     try {
       session = await (req && res ? auth0.getSession(req, res) : auth0.getSession());
@@ -67,7 +68,36 @@ const getCachedSession = cache(
       session.user.id = user.id;
       session.user.organizationId = user.organizationId;
     }
-    return session as { user: User };
+    if (session?.user?.['https://theanswer.ai/roles']) {
+      session.user.roles = session.user['https://theanswer.ai/roles'];
+    }
+    if (session?.user) {
+      await flagsmith.init({
+        // fetches flags on the server and passes them to the App
+        environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
+        preventFetch: true
+      });
+
+      if (session?.user?.email)
+        await flagsmith.identify(
+          `user_${
+            session?.user.email
+              ? session?.user.email.split('').reduce((a, b) => {
+                  a = (a << 5) - a + b.charCodeAt(0);
+                  return a & a;
+                }, 0)
+              : ''
+          }`,
+          {
+            env: process.env.NODE_ENV,
+            domain: session.user.email.split('@')[1]
+          }
+        );
+
+      const flagsmithState = flagsmith.getState();
+      session.flagsmithState = flagsmithState;
+    }
+    return session as { user: User; flagsmithState: any };
   }
 );
 
