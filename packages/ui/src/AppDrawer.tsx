@@ -113,7 +113,7 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
             ]?.filter(
               (item) =>
                 // menu list collapse & items
-                !ADMIN_ACTIONS?.includes(item.id) && !flags?.org_admin.enabled
+                !ADMIN_ACTIONS?.includes(item.id) && !flags['org:admin']?.enabled
             )
           }
         : {})

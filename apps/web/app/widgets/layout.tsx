@@ -21,7 +21,7 @@ const WidgetLayout = async ({
     <AppWidgetLayout
       session={session as Session}
       params={params}
-      flagsmithState={session.flagsmithState}>
+      flagsmithState={session?.flagsmithState}>
       {children}
     </AppWidgetLayout>
   );

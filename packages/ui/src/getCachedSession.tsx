@@ -75,24 +75,23 @@ const getCachedSession = cache(
       await flagsmith.init({
         // fetches flags on the server and passes them to the App
         environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
-        preventFetch: true
-      });
-
-      if (session?.user?.email)
-        await flagsmith.identify(
-          `user_${
-            session?.user.email
-              ? session?.user.email.split('').reduce((a, b) => {
+        ...(session?.user?.id && {
+          identity: `user_${
+            session?.user?.email
+              ? session.user.email.split('').reduce((a: any, b: any) => {
                   a = (a << 5) - a + b.charCodeAt(0);
                   return a & a;
                 }, 0)
               : ''
           }`,
-          {
+          traits: {
             env: process.env.NODE_ENV,
-            domain: session.user.email.split('@')[1]
+            roles: session?.user?.roles?.join(',') ?? '',
+            invited: !!session?.user?.invited,
+            domain: session?.user?.email?.split('@')[1]!
           }
-        );
+        })
+      });
 
       const flagsmithState = flagsmith.getState();
       session.flagsmithState = flagsmithState;
