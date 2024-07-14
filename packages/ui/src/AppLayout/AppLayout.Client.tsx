@@ -11,8 +11,6 @@ import { AppDrawer } from '../AppDrawer';
 import { darkModeTheme } from '../theme';
 import GlobalStyles from '../GlobalStyles';
 
-import { NotInvitedPage } from './NotInvitedPage';
-
 import { AppSettings } from 'types';
 
 export default function AppLayout({
@@ -42,29 +40,30 @@ export default function AppLayout({
       <ThemeProvider theme={darkModeTheme}>
         <CssBaseline enableColorScheme />
         <GlobalStyles />
-        {flagsmithState?.flags?.access_enabled?.enabled ? (
-          <>
-            <AppDrawer params={params} session={session} chatList={chatList}  flagsmithState={flagsmithState}/>
+        <>
+          <AppDrawer
+            params={params}
+            session={session}
+            chatList={chatList}
+            flagsmithState={flagsmithState}
+          />
+          <div
+            style={{
+              flex: 1,
+              width: 'calc(100% - 65px)',
+              height: '100vh',
+              position: 'relative'
+            }}>
             <div
               style={{
-                flex: 1,
-                width: 'calc(100% - 65px)',
+                width: '100%',
                 height: '100vh',
                 position: 'relative'
               }}>
-              <div
-                style={{
-                  width: '100%',
-                  height: '100vh',
-                  position: 'relative'
-                }}>
-                {children}
-              </div>
+              {children}
             </div>
-          </>
-        ) : (
-          <NotInvitedPage session={session} />
-        )}
+          </div>
+        </>
       </ThemeProvider>
     </FlagsmithProvider>
   );
