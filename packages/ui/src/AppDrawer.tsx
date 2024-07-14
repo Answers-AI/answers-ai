@@ -77,8 +77,9 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
   const [submenuOpen, setSubmenuOpen] = useState('');
   const pathname = usePathname();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const flags = useFlags(['chatflow:manage', 'org:admin']);
-  const ADMIN_ACTIONS = ['agentflows', 'tools', 'assistants', 'credentials', 'variables', 'apikey'];
+  const flags = useFlags(['chatflow:use', 'chatflow:manage', 'org:manage']);
+  const MEMBER_ACTIONS = ['chatflows', 'marketplaces', 'tools', 'assistants'];
+  const BUILDER_ACTIONS = ['agentflows', 'credentials', 'variables', 'apikey'];
   const menuConfig = [
     // {
     //   text: 'New Chat',
@@ -91,13 +92,13 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
     //   // ]
     // },
     {
-      ...(flags['chatflow:manage'].enabled
+      ...(flags['chatflow:use'].enabled
         ? {
             text: 'Sidekick Studio',
             link: '/sidekick-studio',
             icon: <SmartToy />,
             subMenu: [
-              { id: 'chatflows', text: 'Workflows', link: '/sidekick-studio/chatflows' },
+              { id: 'chatflows', text: 'Chatflows', link: '/sidekick-studio/chatflows' },
               { id: 'agentflows', text: 'Agentflows', link: '/sidekick-studio/agentflows' },
               { id: 'marketplaces', text: 'Marketplaces', link: '/sidekick-studio/marketplaces' },
               { id: 'tools', text: 'Tools', link: '/sidekick-studio/tools' },
@@ -113,7 +114,8 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
             ]?.filter(
               (item) =>
                 // menu list collapse & items
-                !ADMIN_ACTIONS?.includes(item.id) && !flags['org:admin']?.enabled
+                (MEMBER_ACTIONS?.includes(item.id) && flags['chatflow:use']?.enabled) ||
+                (BUILDER_ACTIONS?.includes(item.id) && flags['chatflow:manage']?.enabled)
             )
           }
         : {})

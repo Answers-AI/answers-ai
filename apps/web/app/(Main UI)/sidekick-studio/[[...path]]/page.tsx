@@ -15,28 +15,8 @@ const FlowisePage = async ({ params }: any) => {
 
   const session = await getCachedSession();
   const path = params.path?.join('/');
-  await flagsmith.init({
-    // fetches flags on the server and passes them to the App
-    environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
-    preventFetch: true
-  });
 
-  if (session?.user?.email)
-    await flagsmith.identify( `user_${
-                    session?.user.email
-                        ? session?.user.email.split('').reduce((a, b) => {
-                              a = (a << 5) - a + b.charCodeAt(0)
-                              return a & a
-                          }, 0)
-                        : ''
-                }`, {
-      env: process.env.NODE_ENV,
-      domain: session.user.email.split('@')[1]
-    });
-
-  const flagsmithState = flagsmith.getState();
-  console.log({ flagsmithState });
-  if (flagsmithState.traits?.roles === 'Member') {
+  if (!session?.flagsmithState.flags?.['chatflow:use']?.enabled) {
     redirect('/chat');
   }
   if (!path) redirect('/sidekick-studio/chatflows');

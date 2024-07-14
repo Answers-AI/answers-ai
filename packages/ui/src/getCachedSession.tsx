@@ -68,14 +68,16 @@ const getCachedSession = cache(
       session.user.id = user.id;
       session.user.organizationId = user.organizationId;
     }
+    console.log(session?.user);
     if (session?.user?.['https://theanswer.ai/roles']) {
       session.user.roles = session.user['https://theanswer.ai/roles'];
+      session.user.roles = ['Member', 'Builder', 'Admin'];
     }
     if (session?.user) {
       await flagsmith.init({
         // fetches flags on the server and passes them to the App
         environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
-        ...(session?.user?.id && {
+        ...(session?.user?.email && {
           identity: `user_${
             session?.user?.email
               ? session.user.email.split('').reduce((a: any, b: any) => {
@@ -85,7 +87,8 @@ const getCachedSession = cache(
               : ''
           }`,
           traits: {
-            env: process.env.NODE_ENV,
+            env: 'production',
+            organization: session?.user?.organizationId,
             roles: session?.user?.roles?.join(',') ?? '',
             invited: !!session?.user?.invited,
             domain: session?.user?.email?.split('@')[1]!
@@ -96,6 +99,7 @@ const getCachedSession = cache(
       const flagsmithState = flagsmith.getState();
       session.flagsmithState = flagsmithState;
     }
+    console.log('session', session?.flagsmithState);
     return session as { user: User; flagsmithState: any };
   }
 );
