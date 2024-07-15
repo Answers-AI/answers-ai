@@ -5,15 +5,10 @@ import { redirect } from 'next/navigation';
 
 export const GET = handleAuth({
   onError(req: Request, error: Error) {
-    console.error('HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE');
-    console.error(error.message);
-    console.error('HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE');
-    console.error(error.description);
-    console.error('HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE');
-    console.error(error.cause);
     // console.error(error);
     // You can finish the response yourself if you want to customize
     // the status code or redirect the user
+    console.error(error);
     return redirect('/auth/error?error=' + error.message);
     // res.end();
   }
