@@ -78,8 +78,16 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
   const pathname = usePathname();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const flags = useFlags(['chatflow:use', 'chatflow:manage', 'org:manage']);
-  const MEMBER_ACTIONS = ['chatflows', 'marketplaces', 'tools', 'assistants'];
-  const BUILDER_ACTIONS = ['agentflows', 'credentials', 'variables', 'apikey'];
+  const MEMBER_ACTIONS = ['chatflows', 'marketplaces', 'document-stores'];
+  const BUILDER_ACTIONS = [
+    'agentflows',
+    'assistants',
+    'tools',
+    'credentials',
+    'variables',
+    'apikey',
+    'documentstores'
+  ];
   const menuConfig = [
     // {
     //   text: 'New Chat',
