@@ -68,6 +68,7 @@ const getCachedSession = cache(
       session.user.id = user.id;
       session.user.organizationId = user.organizationId;
     }
+    console.log('User', session?.user);
     if (session?.user?.['https://theanswer.ai/roles']) {
       session.user.roles = session.user['https://theanswer.ai/roles'];
     }
@@ -95,6 +96,7 @@ const getCachedSession = cache(
       });
 
       const flagsmithState = flagsmith.getState();
+      console.log('FlagsmithState', flagsmithState);
       session.flagsmithState = flagsmithState;
     }
     return session as { user: User; flagsmithState: any };
