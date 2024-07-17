@@ -77,7 +77,7 @@ const getCachedSession = cache(
         // fetches flags on the server and passes them to the App
         environmentID: process.env.FLAGSMITH_ENVIRONMENT_ID!,
         ...(session?.user?.email && {
-          identity: `user_${
+          identity: `user_${session?.user?.organizationId}_${
             session?.user?.email
               ? session.user.email.split('').reduce((a: any, b: any) => {
                   a = (a << 5) - a + b.charCodeAt(0);
