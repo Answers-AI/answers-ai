@@ -1,15 +1,19 @@
 import { prisma } from '@db/client';
 import { ApiKeyType, Organization, User } from 'db/generated/prisma-client';
 
+export type AuthenticateApiKeyUserResult = {
+  type: 'user';
+  user: User;
+};
+
+export type AuthenticateApiKeyOrganizationResult = {
+  type: 'organization';
+  organization: Organization;
+};
+
 export type AuthenticateApiKeyResult =
-  | {
-      type: 'user';
-      user: User;
-    }
-  | {
-      type: 'organization';
-      organization: Organization;
-    };
+  | AuthenticateApiKeyUserResult
+  | AuthenticateApiKeyOrganizationResult;
 
 export const authenticateApiKey = async (
   req: Request
