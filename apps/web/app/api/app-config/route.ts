@@ -60,3 +60,37 @@ export async function GET(req: NextRequest, res: any) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+export async function PUT(req: NextRequest, res: any) {
+  try {
+    const session = await getCachedSession(req);
+    if (!session?.user?.email) return respond401();
+    const { config } = await req.json();
+    const appConfigId = req.nextUrl.searchParams.get('app_config_id');
+
+    if (!appConfigId) {
+      return NextResponse.json(
+        {
+          error: 'No app config id provided'
+        },
+        { status: 400 }
+      );
+    }
+
+    const updatedAppConfig = await prisma.appConfig.update({
+      where: {
+        id: appConfigId
+      },
+      data: {
+        config: config
+      }
+    });
+
+    return NextResponse.json({
+      appConfig: updatedAppConfig
+    });
+  } catch (error) {
+    console.error('Failed to update AppConfig:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
