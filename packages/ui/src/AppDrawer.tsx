@@ -1,4 +1,3 @@
-'use client';
 import React, { useState } from 'react';
 import NextLink from 'next/link';
 import { styled } from '@mui/material/styles';
@@ -7,20 +6,22 @@ import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-
 import MuiDrawer from '@mui/material/Drawer';
 import ListItemIcon from '@mui/material/ListItemIcon';
-
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import ViewSidebarOutlinedIcon from '@mui/icons-material/ViewSidebarOutlined';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Collapse from '@mui/material/Collapse';
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import SmartToy from '@mui/icons-material/SmartToy';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AIIcon from '@mui/icons-material/SmartButton';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { usePathname } from 'next/navigation';
 import { Menu, MenuItem } from '@mui/material';
 import { useFlags } from 'flagsmith/react';
@@ -35,10 +36,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     'whiteSpace': 'nowrap',
     'overflowX': 'hidden',
     'transition': '.3s',
-    // 'transition': theme.transitions.create('width', {
-    //   easing: theme.transitions.easing.sharp,
-    //   duration: theme.transitions.duration.enteringScreen
-    // }),
     ' .MuiDrawer-paper': {
       transition: '.3s',
       overflowY: 'hidden',
@@ -53,8 +50,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
       '& .MuiDrawer-paper': {
         transition: '.3s',
         maxWidth: drawerWidth
-        // onMouseEnter: () => setDrawerOpen(true),
-        // onMouseLeave: () => setDrawerOpen(false)
       }
     }),
     ...(!open && {
@@ -64,8 +59,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
         p: {
           opacity: 0
         }
-        // onMouseEnter: () => setDrawerOpen(true),
-        // onMouseLeave: () => setDrawerOpen(false)
       }
     })
   })
@@ -89,16 +82,6 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
     'documentstores'
   ];
   const menuConfig = [
-    // {
-    //   text: 'New Chat',
-    //   link: '/chat',
-    //   icon: <MessageIcon />
-    //   // subMenu: [
-    //   //   { text: 'Dashboard', link: '/' },
-    //   //   { text: 'New Chat', link: '/chat' },
-    //   //   { text: 'New Project', link: '/journey/new' }
-    //   // ]
-    // },
     {
       ...(flags['chatflow:use'].enabled
         ? {
@@ -121,45 +104,14 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
               }
             ]?.filter(
               (item) =>
-                // menu list collapse & items
                 (MEMBER_ACTIONS?.includes(item.id) && flags['chatflow:use']?.enabled) ||
                 (BUILDER_ACTIONS?.includes(item.id) && flags['chatflow:manage']?.enabled)
             )
           }
         : {})
     }
-    // { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
-    // {
-    //   text: 'Settings',
-    //   // link: '/settings',
-    //   icon: <SettingsIcon />,
-    //   subMenu: [
-    //     { text: 'Organization', link: '/settings/organization' },
-    //     { text: 'User', link: '/settings/user' }
-    //   ]
-    // }
-    // { text: 'Knowledge Base', link: '/knowledge-base', icon: <AIIcon /> },
-    // {
-    //   text: 'Settings',
-    //   // link: '/settings',
-    //   icon: <SettingsIcon />,
-    //   subMenu: [
-    //     { text: 'Organization', link: '/settings/organization' },
-    //     { text: 'User', link: '/settings/user' }
-    //   ]
-    // }
-    // {
-    //   text: 'Developer',
-    //   // link: '#',
-    //   icon: <StorageIcon />,
-    //   subMenu: [
-    //     { text: 'Ingest', link: '/developer/ingest' },
-    //     { text: 'Prisma', link: '/developer/prisma' },
-    //     { text: 'Tracing', link: '/developer/tracing' },
-    //     { text: 'API Keys', link: '/developer/apikey' }
-    //   ]
-    // }
   ];
+
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -167,38 +119,71 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  // Drawer style based on open state
-  const drawerStyle = {
-    width: drawerOpen ? drawerWidth : 0, // Adjust width based on state
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    transition: 'width 0.5s ease'
+
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
   };
 
-  // Updated Drawer component to include onMouseEnter and onMouseLeave
+  const handleNewChat = () => {
+    setDrawerOpen(false);
+  };
 
   return (
     <Drawer
       open={drawerOpen}
       variant="permanent"
-      onMouseEnter={() => setDrawerOpen(!!session && true)}
-      onMouseLeave={() => setDrawerOpen(false)}
       className={drawerOpen ? 'MuiDrawer-open' : 'MuiDrawer-closed'}
       sx={{}}>
-      {/* <DrawerHeader sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <NextLink href="/">
-          <Avatar sx={{ objectFit: 'contain' }}>AI</Avatar>
-        </NextLink>
-      </DrawerHeader> */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: drawerOpen ? 'space-between' : 'center',
+          flexDirection: drawerOpen ? 'row' : 'column',
+          p: 1
+        }}>
+        <IconButton onClick={toggleDrawer}>
+          <ViewSidebarOutlinedIcon
+            sx={{
+              transform: drawerOpen ? 'scaleX(-1)' : 'none',
+              color: 'primary.main'
+            }}
+          />
+        </IconButton>
+        <Button
+          href="/chat"
+          variant="outlined"
+          onClick={handleNewChat}
+          component={NextLink}
+          endIcon={<RateReviewIcon />}
+          fullWidth
+          sx={{
+            'minWidth': 0,
+            'textTransform': 'capitalize',
+            'justifyContent': 'space-between',
+            '.MuiDrawer-closed & .MuiButton-endIcon': {
+              margin: 0
+            }
+          }}>
+          <Box
+            component="span"
+            sx={{
+              'overflow': 'hidden',
+              'transition': '.2s',
+              'maxWidth': '240px',
+              '.MuiDrawer-closed &': {
+                maxWidth: '0',
+                opacity: 0
+              }
+            }}>
+            New chat
+          </Box>
+        </Button>
+      </Box>
       <Box
         sx={{
           'flex': 1,
-          // 'overflowY': drawerOpen ? 'auto' : 'hidden',
           'overflowY': 'auto',
           'overflowX': 'hidden',
-
-          //Make the scrollbar animate to hidden when drawerOpen is false
           '&::-webkit-scrollbar': {
             transition: 'opacity 0.5s ease',
             opacity: drawerOpen ? 1 : 0
@@ -215,17 +200,14 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
 
       <List sx={{ display: 'flex', flexDirection: 'column' }} disablePadding>
         {menuConfig.map((item) => (
-          <Box
-            key={item.text}
-            onMouseEnter={() => setSubmenuOpen(item.text)}
-            onMouseLeave={() => setSubmenuOpen('')}>
+          <Box key={item.text}>
             <ListItem disablePadding>
               <ListItemButton
                 selected={!!item.link && pathname.startsWith(item.link)}
                 href={item.link}
                 component={item.link ? NextLink : 'button'}
                 sx={{ flex: 1, display: 'flex', width: '100%' }}
-                onClick={() => setSubmenuOpen(item.text == submenuOpen ? '' : item.text)}>
+                onClick={() => setSubmenuOpen(item.text == submenuOpen ? '' : item.text ?? '')}>
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <Typography
                   sx={{
@@ -243,12 +225,7 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
             </ListItem>
 
             <Collapse
-              in={
-                drawerOpen &&
-                !pathname?.includes(item?.link) &&
-                (submenuOpen === item?.text ||
-                  item?.subMenu?.some((subItem) => pathname === subItem.link))
-              }
+              in={drawerOpen || pathname?.includes(item?.link)}
               timeout="auto"
               sx={{ transition: '.2s', opacity: drawerOpen ? 1 : 0 }}>
               {item?.subMenu?.map((subItem) => (
@@ -292,7 +269,6 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
                 overflow: 'hidden',
                 alignItems: 'center',
                 width: '100%',
-                // gap: 2,
                 maxWidth: 124
               }}>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -309,7 +285,6 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
                 <Typography
                   variant="caption"
                   sx={{
-                    // opacity: 0.9,
                     width: '100%',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
