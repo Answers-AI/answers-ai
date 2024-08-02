@@ -16,9 +16,9 @@ export type AuthenticateApiKeyResult =
   | AuthenticateApiKeyOrganizationResult;
 
 export const authenticateApiKey = async (
-  req: Request
+  req?: Request
 ): Promise<AuthenticateApiKeyResult | null> => {
-  const token = req.headers.get('authorization')?.replace('Bearer ', '');
+  const token = req?.headers.get('authorization')?.replace('Bearer ', '');
   if (!token) return null;
 
   const apiKey = await prisma.apiKey.findUnique({
