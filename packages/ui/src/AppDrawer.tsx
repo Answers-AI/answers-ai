@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import NextLink from 'next/link';
 import { styled } from '@mui/material/styles';
@@ -15,16 +16,33 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Collapse from '@mui/material/Collapse';
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import SettingsIcon from '@mui/icons-material/Settings';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import SmartToy from '@mui/icons-material/SmartToy';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AIIcon from '@mui/icons-material/SmartButton';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ConstructionIcon from '@mui/icons-material/Construction';
+import GroupsIcon from '@mui/icons-material/Groups';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import BuildIcon from '@mui/icons-material/Build';
+import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
+import LanguageIcon from '@mui/icons-material/Language';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import { usePathname } from 'next/navigation';
 import { Menu, MenuItem } from '@mui/material';
 import { useFlags } from 'flagsmith/react';
+import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import ExitToAppOutlinedIcon from '@mui/icons-material/ExitToAppOutlined';
+import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
+import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import SmartButtonOutlinedIcon from '@mui/icons-material/SmartButtonOutlined';
+import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
+import ConstructionOutlinedIcon from '@mui/icons-material/ConstructionOutlined';
+import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
+import BuildOutlinedIcon from '@mui/icons-material/BuildOutlined';
+import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
+import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined';
+import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined';
 
 const drawerWidth = 240;
 
@@ -40,7 +58,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
       transition: '.3s',
       overflowY: 'hidden',
       overflowX: 'hidden',
-      padding: 0,
+      padding: 0, // Remove padding here
       width: drawerWidth
     },
     'p': {
@@ -71,7 +89,7 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
   const pathname = usePathname();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const flags = useFlags(['chatflow:use', 'chatflow:manage', 'org:manage']);
-  const MEMBER_ACTIONS = ['chatflows', 'marketplaces', 'document-stores'];
+  const MEMBER_ACTIONS = ['chatflows', 'agentflows', 'document-stores'];
   const BUILDER_ACTIONS = [
     'agentflows',
     'assistants',
@@ -87,26 +105,51 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
         ? {
             text: 'Sidekick Studio',
             link: '/sidekick-studio',
-            icon: <SmartToy />,
+            icon: <ConstructionOutlinedIcon color="primary" />,
             subMenu: [
-              { id: 'chatflows', text: 'Chatflows', link: '/sidekick-studio/chatflows' },
-              { id: 'agentflows', text: 'Agentflows', link: '/sidekick-studio/agentflows' },
-              { id: 'marketplaces', text: 'Marketplaces', link: '/sidekick-studio/marketplaces' },
-              { id: 'tools', text: 'Tools', link: '/sidekick-studio/tools' },
-              { id: 'assistants', text: 'Assistants', link: '/sidekick-studio/assistants' },
-              { id: 'credentials', text: 'Credentials', link: '/sidekick-studio/credentials' },
-              { id: 'variables', text: 'Variables', link: '/sidekick-studio/variables' },
-              { id: 'apikey', text: 'API Keys', link: '/sidekick-studio/apikey' },
+              {
+                id: 'chatflows',
+                text: 'Sidekicks',
+                link: '/sidekick-studio/chatflows',
+                icon: <SmartToyOutlinedIcon color="primary" />
+              },
+              {
+                id: 'agentflows',
+                text: 'Sidekick Teams',
+                link: '/sidekick-studio/agentflows',
+                icon: <GroupsOutlinedIcon color="primary" />
+              },
               {
                 id: 'documentstores',
-                text: 'Document Stores',
-                link: '/sidekick-studio/document-stores'
+                text: 'Knowledge Bases',
+                link: '/sidekick-studio/document-stores',
+                icon: <MenuBookOutlinedIcon color="primary" />
+              },
+              {
+                id: 'tools',
+                text: 'Tools',
+                link: '/sidekick-studio/tools',
+                icon: <BuildOutlinedIcon color="primary" />
+              },
+              {
+                id: 'credentials',
+                text: 'Integrations',
+                link: '/sidekick-studio/credentials',
+                icon: <IntegrationInstructionsOutlinedIcon color="primary" />
+              },
+              {
+                id: 'variables',
+                text: 'Global Variables',
+                link: '/sidekick-studio/variables',
+                icon: <LanguageOutlinedIcon color="primary" />
+              },
+              {
+                id: 'apikey',
+                text: 'API Keys',
+                link: '/sidekick-studio/apikey',
+                icon: <VpnKeyOutlinedIcon color="primary" />
               }
-            ]?.filter(
-              (item) =>
-                (MEMBER_ACTIONS?.includes(item.id) && flags['chatflow:use']?.enabled) ||
-                (BUILDER_ACTIONS?.includes(item.id) && flags['chatflow:manage']?.enabled)
-            )
+            ]
           }
         : {})
     }
@@ -208,7 +251,7 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
                 component={item.link ? NextLink : 'button'}
                 sx={{ flex: 1, display: 'flex', width: '100%' }}
                 onClick={() => setSubmenuOpen(item.text == submenuOpen ? '' : item.text ?? '')}>
-                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
                 <Typography
                   sx={{
                     overflow: 'hidden',
@@ -225,18 +268,15 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
             </ListItem>
 
             <Collapse
-              in={drawerOpen || pathname?.includes(item?.link)}
-              timeout="auto"
-              sx={{ transition: '.2s', opacity: drawerOpen ? 1 : 0 }}>
-              {item?.subMenu?.map((subItem) => (
-                <ListItem
-                  key={subItem.text}
-                  disablePadding
-                  sx={{ pl: 4, transition: '.2s', opacity: drawerOpen ? 1 : 0 }}>
+              in={drawerOpen || (pathname && item.link ? pathname.includes(item.link) : false)}
+              timeout="auto">
+              {item.subMenu?.map((subItem) => (
+                <ListItem key={subItem.text} disablePadding>
                   <ListItemButton
                     component={NextLink}
                     href={subItem.link}
                     selected={pathname === subItem.link}>
+                    <ListItemIcon sx={{ minWidth: 40 }}>{subItem.icon}</ListItemIcon>
                     <Typography>{subItem.text}</Typography>
                   </ListItemButton>
                 </ListItem>
@@ -308,8 +348,9 @@ export const AppDrawer = ({ session, chatList, flagsmithState }: any) => {
               keepMounted
               open={Boolean(anchorEl)}
               onClose={handleClose}>
-              <MenuItem variant="caption" disabled>
+              <MenuItem disabled>
                 <Typography
+                  variant="caption"
                   sx={{
                     opacity: 0.9,
                     width: '100%',
