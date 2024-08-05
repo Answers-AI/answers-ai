@@ -70,14 +70,17 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
     const date = new Date(chat.createdAt);
     const now = new Date();
     if (date.toDateString() === now.toDateString()) return 'Today';
-    if (date.toDateString() === new Date(now.setDate(now.getDate() - 1)).toDateString()) return 'Yesterday';
+    if (date.toDateString() === new Date(now.setDate(now.getDate() - 1)).toDateString())
+      return 'Yesterday';
     if (date >= new Date(now.setDate(now.getDate() - 6))) return 'Last 7 days';
     if (date >= new Date(now.setDate(now.getDate() - 23))) return 'Last 30 days';
     return date.toLocaleString('default', { month: 'long', year: 'numeric' });
   };
 
   const chatsByDate = React.useMemo(() => {
-    const sortedChats = fetchedChats?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    const sortedChats = fetchedChats?.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
     return sortedChats?.reduce((accum: { [key: string]: Chat[] }, chat: Chat) => {
       const dateKey = getDateKey(chat);
       return { ...accum, [dateKey]: [...(accum[dateKey] || []), chat] };
@@ -112,49 +115,6 @@ export default function ChatDrawer({ journeys, chats, defaultOpen }: ChatDrawerP
   return (
     <>
       <List disablePadding>
-        <ListItem
-          disablePadding
-          sx={(theme) => ({
-            flexDirection: 'row',
-            px: 0,
-            py: 1,
-            position: 'sticky',
-            top: 0,
-            zIndex: 2,
-            bgcolor: 'background.paper'
-          })}>
-          <Button
-            href={`/chat`}
-            variant="outlined"
-            onClick={handleDrawerClose}
-            component={NextLink}
-            endIcon={<Add />}
-            fullWidth
-            sx={{
-              'minWidth': 0,
-              'textTransform': 'capitalize',
-              'justifyContent': 'space-between',
-              '.MuiDrawer-closed & .MuiButton-endIcon': {
-                margin: 0
-              }
-            }}>
-            <Box
-              component="span"
-              sx={{
-                'overflow': 'hidden',
-                'transition': '.2s',
-                'maxWidth': '240px',
-
-                '.MuiDrawer-closed &': {
-                  maxWidth: '0',
-                  opacity: 0
-                  // display: 'none'
-                }
-              }}>
-              New chat
-            </Box>
-          </Button>
-        </ListItem>
         {Object.entries(chatsByDate || {}).map(([date, chats]) => (
           <Box key={date} sx={{ mb: 1 }}>
             <ListItem
