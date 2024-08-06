@@ -7,7 +7,7 @@
     "dev-docker": "docker-compose  -f \"./docker-compose.dev.yml\" up -d",
     "build": "dotenv -- turbo run build",
     "db": "dotenv -- pnpm --filter db prisma",
-    "db:healthcheck": "dotenv -- wait-on tcp:localhost:5432",
+    "db:healthcheck": "dotenv -- wait-on tcp:5432",
     "db:migrate": "dotenv -- pnpm db migrate dev",
     "db:deploy": "dotenv -- pnpm db migrate deploy",
     "db:reset": "dotenv -- pnpm db migrate reset",
